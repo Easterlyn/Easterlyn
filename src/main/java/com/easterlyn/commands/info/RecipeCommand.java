@@ -5,8 +5,8 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.utilities.InventoryUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import com.easterlyn.utilities.TextUtils;
+import com.easterlyn.utilities.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -45,11 +45,11 @@ public class RecipeCommand extends EasterlynCommand {
 				// No recipe number provided
 			}
 		}
-		Pair<Material, Short> type = InventoryUtils.matchMaterial(StringUtils.join(args, ' ', 0, setRecipeNumber ? args.length - 1 : args.length));
+		Pair<Material, Short> type = InventoryUtils.matchMaterial(TextUtils.join(args, ' ', 0, setRecipeNumber ? args.length - 1 : args.length));
 		if (type == null) {
 			return false;
 		}
-		ItemStack result = new ItemStack(type.getLeft(), 1, type.getRight());
+		ItemStack result = new ItemStack(type.getLeft(), 1);
 		List<Recipe> recipes = Bukkit.getRecipesFor(result);
 		String friendlyName = InventoryUtils.getItemName(result);
 		if (recipes.isEmpty()) {

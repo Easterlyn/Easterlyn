@@ -4,15 +4,15 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.player.PlayerUtils;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.server.v1_13_R2.UserCache;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.server.v1_14_R1.UserCache;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
 import org.bukkit.entity.Player;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
@@ -71,12 +71,12 @@ public class WhiteLinkCommand extends EasterlynAsynchronousCommand {
 			return false;
 		}
 
-		String discordID = StringUtils.join(args, ' ', 1, args.length);
+		String discordID = TextUtils.join(args, ' ', 1, args.length);
 		IUser user = null;
 		try {
 			long longID = Long.parseLong(discordID);
 			user = discord.getClient().getUserByID(longID);
-		} catch (NumberFormatException e) {}
+		} catch (NumberFormatException ignored) {}
 
 		if (user == null) {
 			for (IGuild guild : discord.getClient().getGuilds()) {

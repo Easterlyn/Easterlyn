@@ -15,11 +15,10 @@ import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.NumberUtils;
 import com.easterlyn.utilities.player.PermissionUtils;
+import com.easterlyn.utilities.tuple.Pair;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -373,7 +372,7 @@ public class Effects extends Module {
 			}
 		}
 		try {
-			return new ImmutablePair<>(effect, NumberUtils.intFromRoman(match.group(2)));
+			return new Pair<>(effect, NumberUtils.intFromRoman(match.group(2)));
 		} catch (NumberFormatException e) {
 			return null;
 		}

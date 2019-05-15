@@ -8,8 +8,7 @@ import com.easterlyn.machines.type.Machine;
 import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.utilities.InventoryUtils;
 
-import org.apache.commons.lang3.tuple.Pair;
-
+import com.easterlyn.utilities.tuple.Pair;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;

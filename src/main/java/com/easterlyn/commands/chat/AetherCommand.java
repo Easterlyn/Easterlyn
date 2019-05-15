@@ -10,11 +10,11 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.player.WrappedSenderPlayer;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -56,7 +56,7 @@ public class AetherCommand extends EasterlynAsynchronousCommand {
 			return true;
 		}
 
-		sendAether(sender, args[0], StringUtils.join(args, ' ', 1, args.length), label.equals("aetherme"));
+		sendAether(sender, args[0], TextUtils.join(args, ' ', 1, args.length), label.equals("aetherme"));
 		return true;
 	}
 

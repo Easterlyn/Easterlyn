@@ -1,16 +1,14 @@
 package com.easterlyn.commands.admin;
 
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.player.PlayerUtils;
-
-import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.List;
 
 /**
  * EasterlynCommand for silently kicking a player.
@@ -33,7 +31,7 @@ public class SilentKickCommand extends EasterlynCommand {
 		if (player == null) {
 			return false;
 		}
-		player.kickPlayer(StringUtils.join(args, ' ', 1, args.length));
+		player.kickPlayer(TextUtils.join(args, ' ', 1, args.length));
 		return true;
 	}
 

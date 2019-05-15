@@ -13,13 +13,12 @@ import com.easterlyn.module.Module;
 import com.easterlyn.utilities.player.PermissiblePlayer;
 import com.easterlyn.utilities.player.PlayerUtils;
 import com.easterlyn.utilities.concurrent.ConcurrentConfiguration;
+import com.easterlyn.utilities.tuple.Pair;
+import com.google.common.base.Preconditions;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.Validate;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -377,7 +376,7 @@ public class Discord extends Module {
 		// Collect messages by channel to ensure bulk delete will work.
 		Map<Pair<IChannel, Boolean>, List<IMessage>> messagesByChannel = messages.stream().distinct()
 				.collect(Collectors.groupingBy(
-						message -> new ImmutablePair<>(message.getChannel(),
+						message -> new Pair<>(message.getChannel(),
 								message.getTimestamp().isBefore(bulkDeleteableBefore))));
 
 		for (Map.Entry<Pair<IChannel, Boolean>, List<IMessage>> entry : messagesByChannel.entrySet()) {
@@ -499,10 +498,10 @@ public class Discord extends Module {
 
 	@SuppressWarnings("unchecked")
 	public <T extends DiscordModule> T getModule(Class<T> clazz) throws IllegalArgumentException {
-		Validate.isTrue(DiscordModule.class.isAssignableFrom(clazz), clazz.getName() + " is not a DiscordModule.");
-		Validate.isTrue(modules.containsKey(clazz), "Module not enabled!");
+		Preconditions.checkArgument(DiscordModule.class.isAssignableFrom(clazz), clazz.getName() + " is not a DiscordModule.");
+		Preconditions.checkArgument(modules.containsKey(clazz), "Module not enabled!");
 		Object object = modules.get(clazz);
-		Validate.isTrue(clazz.isAssignableFrom(object.getClass()));
+		Preconditions.checkArgument(clazz.isAssignableFrom(object.getClass()));
 		return (T) object;
 	}
 

@@ -1,10 +1,9 @@
 package com.easterlyn.utilities;
 
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import com.easterlyn.utilities.tuple.Pair;
 
-import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.LinkedHashMap;
@@ -57,7 +56,7 @@ public class NumberUtils {
 	 * @return the BigInteger converted to a String in the correct base
 	 */
 	public static String getBase(BigInteger bigInt, int base, int minimumDigits) {
-		if (bigInt.compareTo(BigInteger.ZERO) == -1) {
+		if (bigInt.compareTo(BigInteger.ZERO) < 0) {
 			throw new IllegalArgumentException("Cannot convert a negative number!");
 		}
 		if (base > 62 || base < 2) {
@@ -88,8 +87,8 @@ public class NumberUtils {
 	public static BigInteger md5(String string) {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("MD5");
-			return new BigInteger(1, digest.digest(string.getBytes("UTF-8")));
-		} catch (NoSuchAlgorithmException | UnsupportedEncodingException e) {
+			return new BigInteger(1, digest.digest(string.getBytes(StandardCharsets.UTF_8)));
+		} catch (NoSuchAlgorithmException e) {
 			throw new RuntimeException(e);
 		}
 	}
@@ -201,9 +200,9 @@ public class NumberUtils {
 			if (BUILDER.length() > 0) {
 				BUILDER.delete(0, BUILDER.length());
 			}
-			BUILDER.append(input.substring(0, matcher.start())).append(
+			BUILDER.append(input, 0, matcher.start()).append(
 					input.substring(matcher.end()));
-			return new ImmutablePair<>(BUILDER.toString(), time);
+			return new Pair<>(BUILDER.toString(), time);
 		}
 	}
 

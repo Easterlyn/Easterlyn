@@ -5,11 +5,6 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.utilities.InventoryUtils;
-import net.minecraft.server.v1_13_R2.IRecipe;
-import net.minecraft.server.v1_13_R2.MinecraftKey;
-import net.minecraft.server.v1_13_R2.ShapedRecipes;
-import net.minecraft.server.v1_13_R2.ShapelessRecipes;
-import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -17,7 +12,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -59,10 +53,11 @@ public class CompoundingUnionizor extends Machine {
 		}
 		Keyed keyed = (Keyed) recipe;
 
-		IRecipe iRecipe = ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager()
-				.a(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
+//		IRecipe iRecipe = ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager()
+//				.a(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
 
-		return iRecipe instanceof ShapedRecipes || iRecipe instanceof ShapelessRecipes;
+//		return iRecipe instanceof ShapedRecipes || iRecipe instanceof ShapelessRecipes;
+		return false;
 	}
 
 	@Override

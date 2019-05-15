@@ -6,8 +6,8 @@ import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -136,7 +136,7 @@ public class LoginCommandsCommand extends EasterlynCommand {
 			player.sendMessage(getLang().getValue("command.onlogin.error.add.noChat"));
 			return;
 		}
-		String command = StringUtils.join(args, ' ', 1, args.length);
+		String command = TextUtils.join(args, ' ', 1, args.length);
 		commands.add(command);
 		user.setLoginCommands(commands);
 		player.sendMessage(getLang().getValue("command.onlogin.add").replace("{PARAMETER}", command));

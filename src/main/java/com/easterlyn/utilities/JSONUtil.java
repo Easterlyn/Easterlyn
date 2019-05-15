@@ -8,8 +8,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.HoverEvent.Action;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_13_R2.NBTTagCompound;
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import net.minecraft.server.v1_14_R1.NBTTagCompound;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -151,7 +151,7 @@ public class JSONUtil {
 	}
 
 	public static TextComponent getItemComponent(ItemStack item) {
-		net.minecraft.server.v1_13_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_14_R1.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 		boolean named = nmsStack.hasName();
 		TextComponent component = new TextComponent(JSONUtil.fromLegacyText(nmsStack.getName().getText()));
 		for (int i = 0; i < component.getExtra().size(); i++) {
@@ -172,11 +172,11 @@ public class JSONUtil {
 		return getItemText(CraftItemStack.asNMSCopy(item));
 	}
 
-	private static String getItemText(net.minecraft.server.v1_13_R2.ItemStack item) {
+	private static String getItemText(net.minecraft.server.v1_14_R1.ItemStack item) {
 		return item.save(new NBTTagCompound()).toString();
 	}
 
-	private static HoverEvent getItemHover(net.minecraft.server.v1_13_R2.ItemStack item) {
+	private static HoverEvent getItemHover(net.minecraft.server.v1_14_R1.ItemStack item) {
 		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(getItemText(item)) });
 	}
 

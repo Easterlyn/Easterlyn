@@ -4,7 +4,7 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Densificator;
 import com.easterlyn.machines.type.Elevator;
 import com.easterlyn.machines.type.Machine;
-import org.apache.commons.lang3.tuple.Pair;
+import com.easterlyn.utilities.tuple.Pair;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;

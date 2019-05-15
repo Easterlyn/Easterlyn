@@ -4,10 +4,9 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
-import com.easterlyn.utilities.player.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -91,7 +90,7 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 		} catch (Exception e) {
 			sender.sendMessage(Language.getColor("bad") + "An error occurred processing this command. Please make sure your parameters are correct.");
 			plugin.getModule(Discord.class).postReport("Error processing command by " + sender.getName()
-					+ ": /" + getName() + " " + StringUtils.join(args, ' ') + '\n' + TextUtils.getTrace(e, 5));
+					+ ": /" + getName() + " " + TextUtils.join(args, ' ') + '\n' + TextUtils.getTrace(e, 5));
 			e.printStackTrace();
 		}
 		sender.sendMessage(this.getUsage());

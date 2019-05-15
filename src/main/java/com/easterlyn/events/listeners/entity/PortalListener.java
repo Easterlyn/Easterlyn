@@ -45,24 +45,19 @@ public class PortalListener extends EasterlynListener {
 			return;
 		}
 
+		agent.reset();
 
-		if (event.useTravelAgent()) {
-			agent.reset();
-			event.setPortalTravelAgent(agent);
+		if (fromEnvironment == Environment.NETHER) {
+			agent.setSearchRadius(9);
+		} else {
+			agent.setSearchRadius(1);
+		}
 
-			if (fromEnvironment == Environment.NETHER) {
-				agent.setSearchRadius(9);
-			} else {
-				agent.setSearchRadius(1);
-			}
-
-			Location fromCenter = RegionUtils.findNetherPortalCenter(fromPortal);
-			if (fromCenter != null) {
-				fromCenter.setPitch(event.getFrom().getPitch());
-				fromCenter.setYaw(event.getFrom().getYaw() - 180);
-				event.setFrom(fromCenter);
-			}
-
+		Location fromCenter = RegionUtils.findNetherPortalCenter(fromPortal);
+		if (fromCenter != null) {
+			fromCenter.setPitch(event.getFrom().getPitch());
+			fromCenter.setYaw(event.getFrom().getYaw() - 180);
+			event.setFrom(fromCenter);
 		}
 
 		Location to = RegionUtils.calculatePortalDestination(event.getFrom(), fromPortal.getType());
@@ -74,10 +69,6 @@ public class PortalListener extends EasterlynListener {
 
 		event.setTo(to);
 
-		if (!event.useTravelAgent()) {
-			return;
-		}
-
 		agent.setFrom(event.getFrom().getBlock());
 		Location toPortal = agent.findPortal(to);
 		if (toPortal == null) {
@@ -87,6 +78,7 @@ public class PortalListener extends EasterlynListener {
 					return;
 				}
 			}
+			agent.createPortal(to);
 		} else {
 			event.setTo(toPortal);
 		}

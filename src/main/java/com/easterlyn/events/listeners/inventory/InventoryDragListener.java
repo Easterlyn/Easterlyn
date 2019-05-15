@@ -6,8 +6,7 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.utilities.InventoryUtils;
 
-import org.apache.commons.lang3.tuple.Pair;
-
+import com.easterlyn.utilities.tuple.Pair;
 import org.bukkit.block.BlockState;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;

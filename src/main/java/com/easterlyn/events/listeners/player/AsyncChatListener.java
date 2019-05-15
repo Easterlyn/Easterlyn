@@ -16,6 +16,7 @@ import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.StringMetric;
 import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.player.WrappedSenderPlayer;
 import com.google.common.collect.ImmutableList;
@@ -25,7 +26,6 @@ import me.ryanhamshire.GriefPrevention.PlayerData;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -351,8 +351,9 @@ public class AsyncChatListener extends EasterlynListener {
 
 			String msgSansURLs = urlStripped.toString().trim();
 
-			if (msgSansURLs.length() > 10 && StringUtils.getLevenshteinDistance(msgSansURLs,
-					msgSansURLs.toUpperCase()) < msgSansURLs.length() * .25) {
+			if (msgSansURLs.length() > 10 && StringMetric.compareJaroWinkler(msgSansURLs,
+					msgSansURLs.toUpperCase()) > .75F) {
+				// TODO: verify that StringMetric does not ignore case
 				this.toLowerCase(message.getMessageComponent());
 			}
 		}
@@ -434,7 +435,7 @@ public class AsyncChatListener extends EasterlynListener {
 
 		// Must be more than 25% different from last message
 		if (!player.hasPermission("easterlyn.chat.spam.repeat") && lastChat > 0
-				&& StringUtils.getLevenshteinDistance(msg, lastMsg) < msg.length() * .25) {
+				&& StringMetric.compareJaroWinkler(msg, lastMsg) > .75F) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[SimilarChat] " + event.getFormat());
 			return true;

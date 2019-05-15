@@ -10,7 +10,7 @@ import com.easterlyn.micromodules.AwayFromKeyboard;
 import com.easterlyn.micromodules.Cooldowns;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import com.easterlyn.utilities.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.World.Environment;

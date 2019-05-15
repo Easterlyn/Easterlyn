@@ -1,8 +1,5 @@
 package com.easterlyn.commands.chat;
 
-import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
@@ -10,13 +7,13 @@ import com.easterlyn.chat.message.Message;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.micromodules.RawAnnouncer;
 import com.easterlyn.users.UserRank;
-
+import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.ImmutableList;
-
-import org.apache.commons.lang3.StringUtils;
-
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * EasterlynCommand for manipulating the raw message announcer.
@@ -41,7 +38,7 @@ public class HalCommand extends EasterlynCommand {
 	protected boolean onCommand(CommandSender sender, String label, String[] args) {
 		Message message;
 		if (!announcer.isEnabled()) {
-			message = chat.getHalBase().setMessage(Language.getColor("bot_text") + StringUtils.join(args, ' ')).toMessage();
+			message = chat.getHalBase().setMessage(Language.getColor("bot_text") + TextUtils.join(args, ' ')).toMessage();
 		} else if (args.length > 0) {
 			try {
 				int msgNum = Integer.valueOf(args[0]);
@@ -53,7 +50,7 @@ public class HalCommand extends EasterlynCommand {
 				}
 				message = announcer.getMessages().get(msgNum - 1);
 			} catch (NumberFormatException e) {
-				message = chat.getHalBase().setMessage(Language.getColor("bot_text") + StringUtils.join(args, ' ')).toMessage();
+				message = chat.getHalBase().setMessage(Language.getColor("bot_text") + TextUtils.join(args, ' ')).toMessage();
 			}
 		} else {
 			message = announcer.getMessages().get(ThreadLocalRandom.current().nextInt(announcer.getMessages().size()));

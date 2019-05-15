@@ -173,4 +173,45 @@ public class TextUtils {
 		return trace.toString();
 	}
 
+	public static String join(Object[] args, char separator) {
+		return join(args, String.valueOf(separator));
+	}
+
+	public static String join(Object[] args, String separator) {
+		if (args == null) {
+			return null;
+		}
+
+		return join(args, separator, 0, args.length);
+	}
+
+	public static String join(Object[] array, char separator, int startIndex, int endIndex) {
+		return join(array, String.valueOf(separator), startIndex, endIndex);
+	}
+
+	public static String join(Object[] array, String separator, int startIndex, int endIndex) {
+		if (array == null) {
+			return null;
+		}
+
+		int totalCount = endIndex - startIndex;
+		if (totalCount <= 0) {
+			return "";
+		}
+
+		StringBuilder builder = new StringBuilder(totalCount * 16);
+
+		for(int i = startIndex; i < endIndex; ++i) {
+			if (i > startIndex) {
+				builder.append(separator);
+			}
+
+			if (array[i] != null) {
+				builder.append(array[i]);
+			}
+		}
+
+		return builder.toString();
+	}
+
 }

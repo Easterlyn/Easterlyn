@@ -11,9 +11,8 @@ import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
+import com.easterlyn.utilities.tuple.Triple;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -280,7 +279,7 @@ public class Dublexor extends Machine {
 		open.setItem(1, expCost);
 		open.setItem(2, result);
 		InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-				new ImmutableTriple<>(input, expCost, result));
+				new Triple<>(input, expCost, result));
 		player.updateInventory();
 	}
 
@@ -322,7 +321,7 @@ public class Dublexor extends Machine {
 		im.setLore(lore);
 		is3.setItemMeta(im);
 
-		return new ImmutableTriple<>(is1, is2, is3);
+		return new Triple<>(is1, is2, is3);
 	}
 
 }

@@ -9,25 +9,23 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
+import com.easterlyn.utilities.tuple.Pair;
+import com.easterlyn.utilities.tuple.Triple;
 import com.google.common.collect.HashMultimap;
 import io.netty.buffer.Unpooled;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_13_R2.EntityPlayer;
-import net.minecraft.server.v1_13_R2.MerchantRecipe;
-import net.minecraft.server.v1_13_R2.MerchantRecipeList;
-import net.minecraft.server.v1_13_R2.MinecraftKey;
-import net.minecraft.server.v1_13_R2.PacketDataSerializer;
-import net.minecraft.server.v1_13_R2.PacketPlayOutCustomPayload;
-import net.minecraft.server.v1_13_R2.PacketPlayOutSetSlot;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
-import org.apache.commons.lang3.tuple.Triple;
+import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.MerchantRecipe;
+import net.minecraft.server.v1_14_R1.MerchantRecipeList;
+import net.minecraft.server.v1_14_R1.MinecraftKey;
+import net.minecraft.server.v1_14_R1.PacketDataSerializer;
+import net.minecraft.server.v1_14_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_14_R1.PacketPlayOutSetSlot;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_13_R2.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
@@ -65,6 +63,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 
 /**
  * A set of useful methods for inventory functions.
@@ -84,7 +83,7 @@ public class InventoryUtils {
 			return items;
 		}
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Bukkit.getPluginManager().getPlugin("Easterlyn").getResource("items.csv")))) {
+				Objects.requireNonNull(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("Easterlyn")).getResource("items.csv"))))) {
 			items = new HashMap<>();
 			itemsReverse = HashMultimap.create();
 			String line;
@@ -190,7 +189,7 @@ public class InventoryUtils {
 		if (matData.length > 1) {
 			try {
 				durability = Short.parseShort(matData[1]);
-			} catch (NumberFormatException e) {}
+			} catch (NumberFormatException ignored) {}
 		}
 
 		boolean durabilitySet = durability != null;
@@ -198,11 +197,11 @@ public class InventoryUtils {
 			durability = 0;
 		}
 
-		int matchLevel = Integer.MAX_VALUE;
+		float matchLevel = 0F;
 		matData[0] = matData[0].replace('_', ' ').toLowerCase();
 		for (Entry<String, String> entry : getItems().entrySet()) {
-			int current = StringUtils.getLevenshteinDistance(matData[0], entry.getValue().toLowerCase());
-			if (current < matchLevel) {
+			float current = StringMetric.compareJaroWinkler(matData[0], entry.getValue().toLowerCase());
+			if (current > matchLevel) {
 				matchLevel = current;
 				String[] entryData = entry.getKey().split(":");
 				material = Material.getMaterial(entryData[0]);
@@ -210,13 +209,13 @@ public class InventoryUtils {
 					durability = Short.valueOf(entryData[1]);
 				}
 			}
-			if (current == 0) {
-				return new ImmutablePair<>(material, durability);
+			if (current == 1F) {
+				return new Pair<>(material, durability);
 			}
 		}
 		// Allow more fuzziness for longer named items
 		if (matchLevel < (3 + material.name().length() / 5)) {
-			return new ImmutablePair<>(material, durability);
+			return new Pair<>(material, durability);
 		}
 		return null;
 	}
@@ -573,10 +572,10 @@ public class InventoryUtils {
 			// To combat that, add a full empty recipe instead of a recipe with an empty result.
 			// We can't just remove the recipe in case the client has changed to a higher number
 			// recipe - it cannot handle a reduction below its current recipe number.
-			boolean hasNoResult = recipe.getRight() == null || recipe.getRight().getType() == Material.AIR;
-			list.add(new MerchantRecipe(hasNoResult ? net.minecraft.server.v1_13_R2.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getLeft()),
-					hasNoResult ? net.minecraft.server.v1_13_R2.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getMiddle()),
-							CraftItemStack.asNMSCopy(recipe.getRight())));
+			boolean hasNoResult = recipe.getRight().getType() == Material.AIR;
+			list.add(new MerchantRecipe(hasNoResult ? net.minecraft.server.v1_14_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getLeft()),
+					hasNoResult ? net.minecraft.server.v1_14_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getMiddle()),
+							CraftItemStack.asNMSCopy(recipe.getRight()), 0, Integer.MAX_VALUE, 0, 0));
 		}
 
 		PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());

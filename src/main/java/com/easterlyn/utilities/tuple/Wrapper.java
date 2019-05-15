@@ -1,4 +1,4 @@
-package com.easterlyn.utilities;
+package com.easterlyn.utilities.tuple;
 
 /**
  * Simple object wrapper.

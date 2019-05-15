@@ -5,8 +5,7 @@ import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 
-import org.apache.commons.lang3.tuple.Pair;
-
+import com.easterlyn.utilities.tuple.Pair;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockFromToEvent;
@@ -30,7 +29,7 @@ public class FromToListener extends EasterlynListener {
 		Pair<Machine, ConfigurationSection> machine = machines.getMachineByBlock(event.getToBlock());
 
 		if (machine != null) {
-			event.setCancelled(machine.getKey().handleFromTo(event, machine.getRight()));
+			event.setCancelled(machine.getLeft().handleFromTo(event, machine.getRight()));
 		}
 	}
 

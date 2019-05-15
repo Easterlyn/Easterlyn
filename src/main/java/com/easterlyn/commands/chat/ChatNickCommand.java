@@ -1,8 +1,5 @@
 package com.easterlyn.commands.chat;
 
-import java.text.Normalizer;
-import java.util.List;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Chat;
 import com.easterlyn.chat.Language;
@@ -11,15 +8,14 @@ import com.easterlyn.chat.channel.NickChannel;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
-
+import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.ImmutableList;
-
-import org.apache.commons.lang3.StringUtils;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import net.md_5.bungee.api.ChatColor;
+import java.text.Normalizer;
+import java.util.List;
 
 /**
  * Command for changing nickname in a channel.
@@ -77,7 +73,7 @@ public class ChatNickCommand extends EasterlynCommand {
 			return true;
 		}
 		StringBuilder sb = new StringBuilder();
-		for (char character : Normalizer.normalize(StringUtils.join(args, ' '),
+		for (char character : Normalizer.normalize(TextUtils.join(args, ' '),
 				Normalizer.Form.NFD).toCharArray()) {
 			if (character > '\u001F' && character < '\u007E') {
 				sb.append(character);

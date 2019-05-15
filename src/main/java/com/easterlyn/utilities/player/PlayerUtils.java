@@ -4,19 +4,19 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.StringMetric;
 import com.easterlyn.utilities.TextUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.authlib.GameProfile;
-import net.minecraft.server.v1_13_R2.DimensionManager;
-import net.minecraft.server.v1_13_R2.EntityPlayer;
-import net.minecraft.server.v1_13_R2.MinecraftServer;
-import net.minecraft.server.v1_13_R2.PlayerInteractManager;
-import org.apache.commons.lang3.StringUtils;
+import net.minecraft.server.v1_14_R1.DimensionManager;
+import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.MinecraftServer;
+import net.minecraft.server.v1_14_R1.PlayerInteractManager;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -281,21 +281,21 @@ public class PlayerUtils {
 			return null;
 		}
 
-		int bestMatch = Integer.MAX_VALUE;
+		float bestMatch = 0F;
 		for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
 			if (offlinePlayer.getName() == null) {
 				// Loaded by UUID only, name has never been looked up.
 				continue;
 			}
 
-			int currentMatch = StringUtils.getLevenshteinDistance(id, offlinePlayer.getName());
+			float currentMatch = StringMetric.compareJaroWinkler(id, offlinePlayer.getName());
 
-			if (currentMatch == 0) {
+			if (currentMatch == 1F) {
 				player = offlinePlayer;
 				break;
 			}
 
-			if (currentMatch < bestMatch) {
+			if (currentMatch > bestMatch) {
 				bestMatch = currentMatch;
 				player = offlinePlayer;
 			}

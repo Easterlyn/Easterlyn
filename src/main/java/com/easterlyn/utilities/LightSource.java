@@ -1,14 +1,13 @@
 package com.easterlyn.utilities;
 
-import net.minecraft.server.v1_13_R2.BlockPosition;
-import net.minecraft.server.v1_13_R2.Chunk;
-import net.minecraft.server.v1_13_R2.EnumSkyBlock;
+import net.minecraft.server.v1_14_R1.BlockPosition;
+import net.minecraft.server.v1_14_R1.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.v1_13_R2.CraftChunk;
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.CraftChunk;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +28,8 @@ public class LightSource {
 
 		BlockPosition blockPos = new BlockPosition(l.getBlockX(), l.getBlockY(), l.getBlockZ());
 		// Sets the light source at the location to the level
-		w.getHandle().a(EnumSkyBlock.BLOCK, blockPos, level);
+		// TODO may not be correct in 1.14
+		w.getHandle().getChunkProvider().getLightEngine().a(blockPos, level);
 
 		updateChunk(l);
 	}

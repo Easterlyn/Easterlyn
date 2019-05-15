@@ -7,8 +7,6 @@ import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.users.UserAffinity;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftAnimals;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
 import org.bukkit.entity.Animals;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
@@ -78,7 +76,8 @@ public class EffectBreedAnimal extends Effect implements BehaviorActive, Behavio
 			}
 			Animals animal = (Animals) near;
 			if (animal.isAdult()) {
-				((CraftAnimals) animal).getHandle().f(((CraftPlayer) player).getHandle());
+				animal.setLoveModeTicks(600);
+				animal.setBreedCause(player.getUniqueId());
 			}
 		}
 	}

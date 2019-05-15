@@ -2,27 +2,30 @@ package com.easterlyn.machines;
 
 import com.easterlyn.machines.type.Dublexor;
 import com.easterlyn.machines.type.Machine;
-import net.minecraft.server.v1_13_R2.BlockPosition;
-import net.minecraft.server.v1_13_R2.ChatComponentText;
-import net.minecraft.server.v1_13_R2.Container;
-import net.minecraft.server.v1_13_R2.ContainerMerchant;
-import net.minecraft.server.v1_13_R2.EntityHuman;
-import net.minecraft.server.v1_13_R2.EntityPlayer;
-import net.minecraft.server.v1_13_R2.EntityVillager;
-import net.minecraft.server.v1_13_R2.IChatBaseComponent;
-import net.minecraft.server.v1_13_R2.ItemStack;
-import net.minecraft.server.v1_13_R2.MerchantRecipe;
-import net.minecraft.server.v1_13_R2.MerchantRecipeList;
-import net.minecraft.server.v1_13_R2.PacketPlayOutOpenWindow;
-import net.minecraft.server.v1_13_R2.World;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
+import com.easterlyn.utilities.tuple.Pair;
+import net.minecraft.server.v1_14_R1.BlockPosition;
+import net.minecraft.server.v1_14_R1.ChatComponentText;
+import net.minecraft.server.v1_14_R1.Container;
+import net.minecraft.server.v1_14_R1.ContainerMerchant;
+import net.minecraft.server.v1_14_R1.Containers;
+import net.minecraft.server.v1_14_R1.EntityHuman;
+import net.minecraft.server.v1_14_R1.EntityPlayer;
+import net.minecraft.server.v1_14_R1.EntityTypes;
+import net.minecraft.server.v1_14_R1.EntityVillager;
+import net.minecraft.server.v1_14_R1.EnumHand;
+import net.minecraft.server.v1_14_R1.IChatBaseComponent;
+import net.minecraft.server.v1_14_R1.MerchantRecipe;
+import net.minecraft.server.v1_14_R1.MerchantRecipeList;
+import net.minecraft.server.v1_14_R1.PacketPlayOutOpenWindow;
+import net.minecraft.server.v1_14_R1.SoundEffect;
+import net.minecraft.server.v1_14_R1.World;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
+import javax.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -69,44 +72,55 @@ public class MachineInventoryTracker {
 		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
 		int containerCounter = nmsPlayer.nextContainerCounter();
-		Container container = new MerchantContainer(nmsPlayer, key);
+		Container container = new MerchantContainer(containerCounter, nmsPlayer, key);
 		nmsPlayer.activeContainer = container;
-		container.windowId = containerCounter;
 		container.addSlotListener(nmsPlayer);
-		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, "minecraft:villager",
-				new ChatComponentText(m.getClass().getSimpleName()), 3));
+		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(containerCounter, Containers.MERCHANT,
+				new ChatComponentText(m.getName())));
 
-		this.openMachines.put(player.getUniqueId(), new ImmutablePair<>(m, key));
+		this.openMachines.put(player.getUniqueId(), new Pair<>(m, key));
 	}
 
 	public class MerchantContainer extends ContainerMerchant {
-		MerchantContainer(EntityPlayer player, Location location) {
-			super(player.inventory, new FakeNMSVillager(player, player.world, location), player.world);
+		MerchantContainer(int containerCounter, EntityPlayer player, Location location) {
+			super(containerCounter, player.inventory, new FakeNMSVillager(player, player.world, location));
 			this.checkReachable = false;
 		}
 	}
 
 	public class FakeNMSVillager extends EntityVillager {
 		FakeNMSVillager(EntityPlayer player, World world, Location location) {
-			super(world);
+			super(EntityTypes.VILLAGER, world);
 			setTradingPlayer(player);
 			// Set location so that logging plugins know where the transaction is taking place
 			a(new BlockPosition(location.getX(), location.getY(), location.getZ()), -1);
 		}
 
 		@Override
-		public MerchantRecipeList getOffers(EntityHuman paramEntityHuman) {
+		public MerchantRecipeList getOffers() {
 			return new MerchantRecipeList();
 		}
 
 		@Override
 		public void a(MerchantRecipe paramMerchantRecipe) {
-			// adds a trade
+			// Adds a trade
+		}
+
+		@Nullable
+		@Override
+		protected SoundEffect getSoundAmbient() {
+			return null;
 		}
 
 		@Override
-		public void a(ItemStack paramItemStack) {
-			// reduces remaining trades and makes yes/no noises
+		public void ej() {
+			// Random sound
+		}
+
+		@Override
+		public boolean a(EntityHuman entityhuman, EnumHand enumhand) {
+			// Player interaction should not be possible
+			return true;
 		}
 
 		@Override

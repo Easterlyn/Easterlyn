@@ -12,9 +12,8 @@ import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
+import com.easterlyn.utilities.tuple.Triple;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Directional;
@@ -206,8 +205,14 @@ public class Alchemiter extends Machine {
             // Set items
             open.setItem(1, expCost);
             open.setItem(2, result);
+            if (input == null) {
+                input = new ItemStack(Material.AIR);
+            }
+            if (expCost == null) {
+                expCost = new ItemStack(Material.AIR);
+            }
             InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-                    new ImmutableTriple<>(input, expCost, result == null ? barrier : result));
+                    new Triple<>(input, expCost, result == null ? barrier : result));
             player.updateInventory();
         });
     }
@@ -255,7 +260,7 @@ public class Alchemiter extends Machine {
         im.setLore(lore);
         is3.setItemMeta(im);
 
-        return new ImmutableTriple<>(is1, is2, is3);
+        return new Triple<>(is1, is2, is3);
     }
 
 }

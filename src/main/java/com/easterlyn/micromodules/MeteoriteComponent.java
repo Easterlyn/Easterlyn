@@ -1,11 +1,11 @@
 package com.easterlyn.micromodules;
 
-import net.minecraft.server.v1_13_R2.DamageSource;
-import net.minecraft.server.v1_13_R2.EntityFallingBlock;
+import net.minecraft.server.v1_14_R1.DamageSource;
+import net.minecraft.server.v1_14_R1.EntityFallingBlock;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 /**
@@ -18,7 +18,6 @@ public class MeteoriteComponent extends EntityFallingBlock {
 	private final boolean explode;
 	private final boolean bore;
 
-	@SuppressWarnings("deprecation")
 	MeteoriteComponent(Location l, Material material, boolean explode, boolean bore) {
 		super(((CraftWorld) l.getWorld()).getHandle(), l.getBlockX(), l.getBlockY(), l.getBlockZ(), CraftMagicNumbers.getBlock(material).getBlockData());
 		this.explode = explode;
@@ -28,7 +27,7 @@ public class MeteoriteComponent extends EntityFallingBlock {
 		((CraftWorld) l.getWorld()).getHandle().addEntity(this, SpawnReason.CUSTOM);
 	}
 
-	public boolean shouldExplode() {
+	boolean shouldExplode() {
 		return explode;
 	}
 

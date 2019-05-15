@@ -8,9 +8,9 @@ import com.easterlyn.machines.type.computer.Program;
 import com.easterlyn.machines.type.computer.Programs;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.TextUtils;
+import com.easterlyn.utilities.tuple.Pair;
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -48,7 +48,7 @@ public class MachineCommand extends EasterlynCommand {
 		Player player = (Player) sender;
 		if (args[0].equalsIgnoreCase("get")) {
 			try {
-				player.getInventory().addItem(machines.getMachineByName(StringUtils.join(args, ' ', 1, args.length)).getUniqueDrop());
+				player.getInventory().addItem(machines.getMachineByName(TextUtils.join(args, ' ', 1, args.length)).getUniqueDrop());
 				sender.sendMessage("Machine get!");
 			} catch (Exception e) {
 				StringBuilder sb = new StringBuilder("Valid types: ");
@@ -60,7 +60,7 @@ public class MachineCommand extends EasterlynCommand {
 			return true;
 		}
 		if (args[0].equalsIgnoreCase("make")) {
-			Machine machine = machines.getMachineByName(StringUtils.join(args, ' ', 1, args.length));
+			Machine machine = machines.getMachineByName(TextUtils.join(args, ' ', 1, args.length));
 			Pair<Machine, ConfigurationSection> machinePair = machines.addMachine(player.getLocation(),
 					machine.getName(), player.getUniqueId(),
 					Direction.getFacingDirection(player));

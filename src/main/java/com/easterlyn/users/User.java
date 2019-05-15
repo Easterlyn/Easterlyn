@@ -15,9 +15,9 @@ import com.easterlyn.effects.effect.BehaviorGodtier;
 import com.easterlyn.effects.effect.BehaviorPassive;
 import com.easterlyn.effects.effect.BehaviorReactive;
 import com.easterlyn.effects.effect.Effect;
+import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.player.PlayerUtils;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -459,7 +459,7 @@ public class User {
 		}
 		String base = lang.getValue("chat.channel.join", true).replace("{PLAYER}", this.getDisplayName());
 
-		String all = base.replace("{CHANNEL}", StringUtils.join(getListening(), ", "));
+		String all = base.replace("{CHANNEL}", TextUtils.join(getListening().toArray(), ", "));
 		int lastComma = all.lastIndexOf(',');
 		if (lastComma > -1) {
 			all = all.substring(0, lastComma) + " and" + all.substring(lastComma + 1);

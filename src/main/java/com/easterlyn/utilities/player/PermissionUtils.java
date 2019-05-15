@@ -14,15 +14,13 @@ public class PermissionUtils {
 	private PermissionUtils() {}
 
 	public static Permission getOrCreate(String permissionName, PermissionDefault permissionDefault) {
-		Permission permission;
-		try {
+		Permission permission = Bukkit.getPluginManager().getPermission(permissionName);
+		if (permission ==  null) {
 			permission = new Permission(permissionName, permissionDefault);
 			Bukkit.getPluginManager().addPermission(permission);
-		} catch (Exception e) {
-			permission = Bukkit.getPluginManager().getPermission(permissionName);
-			permission.setDefault(permissionDefault);
-			permission.recalculatePermissibles();
 		}
+		permission.setDefault(permissionDefault);
+		permission.recalculatePermissibles();
 		return permission;
 	}
 

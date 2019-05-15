@@ -4,9 +4,8 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.module.Module;
+import com.easterlyn.utilities.tuple.Pair;
 import com.google.common.collect.LinkedHashMultimap;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -101,7 +100,7 @@ public class Machines extends Module {
 	 * @return the Machine created
 	 */
 	public Pair<Machine, ConfigurationSection> addMachine(Location location, String type,
-			UUID owner, Direction direction) {
+				UUID owner, Direction direction) {
 		if (!this.isEnabled() || !byName.containsKey(type)) {
 			return null;
 		}
@@ -128,7 +127,7 @@ public class Machines extends Module {
 		for (Location location : type.getShape().getBuildLocations(key, direction).keySet()) {
 			this.addMachineBlock(location, key);
 		}
-		return new ImmutablePair<>(type, section);
+		return new Pair<>(type, section);
 	}
 
 	public void enableChunkMachines(Chunk chunk) {
@@ -403,7 +402,7 @@ public class Machines extends Module {
 		if (section == null) {
 			return null;
 		}
-		return new ImmutablePair<>(byName.get(section.getString("type")), section);
+		return new Pair<>(byName.get(section.getString("type")), section);
 	}
 
 	/**

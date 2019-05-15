@@ -3,7 +3,7 @@
   "group": "glazed_terracotta",
   "ingredients": [
     {
-      "item": "minecraft:dandelion_yellow"
+      "item": "minecraft:yellow_dye"
     },
     {
       "tag": "easterlyn:glazed_terracotta"

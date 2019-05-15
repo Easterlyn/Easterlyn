@@ -5,11 +5,11 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.events.Events;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.player.PermissionBridge;
 import com.easterlyn.utilities.player.PermissionUtils;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.event.EventHandler;
@@ -71,7 +71,7 @@ public class AsyncPreLoginListener extends EasterlynListener {
 			OfflinePlayer offline = Bukkit.getOfflinePlayer(event.getUniqueId());
 			String name = offline.getName() != null ? offline.getName() : event.getUniqueId().toString();
 			Bukkit.getConsoleSender().sendMessage( ips.size() + " IPs on record for " + name
-					+ ": " + StringUtils.join(ips.toArray(new String[0]), ", "));
+					+ ": " + TextUtils.join(ips.toArray(new String[0]), ", "));
 		}
 	}
 

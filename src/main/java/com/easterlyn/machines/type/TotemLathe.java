@@ -8,9 +8,8 @@ import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.InventoryUtils;
+import com.easterlyn.utilities.tuple.Triple;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Bisected;
@@ -193,7 +192,7 @@ public class TotemLathe extends Machine {
             // Set items
             open.setItem(2, result);
             InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-                    new ImmutableTriple<>(slot0, slot1, result));
+                    new Triple<>(slot0, slot1, result));
             InventoryUtils.updateWindowSlot(player, 2);
         });
     }
@@ -234,7 +233,7 @@ public class TotemLathe extends Machine {
         im.setDisplayName(ChatColor.GOLD + "Carved Totem");
         is3.setItemMeta(im);
 
-        return new ImmutableTriple<>(is1, is2, is3);
+        return new Triple<>(is1, is2, is3);
     }
 
 }

@@ -4,9 +4,8 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.JSONUtil;
+import com.easterlyn.utilities.tuple.Pair;
 import net.md_5.bungee.api.ChatMessageType;
-import org.apache.commons.lang3.tuple.ImmutablePair;
-import org.apache.commons.lang3.tuple.Pair;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.boss.BarColor;
@@ -49,7 +48,7 @@ public class SleepVote extends Module {
 			return;
 		}
 		if (!votes.containsKey(world.getName())) {
-			votes.put(world.getName(), new ImmutablePair<>(
+			votes.put(world.getName(), new Pair<>(
 					Bukkit.createBossBar(lang.getValue("sleep.title"), BarColor.BLUE, BarStyle.SEGMENTED_20),
 					new HashSet<>()));
 			resetVote(world);

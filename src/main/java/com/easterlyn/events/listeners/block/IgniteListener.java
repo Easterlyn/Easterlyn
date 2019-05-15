@@ -5,8 +5,7 @@ import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
 
-import org.apache.commons.lang3.tuple.Pair;
-
+import com.easterlyn.utilities.tuple.Pair;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockIgniteEvent;

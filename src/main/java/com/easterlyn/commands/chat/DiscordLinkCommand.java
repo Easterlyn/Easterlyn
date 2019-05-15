@@ -5,13 +5,13 @@ import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.Discord;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.JSONUtil;
+import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.player.PlayerUtils;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -57,7 +57,7 @@ public class DiscordLinkCommand extends EasterlynCommand {
 				return false;
 			}
 
-			String discordID = StringUtils.join(args, ' ', 1, args.length);
+			String discordID = TextUtils.join(args, ' ', 1, args.length);
 			IUser user = null;
 			try {
 				long longID = Long.parseLong(discordID);

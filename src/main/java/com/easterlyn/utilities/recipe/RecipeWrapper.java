@@ -1,20 +1,21 @@
 package com.easterlyn.utilities.recipe;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.server.v1_13_R2.IRecipe;
-import net.minecraft.server.v1_13_R2.ItemStack;
-import net.minecraft.server.v1_13_R2.MinecraftKey;
-import net.minecraft.server.v1_13_R2.RecipeItemStack;
+import net.minecraft.server.v1_14_R1.IRecipe;
+import net.minecraft.server.v1_14_R1.ItemStack;
+import net.minecraft.server.v1_14_R1.MinecraftKey;
+import net.minecraft.server.v1_14_R1.RecipeItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_13_R2.CraftServer;
-import org.bukkit.craftbukkit.v1_13_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
 import org.bukkit.inventory.Recipe;
 
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 /**
  * Wrapper for NMS recipes.
@@ -29,12 +30,18 @@ public class RecipeWrapper {
 	public RecipeWrapper(Recipe recipe) {
 		Preconditions.checkArgument(recipe instanceof Keyed, "%s does not implement Keyed!", recipe.getClass());
 		Keyed keyed = ((Keyed) recipe);
-		IRecipe iRecipe = ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager()
+		Optional<? extends IRecipe<?>> iRecipeOptional = ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager()
 				.a(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
+
+		if (!iRecipeOptional.isPresent()) {
+			ingredients = new HashMap<>();
+			result = new org.bukkit.inventory.ItemStack(Material.AIR);
+			return;
+		}
 
 		ingredients = new HashMap<>();
 
-		for (RecipeItemStack ingredient : iRecipe.e()) {
+		for (RecipeItemStack ingredient : iRecipeOptional.get().a()) {
 			ingredient.buildChoices();
 			EnumSet<Material> materials = EnumSet.noneOf(Material.class);
 			for (ItemStack itemStack : ingredient.choices) {

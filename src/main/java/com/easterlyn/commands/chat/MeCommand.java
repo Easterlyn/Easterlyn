@@ -6,8 +6,8 @@ import com.easterlyn.commands.EasterlynAsynchronousCommand;
 import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.ImmutableList;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -42,7 +42,7 @@ public class MeCommand extends EasterlynAsynchronousCommand {
 		Player player = (Player) sender;
 		MessageBuilder builder = new MessageBuilder((Easterlyn) getPlugin()).setThirdPerson(true)
 				.setSender(users.getUser(player.getUniqueId()))
-				.setMessage(StringUtils.join(args, ' ', 0, args.length));
+				.setMessage(TextUtils.join(args, ' ', 0, args.length));
 
 		if (!builder.canBuild(true) || !builder.isSenderInChannel(true)) {
 			return true;

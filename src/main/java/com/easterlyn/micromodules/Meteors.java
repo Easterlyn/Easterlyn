@@ -9,10 +9,10 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-import net.minecraft.server.v1_13_R2.Explosion;
+import net.minecraft.server.v1_14_R1.Explosion;
 
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity;
 
 /**
  * A Module for creating falling explosive spheres.
@@ -43,7 +43,7 @@ public class Meteors extends Module {
 	 * @param event the EntityChangeBlockEvent
 	 */
 	public void handlePotentialMeteorite(EntityChangeBlockEvent event) {
-		net.minecraft.server.v1_13_R2.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
+		net.minecraft.server.v1_14_R1.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
 		if (nmsEntity instanceof MeteoriteComponent) {
 			event.setCancelled(true);
 			explode(event.getBlock().getLocation(), event.getEntity(),
@@ -60,7 +60,8 @@ public class Meteors extends Module {
 	 */
 	private void explode(Location loc, Entity explodeAs, boolean setFires, boolean terrainDamage) {
 		Explosion explosion = new Explosion(((CraftWorld) loc.getWorld()).getHandle(),
-				((CraftEntity) explodeAs).getHandle(), loc.getX(), loc.getY(), loc.getZ(), 4F, setFires, terrainDamage);
+				((CraftEntity) explodeAs).getHandle(), loc.getX(), loc.getY(), loc.getZ(), 4F, setFires,
+				terrainDamage ? Explosion.Effect.BREAK : Explosion.Effect.NONE);
 		explosion.a();
 		explosion.a(true);
 		loc.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, loc, 1);

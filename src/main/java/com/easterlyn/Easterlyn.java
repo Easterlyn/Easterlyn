@@ -25,11 +25,11 @@ import com.easterlyn.module.Dependency;
 import com.easterlyn.module.Module;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.users.Users;
-import com.easterlyn.utilities.player.PermissionUtils;
 import com.easterlyn.utilities.TextUtils;
+import com.easterlyn.utilities.player.PermissionUtils;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
@@ -207,7 +207,11 @@ public class Easterlyn extends JavaPlugin {
 					}
 				}
 				cmdMap.register(this.getDescription().getName(), cmd);
-				Permission permission = new Permission(cmd.getPermission());
+				String permissionString = cmd.getPermission();
+				if (permissionString == null) {
+					continue;
+				}
+				Permission permission = new Permission(permissionString);
 				if (cmd.getPermissionLevel() != UserRank.DANGER_DANGER_HIGH_VOLTAGE) {
 					permission.addParent("easterlyn.command.*", true).recalculatePermissibles();
 				}
@@ -247,10 +251,10 @@ public class Easterlyn extends JavaPlugin {
 
 	@SuppressWarnings("unchecked")
 	public <T> T getModule(Class<T> clazz) {
-		Validate.isTrue(Module.class.isAssignableFrom(clazz), "That's not a Module. Are you even trying?");
-		Validate.isTrue(modules.containsKey(clazz), "Module not enabled!");
+		Preconditions.checkArgument(Module.class.isAssignableFrom(clazz), "That's not a Module. Are you even trying?");
+		Preconditions.checkArgument(modules.containsKey(clazz), "Module not enabled!");
 		Object object = modules.get(clazz);
-		Validate.isTrue(clazz.isAssignableFrom(object.getClass()));
+		Preconditions.checkArgument(clazz.isAssignableFrom(object.getClass()));
 		return (T) object;
 	}
 

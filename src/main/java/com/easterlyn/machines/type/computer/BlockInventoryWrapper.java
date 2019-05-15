@@ -7,6 +7,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.List;
@@ -27,17 +28,20 @@ public class BlockInventoryWrapper implements Inventory {
 		this.location = location;
 	}
 
+	@NotNull
 	@Override
-	public HashMap<Integer, ItemStack> addItem(ItemStack... items) throws IllegalArgumentException {
+	public HashMap<Integer, ItemStack> addItem(@NotNull ItemStack... items) throws IllegalArgumentException {
 		return inventory.addItem(items);
 	}
 
+	@NotNull
 	@Override
-	public HashMap<Integer, ? extends ItemStack> all(Material material)
+	public HashMap<Integer, ? extends ItemStack> all(@NotNull Material material)
 			throws IllegalArgumentException {
 		return inventory.all(material);
 	}
 
+	@NotNull
 	@Override
 	public HashMap<Integer, ? extends ItemStack> all(ItemStack item) {
 		return inventory.all(item);
@@ -54,7 +58,7 @@ public class BlockInventoryWrapper implements Inventory {
 	}
 
 	@Override
-	public boolean contains(Material material) throws IllegalArgumentException {
+	public boolean contains(@NotNull Material material) throws IllegalArgumentException {
 		return inventory.contains(material);
 	}
 
@@ -64,7 +68,7 @@ public class BlockInventoryWrapper implements Inventory {
 	}
 
 	@Override
-	public boolean contains(Material material, int amount) throws IllegalArgumentException {
+	public boolean contains(@NotNull Material material, int amount) throws IllegalArgumentException {
 		return inventory.contains(material, amount);
 	}
 
@@ -79,12 +83,12 @@ public class BlockInventoryWrapper implements Inventory {
 	}
 
 	@Override
-	public int first(Material material) throws IllegalArgumentException {
+	public int first(@NotNull Material material) throws IllegalArgumentException {
 		return inventory.first(material);
 	}
 
 	@Override
-	public int first(ItemStack item) {
+	public int first(@NotNull ItemStack item) {
 		return inventory.first(item);
 	}
 
@@ -93,6 +97,7 @@ public class BlockInventoryWrapper implements Inventory {
 		return inventory.firstEmpty();
 	}
 
+	@NotNull
 	@Override
 	public ItemStack[] getContents() {
 		return inventory.getContents();
@@ -119,58 +124,53 @@ public class BlockInventoryWrapper implements Inventory {
 	}
 
 	@Override
-	public String getName() {
-		return inventory.getName();
-	}
-
-	@Override
 	public int getSize() {
 		return inventory.getSize();
 	}
 
-	@Override
-	public String getTitle() {
-		return inventory.getTitle();
-	}
-
+	@NotNull
 	@Override
 	public InventoryType getType() {
 		return inventory.getType();
 	}
 
+	@NotNull
 	@Override
 	public List<HumanEntity> getViewers() {
 		return inventory.getViewers();
 	}
 
+	@NotNull
 	@Override
 	public ListIterator<ItemStack> iterator() {
 		return inventory.iterator();
 	}
 
+	@NotNull
 	@Override
 	public ListIterator<ItemStack> iterator(int index) {
 		return inventory.iterator(index);
 	}
 
 	@Override
-	public void remove(Material material) throws IllegalArgumentException {
+	public void remove(@NotNull Material material) throws IllegalArgumentException {
 		inventory.remove(material);
 	}
 
 	@Override
-	public void remove(ItemStack item) {
+	public void remove(@NotNull ItemStack item) {
 		inventory.remove(item);
 	}
 
+	@NotNull
 	@Override
-	public HashMap<Integer, ItemStack> removeItem(ItemStack... items)
+	public HashMap<Integer, ItemStack> removeItem(@NotNull ItemStack... items)
 			throws IllegalArgumentException {
 		return inventory.removeItem(items);
 	}
 
 	@Override
-	public void setContents(ItemStack[] items) throws IllegalArgumentException {
+	public void setContents(@NotNull ItemStack[] items) throws IllegalArgumentException {
 		inventory.setContents(items);
 	}
 
@@ -184,13 +184,14 @@ public class BlockInventoryWrapper implements Inventory {
 		inventory.setMaxStackSize(size);
 	}
 
+	@NotNull
 	@Override
 	public ItemStack[] getStorageContents() {
 		return inventory.getStorageContents();
 	}
 
 	@Override
-	public void setStorageContents(ItemStack[] arg0) throws IllegalArgumentException {
+	public void setStorageContents(@NotNull ItemStack[] arg0) throws IllegalArgumentException {
 		inventory.setStorageContents(arg0);
 	}
 

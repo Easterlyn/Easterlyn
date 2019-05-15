@@ -1,6 +1,5 @@
 package com.easterlyn.utilities.player;
 
-import org.apache.commons.lang3.NotImplementedException;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -32,6 +31,7 @@ import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -49,6 +49,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -79,7 +80,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Inventory getEnderChest() {
-		throw new NotImplementedException("DummyPlayer#getEnderChest");
+		throw new UnsupportedOperationException("DummyPlayer#getEnderChest");
 	}
 
 	@Override
@@ -132,19 +133,19 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public PlayerInventory getInventory() {
-		throw new NotImplementedException("DummyPlayer#getInventory");
+		throw new UnsupportedOperationException("DummyPlayer#getInventory");
 	}
 
 	@NotNull
 	@Override
 	public ItemStack getItemInHand() {
-		throw new NotImplementedException("DummyPlayer#getItemInHand");
+		throw new UnsupportedOperationException("DummyPlayer#getItemInHand");
 	}
 
 	@NotNull
 	@Override
 	public ItemStack getItemOnCursor() {
-		throw new NotImplementedException("DummyPlayer#getItemOnCursor");
+		throw new UnsupportedOperationException("DummyPlayer#getItemOnCursor");
 	}
 
 	@NotNull
@@ -156,7 +157,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public InventoryView getOpenInventory() {
-		throw new NotImplementedException("DummyPlayer#getOpenInventory");
+		throw new UnsupportedOperationException("DummyPlayer#getOpenInventory");
 	}
 
 	@Override
@@ -224,7 +225,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Collection<PotionEffect> getActivePotionEffects() {
-		throw new NotImplementedException("DummyPlayer#getActivePotionEffects");
+		throw new UnsupportedOperationException("DummyPlayer#getActivePotionEffects");
 	}
 
 	@Override
@@ -250,7 +251,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Location getEyeLocation() {
-		throw new NotImplementedException("DummyPlayer#getEyeLocation");
+		throw new UnsupportedOperationException("DummyPlayer#getEyeLocation");
 	}
 
 	@Override
@@ -266,7 +267,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public List<Block> getLastTwoTargetBlocks(Set<Material> arg0, int arg1) {
-		throw new NotImplementedException("DummyPlayer#getLastTwoTargetBlocks");
+		throw new UnsupportedOperationException("DummyPlayer#getLastTwoTargetBlocks");
 	}
 
 	@Override
@@ -292,13 +293,13 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Entity getLeashHolder() throws IllegalStateException {
-		throw new NotImplementedException("DummyPlayer#getLeashHolder");
+		throw new UnsupportedOperationException("DummyPlayer#getLeashHolder");
 	}
 
 	@NotNull
 	@Override
 	public List<Block> getLineOfSight(Set<Material> arg0, int arg1) {
-		throw new NotImplementedException("DummyPlayer#getLineOfSight");
+		throw new UnsupportedOperationException("DummyPlayer#getLineOfSight");
 	}
 
 	@Override
@@ -329,7 +330,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Block getTargetBlock(Set<Material> arg0, int arg1) {
-		throw new NotImplementedException("DummyPlayer#getTargetBlock");
+		throw new UnsupportedOperationException("DummyPlayer#getTargetBlock");
 	}
 
 	@Override
@@ -430,7 +431,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public List<Entity> getNearbyEntities(double arg0, double arg1, double arg2) {
-		throw new NotImplementedException("DummyPlayer#getNearbyEntities");
+		throw new UnsupportedOperationException("DummyPlayer#getNearbyEntities");
 	}
 
 	@Override
@@ -600,23 +601,23 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public PermissionAttachment addAttachment(@NotNull Plugin plugin) {
-		throw new NotImplementedException("DummyPlayer#addAttachment");
+		throw new UnsupportedOperationException("DummyPlayer#addAttachment");
 	}
 
 	@Override
 	public PermissionAttachment addAttachment(@NotNull Plugin plugin, int ticks) {
-		throw new NotImplementedException("DummyPlayer#addAttachment");
+		throw new UnsupportedOperationException("DummyPlayer#addAttachment");
 	}
 
 	@NotNull
 	@Override
 	public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value) {
-		throw new NotImplementedException("DummyPlayer#addAttachment");
+		throw new UnsupportedOperationException("DummyPlayer#addAttachment");
 	}
 
 	@Override
 	public PermissionAttachment addAttachment(@NotNull Plugin plugin, @NotNull String name, boolean value, int ticks) {
-		throw new NotImplementedException("DummyPlayer#addAttachment");
+		throw new UnsupportedOperationException("DummyPlayer#addAttachment");
 	}
 
 	@NotNull
@@ -687,13 +688,13 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public <T extends Projectile> T launchProjectile(@NotNull Class<? extends T> arg0) {
-		throw new NotImplementedException("DummyPlayer#launchProjectile");
+		throw new UnsupportedOperationException("DummyPlayer#launchProjectile");
 	}
 
 	@NotNull
 	@Override
 	public <T extends Projectile> T launchProjectile(@NotNull Class<? extends T> arg0, Vector arg1) {
-		throw new NotImplementedException("DummyPlayer#launchProjectile");
+		throw new UnsupportedOperationException("DummyPlayer#launchProjectile");
 	}
 
 	@Override
@@ -756,7 +757,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Map<String, Object> serialize() {
-		throw new NotImplementedException("DummyPlayer#serialize");
+		throw new UnsupportedOperationException("DummyPlayer#serialize");
 	}
 
 	@NotNull
@@ -817,7 +818,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Location getCompassTarget() {
-		throw new NotImplementedException("DummyPlayer#getCompassTarget");
+		throw new UnsupportedOperationException("DummyPlayer#getCompassTarget");
 	}
 
 	@NotNull
@@ -885,7 +886,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Scoreboard getScoreboard() {
-		throw new NotImplementedException("DummyPlayer#getScoreboard");
+		throw new UnsupportedOperationException("DummyPlayer#getScoreboard");
 	}
 
 	@Override
@@ -1070,7 +1071,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Location getBedLocation() {
-		throw new NotImplementedException("DummyPlayer#getBedLocation");
+		throw new UnsupportedOperationException("DummyPlayer#getBedLocation");
 	}
 
 	@Override
@@ -1184,7 +1185,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Spigot spigot() {
-		throw new NotImplementedException("DummyPlayer#spigot");
+		throw new UnsupportedOperationException("DummyPlayer#spigot");
 	}
 
 	@Override
@@ -1269,7 +1270,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public AdvancementProgress getAdvancementProgress(@NotNull Advancement advancement) {
-		throw new NotImplementedException("DummyPlayer#getAdvancementProgress");
+		throw new UnsupportedOperationException("DummyPlayer#getAdvancementProgress");
 	}
 
 	@Override
@@ -1381,7 +1382,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public Set<String> getScoreboardTags() {
-		throw new NotImplementedException("DummyPlayer#getScoreboardTags");
+		throw new UnsupportedOperationException("DummyPlayer#getScoreboardTags");
 	}
 
 	@Override
@@ -1399,6 +1400,12 @@ public class DummyPlayer implements Player {
 	@Override
 	public BlockFace getFacing() {
 		return BlockFace.NORTH;
+	}
+
+	@NotNull
+	@Override
+	public Pose getPose() {
+		throw new UnsupportedOperationException("DummyPlayer#getPose");
 	}
 
 	@Override
@@ -1453,7 +1460,7 @@ public class DummyPlayer implements Player {
 	@NotNull
 	@Override
 	public BoundingBox getBoundingBox() {
-		throw new NotImplementedException("DummyPlayer#getBoundingBox");
+		throw new UnsupportedOperationException("DummyPlayer#getBoundingBox");
 	}
 
 	@Override
@@ -1469,4 +1476,9 @@ public class DummyPlayer implements Player {
 	@Override
 	public void setCooldown(@NotNull Material arg0, int arg1) {}
 
+	@NotNull
+	@Override
+	public PersistentDataContainer getPersistentDataContainer() {
+		throw new UnsupportedOperationException("DummyPlayer#getPeristentDataContainer");
+	}
 }

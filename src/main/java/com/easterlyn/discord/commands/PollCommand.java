@@ -4,8 +4,8 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.abstraction.DiscordCommand;
 import com.easterlyn.discord.queue.CallType;
 import com.easterlyn.discord.queue.DiscordCallable;
-import com.easterlyn.utilities.Wrapper;
-import org.apache.commons.lang3.StringUtils;
+import com.easterlyn.utilities.TextUtils;
+import com.easterlyn.utilities.tuple.Wrapper;
 import sx.blah.discord.handle.impl.obj.ReactionEmoji;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
@@ -35,7 +35,7 @@ public class PollCommand extends DiscordCommand {
 			@Override
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
 				String senderName = channel.isPrivate() ? sender.getName() : sender.getDisplayName(channel.getGuild());
-				message.set(channel.sendMessage(String.format("**Poll by %s:** %s", senderName, StringUtils.join(args, ' '))));
+				message.set(channel.sendMessage(String.format("**Poll by %s:** %s", senderName, TextUtils.join(args, ' '))));
 			}
 		}.withChainedCall(new DiscordCallable(channel, CallType.EMOJI_EDIT) {
 			@Override

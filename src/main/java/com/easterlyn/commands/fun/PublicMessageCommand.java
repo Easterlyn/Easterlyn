@@ -3,8 +3,7 @@ package com.easterlyn.commands.fun;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 
-import org.apache.commons.lang3.StringUtils;
-
+import com.easterlyn.utilities.TextUtils;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -31,7 +30,7 @@ public class PublicMessageCommand extends EasterlynCommand {
 			return false;
 		}
 		((Player) sender).chat("[privatemessage;Username:" + args[0] + ']'
-				+ StringUtils.join(args, ' ', 1, args.length) + "[/privatemessage]");
+				+ TextUtils.join(args, ' ', 1, args.length) + "[/privatemessage]");
 		return true;
 	}
 

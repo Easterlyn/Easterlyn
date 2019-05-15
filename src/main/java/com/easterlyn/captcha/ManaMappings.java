@@ -9,7 +9,7 @@ import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
 import org.bukkit.Material;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.v1_13_R2.enchantments.CraftEnchantment;
+import org.bukkit.craftbukkit.v1_14_R1.enchantments.CraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.InventoryHolder;

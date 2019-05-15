@@ -5,9 +5,9 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
+import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -165,7 +165,7 @@ public class LoreCommand extends EasterlynCommand {
 			return true;
 		}
 		BookMeta meta = (BookMeta) hand.getItemMeta();
-		String author = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length));
+		String author = ChatColor.translateAlternateColorCodes('&', TextUtils.join(args, ' ', 1, args.length));
 		meta.setAuthor(author);
 		hand.setItemMeta(meta);
 		player.sendMessage(Language.getColor("good") + "Author set to " + author);
@@ -178,7 +178,7 @@ public class LoreCommand extends EasterlynCommand {
 			return true;
 		}
 		BookMeta meta = (BookMeta) hand.getItemMeta();
-		String title = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length));
+		String title = ChatColor.translateAlternateColorCodes('&', TextUtils.join(args, ' ', 1, args.length));
 		meta.setTitle(title);
 		hand.setItemMeta(meta);
 		player.sendMessage(Language.getColor("good") + "Title set to " + title);
@@ -187,7 +187,7 @@ public class LoreCommand extends EasterlynCommand {
 
 	private boolean name(Player player, ItemStack hand, String[] args) {
 		ItemMeta meta = hand.getItemMeta();
-		String name = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length));
+		String name = ChatColor.translateAlternateColorCodes('&', TextUtils.join(args, ' ', 1, args.length));
 		meta.setDisplayName(name);
 		hand.setItemMeta(meta);
 		player.sendMessage(Language.getColor("good") + "Name set to " + name);
@@ -261,7 +261,7 @@ public class LoreCommand extends EasterlynCommand {
 		if (meta.hasLore()) {
 			lore.addAll(meta.getLore());
 		}
-		lore.add(ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 1, args.length)));
+		lore.add(ChatColor.translateAlternateColorCodes('&', TextUtils.join(args, ' ', 1, args.length)));
 		meta.setLore(lore);
 		hand.setItemMeta(meta);
 		player.sendMessage(Language.getColor("good") + "Added \"" + lore.get(lore.size() - 1) + Language.getColor("good") + "\"");
@@ -288,7 +288,7 @@ public class LoreCommand extends EasterlynCommand {
 				player.sendMessage(Language.getColor("bad") + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
 				return true;
 			}
-			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 2, args.length));
+			String added = ChatColor.translateAlternateColorCodes('&', TextUtils.join(args, ' ', 2, args.length));
 			String removed = lore.set(line - 1, added);
 			meta.setLore(lore);
 			hand.setItemMeta(meta);
@@ -321,7 +321,7 @@ public class LoreCommand extends EasterlynCommand {
 				player.sendMessage(Language.getColor("bad") + "Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
 				return true;
 			}
-			String added = ChatColor.translateAlternateColorCodes('&', StringUtils.join(args, ' ', 2, args.length));
+			String added = ChatColor.translateAlternateColorCodes('&', TextUtils.join(args, ' ', 2, args.length));
 			player.sendMessage(Language.getColor("good") + "Inserted \"" + added + Language.getColor("good") + "\" at " + line + "!");
 			int size = lore.size();
 			for (int i = 0; i < size; i++) {

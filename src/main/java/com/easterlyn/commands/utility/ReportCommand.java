@@ -3,9 +3,7 @@ package com.easterlyn.commands.utility;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.Discord;
-
-import org.apache.commons.lang3.StringUtils;
-
+import com.easterlyn.utilities.TextUtils;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -48,7 +46,7 @@ public class ReportCommand extends EasterlynCommand {
 				.replace("{Y}", String.valueOf(location.getBlockY()))
 				.replace("{Z}", String.valueOf(location.getBlockZ()))
 				.replace("{WORLD}", location.getWorld().getName())
-				.replace("{PARAMETER}", StringUtils.join(args, ' ')));
+				.replace("{PARAMETER}", TextUtils.join(args, ' ')));
 		player.sendMessage(getLang().getValue("command.report.success"));
 		return true;
 	}

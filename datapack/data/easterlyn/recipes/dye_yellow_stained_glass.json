@@ -3,7 +3,7 @@
   "group": "stained_glass",
   "ingredients": [
     {
-      "item": "minecraft:dandelion_yellow"
+      "item": "minecraft:yellow_dye"
     },
     {
       "tag": "easterlyn:stained_glass"

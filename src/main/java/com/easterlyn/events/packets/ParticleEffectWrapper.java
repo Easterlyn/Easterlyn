@@ -14,7 +14,7 @@ public class ParticleEffectWrapper {
 	private final int quantity, radius;
 	private final Object data;
 
-	public  ParticleEffectWrapper(Particle particle, Object data, float offsetX,
+	public ParticleEffectWrapper(Particle particle, Object data, float offsetX,
 			float offsetY, float offsetZ, float speed, int quantity, int displayRadius) {
 		this.particle = particle;
 		this.data = data;

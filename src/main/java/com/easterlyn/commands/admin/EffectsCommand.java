@@ -6,9 +6,9 @@ import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.NumberUtils;
+import com.easterlyn.utilities.TextUtils;
 import com.google.common.collect.ImmutableList;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,32 +54,33 @@ public class EffectsCommand extends EasterlynCommand {
 			try {
 				level = Integer.valueOf(args[args.length - 1]);
 				level = level < 1 ? 1 : level;
-				effectName = StringUtils.join(args, ' ', 0, args.length - 1);
+				effectName = TextUtils.join(args, ' ', 0, args.length - 1);
 			} catch (NumberFormatException e) {
 				level = 1;
-				effectName = StringUtils.join(args, ' ', 0, args.length);
+				effectName = TextUtils.join(args, ' ', 0, args.length);
 			}
 		} else {
 			level = 1;
-			effectName = StringUtils.join(args, ' ', 0, args.length);
+			effectName = TextUtils.join(args, ' ', 0, args.length);
 		}
 
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand == null || hand.getType() == Material.AIR) {
+		if (hand.getType() == Material.AIR) {
 			sender.sendMessage(getLang().getValue("command.general.needItemInHand"));
 			return true;
 		}
 
 		ItemMeta meta;
-		if (!hand.hasItemMeta() && hand.getItemMeta() == null) {
+		if (!hand.hasItemMeta()) {
 			meta = Bukkit.getItemFactory().getItemMeta(hand.getType());
-			if (meta == null) {
-				sender.sendMessage(getLang().getValue("command.general.noMetaSupport"));
-				return true;
-			}
 		} else {
 			meta = hand.getItemMeta();
+		}
+
+		if (meta == null) {
+			sender.sendMessage(getLang().getValue("command.general.noMetaSupport"));
+			return true;
 		}
 
 		String loreString = ChatColor.GRAY + effectName + ' ' + NumberUtils.romanFromInt(level);
@@ -95,10 +97,11 @@ public class EffectsCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
 	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
 			throws IllegalArgumentException {
-		if (!(sender instanceof Player) || !sender.hasPermission(this.getPermission())
+		if (!(sender instanceof Player) || this.getPermission() != null && !sender.hasPermission(this.getPermission())
 				|| args.length == 0 || args.length > 2) {
 			return ImmutableList.of();
 		}
@@ -114,4 +117,5 @@ public class EffectsCommand extends EasterlynCommand {
 		}
 		return matches;
 	}
+
 }

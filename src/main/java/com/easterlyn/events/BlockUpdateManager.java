@@ -1,14 +1,14 @@
 package com.easterlyn.events;
 
 import com.easterlyn.Easterlyn;
-import net.minecraft.server.v1_13_R2.BlockPosition;
-import net.minecraft.server.v1_13_R2.IBlockData;
-import net.minecraft.server.v1_13_R2.World;
+import net.minecraft.server.v1_14_R1.BlockPosition;
+import net.minecraft.server.v1_14_R1.IBlockData;
+import net.minecraft.server.v1_14_R1.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_13_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_13_R2.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_13_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_14_R1.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -95,7 +95,7 @@ public class BlockUpdateManager {
 			IBlockData blockData = nmsWorld.getType(position1);
 
 			// See Chunk#setType
-			blockData.onPlace(nmsWorld, position1, blockData);
+			blockData.onPlace(nmsWorld, position1, blockData, false);
 
 			// See World#notifyAndUpdatePhysics
 			if (blockData.isComplexRedstone()) {

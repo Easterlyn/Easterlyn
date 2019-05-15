@@ -3,7 +3,7 @@ package com.easterlyn.commands.utility;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.DiscordPlayer;
-import org.apache.commons.lang3.StringUtils;
+import com.easterlyn.utilities.StringMetric;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -76,7 +76,7 @@ public class OopsCommand extends EasterlynCommand {
 			discordWhitelist = null;
 		}
 
-		int matchLevel = Integer.MAX_VALUE;
+		float matchLevel = 0F;
 		String correctCommandName = null;
 		for (Command command : commandMap.getCommands()) {
 			String permission = command.getPermission();
@@ -88,11 +88,11 @@ public class OopsCommand extends EasterlynCommand {
 				continue;
 			}
 			for (String alias : getAllAliases(command)) {
-				int current = StringUtils.getLevenshteinDistance(commandName, alias);
-				if (current == 0) {
+				float current = StringMetric.compareJaroWinkler(commandName, alias);
+				if (current == 1) {
 					return null;
 				}
-				if (current < matchLevel) {
+				if (current > matchLevel) {
 					matchLevel = current;
 					correctCommandName = alias;
 				}

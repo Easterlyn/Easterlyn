@@ -8,11 +8,11 @@ import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.events.event.EasterlynAsyncChatEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.Users;
+import com.easterlyn.utilities.TextUtils;
 import com.easterlyn.utilities.player.WrappedSenderPlayer;
 import com.google.common.collect.ImmutableList;
 import com.mojang.authlib.GameProfile;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.StringUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -98,7 +98,7 @@ public class MessageCommand extends EasterlynCommand {
 		MessageBuilder builder = new MessageBuilder((Easterlyn) getPlugin())
 				.setChannel(manager.getChannel("#pm")).setMessage(
 						ChatColor.WHITE + recipientProfile.getName() + ": "
-						+ StringUtils.join(args, ' ', isReply ? 0 : 1, args.length));
+						+ TextUtils.join(args, ' ', isReply ? 0 : 1, args.length));
 		if (senderUser != null) {
 			builder.setSender(senderUser);
 		} else {

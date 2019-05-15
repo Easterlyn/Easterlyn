@@ -1,15 +1,11 @@
 package com.easterlyn.discord.commands;
 
-import java.util.EnumSet;
-
 import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.abstraction.DiscordCommand;
 import com.easterlyn.discord.queue.CallType;
 import com.easterlyn.discord.queue.DiscordCallable;
-import com.easterlyn.utilities.Wrapper;
-
-import org.apache.commons.lang3.StringUtils;
-
+import com.easterlyn.utilities.TextUtils;
+import com.easterlyn.utilities.tuple.Wrapper;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IMessage;
 import sx.blah.discord.handle.obj.IUser;
@@ -17,6 +13,8 @@ import sx.blah.discord.handle.obj.Permissions;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
+
+import java.util.EnumSet;
 
 /**
  * Simple DiscordCommand for pinning an announcement.
@@ -38,7 +36,7 @@ public class AnnouncementCommand extends DiscordCommand {
 		this.getDiscord().queue(new DiscordCallable(channel, CallType.MESSAGE_SEND) {
 			@Override
 			public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-				message.set(channel.sendMessage(StringUtils.join(args, ' ')));
+				message.set(channel.sendMessage(TextUtils.join(args, ' ')));
 			}
 		}.withChainedCall(new DiscordCallable(channel, CallType.MESSAGE_EDIT) {
 			@Override

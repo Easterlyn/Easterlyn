@@ -15,6 +15,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -213,7 +214,7 @@ public class Transportalizer extends Machine {
 
 		// Check for a sign in the proper location
 		Block signBlock = key.clone().add(new Vector(0, 2, 0)).getBlock();
-		if (signBlock.getType() != Material.WALL_SIGN) {
+		if (!Tag.WALL_SIGNS.isTagged(signBlock.getType())) {
 			event.getPlayer().sendMessage(Language.getColor("bad")
 					+ "Please place a sign on your transportalizer between the buttons to use it."
 					+ "\nThe third row should contain your desired coordinates in x, y, z format."

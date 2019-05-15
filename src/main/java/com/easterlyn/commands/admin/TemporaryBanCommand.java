@@ -4,8 +4,8 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.NumberUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import com.easterlyn.utilities.TextUtils;
+import com.easterlyn.utilities.tuple.Pair;
 import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -33,7 +33,7 @@ public class TemporaryBanCommand extends EasterlynCommand {
 			return false;
 		}
 		final String target = args[0];
-		String arguments = StringUtils.join(args, ' ', 1, args.length);
+		String arguments = TextUtils.join(args, ' ', 1, args.length);
 		final Pair<String, Long> banData = NumberUtils.parseAndRemoveFirstTime(arguments);
 		if (banData.getRight() < 1) {
 			sender.sendMessage("Unable to parse ban duration! Must be a minimum of 1 second.");
@@ -55,14 +55,12 @@ public class TemporaryBanCommand extends EasterlynCommand {
 			public void run() {
 				@SuppressWarnings("deprecation")
 				final OfflinePlayer player = Bukkit.getOfflinePlayer(target);
-				if (player == null) {
-					return;
-				}
 				new BukkitRunnable() {
 					@Override
 					public void run() {
-						Bukkit.getBanList(Type.NAME).addBan(player.getName(), reason,
-									expiry, sender.getName());
+						if (player.getName() != null) {
+							Bukkit.getBanList(Type.NAME).addBan(player.getName(), reason, expiry, sender.getName());
+						}
 						if (player.isOnline()) {
 							player.getPlayer().kickPlayer(reason);
 						}

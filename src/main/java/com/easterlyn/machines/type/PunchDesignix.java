@@ -8,9 +8,8 @@ import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.utilities.InventoryUtils;
+import com.easterlyn.utilities.tuple.Triple;
 import net.md_5.bungee.api.ChatColor;
-import org.apache.commons.lang3.tuple.ImmutableTriple;
-import org.apache.commons.lang3.tuple.Triple;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.data.Bisected;
@@ -207,7 +206,7 @@ public class PunchDesignix extends Machine {
                 inputSlot2.setAmount(1);
             }
             InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-                    new ImmutableTriple<>(inputSlot1, inputSlot2, result));
+                    new Triple<>(inputSlot1, inputSlot2, result));
             InventoryUtils.updateWindowSlot(player, 2);
         });
     }
@@ -316,7 +315,7 @@ public class PunchDesignix extends Machine {
         im.setLore(lore);
         is3.setItemMeta(im);
 
-        return new ImmutableTriple<>(is1, is2, is3);
+        return new Triple<>(is1, is2, is3);
     }
 
 }

@@ -1,7 +1,7 @@
 package com.easterlyn.discord.queue;
 
 import com.easterlyn.discord.Discord;
-import com.easterlyn.utilities.Wrapper;
+import com.easterlyn.utilities.tuple.Wrapper;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;

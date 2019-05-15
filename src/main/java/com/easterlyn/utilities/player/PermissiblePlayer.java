@@ -31,6 +31,7 @@ import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Pose;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Villager;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -48,6 +49,7 @@ import org.bukkit.metadata.MetadataValue;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.permissions.PermissionAttachmentInfo;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -1716,6 +1718,12 @@ public class PermissiblePlayer implements Player {
 		return player.getFacing();
 	}
 
+	@NotNull
+	@Override
+	public Pose getPose() {
+		return player.getPose();
+	}
+
 	@Override
 	public void playSound(@NotNull Location arg0, @NotNull Sound arg1, @NotNull SoundCategory arg2, float arg3, float arg4) {
 		player.playSound(arg0, arg1, arg2, arg3, arg4);
@@ -1793,4 +1801,9 @@ public class PermissiblePlayer implements Player {
 		player.setCooldown(material, duration);
 	}
 
+	@NotNull
+	@Override
+	public PersistentDataContainer getPersistentDataContainer() {
+		return player.getPersistentDataContainer();
+	}
 }

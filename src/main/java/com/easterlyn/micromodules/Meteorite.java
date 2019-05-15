@@ -70,7 +70,7 @@ public class Meteorite {
 
 		skyTarget = target.clone();
 		int highestPossible = 255 - radius;
-		int highestBlock = target.getWorld().getHighestBlockYAt(target);
+		int highestBlock = target.getWorld() == null ? 255 : target.getWorld().getHighestBlockYAt(target);
 		int visible = highestBlock + 40 + radius;
 		skyTarget.setY(visible > highestPossible ? highestPossible : visible);
 

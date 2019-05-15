@@ -4,8 +4,8 @@ import com.easterlyn.discord.Discord;
 import com.easterlyn.discord.abstraction.DiscordCommand;
 import com.easterlyn.discord.modules.RetentionModule;
 import com.easterlyn.utilities.NumberUtils;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.tuple.Pair;
+import com.easterlyn.utilities.TextUtils;
+import com.easterlyn.utilities.tuple.Pair;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.handle.obj.IPrivateChannel;
 import sx.blah.discord.handle.obj.IUser;
@@ -63,7 +63,7 @@ public class RetentionCommand extends DiscordCommand {
 		}
 		Pair<String, Long> pair;
 		try {
-			pair = NumberUtils.parseAndRemoveFirstTime(StringUtils.join(args, ' '));
+			pair = NumberUtils.parseAndRemoveFirstTime(TextUtils.join(args, ' '));
 		} catch (NumberFormatException e) {
 			return false;
 		}

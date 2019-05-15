@@ -3,7 +3,7 @@
   "group": "concrete_powder",
   "ingredients": [
     {
-      "item": "minecraft:dandelion_yellow"
+      "item": "minecraft:yellow_dye"
     },
     {
       "tag": "easterlyn:concrete_powder"

@@ -7,7 +7,6 @@ import com.easterlyn.utilities.RegionUtils;
 import org.bukkit.Axis;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.TravelAgent;
 import org.bukkit.World.Environment;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Orientable;
@@ -18,7 +17,7 @@ import org.bukkit.util.Vector;
  *
  * @author Jikoo
  */
-public class NetherPortalAgent implements TravelAgent {
+public class NetherPortalAgent {
 
 	private int searchRadius = 0, creationRadius = 0;
 	private boolean canCreatePortal = true;
@@ -103,29 +102,24 @@ public class NetherPortalAgent implements TravelAgent {
 		shape.setVectorData(new Vector(0, 2, 0), value);
 	}
 
-	@Override
-	public TravelAgent setSearchRadius(int radius) {
+	public NetherPortalAgent setSearchRadius(int radius) {
 		this.searchRadius = radius;
 		return this;
 	}
 
-	@Override
 	public int getSearchRadius() {
 		return this.searchRadius;
 	}
 
-	@Override
-	public TravelAgent setCreationRadius(int radius) {
+	public NetherPortalAgent setCreationRadius(int radius) {
 		creationRadius = radius;
 		return this;
 	}
 
-	@Override
 	public int getCreationRadius() {
 		return creationRadius;
 	}
 
-	@Override
 	public boolean getCanCreatePortal() {
 		return canCreatePortal;
 	}
@@ -134,7 +128,6 @@ public class NetherPortalAgent implements TravelAgent {
 		from = block;
 	}
 
-	@Override
 	public Location findOrCreate(Location location) {
 		Location destination = findPortal(location);
 		if (destination == null || destination.equals(destination.getWorld().getSpawnLocation())) {
@@ -144,7 +137,6 @@ public class NetherPortalAgent implements TravelAgent {
 		return destination;
 	}
 
-	@Override
 	public Location findPortal(Location location) {
 		Block block = location.getBlock();
 		for (int dX = -searchRadius; dX <= searchRadius; dX++) {
@@ -165,7 +157,6 @@ public class NetherPortalAgent implements TravelAgent {
 		return null;
 	}
 
-	@Override
 	public boolean createPortal(Location location) {
 		if (from == null) {
 			return false;
@@ -180,12 +171,11 @@ public class NetherPortalAgent implements TravelAgent {
 		return true;
 	}
 
-	@Override
 	public void setCanCreatePortal(boolean create) {
 		canCreatePortal = create;
 	}
 
-	public TravelAgent reset() {
+	public NetherPortalAgent reset() {
 		searchRadius = 1;
 		creationRadius = 0;
 		canCreatePortal = true;

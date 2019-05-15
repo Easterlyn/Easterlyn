@@ -50,12 +50,11 @@ public class PortalListener extends EasterlynListener {
 			return;
 		}
 
-		event.useTravelAgent(fromPortal.getType() == Material.NETHER_PORTAL);
+		boolean useTravelAgent = fromPortal.getType() == Material.NETHER_PORTAL;
 
-		if (event.useTravelAgent()) {
+		if (useTravelAgent) {
 			// Reset agent for reuse in case other plugins changed values.
 			agent.reset();
-			event.setPortalTravelAgent(agent);
 
 			if (fromEnvironment == Environment.NETHER) {
 				// Nether is 1/8 of normal so portals can exist in a much wider radius
@@ -88,7 +87,7 @@ public class PortalListener extends EasterlynListener {
 		// Set the destination to the exact calculated output location.
 		event.setTo(to);
 
-		if (!event.useTravelAgent()) {
+		if (useTravelAgent) {
 			// All remaining handling is for nether portals using our travel agent.
 			return;
 		}
@@ -106,6 +105,7 @@ public class PortalListener extends EasterlynListener {
 					return;
 				}
 			}
+			agent.createPortal(to);
 		} else {
 			// Set destination to located portal.
 			event.setTo(toPortal);
