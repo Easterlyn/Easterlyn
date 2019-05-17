@@ -279,7 +279,7 @@ public class Dublexor extends Machine {
 		open.setItem(1, expCost);
 		open.setItem(2, result);
 		InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-				new Triple<>(input, expCost, result));
+				new Triple<>(input == null ? new ItemStack(Material.AIR) : input, expCost, result));
 		player.updateInventory();
 	}
 

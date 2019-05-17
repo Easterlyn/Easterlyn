@@ -214,7 +214,7 @@ public class InventoryUtils {
 			}
 		}
 		// Allow more fuzziness for longer named items
-		if (matchLevel < (3 + material.name().length() / 5)) {
+		if (matchLevel < (3 + (material.name().length() / 5F))) {
 			return new Pair<>(material, durability);
 		}
 		return null;
@@ -456,9 +456,6 @@ public class InventoryUtils {
 
 	public static void changeWindowName(Player player, String name) {
 		Inventory top = player.getOpenInventory().getTopInventory();
-		if (top == null) {
-			return;
-		}
 
 		int slots = top.getSize();
 
