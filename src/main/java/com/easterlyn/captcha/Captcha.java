@@ -201,7 +201,7 @@ public class Captcha extends Module {
 		StringBuilder builder = new StringBuilder().append(Language.getColor("emphasis.neutral")).append(item.getAmount()).append(' ');
 		if (isCaptcha(item)) {
 			builder.append("Captcha of ").append(meta.getLore().get(0));
-		} else if (meta.hasDisplayName() && !InventoryUtils.isMisleadinglyNamed(meta.getDisplayName(), item.getType(), item.getDurability())) {
+		} else if (meta.hasDisplayName() && !InventoryUtils.isMisleadinglyNamed(meta.getDisplayName(), item.getType())) {
 			builder.append(meta.getDisplayName());
 		} else {
 			builder.append(InventoryUtils.getItemName(item));

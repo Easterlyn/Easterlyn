@@ -3,18 +3,16 @@ package com.easterlyn.utilities;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.Effect;
+import java.util.Collection;
+import java.util.Map;
+import javax.annotation.Nullable;
 import net.minecraft.server.v1_14_R1.IBlockData;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import javax.annotation.Nullable;
-import java.util.Collection;
-import java.util.Map;
 
 /**
  * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
@@ -75,13 +73,12 @@ public class BlockDrops {
 		}
 	}
 
-	private static boolean isUsableTool(ItemStack tool, Material block) {
-		// TODO messy
-		net.minecraft.server.v1_14_R1.Block nmsBlock = net.minecraft.server.v1_14_R1.Block.asBlock(CraftItemStack.asNMSCopy(new ItemStack(block)).getItem());
-		if (nmsBlock == null) {
+	private static boolean isUsableTool(ItemStack tool, Material broken) {
+		net.minecraft.server.v1_14_R1.Block block = CraftMagicNumbers.getBlock(broken);
+		if (block == null) {
 			return false;
 		}
-		IBlockData data = nmsBlock.getBlockData();
+		IBlockData data = block.getBlockData();
 		return data.getMaterial().isAlwaysDestroyable() || tool != null && tool.getType() != Material.AIR
 				&& CraftMagicNumbers.getItem(tool.getType()).canDestroySpecialBlock(data);
 	}

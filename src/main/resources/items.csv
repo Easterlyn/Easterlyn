@@ -159,7 +159,7 @@ CHISELED_STONE_BRICKS,Chiseled Stone Bricks
 CHORUS_FLOWER,Chorus Flower
 CHORUS_FRUIT,Chorus Fruit
 CHORUS_PLANT,Chorus Plant
-CLAY,Clay
+CLAY,Clay Block
 CLAY_BALL,Clay
 CLOCK,Clock
 COAL,Coal
@@ -194,7 +194,7 @@ CORNFLOWER,Cornflower
 COW_SPAWN_EGG,Cow Spawn Egg
 CRACKED_STONE_BRICKS,Cracked Stone Bricks
 CRAFTING_TABLE,Crafting Table
-CREEPER_BANNER_PATTERN,Banner Pattern
+CREEPER_BANNER_PATTERN,Creeper Banner Pattern
 CREEPER_HEAD,Creeper Head
 CREEPER_SPAWN_EGG,Creeper Spawn Egg
 CREEPER_WALL_HEAD,Creeper Wall Head
@@ -333,7 +333,7 @@ FISHING_ROD,Fishing Rod
 FLETCHING_TABLE,Fletching Table
 FLINT,Flint
 FLINT_AND_STEEL,Flint and Steel
-FLOWER_BANNER_PATTERN,Banner Pattern
+FLOWER_BANNER_PATTERN,Flower Banner Pattern
 FLOWER_POT,Flower Pot
 FOX_SPAWN_EGG,Fox Spawn Egg
 FROSTED_ICE,Frosted Ice
@@ -345,7 +345,7 @@ GLASS,Glass
 GLASS_BOTTLE,Glass Bottle
 GLASS_PANE,Glass Pane
 GLISTERING_MELON_SLICE,Glistering Melon Slice
-GLOBE_BANNER_PATTERN,Banner Pattern
+GLOBE_BANNER_PATTERN,Globe Banner Pattern
 GLOWSTONE,Glowstone
 GLOWSTONE_DUST,Glowstone Dust
 GOLDEN_APPLE,Golden Apple
@@ -546,7 +546,7 @@ MELON_SLICE,Melon Slice
 MELON_STEM,Melon Stem
 MILK_BUCKET,Milk Bucket
 MINECART,Minecart
-MOJANG_BANNER_PATTERN,Banner Pattern
+MOJANG_BANNER_PATTERN,Mojang Banner Pattern
 MOOSHROOM_SPAWN_EGG,Mooshroom Spawn Egg
 MOSSY_COBBLESTONE,Mossy Cobblestone
 MOSSY_COBBLESTONE_SLAB,Mossy Cobblestone Slab
@@ -560,18 +560,18 @@ MOVING_PISTON,Moving Piston
 MULE_SPAWN_EGG,Mule Spawn Egg
 MUSHROOM_STEM,Mushroom Stem
 MUSHROOM_STEW,Mushroom Stew
-MUSIC_DISC_11,Music Disc
-MUSIC_DISC_13,Music Disc
-MUSIC_DISC_BLOCKS,Music Disc
-MUSIC_DISC_CAT,Music Disc
-MUSIC_DISC_CHIRP,Music Disc
-MUSIC_DISC_FAR,Music Disc
-MUSIC_DISC_MALL,Music Disc
-MUSIC_DISC_MELLOHI,Music Disc
-MUSIC_DISC_STAL,Music Disc
-MUSIC_DISC_STRAD,Music Disc
-MUSIC_DISC_WAIT,Music Disc
-MUSIC_DISC_WARD,Music Disc
+MUSIC_DISC_11,Music Disc (11)
+MUSIC_DISC_13,Music Disc (13)
+MUSIC_DISC_BLOCKS,Music Disc (Blocks)
+MUSIC_DISC_CAT,Music Disc (Cat)
+MUSIC_DISC_CHIRP,Music Disc (Chirp)
+MUSIC_DISC_FAR,Music Disc (Far)
+MUSIC_DISC_MALL,Music Disc (Mall)
+MUSIC_DISC_MELLOHI,Music Disc (Mellohi)
+MUSIC_DISC_STAL,Music Disc (Stal)
+MUSIC_DISC_STRAD,Music Disc (Strad)
+MUSIC_DISC_WAIT,Music Disc (Wait)
+MUSIC_DISC_WARD,Music Disc (Ward)
 MUTTON,Raw Mutton
 MYCELIUM,Mycelium
 NAME_TAG,Name Tag
@@ -802,7 +802,7 @@ SKELETON_HORSE_SPAWN_EGG,Skeleton Horse Spawn Egg
 SKELETON_SKULL,Skeleton Skull
 SKELETON_SPAWN_EGG,Skeleton Spawn Egg
 SKELETON_WALL_SKULL,Skeleton Wall Skull
-SKULL_BANNER_PATTERN,Banner Pattern
+SKULL_BANNER_PATTERN,Skull Banner Pattern
 SLIME_BALL,Slimeball
 SLIME_BLOCK,Slime Block
 SLIME_SPAWN_EGG,Slime Spawn Egg

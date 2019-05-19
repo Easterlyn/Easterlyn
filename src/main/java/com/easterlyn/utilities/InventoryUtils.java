@@ -1,29 +1,37 @@
 package com.easterlyn.utilities;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.captcha.Captcha;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.Machine;
-import com.easterlyn.utilities.tuple.Pair;
 import com.easterlyn.utilities.tuple.Triple;
-import com.google.common.collect.HashMultimap;
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import io.netty.buffer.Unpooled;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Objects;
+import java.util.function.BiConsumer;
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_14_R1.ChatMessage;
 import net.minecraft.server.v1_14_R1.EntityPlayer;
 import net.minecraft.server.v1_14_R1.MerchantRecipe;
 import net.minecraft.server.v1_14_R1.MerchantRecipeList;
 import net.minecraft.server.v1_14_R1.MinecraftKey;
 import net.minecraft.server.v1_14_R1.PacketDataSerializer;
 import net.minecraft.server.v1_14_R1.PacketPlayOutCustomPayload;
+import net.minecraft.server.v1_14_R1.PacketPlayOutOpenWindow;
 import net.minecraft.server.v1_14_R1.PacketPlayOutSetSlot;
+import net.minecraft.server.v1_14_R1.PacketPlayOutWindowData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.block.banner.Pattern;
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -42,28 +50,19 @@ import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
+import org.bukkit.inventory.meta.FireworkEffectMeta;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
 
 /**
  * A set of useful methods for inventory functions.
@@ -74,18 +73,16 @@ public class InventoryUtils {
 
 	public static final String ITEM_UNIQUE = ChatColor.DARK_PURPLE + "Unique";
 
-	private static HashMap<String, String> items;
-	private static HashMultimap<String, String> itemsReverse;
+	private static BiMap<String, String> items;
 	private static HashSet<ItemStack> uniques;
 
-	private static HashMap<String, String> getItems() {
+	private static BiMap<String, String> getItems() {
 		if (items != null) {
 			return items;
 		}
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
 				Objects.requireNonNull(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("Easterlyn")).getResource("items.csv"))))) {
-			items = new HashMap<>();
-			itemsReverse = HashMultimap.create();
+			items = HashBiMap.create();
 			String line;
 			while ((line = reader.readLine()) != null) {
 				line = line.trim();
@@ -94,7 +91,6 @@ public class InventoryUtils {
 				}
 				String[] row = line.split(",");
 				items.put(row[0], row[1]);
-				itemsReverse.put(row[1], row[0]);
 			}
 		} catch (IOException e) {
 			throw new RuntimeException("Could not load items from items.csv!", e);
@@ -163,167 +159,163 @@ public class InventoryUtils {
 		return name.toString();
 	}
 
-	public static boolean isMisleadinglyNamed(String name, Material material, short durability) {
-		getItems();
-		String id = material.name() + ":" + durability;
-		boolean match = false;
-		for (String storedId : itemsReverse.get(name)) {
-			if (storedId.equals(id)) {
-				return false;
-			}
-			match = true;
-		}
-		return match;
+	public static boolean isMisleadinglyNamed(String name, Material material) {
+		String materialName = getItems().inverse().get(name);
+		return materialName != null && !materialName.equals(material.name());
 	}
 
-	public static Pair<Material, Short> matchMaterial(String search) {
-		String[] matData = search.split(":");
-		if (matData[0].length() < 2) {
-			// Too short strings will always result in "air"
-			throw new IllegalArgumentException("Search string must be 2 characters minimum.");
+	public static Material matchMaterial(String search) {
+		String searchMaterialName = search.toUpperCase().replace(' ', '_');
+
+		try {
+			return Material.valueOf(searchMaterialName);
+		} catch (IllegalArgumentException ignored) {}
+
+		String searchFriendlyName = search.replace('_', ' ');
+
+		// TODO ignoreCase
+		String materialName = getItems().inverse().get(searchFriendlyName);
+		if (materialName != null) {
+			return Material.valueOf(materialName);
 		}
 
 		Material material = null;
-		Short durability = null;
-
-		if (matData.length > 1) {
-			try {
-				durability = Short.parseShort(matData[1]);
-			} catch (NumberFormatException ignored) {}
-		}
-
-		boolean durabilitySet = durability != null;
-		if (!durabilitySet) {
-			durability = 0;
-		}
 
 		float matchLevel = 0F;
-		matData[0] = matData[0].replace('_', ' ').toLowerCase();
+		search = search.replace('_', ' ').toLowerCase();
 		for (Entry<String, String> entry : getItems().entrySet()) {
-			float current = StringMetric.compareJaroWinkler(matData[0], entry.getValue().toLowerCase());
+			float current = StringMetric.compareJaroWinkler(search, entry.getValue().toLowerCase());
 			if (current > matchLevel) {
 				matchLevel = current;
-				String[] entryData = entry.getKey().split(":");
-				material = Material.getMaterial(entryData[0]);
-				if (!durabilitySet) {
-					durability = Short.valueOf(entryData[1]);
-				}
+				material = Material.getMaterial(entry.getKey());
 			}
 			if (current == 1F) {
-				return new Pair<>(material, durability);
+				return material;
 			}
 		}
+
 		// Allow more fuzziness for longer named items
-		if (matchLevel < (3 + (material.name().length() / 5F))) {
-			return new Pair<>(material, durability);
+		if (matchLevel > (.7F - (1F / material.name().length()))) {
+			return material;
 		}
 		return null;
 	}
 
-	public static ItemStack cleanNBT(ItemStack is) {
-		if (is == null || !is.hasItemMeta()) {
-			return is;
+	public static ItemStack cleanNBT(ItemStack originalItem) {
+		if (originalItem == null || !originalItem.hasItemMeta()) {
+			return originalItem;
 		}
 
-		ItemStack cleanedItem = new ItemStack(is.getType());
+		ItemMeta originalMeta = originalItem.getItemMeta();
+		if (originalMeta == null) {
+			// Unnecessary, but it keeps the compiler happy.
+			return originalItem;
+		}
+
+		ItemStack cleanedItem = new ItemStack(originalItem.getType());
 		// Why Bukkit doesn't have a constructor ItemStack(MaterialData) I don't know.
-		cleanedItem.setData(is.getData());
-		cleanedItem.setDurability(is.getDurability());
-		cleanedItem.setAmount(is.getAmount());
-		ItemMeta im = is.getItemMeta();
+		cleanedItem.setData(originalItem.getData());
+		cleanedItem.setAmount(originalItem.getAmount());
+
+		ItemMeta cleanedMeta = cleanedItem.getItemMeta();
+		if (cleanedMeta == null) {
+			return cleanedItem;
+		}
 
 		// Banners
-		if (im instanceof BannerMeta) {
-			BannerMeta meta = (BannerMeta) Bukkit.getItemFactory().getItemMeta(Material.BLACK_BANNER);
-			for (Pattern pattern : ((BannerMeta) im).getPatterns()) {
-				meta.addPattern(pattern);
-			}
-			cleanedItem.setItemMeta(meta);
-		}
+		handleSpecialMeta(BannerMeta.class, originalMeta, cleanedMeta,
+				(oldMeta, newMeta) -> newMeta.setPatterns(oldMeta.getPatterns()));
 
 		// Book and quill/Written books
-		if (im instanceof BookMeta) {
-			BookMeta meta = (BookMeta) Bukkit.getItemFactory().getItemMeta(Material.WRITTEN_BOOK);
-			BookMeta bm = (BookMeta) im;
-			if (bm.hasPages()) {
-				meta.setPages(bm.getPages());
+		handleSpecialMeta(BookMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+			if (oldMeta.hasPages()) {
+				newMeta.setPages(oldMeta.getPages());
 			}
-			if (bm.hasAuthor()) {
-				meta.setAuthor(bm.getAuthor());
+			if (oldMeta.hasAuthor()) {
+				newMeta.setAuthor(oldMeta.getAuthor());
 			}
-			if (bm.hasTitle()) {
-				meta.setTitle(bm.getTitle());
+			if (oldMeta.hasTitle()) {
+				newMeta.setTitle(oldMeta.getTitle());
 			}
-			cleanedItem.setItemMeta(meta);
-		}
+		});
 
-		// Enchanted books
-		if (im instanceof EnchantmentStorageMeta) {
-			EnchantmentStorageMeta meta = (EnchantmentStorageMeta) Bukkit.getItemFactory().getItemMeta(Material.ENCHANTED_BOOK);
-			for (Map.Entry<Enchantment, Integer> entry : ((EnchantmentStorageMeta) im).getStoredEnchants().entrySet()) {
-				meta.addStoredEnchant(entry.getKey(), entry.getValue(), true);
-			}
-			cleanedItem.setItemMeta(meta);
-		}
+		// Single effect fireworks
+		handleSpecialMeta(FireworkEffectMeta.class, originalMeta, cleanedMeta,
+				(oldMeta, newMeta) -> newMeta.setEffect(oldMeta.getEffect()));
 
 		// Fireworks/Firework stars
-		if (im instanceof FireworkMeta && ((FireworkMeta) im).getEffectsSize() > 0) {
-			FireworkMeta meta = (FireworkMeta) Bukkit.getItemFactory().getItemMeta(Material.FIREWORK_ROCKET);
-			meta.addEffects(((FireworkMeta) im).getEffects());
-			cleanedItem.setItemMeta(meta);
-		}
+		handleSpecialMeta(FireworkMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+			newMeta.setPower(oldMeta.getPower());
+			newMeta.addEffects(oldMeta.getEffects());
+		});
 
 		// Leather armor color
-		if (im instanceof LeatherArmorMeta) {
-			LeatherArmorMeta meta = (LeatherArmorMeta) Bukkit.getItemFactory().getItemMeta(Material.LEATHER_CHESTPLATE);
-			meta.setColor(((LeatherArmorMeta) im).getColor());
-			cleanedItem.setItemMeta(meta);
-		}
+		handleSpecialMeta(LeatherArmorMeta.class, originalMeta, cleanedMeta,
+				(oldMeta, newMeta) -> newMeta.setColor(oldMeta.getColor()));
 
-		// MapMeta is handled by data value
+		// Enchanted books
+		handleSpecialMeta(EnchantmentStorageMeta.class, originalMeta, cleanedMeta,
+				(oldMeta, newMeta) -> oldMeta.getStoredEnchants().forEach(
+						(enchantment, level) -> newMeta.addStoredEnchant(enchantment, level, true)));
+
+		// Map ID
+		handleSpecialMeta(MapMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+				newMeta.setMapView(oldMeta.getMapView());
+				newMeta.setColor(oldMeta.getColor());
+				newMeta.setLocationName(oldMeta.getLocationName());
+				newMeta.setScaling(oldMeta.isScaling());
+		});
 
 		// Potions
-		if (im instanceof PotionMeta && ((PotionMeta) im).hasCustomEffects()) {
-			PotionMeta meta = (PotionMeta) Bukkit.getItemFactory().getItemMeta(Material.POTION);
-			PotionMeta oldMeta = (PotionMeta) im;
-			meta.setBasePotionData(oldMeta.getBasePotionData());
-			for (PotionEffect effect : oldMeta.getCustomEffects()) {
-				// Custom effects are fine, but amplifiers that are way too high are not
-				if (effect.getAmplifier() < 5 && effect.getAmplifier() >= 0) {
-					meta.addCustomEffect(effect, true);
-				}
-			}
-			cleanedItem.setItemMeta(meta);
-		}
+		handleSpecialMeta(PotionMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+				newMeta.setBasePotionData(oldMeta.getBasePotionData());
+				newMeta.setColor(oldMeta.getColor());
+				oldMeta.getCustomEffects().forEach(effect -> {
+					// Custom effects are fine, but amplifiers that are way too high are not
+					if (effect.getAmplifier() < 5 && effect.getAmplifier() >= 0) {
+						newMeta.addCustomEffect(effect, true);
+					}
+				});
+		});
 
 		// Repairable would preserve anvil tags on tools, we'll avoid that
 
 		// Skulls
-		if (im instanceof SkullMeta && ((SkullMeta) im).hasOwner()) {
-			SkullMeta meta = (SkullMeta) Bukkit.getItemFactory().getItemMeta(Material.PLAYER_HEAD);
-			meta.setOwningPlayer(((SkullMeta) im).getOwningPlayer());
-			cleanedItem.setItemMeta(meta);
-		}
+		handleSpecialMeta(SkullMeta.class, originalMeta, cleanedMeta,
+				(oldMeta, newMeta) -> newMeta.setOwningPlayer(oldMeta.getOwningPlayer()));
 
 		// Normal meta
-		ItemMeta meta = cleanedItem.getItemMeta();
-
-		if (im.hasDisplayName()) {
-			meta.setDisplayName(im.getDisplayName());
+		if (originalMeta.hasDisplayName()) {
+			cleanedMeta.setDisplayName(originalMeta.getDisplayName());
 		}
 
-		if (im.hasEnchants()) {
-			for (Map.Entry<Enchantment, Integer> entry : im.getEnchants().entrySet()) {
-				meta.addEnchant(entry.getKey(), entry.getValue(), true);
+		if (originalMeta.hasEnchants()) {
+			for (Map.Entry<Enchantment, Integer> entry : originalMeta.getEnchants().entrySet()) {
+				cleanedMeta.addEnchant(entry.getKey(), entry.getValue(), true);
 			}
 		}
 
-		if (im.hasLore()) {
-			meta.setLore(im.getLore());
+		if (originalMeta.hasLore()) {
+			cleanedMeta.setLore(originalMeta.getLore());
 		}
 
-		cleanedItem.setItemMeta(meta);
+		if (originalMeta instanceof Damageable && cleanedMeta instanceof Damageable) {
+			((Damageable) cleanedMeta).setDamage(((Damageable) originalMeta).getDamage());
+		}
+
+		cleanedItem.setItemMeta(cleanedMeta);
 		return cleanedItem;
+	}
+
+	private static <T extends ItemMeta> void handleSpecialMeta(Class<T> metaClazz, ItemMeta originalMeta,
+			ItemMeta newMeta, BiConsumer<T, T> consumer) {
+		if (!metaClazz.isInstance(originalMeta)) {
+			return;
+		}
+		if (!metaClazz.isInstance(newMeta)) {
+			return;
+		}
+		consumer.accept(metaClazz.cast(originalMeta), metaClazz.cast(newMeta));
 	}
 
 	public static HashSet<ItemStack> getUniqueItems(Easterlyn plugin) {
@@ -455,51 +447,16 @@ public class InventoryUtils {
 	}
 
 	public static void changeWindowName(Player player, String name) {
-		Inventory top = player.getOpenInventory().getTopInventory();
+		CraftPlayer craftPlayer = (CraftPlayer) player;
+		EntityPlayer entityPlayer = craftPlayer.getHandle();
 
-		int slots = top.getSize();
-
-		int containerCounter;
-		try {
-			Method method = player.getClass().getMethod("getHandle");
-			Object nmsPlayer = method.invoke(player);
-			Field field = nmsPlayer.getClass().getDeclaredField("containerCounter");
-			field.setAccessible(true);
-			containerCounter = (int) field.get(nmsPlayer);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException
-				| IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-			e.printStackTrace();
+		if (entityPlayer.playerConnection == null) {
 			return;
 		}
-		String containerName;
-		try {
-			Method method = top.getClass().getMethod("getInventory");
-			Object iinventory = method.invoke(top);
-			method = iinventory.getClass().getMethod("getContainerName");
-			containerName = (String) method.invoke(iinventory);
-		} catch (NoSuchMethodException e) {
-			// TODO Custom containers do not have a method getContainerName
-			// Should probably mimic behavior and just fetch based on InventoryType
-			containerName = "minecraft:container";
-		} catch (SecurityException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | ClassCastException e) {
-			e.printStackTrace();
-			containerName = "minecraft:container";
-		}
 
-		ProtocolManager manager = ProtocolLibrary.getProtocolManager();
-		PacketContainer packet = manager.createPacket(PacketType.Play.Server.OPEN_WINDOW);
-		packet.getIntegers().write(0, containerCounter);
-		packet.getStrings().write(0, containerName);
-		packet.getChatComponents().write(0,
-				WrappedChatComponent.fromJson("{\"text\": \"" + name + "\"}"));
-		packet.getIntegers().write(1, slots);
-		try {
-			manager.sendServerPacket(player, packet);
-			player.updateInventory();
-		} catch (InvocationTargetException ex) {
-			ex.printStackTrace();
-		}
+		entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(entityPlayer.activeContainer.windowId,
+				entityPlayer.activeContainer.getType(), new ChatMessage(name)));
+
 	}
 
 	public static String getNameFromAnvil(InventoryView view) {
@@ -536,17 +493,12 @@ public class InventoryUtils {
 		if (!(view.getTopInventory() instanceof AnvilInventory)) {
 			return;
 		}
-		try {
-			Method method = view.getClass().getMethod("getHandle");
-			Object nmsInventory = method.invoke(view);
-			Field field = nmsInventory.getClass().getDeclaredField("a");
-			method = view.getPlayer().getClass().getMethod("getHandle");
-			Object nmsPlayer = method.invoke(view.getPlayer());
-			method = nmsPlayer.getClass().getMethod("setContainerData", nmsInventory.getClass().getSuperclass(), int.class, int.class);
-			method.invoke(nmsPlayer, nmsInventory, 0, field.get(nmsInventory));
-		} catch (Exception e) {
-			e.printStackTrace();
+		EntityPlayer entityPlayer = ((CraftPlayer) view.getPlayer()).getHandle();
+		if (entityPlayer.playerConnection == null) {
+			return;
 		}
+		entityPlayer.playerConnection.sendPacket(new PacketPlayOutWindowData(entityPlayer.activeContainer.windowId, 0,
+				((AnvilInventory) view.getTopInventory()).getRepairCost()));
 	}
 
 	@SafeVarargs
@@ -639,9 +591,6 @@ public class InventoryUtils {
 		}
 		StringBuilder builder = new StringBuilder();
 		builder.append(item.getType().name());
-		if (item.getDurability() != -1 && item.getDurability() != Short.MAX_VALUE) {
-			builder.append(':').append(item.getDurability());
-		}
 		if (item.getAmount() != 1) {
 			builder.append('x').append(item.getAmount());
 		}

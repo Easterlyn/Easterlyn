@@ -6,7 +6,7 @@ import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.TextUtils;
-import com.easterlyn.utilities.tuple.Pair;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -17,8 +17,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.ShapelessRecipe;
-
-import java.util.List;
 
 /**
  * Better recipe lookup.
@@ -45,11 +43,11 @@ public class RecipeCommand extends EasterlynCommand {
 				// No recipe number provided
 			}
 		}
-		Pair<Material, Short> type = InventoryUtils.matchMaterial(TextUtils.join(args, ' ', 0, setRecipeNumber ? args.length - 1 : args.length));
+		Material type = InventoryUtils.matchMaterial(TextUtils.join(args, ' ', 0, setRecipeNumber ? args.length - 1 : args.length));
 		if (type == null) {
 			return false;
 		}
-		ItemStack result = new ItemStack(type.getLeft(), 1);
+		ItemStack result = new ItemStack(type, 1);
 		List<Recipe> recipes = Bukkit.getRecipesFor(result);
 		String friendlyName = InventoryUtils.getItemName(result);
 		if (recipes.isEmpty()) {

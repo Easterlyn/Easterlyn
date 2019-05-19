@@ -1,18 +1,18 @@
 package com.easterlyn.utilities;
 
+import com.google.common.collect.BiMap;
+import com.google.common.collect.HashBiMap;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import org.bukkit.Material;
-import org.junit.Test;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.EnumSet;
-import java.util.HashMap;
+import org.bukkit.Material;
+import org.junit.Test;
 
 import static org.junit.Assert.fail;
 
@@ -20,7 +20,7 @@ public class ItemNameTest {
 
 	@Test
 	public void testMaterialsPresent() {
-		HashMap<String, String> items = new HashMap<>();
+		BiMap<String, String> items = HashBiMap.create();
 		try (BufferedReader reader = new BufferedReader(new FileReader("src/main/resources/items.csv"))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
@@ -31,6 +31,17 @@ public class ItemNameTest {
 				String[] row = line.split(",");
 				if (row.length < 2) {
 					fail("Row does not match format: " + line);
+				}
+				if (items.containsKey(row[0])) {
+					fail("Duplicate key: " + row[0]);
+				}
+				if (items.containsValue(row[1])) {
+					fail("Duplicate value: " + row[1]);
+				}
+				try {
+					Material.valueOf(row[0]);
+				} catch (IllegalArgumentException e) {
+					fail("Invalid material: " + row[0]);
 				}
 				items.put(row[0], row[1]);
 			}
