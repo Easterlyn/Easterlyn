@@ -4,15 +4,18 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.Effect;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import javax.annotation.Nullable;
 import net.minecraft.server.v1_14_R1.IBlockData;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
@@ -33,9 +36,23 @@ public class BlockDrops {
 		return getDrops(tool, block, bonus);
 	}
 
-	private static Collection<ItemStack> getDrops(@Nullable ItemStack tool, Block block, int fortuneBonus) {
+	private static Collection<ItemStack> getDrops(@Nullable ItemStack tool, @NotNull Block block, int fortuneBonus) {
 		if (tool == null) {
 			return block.getDrops();
+		}
+
+		// Block#getDrops does not properly support silk touch for coral
+		if (tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0 && Tag.CORALS.isTagged(block.getType())) {
+			Material type = block.getType();
+			if (Tag.WALL_CORALS.isTagged(type)) {
+				type = Material.matchMaterial(type.name().replace("WALL_", ""));
+			}
+			if (type != null) {
+				ItemStack itemStack = new ItemStack(type);
+				if (itemStack.getType() != Material.AIR) {
+					return Collections.singleton(new ItemStack(type));
+				}
+			}
 		}
 
 		if (fortuneBonus != 0) {
