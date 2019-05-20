@@ -4,6 +4,12 @@ import com.easterlyn.effects.Effects;
 import com.easterlyn.effects.effect.Effect;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.recipe.RecipeWrapper;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
@@ -11,7 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.v1_14_R1.enchantments.CraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
-import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.CookingRecipe;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Recipe;
@@ -22,13 +28,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
-
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * A class for handling all functions of cruxite dowels.
@@ -43,12 +42,16 @@ public class ManaMappings {
 		if (toCreate == null || toCreate.getAmount() < 1) {
 			return Double.MAX_VALUE;
 		}
+
 		double cost = getMana().getOrDefault(toCreate.getType(), Double.MAX_VALUE);
 		if (cost == Double.MAX_VALUE) {
 			// Item cannot be made with mana
 			return Double.MAX_VALUE;
 		}
-		if (!toCreate.hasItemMeta()) {
+
+		ItemMeta meta = toCreate.hasItemMeta() ? toCreate.getItemMeta() : null;
+
+		if (meta == null) {
 			// No additional costs from meta, finish fast.
 			if (Double.MAX_VALUE / toCreate.getAmount() <= cost) {
 				return Double.MAX_VALUE;
@@ -59,8 +62,6 @@ public class ManaMappings {
 		if (InventoryUtils.isUniqueItem(effects.getPlugin(), toCreate)) {
 			return Double.MAX_VALUE;
 		}
-
-		ItemMeta meta = toCreate.getItemMeta();
 
 		if (toCreate.getEnchantments().size() > 0 || meta.hasDisplayName() || meta.hasLore() || meta.isUnbreakable()) {
 			switch (toCreate.getType()) {
@@ -312,7 +313,7 @@ public class ManaMappings {
 		enchantCost *= (stored ? 220 : 225);
 		// Balance: Base cost on percentage of max level, not only current level
 		enchantCost *= Math.abs(level) / enchantment.getMaxLevel();
-		if (enchantment.getName().contains("CURSE")) {
+		if (enchantment.getKey().getKey().contains("curse")) {
 			// Curses are also treasure, should be handled first.
 			enchantCost /= 2.5;
 		} else if (enchantment.isTreasure()) {
@@ -323,62 +324,65 @@ public class ManaMappings {
 	}
 
 	public static Map<Material, Double> getMana() {
-		if (manaMappings == null) {
-			manaMappings = createBaseMana();
-
-			for (String variant : new String[] { "BRAIN", "BUBBLE", "FIRE", "HORN", "TUBE" }) {
-				manaMappings.put(Material.matchMaterial(String.format("%s_CORAL_FAN", variant)), 4D);
-				manaMappings.put(Material.matchMaterial(String.format("%s_CORAL", variant)), 16D);
-				manaMappings.put(Material.matchMaterial(String.format("%s_CORAL_BLOCK", variant)), 64D);
-				manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL_FAN", variant)), 2D);
-				manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL", variant)), 8D);
-				manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL_BLOCK", variant)), 32D);
-			}
-
-			// Fill from recipes
-			for (Material material : Material.values()) {
-				addRecipeCosts(material);
-			}
-
-			// Special cases
-			manaMappings.put(Material.CHIPPED_ANVIL, manaMappings.getOrDefault(Material.ANVIL, Double.MAX_VALUE) / 3 * 2);
-			manaMappings.put(Material.DAMAGED_ANVIL, manaMappings.getOrDefault(Material.ANVIL, Double.MAX_VALUE) / 3);
-			manaMappings.put(Material.FIREWORK_ROCKET, manaMappings.get(Material.PAPER));
-			manaMappings.put(Material.FIREWORK_STAR, manaMappings.get(Material.GUNPOWDER));
-			manaMappings.put(Material.POTION, manaMappings.get(Material.GLASS_BOTTLE) + 1);
-			manaMappings.put(Material.SPLASH_POTION, manaMappings.get(Material.POTION) + manaMappings.get(Material.GUNPOWDER));
-			manaMappings.put(Material.LINGERING_POTION, manaMappings.get(Material.SPLASH_POTION) + manaMappings.get(Material.DRAGON_BREATH));
-			manaMappings.put(Material.TIPPED_ARROW, manaMappings.get(Material.LINGERING_POTION) / 8 + manaMappings.get(Material.ARROW));
-
-			manaMappings.put(Material.FILLED_MAP, manaMappings.get(Material.MAP));
-
-			manaMappings.put(Material.SMOOTH_QUARTZ, manaMappings.get(Material.QUARTZ_BLOCK));
-			manaMappings.put(Material.SMOOTH_RED_SANDSTONE, manaMappings.get(Material.RED_SANDSTONE));
-			manaMappings.put(Material.SMOOTH_SANDSTONE, manaMappings.get(Material.SANDSTONE));
-			manaMappings.put(Material.SMOOTH_STONE, manaMappings.get(Material.STONE));
-
-			for (DyeColor color : DyeColor.values()) {
-				manaMappings.put(Material.matchMaterial(color.name() + "_SHULKER_BOX"), manaMappings.get(Material.SHULKER_BOX));
-				manaMappings.put(Material.matchMaterial(color.name() + "_CONCRETE"),
-						manaMappings.get(Material.matchMaterial(color.name() + "_CONCRETE_POWDER")) + 3);
-			}
-
-			manaMappings.put(Material.DEBUG_STICK,
-					manaMappings.get(Material.NETHER_STAR) + 2 * manaMappings.get(Material.END_ROD));
-
-			manaMappings.remove(Material.EMERALD);
-			manaMappings.remove(Material.EMERALD_BLOCK);
-			manaMappings.remove(Material.EMERALD_ORE);
-			manaMappings.remove(Material.LAPIS_LAZULI);
-			manaMappings.remove(Material.LAPIS_BLOCK);
-			manaMappings.remove(Material.LAPIS_ORE);
-
-			manaMappings.entrySet().removeIf(entry -> entry.getValue() == Double.MAX_VALUE);
+		if (manaMappings != null) {
+			return manaMappings;
 		}
+
+		manaMappings = createBaseMana();
+
+		for (String variant : new String[] { "BRAIN", "BUBBLE", "FIRE", "HORN", "TUBE" }) {
+			manaMappings.put(Material.matchMaterial(String.format("%s_CORAL_FAN", variant)), 4D);
+			manaMappings.put(Material.matchMaterial(String.format("%s_CORAL", variant)), 16D);
+			manaMappings.put(Material.matchMaterial(String.format("%s_CORAL_BLOCK", variant)), 64D);
+			manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL_FAN", variant)), 2D);
+			manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL", variant)), 8D);
+			manaMappings.put(Material.matchMaterial(String.format("DEAD_%s_CORAL_BLOCK", variant)), 32D);
+		}
+
+		// Fill from recipes
+		for (Material material : Material.values()) {
+			addRecipeCosts(material);
+		}
+
+		// Special cases
+		manaMappings.put(Material.CHIPPED_ANVIL, manaMappings.get(Material.ANVIL) / 3 * 2);
+		manaMappings.put(Material.DAMAGED_ANVIL, manaMappings.get(Material.ANVIL) / 3);
+		manaMappings.put(Material.FILLED_MAP, manaMappings.get(Material.MAP));
+		manaMappings.put(Material.FIREWORK_ROCKET, manaMappings.get(Material.PAPER));
+		manaMappings.put(Material.FIREWORK_STAR, manaMappings.get(Material.GUNPOWDER));
+		manaMappings.put(Material.POTION, manaMappings.get(Material.GLASS_BOTTLE) + 1);
+		manaMappings.put(Material.SPLASH_POTION, manaMappings.get(Material.POTION) + manaMappings.get(Material.GUNPOWDER));
+		manaMappings.put(Material.LINGERING_POTION, manaMappings.get(Material.SPLASH_POTION) + manaMappings.get(Material.DRAGON_BREATH));
+		manaMappings.put(Material.TIPPED_ARROW, manaMappings.get(Material.LINGERING_POTION) / 8 + manaMappings.get(Material.ARROW));
+		manaMappings.put(Material.COD_BUCKET, manaMappings.get(Material.COD) + manaMappings.get(Material.BUCKET));
+		manaMappings.put(Material.PUFFERFISH_BUCKET, manaMappings.get(Material.PUFFERFISH) + manaMappings.get(Material.BUCKET));
+		manaMappings.put(Material.SALMON_BUCKET, manaMappings.get(Material.SALMON) + manaMappings.get(Material.BUCKET));
+		manaMappings.put(Material.TROPICAL_FISH_BUCKET, manaMappings.get(Material.TROPICAL_FISH) + manaMappings.get(Material.BUCKET));
+		// TODO why are these not detecting properly
+		manaMappings.put(Material.BONE_BLOCK, manaMappings.get(Material.BONE_MEAL) * 9);
+		manaMappings.put(Material.DRIED_KELP_BLOCK, manaMappings.get(Material.DRIED_KELP_BLOCK) * 9);
+
+		for (DyeColor color : DyeColor.values()) {
+			manaMappings.put(Material.matchMaterial(color.name() + "_SHULKER_BOX"), manaMappings.get(Material.SHULKER_BOX));
+			manaMappings.put(Material.matchMaterial(color.name() + "_CONCRETE"),
+					manaMappings.get(Material.matchMaterial(color.name() + "_CONCRETE_POWDER")) + 3);
+		}
+
+		manaMappings.put(Material.DEBUG_STICK,
+				manaMappings.get(Material.NETHER_STAR) + 2 * manaMappings.get(Material.END_ROD));
+
+		manaMappings.remove(Material.EMERALD);
+		manaMappings.remove(Material.EMERALD_BLOCK);
+		manaMappings.remove(Material.EMERALD_ORE);
+		manaMappings.remove(Material.LAPIS_LAZULI);
+		manaMappings.remove(Material.LAPIS_BLOCK);
+		manaMappings.remove(Material.LAPIS_ORE);
+
+		manaMappings.entrySet().removeIf(entry -> entry.getValue() == Double.MAX_VALUE);
+
 		return manaMappings;
 	}
 
-	@SuppressWarnings("deprecation")
 	private static Map<Material, Double> createBaseMana() {
 		Map<Material, Double> values = new HashMap<>();
 
@@ -386,7 +390,6 @@ public class ManaMappings {
 			switch (material) {
 				case BEETROOT_SEEDS:
 				case CLAY_BALL:
-				case COOKIE:
 				case DEAD_BUSH:
 				case DIRT:
 				case FERN:
@@ -407,11 +410,13 @@ public class ManaMappings {
 					break;
 				case ALLIUM:
 				case AZURE_BLUET:
+				case BAMBOO:
 				case BEETROOT:
 				case CACTUS:
 				case CARROT:
 				case CHORUS_FRUIT:
 				case COBBLESTONE:
+				case CORNFLOWER:
 				case DANDELION:
 				case KELP:
 				case LILY_PAD:
@@ -426,8 +431,10 @@ public class ManaMappings {
 				case RED_MUSHROOM_BLOCK:
 				case RED_SAND:
 				case RED_TULIP:
+				case SEAGRASS:
 				case SOUL_SAND:
 				case SUGAR_CANE:
+				case SWEET_BERRIES:
 				case VINE:
 				case WHEAT:
 				case WHITE_TULIP:
@@ -443,6 +450,7 @@ public class ManaMappings {
 				case GRANITE:
 				case LAPIS_LAZULI:
 				case LILAC:
+				case LILY_OF_THE_VALLEY:
 				case NETHERRACK:
 				case OXEYE_DAISY:
 				case PEONY:
@@ -451,14 +459,14 @@ public class ManaMappings {
 				case ROSE_BUSH:
 				case ROTTEN_FLESH:
 				case STONE:
-				case SUNFLOWER:
 					values.put(material, 3D);
 					break;
 				case ARROW:
-				case TALL_GRASS:
-				case LARGE_FERN:
-				case FEATHER:
 				case CHICKEN:
+				case FEATHER:
+				case LARGE_FERN:
+				case TALL_GRASS:
+				case SUNFLOWER:
 					values.put(material, 4D);
 					break;
 				case CLAY:
@@ -489,7 +497,6 @@ public class ManaMappings {
 				case EGG:
 				case NETHER_BRICKS:
 				case PUMPKIN:
-				case SEAGRASS:
 					values.put(material, 6D);
 					break;
 				case COOKED_CHICKEN:
@@ -604,6 +611,7 @@ public class ManaMappings {
 				case GUNPOWDER:
 				case MAP: // Not crafted, right click
 				case MYCELIUM:
+				case PODZOL:
 					values.put(material, 20D);
 					break;
 				case ENCHANTED_BOOK:
@@ -614,7 +622,7 @@ public class ManaMappings {
 					break;
 				case BLAZE_ROD:
 				case GRASS_BLOCK:
-				case PODZOL:
+				case WITHER_ROSE:
 					values.put(material, 30D);
 					break;
 				case BLACK_BANNER:
@@ -695,6 +703,9 @@ public class ManaMappings {
 				case IRON_HORSE_ARMOR:
 					values.put(material, 261D);
 					break;
+				case GLOBE_BANNER_PATTERN:
+					values.put(material, 300D);
+					break;
 				case NAME_TAG:
 					values.put(material, 405D);
 					break;
@@ -718,6 +729,9 @@ public class ManaMappings {
 					break;
 				case CHAINMAIL_CHESTPLATE:
 					values.put(material, 1200D);
+					break;
+				case BELL:
+					values.put(material, 1336D);
 					break;
 				case DRAGON_HEAD:
 				case WITHER_SKELETON_SKULL:
@@ -844,7 +858,7 @@ public class ManaMappings {
 			}
 
 			// Coal is 12, 8 smelts per coal = 1.5 cost per smelt. Hardcoded to prevent a bit of extra code and checks.
-			if (bukkitRecipe instanceof FurnaceRecipe) {
+			if (bukkitRecipe instanceof CookingRecipe) {
 				if (newMinimum >= Double.MAX_VALUE - 1.5) {
 					continue;
 				}
