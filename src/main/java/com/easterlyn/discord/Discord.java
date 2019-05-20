@@ -25,6 +25,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import sx.blah.discord.api.ClientBuilder;
 import sx.blah.discord.api.IDiscordClient;
@@ -39,7 +40,6 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
 
-import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
@@ -790,12 +790,16 @@ public class Discord extends Module {
 		updateLinkedUser(user, uuid);
 	}
 
+	@Nullable
 	public DiscordPlayer getDiscordPlayerFor(IUser user) {
 		UUID uuid = getUUIDOf(user);
 		if (uuid == null) {
 			return null;
 		}
 		Player player = PlayerUtils.getPlayer(this.getPlugin(), uuid);
+		if (player == null) {
+			return  null;
+		}
 		if (player instanceof DiscordPlayer) {
 			return (DiscordPlayer) player;
 		}

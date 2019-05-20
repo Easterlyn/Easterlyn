@@ -80,6 +80,13 @@ public class DiscordMessageReceivedListener implements IListener<MessageReceived
 		}
 		DiscordPlayer sender = discord.getDiscordPlayerFor(author);
 		if (sender == null) {
+			UUID uuid = discord.getUUIDOf(author);
+			if (uuid != null) {
+				discord.postMessage(null, author.mention()
+						+ ", failed to load your Minecraft user in a timely fashion.\nPlease re-post your message in a minute.",
+						channel.getLongID());
+				return;
+			}
 			if (main && !command) {
 				discord.queueMessageDeletion(CallPriority.MEDIUM, event.getMessage());
 			}

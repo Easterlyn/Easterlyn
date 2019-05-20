@@ -109,7 +109,7 @@ public class PlayerUtils {
 		Future<Player> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> getPlayerFor(uuid));
 
 		int ticks = 0;
-		while (!future.isDone() && !future.isCancelled() && ticks < 10) {
+		while (!future.isDone() && !future.isCancelled() && ticks < 20) {
 			++ticks;
 			try {
 				Thread.sleep(50L);
