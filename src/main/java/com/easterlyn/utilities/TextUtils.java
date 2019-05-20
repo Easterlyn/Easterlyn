@@ -15,7 +15,7 @@ import java.util.regex.Pattern;
 public class TextUtils {
 
 	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
-	private static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
+	public static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 
 	static class MatchedURL {

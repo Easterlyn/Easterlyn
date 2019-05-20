@@ -15,6 +15,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -182,9 +183,9 @@ public class InventoryUtils {
 		Material material = null;
 
 		float matchLevel = 0F;
-		search = search.replace('_', ' ').toLowerCase();
+		search = searchFriendlyName.toLowerCase(Locale.ENGLISH);
 		for (Entry<String, String> entry : getItems().entrySet()) {
-			float current = StringMetric.compareJaroWinkler(search, entry.getValue().toLowerCase());
+			float current = StringMetric.compare(search, entry.getValue().toLowerCase(Locale.ENGLISH));
 			if (current > matchLevel) {
 				matchLevel = current;
 				material = Material.getMaterial(entry.getKey());

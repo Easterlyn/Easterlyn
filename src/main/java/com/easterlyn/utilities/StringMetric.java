@@ -17,19 +17,56 @@
 
 package com.easterlyn.utilities;
 
+import java.text.Normalizer;
+import java.util.Locale;
+import java.util.function.Function;
+
 public class StringMetric {
 
-    public static float compareJaroWinkler(String a, String b) {
+    @SuppressWarnings("WeakerAccess") // Inspection false positive - visibility required for comparison usage
+    public static abstract class Simplifier implements Function<String, String> {}
+
+    public static final Simplifier TO_LOWER_CASE = new Simplifier() {
+        @Override
+        public String apply(String s) {
+            return s.toLowerCase(Locale.ENGLISH);
+        }
+    };
+
+    public static final Simplifier STRIP_URLS = new Simplifier() {
+        @Override
+        public String apply(String s) {
+            return TextUtils.trimExtraWhitespace(TextUtils.URL_PATTERN.matcher(s).replaceAll(" "));
+        }
+    };
+
+    public static final Simplifier NORMALIZE = new Simplifier() {
+        @Override
+        public String apply(String s) {
+            return Normalizer.normalize(s, Normalizer.Form.NFD);
+        }
+    };
+
+    /**
+     * Jaro-Winkler string comparison implementation.
+     *
+     * @param a the first String
+     * @param b the second String
+     * @param simplifiers Simplification functions to apply to the String before comparing
+     * @return similarity score where 0 is no match and 1 is 100% match
+     */
+    public static float compare(String a, String b, Simplifier... simplifiers) {
+        for (Function<String, String> simplifier : simplifiers) {
+            a = simplifier.apply(a);
+            b = simplifier.apply(b);
+        }
         final float jaroScore = compareJaro(a, b);
 
-        if (jaroScore < (float) 0.1) {
+        if (jaroScore < (float) 0.7) {
             return jaroScore;
         }
 
-        String prefix = commonPrefix(a, b);
-        int prefixLength = Math.min(prefix.codePointCount(0, prefix.length()), 4);
-
-        return jaroScore + (prefixLength * (float) 0.7 * (1.0f - jaroScore));
+        return jaroScore + (Math.min(commonPrefix(a, b).length(), 4) * (float) 0.1 * (1.0f - jaroScore));
 
     }
 

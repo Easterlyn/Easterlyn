@@ -342,18 +342,9 @@ public class AsyncChatListener extends EasterlynListener {
 		if (!player.hasPermission("easterlyn.chat.spam.caps")
 				&& message.getChannel() instanceof RegionChannel) {
 
-			StringBuilder urlStripped = new StringBuilder();
-			for (String word : msg.split("\\s")) {
-				if (TextUtils.matchURL(word) == null) {
-					urlStripped.append(word).append(' ');
-				}
-			}
+			String msgSansURLs = StringMetric.STRIP_URLS.apply(msg);
 
-			String msgSansURLs = urlStripped.toString().trim();
-
-			if (msgSansURLs.length() > 10 && StringMetric.compareJaroWinkler(msgSansURLs,
-					msgSansURLs.toUpperCase()) > .75F) {
-				// TODO: verify that StringMetric does not ignore case
+			if (msgSansURLs.length() > 10 && StringMetric.compare(msgSansURLs, msgSansURLs.toUpperCase()) > .8F) {
 				this.toLowerCase(message.getMessageComponent());
 			}
 		}
@@ -433,9 +424,9 @@ public class AsyncChatListener extends EasterlynListener {
 			return true;
 		}
 
-		// Must be more than 25% different from last message
+		// Must be more than 20% different from last message
 		if (!player.hasPermission("easterlyn.chat.spam.repeat") && lastChat > 0
-				&& StringMetric.compareJaroWinkler(msg, lastMsg) > .75F) {
+				&& StringMetric.compare(msg, lastMsg, StringMetric.TO_LOWER_CASE, StringMetric.NORMALIZE) > .8F) {
 			sender.setChatViolationLevel(sender.getChatViolationLevel() + 2);
 			event.setFormat("[SimilarChat] " + event.getFormat());
 			return true;

@@ -281,14 +281,19 @@ public class PlayerUtils {
 			return null;
 		}
 
+		id = id.toLowerCase();
+
 		float bestMatch = 0F;
 		for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-			if (offlinePlayer.getName() == null) {
+			String offlineName = offlinePlayer.getName();
+			if (offlineName == null) {
 				// Loaded by UUID only, name has never been looked up.
 				continue;
 			}
 
-			float currentMatch = StringMetric.compareJaroWinkler(id, offlinePlayer.getName());
+			offlineName = offlineName.toLowerCase();
+
+			float currentMatch = StringMetric.compare(id, offlinePlayer.getName());
 
 			if (currentMatch == 1F) {
 				player = offlinePlayer;

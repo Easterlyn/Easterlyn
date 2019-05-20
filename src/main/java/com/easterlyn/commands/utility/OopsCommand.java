@@ -4,6 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.commands.EasterlynCommand;
 import com.easterlyn.discord.DiscordPlayer;
 import com.easterlyn.utilities.StringMetric;
+import java.util.Locale;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -63,6 +64,7 @@ public class OopsCommand extends EasterlynCommand {
 	}
 
 	private String getMatchingCommand(CommandSender sender, String commandName) {
+		commandName = commandName.toLowerCase(Locale.ENGLISH);
 		SimpleCommandMap commandMap = ((Easterlyn) getPlugin()).getCommandMap();
 		if (commandMap.getCommand(commandName) != null) {
 			// Valid command, nothing to oops.
@@ -88,7 +90,7 @@ public class OopsCommand extends EasterlynCommand {
 				continue;
 			}
 			for (String alias : getAllAliases(command)) {
-				float current = StringMetric.compareJaroWinkler(commandName, alias);
+				float current = StringMetric.compare(commandName, alias.toLowerCase(Locale.ENGLISH));
 				if (current == 1) {
 					return null;
 				}
