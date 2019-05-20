@@ -73,6 +73,7 @@ import org.bukkit.potion.PotionType;
 public class InventoryUtils {
 
 	public static final String ITEM_UNIQUE = ChatColor.DARK_PURPLE + "Unique";
+	public static final ItemStack AIR = new ItemStack(Material.AIR);
 
 	private static BiMap<String, String> items;
 	private static HashSet<ItemStack> uniques;

@@ -12,6 +12,12 @@ import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.utilities.Experience;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.tuple.Triple;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -27,12 +33,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Machine for item duplication.
@@ -76,12 +77,12 @@ public class Dublexor extends Machine {
 
 		this.drop = new ItemStack(Material.ENCHANTING_TABLE);
 		ItemMeta meta = this.drop.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "Dublexor");
+		Objects.requireNonNull(meta).setDisplayName(ChatColor.WHITE + "Dublexor");
 		this.drop.setItemMeta(meta);
 
 		this.barrier = new ItemStack(Material.BARRIER);
 		meta = this.barrier.getItemMeta();
-		meta.setDisplayName(Language.getColor("emphasis.bad") + "No Result");
+		Objects.requireNonNull(meta).setDisplayName(Language.getColor("emphasis.bad") + "No Result");
 		this.barrier.setItemMeta(meta);
 	}
 
@@ -204,7 +205,7 @@ public class Dublexor extends Machine {
 			ItemStack originalInput = open.getItem(0);
 
 			if (originalInput == null || originalInput.getType() == Material.AIR) {
-				setSecondTrade(player, open, null, null, null);
+				setSecondTrade(player, open, InventoryUtils.AIR, InventoryUtils.AIR, InventoryUtils.AIR);
 				return;
 			}
 
@@ -275,11 +276,12 @@ public class Dublexor extends Machine {
 		});
 	}
 
-	private void setSecondTrade(Player player, Inventory open, ItemStack input, ItemStack expCost, ItemStack result) {
+	private void setSecondTrade(@NotNull Player player, @NotNull Inventory open, @NotNull ItemStack input,
+			@NotNull ItemStack expCost, @NotNull ItemStack result) {
 		open.setItem(1, expCost);
 		open.setItem(2, result);
 		InventoryUtils.updateVillagerTrades(player, getExampleRecipes(),
-				new Triple<>(input == null ? new ItemStack(Material.AIR) : input, expCost, result));
+				new Triple<>(input, expCost, result));
 		player.updateInventory();
 	}
 
