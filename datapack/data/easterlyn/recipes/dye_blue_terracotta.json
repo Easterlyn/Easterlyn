@@ -3,7 +3,7 @@
   "group": "stained_terracotta",
   "ingredients": [
     {
-      "item": "minecraft:lapis_lazuli"
+      "item": "minecraft:blue_dye"
     },
     {
       "tag": "easterlyn:terracotta"

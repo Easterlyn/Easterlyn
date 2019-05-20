@@ -3,7 +3,7 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:bone_meal"
+      "item": "minecraft:white_dye"
     },
     {
       "tag": "easterlyn:concrete"

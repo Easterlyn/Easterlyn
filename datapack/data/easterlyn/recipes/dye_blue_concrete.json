@@ -3,7 +3,7 @@
   "group": "concrete",
   "ingredients": [
     {
-      "item": "minecraft:lapis_lazuli"
+      "item": "minecraft:blue_dye"
     },
     {
       "tag": "easterlyn:concrete"

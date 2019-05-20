@@ -3,7 +3,7 @@
   "group": "stained_terracotta",
   "ingredients": [
     {
-      "item": "minecraft:ink_sac"
+      "item": "minecraft:black_dye"
     },
     {
       "tag": "easterlyn:terracotta"

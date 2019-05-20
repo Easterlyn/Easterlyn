@@ -3,7 +3,7 @@
   "group": "stained_glass",
   "ingredients": [
     {
-      "item": "minecraft:lapis_lazuli"
+      "item": "minecraft:blue_dye"
     },
     {
       "tag": "easterlyn:stained_glass"

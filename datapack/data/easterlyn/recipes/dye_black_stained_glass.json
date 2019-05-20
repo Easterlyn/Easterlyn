@@ -3,7 +3,7 @@
   "group": "stained_glass",
   "ingredients": [
     {
-      "item": "minecraft:ink_sac"
+      "item": "minecraft:black_dye"
     },
     {
       "tag": "easterlyn:stained_glass"
