@@ -7,15 +7,15 @@ import com.easterlyn.effects.Effects;
 import com.easterlyn.module.Module;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.TextUtils;
-import org.bukkit.Material;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Merchant;
-import org.bukkit.inventory.MerchantRecipe;
-
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Merchant;
+import org.bukkit.inventory.MerchantRecipe;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Module for adjusting villager trades using the item to EXP system.
@@ -87,9 +87,9 @@ public class VillagerAdjustment extends Module {
 		merchant.setRecipes(newRecipes);
 	}
 
-	private MerchantRecipe adjustRecipe(ItemStack input1, ItemStack input2, ItemStack result,
+	private MerchantRecipe adjustRecipe(@NotNull ItemStack input1, @NotNull ItemStack input2, @NotNull ItemStack result,
 			final int uses, final int maxUses, final boolean giveExp) {
-		if (CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
+		if (CurrencyType.isCurrency(input1) && (input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
 				&& !CurrencyType.isCurrency(result)) {
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
 			// Purchase result - deal is not supposed to be good.
@@ -129,8 +129,7 @@ public class VillagerAdjustment extends Module {
 
 			return recipe;
 		}
-		if (!CurrencyType.isCurrency(input1) && (input2 == null || input2.getType() == Material.AIR)
-				&& CurrencyType.isCurrency(result)) {
+		if (!CurrencyType.isCurrency(input1) && input2.getType() == Material.AIR && CurrencyType.isCurrency(result)) {
 			// Sell input - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
 			double inputCost = ManaMappings.expCost(this.effects, input1) * UNDERPRICED_RATE;
@@ -147,7 +146,7 @@ public class VillagerAdjustment extends Module {
 		}
 		if (CurrencyType.isCurrency(input1) && !CurrencyType.isCurrency(input2)) {
 			// Cartographers swap money and item for no apparent reason.
-			// Purchase has already been handled so input2 is not null and not currency.
+			// Purchase has already been handled so input2 is not empty and not currency.
 			ItemStack swap = input1;
 			input1 = input2;
 			input2 = swap;
@@ -181,7 +180,7 @@ public class VillagerAdjustment extends Module {
 			return null;
 		}
 		ItemStack input1 = recipe.getIngredients().get(0);
-		ItemStack input2 = recipe.getIngredients().size() > 1 ? recipe.getIngredients().get(1) : null;
+		ItemStack input2 = recipe.getIngredients().size() > 1 ? recipe.getIngredients().get(1) : InventoryUtils.AIR;
 
 		MerchantRecipe adjusted;
 
@@ -196,16 +195,11 @@ public class VillagerAdjustment extends Module {
 			return null;
 		}
 
-		if (adjusted == null && !(CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(recipe.getResult()))) {
-			if (input1 != null && input1.getType() == Material.WRITTEN_BOOK) {
-				// Skip reporting written book trades.
-				return null;
-			}
-			// DEBUG: post report on un-adjustable trades (barring lapis buy trade from priests)
-			this.getPlugin().getModule(Discord.class)
-					.postReport(String.format("Unable to adjust trade: %s + %s -> %s",
-							InventoryUtils.itemToText(input1), InventoryUtils.itemToText(input2),
-							InventoryUtils.itemToText(recipe.getResult())));
+		if (adjusted == null && input1.getType() != Material.WRITTEN_BOOK && !(CurrencyType.isCurrency(input1)
+				&& CurrencyType.isCurrency(recipe.getResult()))) {
+			// DEBUG: post report on un-adjustable trades (barring lapis buy trade from priests and written book buys)
+			this.getPlugin().getModule(Discord.class).postReport(String.format("Unable to adjust trade: %s + %s -> %s",
+					input1, input2, recipe.getResult()));
 		}
 
 		return adjusted;
