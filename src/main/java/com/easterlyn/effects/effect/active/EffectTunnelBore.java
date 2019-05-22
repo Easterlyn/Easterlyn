@@ -8,6 +8,9 @@ import com.easterlyn.events.Events;
 import com.easterlyn.events.event.EasterlynBreakEvent;
 import com.easterlyn.utilities.BlockDrops;
 import com.easterlyn.utilities.Experience;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -19,10 +22,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
-
-import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Mine or dig a 3x3 area at once.
@@ -64,7 +66,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 		}
 
 		Block block = breakEvent.getBlock();
-
+		float hardness = block.getType().getHardness();
 		PermissionAttachment attachment = player.addAttachment(getPlugin());
 		attachment.setPermission("nocheatplus.checks.blockbreak", true);
 		for (BlockFace yLevel : levels) {
@@ -73,12 +75,12 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 			}
 			Block relativeCenter = block.getRelative(yLevel);
 			if (yLevel != BlockFace.SELF) {
-				if (easterlynBreak(relativeCenter, player)) {
+				if (easterlynBreak(hardness, relativeCenter, player)) {
 					return;
 				}
 			}
 			for (BlockFace face : faces) {
-				if (easterlynBreak(relativeCenter.getRelative(face), player)) {
+				if (easterlynBreak(hardness, relativeCenter.getRelative(face), player)) {
 					return;
 				}
 			}
@@ -87,12 +89,9 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 		player.removeAttachment(attachment);
 	}
 
-	private boolean easterlynBreak(Block block, Player player) {
-		if (block.getType() == Material.BARRIER || block.getType() == Material.BEDROCK
-				|| block.getType() == Material.CHAIN_COMMAND_BLOCK || block.getType() == Material.REPEATING_COMMAND_BLOCK
-				|| block.getType() == Material.COMMAND_BLOCK || block.getType() == Material.END_PORTAL
-				|| block.getType() == Material.END_PORTAL_FRAME
-				|| block.getType() == Material.NETHER_PORTAL || block.isEmpty()) {
+	private boolean easterlynBreak(float requiredHardness, Block block, Player player) {
+		float blockHardness = block.getType().getHardness();
+		if (blockHardness > requiredHardness || blockHardness < 0) {
 			return false;
 		}
 
@@ -110,10 +109,6 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		Collection<ItemStack> drops = BlockDrops.getDrops(getPlugin(), player, hand, block);
 		int exp = BlockDrops.getExp(hand, block);
-		if (hand.getType().getMaxDurability() > 0 && (!hand.containsEnchantment(Enchantment.DURABILITY)
-				|| Math.random() < 1.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 2))) {
-			hand.setDurability((short) (hand.getDurability() + 1));
-		}
 		block.setType(Material.AIR, false);
 		budManager.queueBlock(block);
 		for (ItemStack is : drops) {
@@ -122,7 +117,16 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 		if (exp > 0) {
 			Experience.changeExp(player, exp);
 		}
-		return hand.getDurability() == hand.getType().getMaxDurability();
+		ItemMeta handMeta = hand.getItemMeta();
+		if (handMeta != null && !handMeta.isUnbreakable() && handMeta instanceof Damageable
+				&& (!hand.containsEnchantment(Enchantment.DURABILITY)
+				|| ThreadLocalRandom.current().nextDouble() < 1.0 / (hand.getEnchantmentLevel(Enchantment.DURABILITY) + 2))) {
+			Damageable damageable = (Damageable) handMeta;
+			damageable.setDamage(damageable.getDamage() + 1);
+			hand.setItemMeta(handMeta);
+			return damageable.getDamage() > hand.getType().getMaxDurability();
+		}
+		return false;
 	}
 
 }
