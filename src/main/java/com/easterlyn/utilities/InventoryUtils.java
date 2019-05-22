@@ -458,6 +458,7 @@ public class InventoryUtils {
 
 		entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(entityPlayer.activeContainer.windowId,
 				entityPlayer.activeContainer.getType(), new ChatMessage(name)));
+		entityPlayer.updateInventory(entityPlayer.activeContainer);
 
 	}
 
