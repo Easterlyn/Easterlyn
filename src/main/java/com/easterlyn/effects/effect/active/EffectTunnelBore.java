@@ -21,6 +21,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -91,7 +92,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 
 	private boolean easterlynBreak(float requiredHardness, Block block, Player player) {
 		float blockHardness = block.getType().getHardness();
-		if (blockHardness > requiredHardness || blockHardness < 0) {
+		if (blockHardness > requiredHardness || blockHardness < 0 || block.getState() instanceof InventoryHolder) {
 			return false;
 		}
 
