@@ -11,6 +11,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
+import java.util.Objects;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -23,6 +24,7 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.BlockStateMeta;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -38,6 +40,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Module for Captchacards, Punchcards, and Totems.
@@ -57,12 +61,8 @@ public class Captcha extends Module {
 				.build(new CacheLoader<String, ItemStack>() {
 
 					@Override
-					public ItemStack load(String hash) throws Exception {
-						File folder = new File(getPlugin().getDataFolder(), "captcha");
-						if (!folder.exists()) {
-							folder.mkdirs();
-						}
-						File file = new File(folder, hash);
+					public ItemStack load(@NotNull String hash) throws Exception {
+						File file = new File(getPlugin().getDataFolder().getPath() + File.separator + "captcha", hash);
 						if (!file.exists()) {
 							throw new FileNotFoundException();
 						}
@@ -134,11 +134,7 @@ public class Captcha extends Module {
 
 	private void save(String hash, ItemStack item) {
 		try {
-			File folder = new File(getPlugin().getDataFolder(), "captcha");
-			if (!folder.exists()) {
-				folder.mkdirs();
-			}
-			File file = new File(folder, hash);
+			File file = new File(getPlugin().getDataFolder().getPath() + File.separator + "captcha", hash);
 			if (file.exists()) {
 				return;
 			}
@@ -167,12 +163,12 @@ public class Captcha extends Module {
 	 * @return the blank captchacard ItemStack
 	 */
 	public static ItemStack getBlankCaptchacard() {
-		ItemStack is = new ItemStack(Material.BOOK);
-		ItemMeta im = is.getItemMeta();
-		im.setDisplayName("Captchacard");
-		im.setLore(Collections.singletonList("Blank"));
-		is.setItemMeta(im);
-		return is;
+		ItemStack itemStack = new ItemStack(Material.BOOK);
+		ItemMeta itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
+		itemMeta.setDisplayName("Captchacard");
+		itemMeta.setLore(Collections.singletonList("Blank"));
+		itemStack.setItemMeta(itemMeta);
+		return itemStack;
 	}
 
 	/**
@@ -180,16 +176,16 @@ public class Captcha extends Module {
 	 *
 	 * @return the blank dowel ItemStack
 	 */
-	public static ItemStack getBlankDowel() {
-		ItemStack dowel = new ItemStack(Material.NETHER_BRICK);
-		ItemMeta meta = dowel.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "Cruxite Totem");
-		meta.setLore(Collections.singletonList(Captcha.HASH_PREFIX + "00000000"));
-		dowel.setItemMeta(meta);
-		return dowel;
+	public static @NotNull ItemStack getBlankDowel() {
+		ItemStack itemStack = new ItemStack(Material.NETHER_BRICK);
+		ItemMeta itemMeta = Objects.requireNonNull(itemStack.getItemMeta());
+		itemMeta.setDisplayName(ChatColor.WHITE + "Cruxite Totem");
+		itemMeta.setLore(Collections.singletonList(Captcha.HASH_PREFIX + "00000000"));
+		itemStack.setItemMeta(itemMeta);
+		return itemStack;
 	}
 
-	public ItemStack getCaptchaForHash(String hash) {
+	public @Nullable ItemStack getCaptchaForHash(@NotNull String hash) {
 		ItemStack item = getItemByHash(hash);
 		if (item == null || item.getType() == Material.AIR) {
 			return null;
@@ -197,6 +193,9 @@ public class Captcha extends Module {
 		ItemStack card = getBlankCaptchacard();
 		ItemMeta cardMeta = card.getItemMeta();
 		ItemMeta meta = item.getItemMeta();
+		if (cardMeta == null || meta == null) {
+			return null;
+		}
 		ArrayList<String> cardLore = new ArrayList<>();
 		StringBuilder builder = new StringBuilder().append(Language.getColor("emphasis.neutral")).append(item.getAmount()).append(' ');
 		if (isCaptcha(item)) {
@@ -207,10 +206,10 @@ public class Captcha extends Module {
 			builder.append(InventoryUtils.getItemName(item));
 		}
 		cardLore.add(builder.toString());
-		if (item.getType().getMaxDurability() > 0) {
+		if (item.getType().getMaxDurability() > 0 && meta instanceof Damageable) {
 			builder.delete(0, builder.length());
 			builder.append(Language.getColor("neutral")).append("Durability: ").append(Language.getColor("emphasis.neutral"))
-					.append(item.getType().getMaxDurability() - item.getDurability())
+					.append(item.getType().getMaxDurability() - ((Damageable) meta).getDamage())
 					.append(Language.getColor("neutral")).append("/").append(Language.getColor("emphasis.neutral"))
 					.append(item.getType().getMaxDurability());
 			cardLore.add(builder.toString());
@@ -379,7 +378,7 @@ public class Captcha extends Module {
 			return false;
 		}
 		ItemMeta meta = item.getItemMeta();
-		return meta.hasLore() && meta.hasDisplayName() && meta.getDisplayName().equals("Captchacard");
+		return meta != null && meta.hasLore() && meta.hasDisplayName() && meta.getDisplayName().equals("Captchacard");
 	}
 
 	/**

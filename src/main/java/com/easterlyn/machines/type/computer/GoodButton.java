@@ -5,6 +5,7 @@ import com.easterlyn.machines.type.Densificator;
 import com.easterlyn.machines.type.Elevator;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.utilities.tuple.Pair;
+import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -42,6 +43,10 @@ public class GoodButton extends Program {
 		}
 
 		ItemMeta clickedMeta = clicked.getItemMeta();
+		if (clickedMeta == null) {
+			return;
+		}
+
 		InventoryView view = player.getOpenInventory();
 		Inventory top = view.getTopInventory();
 
@@ -82,17 +87,6 @@ public class GoodButton extends Program {
 				default:
 					break;
 			}
-			return;
-		}
-
-		List<String> lore = clickedMeta.getLore();
-		if (lore.size() == 0) {
-			return;
-		}
-
-		switch (ChatColor.stripColor(lore.get(0))) {
-		default:
-			break;
 		}
 	}
 
@@ -108,6 +102,10 @@ public class GoodButton extends Program {
 		}
 
 		ItemMeta localMeta = localIcon.getItemMeta();
+		if (localMeta == null) {
+			return  localIcon;
+		}
+
 		localMeta.setDisplayName(data[0]);
 
 		if (data.length == 1) {
@@ -116,9 +114,7 @@ public class GoodButton extends Program {
 		}
 
 		List<String> lore = new ArrayList<>(data.length - 1);
-		for (int i = 1; i < data.length; ++i) {
-			lore.add(data[i]);
-		}
+		lore.addAll(Arrays.asList(data).subList(1, data.length));
 		localMeta.setLore(lore);
 
 		localIcon.setItemMeta(localMeta);

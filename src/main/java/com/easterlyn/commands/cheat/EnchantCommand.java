@@ -43,7 +43,7 @@ public class EnchantCommand extends EasterlynCommand {
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (hand == null || hand.getType() == Material.AIR) {
+		if (hand.getType() == Material.AIR) {
 			return false;
 		}
 
@@ -96,7 +96,7 @@ public class EnchantCommand extends EasterlynCommand {
 		ItemMeta meta = item.getItemMeta();
 		if (meta instanceof EnchantmentStorageMeta) {
 			((EnchantmentStorageMeta) meta).removeStoredEnchant(enchantment);
-		} else {
+		} else if (meta != null) {
 			meta.removeEnchant(enchantment);
 		}
 		item.setItemMeta(meta);

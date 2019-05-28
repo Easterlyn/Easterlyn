@@ -34,6 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EntityEquipment;
@@ -66,6 +67,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A barebones Player implementation, mostly for use in chat.
@@ -1335,6 +1337,15 @@ public class DummyPlayer implements Player {
 	public boolean isCollidable() {
 		return false;
 	}
+
+	@Nullable
+	@Override
+	public <T> T getMemory(@NotNull MemoryKey<T> memoryKey) {
+		return null;
+	}
+
+	@Override
+	public <T> void setMemory(@NotNull MemoryKey<T> memoryKey, @Nullable T t) {}
 
 	@Override
 	public void setCollidable(boolean arg0) {}

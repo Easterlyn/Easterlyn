@@ -18,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Waterlogged;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.Action;
@@ -60,7 +61,7 @@ public class InteractListener extends EasterlynListener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerInteractMonitor(PlayerInteractEvent event) {
-		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
+		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.useInteractedBlock() == Event.Result.DENY) {
 			// Right clicking air is cancelled by default as there is no result.
 			return;
 		}
@@ -71,7 +72,8 @@ public class InteractListener extends EasterlynListener {
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerInteractHigh(PlayerInteractEvent event) {
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.PHYSICAL) {
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK && event.getAction() != Action.PHYSICAL
+				|| event.getClickedBlock() == null) {
 			return;
 		}
 
@@ -91,7 +93,7 @@ public class InteractListener extends EasterlynListener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		afk.extendActivity(event.getPlayer());
 
-		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.isCancelled()) {
+		if (event.getAction() != Action.RIGHT_CLICK_AIR && event.useInteractedBlock() == Event.Result.DENY) {
 			// Right clicking air is cancelled by default as there is no result.
 			return;
 		}
@@ -100,7 +102,7 @@ public class InteractListener extends EasterlynListener {
 			return;
 		}
 
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK
+		if (event.getAction() == Action.RIGHT_CLICK_BLOCK && event.getClickedBlock() != null
 				&& hasRightClickFunction(event.getClickedBlock(), event.getItem())
 				&& !event.getPlayer().isSneaking()) {
 			// Other inventory/action. Do not proceed to captcha.

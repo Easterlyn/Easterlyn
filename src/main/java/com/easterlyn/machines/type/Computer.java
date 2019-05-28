@@ -10,6 +10,7 @@ import com.easterlyn.users.UserRank;
 import com.easterlyn.utilities.InventoryUtils;
 import com.easterlyn.utilities.player.PermissionUtils;
 
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -28,6 +29,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
 import net.md_5.bungee.api.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Computers for players! Inventory-based selection system.
@@ -42,7 +44,7 @@ public class Computer extends Machine implements InventoryHolder {
 		super(plugin, machines, new Shape(), "Computer");
 
 		drop = new ItemStack(Material.JUKEBOX);
-		ItemMeta meta = drop.getItemMeta();
+		ItemMeta meta = Objects.requireNonNull(drop.getItemMeta());
 		meta.setDisplayName(ChatColor.WHITE + "Computer");
 		drop.setItemMeta(meta);
 
@@ -64,10 +66,14 @@ public class Computer extends Machine implements InventoryHolder {
 				&& !event.getPlayer().hasPermission("easterlyn.machines.administrate")) {
 			return true;
 		}
+
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
 			Location key = getKey(storage);
-			key.getWorld().dropItemNaturally(key.add(0.5, 0, 0.5), getUniqueDrop());
+			if (key.getWorld() != null) {
+				key.getWorld().dropItemNaturally(key.add(0.5, 0, 0.5), getUniqueDrop());
+			}
 		}
+
 		remove(storage);
 		return true;
 	}
@@ -98,21 +104,22 @@ public class Computer extends Machine implements InventoryHolder {
 			event.setCancelled(true);
 		}
 		if (event.getPlayer().isSneaking()) {
-			return event.isCancelled();
+			return event.useInteractedBlock() == Result.ALLOW || event.useItemInHand() == Result.ALLOW;
 		}
 		openInventory(event.getPlayer());
 		return true;
 	}
 
 	@Override
-	public Inventory getInventory() {
+	public @NotNull Inventory getInventory() {
 		return Bukkit.createInventory(this, 9, "Computer");
 	}
-	public Inventory getInventory(int size) {
+
+	public @NotNull Inventory getInventory(int size) {
 		return Bukkit.createInventory(this, size, "Computer");
 	}
 
-	public void openInventory(Player player) {
+	public void openInventory(@NotNull Player player) {
 		Inventory inventory = getInventory();
 		for (Program program : Programs.getPrograms()) {
 			if (program.isDefault() || program instanceof PowerManager && player.hasPermission(UserRank.DANGER_DANGER_HIGH_VOLTAGE.getPermission())) {
@@ -124,7 +131,7 @@ public class Computer extends Machine implements InventoryHolder {
 	}
 
 	@Override
-	public ItemStack getUniqueDrop() {
+	public @NotNull ItemStack getUniqueDrop() {
 		return drop;
 	}
 

@@ -34,6 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Villager;
+import org.bukkit.entity.memory.MemoryKey;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EntityEquipment;
@@ -65,6 +66,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A wrapper for a Player that directly uses our bridge for handling permissions.
@@ -1643,6 +1645,17 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public boolean isCollidable() {
 		return player.isCollidable();
+	}
+
+	@Nullable
+	@Override
+	public <T> T getMemory(@NotNull MemoryKey<T> memoryKey) {
+		return player.getMemory(memoryKey);
+	}
+
+	@Override
+	public <T> void setMemory(@NotNull MemoryKey<T> memoryKey, @Nullable T t) {
+		player.setMemory(memoryKey, t);
 	}
 
 	@Override

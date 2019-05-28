@@ -5,6 +5,7 @@ import com.easterlyn.machines.type.Densificator;
 import com.easterlyn.machines.type.Elevator;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.utilities.tuple.Pair;
+import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -113,9 +114,7 @@ public class BadButton extends Program {
 		}
 
 		List<String> lore = new ArrayList<>(data.length - 1);
-		for (int i = 1; i < data.length; ++i) {
-			lore.add(data[i]);
-		}
+		lore.addAll(Arrays.asList(data).subList(1, data.length));
 		localMeta.setLore(lore);
 
 		localIcon.setItemMeta(localMeta);

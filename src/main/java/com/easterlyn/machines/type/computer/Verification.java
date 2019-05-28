@@ -20,7 +20,6 @@ import java.util.Collections;
  */
 public class Verification extends Program {
 
-	private final String title = "~/Verify?initialize=%s";
 	private final String lore = ChatColor.WHITE + "sudo %s";
 	private final ItemStack icon;
 
@@ -53,6 +52,7 @@ public class Verification extends Program {
 		if (verification.length() > 12) {
 			verification = verification.substring(0, 12);
 		}
+		String title = "~/Verify?initialize=%s";
 		InventoryUtils.changeWindowName(player, String.format(title, verification));
 	}
 

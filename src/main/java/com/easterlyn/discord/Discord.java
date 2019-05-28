@@ -67,7 +67,6 @@ import java.util.stream.Collectors;
  */
 public class Discord extends Module {
 
-	private final String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private final Pattern toEscape = Pattern.compile("([_~*])");
 	private final Map<Class<? extends DiscordModule>, DiscordModule> modules;
 	private final Map<String, DiscordCommand> commands;
@@ -256,6 +255,7 @@ public class Discord extends Module {
 	private String generateUniqueCode() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 6; i++) {
+			String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 			sb.append(chars.charAt(ThreadLocalRandom.current().nextInt(chars.length())));
 		}
 		String code = sb.toString();
@@ -397,8 +397,7 @@ public class Discord extends Module {
 
 			while (entry.getValue().size() > 0) {
 				List<IMessage> subList = entry.getValue().subList(0, Math.min(100, entry.getValue().size()));
-				List<IMessage> messageList = new ArrayList<>();
-				messageList.addAll(subList);
+				List<IMessage> messageList = new ArrayList<>(subList);
 				subList.clear();
 				this.queue(new DiscordCallable(entry.getKey().getLeft().getGuild().getLongID(), CallType.BULK_DELETE) {
 					@Override
@@ -531,7 +530,7 @@ public class Discord extends Module {
 		if (channelIDs.isEmpty()) {
 			return;
 		}
-		this.postMessage(name, message, channelIDs.toArray(new Long[channelIDs.size()]));
+		this.postMessage(name, message, channelIDs.toArray(new Long[0]));
 	}
 
 	public void postMessage(String name, String message, Long... channelIDs) {
@@ -741,7 +740,7 @@ public class Discord extends Module {
 					}
 				}
 
-				IRole[] roleArray = roles.toArray(new IRole[roles.size()]);
+				IRole[] roleArray = roles.toArray(new IRole[0]);
 				this.queue(new DiscordCallable(guild.getLongID(), CallType.GUILD_USER_ROLE) {
 					@Override
 					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {

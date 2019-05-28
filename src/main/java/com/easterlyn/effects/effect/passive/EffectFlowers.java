@@ -22,7 +22,6 @@ public class EffectFlowers extends Effect implements BehaviorPassive {
 		super(plugin, 1200, 1, 1, "Flowers");
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void applyEffect(LivingEntity entity, int level) {
 		Block standingIn = entity.getLocation().getBlock();
