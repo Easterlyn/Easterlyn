@@ -135,7 +135,7 @@ public class VoiceTextModule extends DiscordModule {
 	}
 
 	private void addPermissions(IChannel text, IUser user) {
-		if (!isUserEditable(user, text.getGuild())) {
+		if (isUserNotEditable(user, text.getGuild())) {
 			return;
 		}
 		getDiscord().queue(new DiscordCallable(text.getGuild().getLongID(), CallType.CHANNEL_MODIFY) {
@@ -153,7 +153,7 @@ public class VoiceTextModule extends DiscordModule {
 	}
 
 	private void removePermissions(IChannel text, IUser user) {
-		if (!isUserEditable(user, text.getGuild())) {
+		if (isUserNotEditable(user, text.getGuild())) {
 			return;
 		}
 		getDiscord().queue(new DiscordCallable(text.getGuild().getLongID(), CallType.CHANNEL_MODIFY) {
@@ -164,13 +164,13 @@ public class VoiceTextModule extends DiscordModule {
 		});
 	}
 
-	private boolean isUserEditable(IUser user, IGuild guild) {
+	private boolean isUserNotEditable(IUser user, IGuild guild) {
 		if (guild.getOwner().equals(user)
 				|| user.getPermissionsForGuild(guild).contains(Permissions.ADMINISTRATOR)) {
-			return false;
+			return true;
 		}
 		IUser us = this.getDiscord().getClient().getOurUser();
-		return !user.equals(us) && PermissionUtils.isUserHigher(guild, us, user);
+		return user.equals(us) || !PermissionUtils.isUserHigher(guild, us, user);
 	}
 
 }

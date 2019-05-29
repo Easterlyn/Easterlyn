@@ -291,9 +291,7 @@ public class PlayerUtils {
 				continue;
 			}
 
-			offlineName = offlineName.toLowerCase();
-
-			float currentMatch = StringMetric.compare(id, offlinePlayer.getName());
+			float currentMatch = StringMetric.compare(id, offlinePlayer.getName().toLowerCase());
 
 			if (currentMatch == 1F) {
 				player = offlinePlayer;

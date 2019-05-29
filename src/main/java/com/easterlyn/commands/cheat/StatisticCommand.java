@@ -14,6 +14,7 @@ import org.bukkit.Statistic;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for editing a Player's Statistics.
@@ -57,12 +58,12 @@ public class StatisticCommand extends EasterlynCommand {
 				if (statString.length > 1) {
 					try {
 						statEntity = EntityType.valueOf(statString[0].toUpperCase());
-					} catch (IllegalArgumentException e) {}
+					} catch (IllegalArgumentException ignored) {}
 					try {
 						statMaterial = Material.valueOf(statString[0].toUpperCase());
-					} catch (IllegalArgumentException e1) {}
+					} catch (IllegalArgumentException ignored) {}
 				}
-			} catch (IllegalArgumentException e) {}
+			} catch (IllegalArgumentException ignored) {}
 		}
 
 		if (stat == null) {
@@ -111,8 +112,9 @@ public class StatisticCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		// CHAT: tab-complete
 		return ImmutableList.of();

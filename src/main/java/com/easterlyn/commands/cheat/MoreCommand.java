@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Command for setting the amount of the ItemStack in hand.
@@ -61,8 +62,9 @@ public class MoreCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		return ImmutableList.of();
 	}

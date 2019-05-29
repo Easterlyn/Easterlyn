@@ -16,6 +16,7 @@ import org.bukkit.scoreboard.Team;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Class that keeps track of players currently logged on to the game.
@@ -96,7 +97,7 @@ public class Users extends Module {
 					PermissionBridge.releasePermissionData(user.getUUID());
 				}).build(new CacheLoader<UUID, User>() {
 					@Override
-					public User load(final UUID uuid) {
+					public User load(@NotNull final UUID uuid) {
 						User user = User.load(Users.this.getPlugin(), uuid);
 						Users.team(user.getPlayer(), null);
 						return user;

@@ -36,11 +36,7 @@ public class LoginListener extends EasterlynListener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLogin(PlayerLoginEvent event) {
-		if (event.getPlayer() == null) {
-			return;
-		}
-		if (event.getPlayer().getName() != null
-				&& this.pattern.matcher(event.getPlayer().getName()).find()) {
+		if (this.pattern.matcher(event.getPlayer().getName()).find()) {
 			/*
 			 * One day we had a guy log in who had a space after his name. Played hell with plugins
 			 * and couldn't be targeted by commands. Good times. Luckily, he wasn't malicious and
@@ -53,24 +49,23 @@ public class LoginListener extends EasterlynListener {
 			return;
 		}
 		switch (event.getResult()) {
-		case ALLOWED:
-		case KICK_FULL:
-		case KICK_WHITELIST:
-			break;
-		case KICK_BANNED:
-		case KICK_OTHER:
-			String reason = event.getKickMessage();
-			BanList banlist = Bukkit.getBanList(Type.NAME);
-			String id;
-			if (banlist.isBanned(id = event.getPlayer().getUniqueId().toString())
-					|| event.getPlayer().getName() != null && banlist.isBanned(id = event.getPlayer().getName())
-					|| (banlist = Bukkit.getBanList(Type.IP)).isBanned(id = event.getAddress().getHostAddress())) {
-				reason = banlist.getBanEntry(id).getReason();
-			}
-			event.setKickMessage(reason.replaceAll("<(ip|uuid|name)=.*?>", ""));
-			break;
-		default:
-			break;
+			case KICK_BANNED:
+			case KICK_OTHER:
+				String reason = event.getKickMessage();
+				BanList banlist = Bukkit.getBanList(Type.NAME);
+				String id;
+				if (banlist.isBanned(id = event.getPlayer().getUniqueId().toString())
+						|| banlist.isBanned(id = event.getPlayer().getName())
+						|| (banlist = Bukkit.getBanList(Type.IP)).isBanned(id = event.getAddress().getHostAddress())) {
+					reason = banlist.getBanEntry(id).getReason();
+				}
+				event.setKickMessage(reason.replaceAll("<(ip|uuid|name)=.*?>", ""));
+				break;
+			case ALLOWED:
+			case KICK_FULL:
+			case KICK_WHITELIST:
+			default:
+				break;
 		}
 	}
 

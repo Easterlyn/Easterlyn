@@ -32,7 +32,7 @@ public abstract class Program {
 
 	public abstract ItemStack getInstaller();
 
-	public Machines getMachines() {
+	Machines getMachines() {
 		return this.machines;
 	}
 

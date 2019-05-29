@@ -5,9 +5,9 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.events.packets.ParticleEffectWrapper;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Shape;
-import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.micromodules.Holograms;
 import com.easterlyn.micromodules.ParticleUtils;
+import com.easterlyn.utilities.InventoryUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -40,164 +41,15 @@ public class RepairShrine extends Machine {
 		this.holograms = plugin.getModule(Holograms.class);
 		this.particles = plugin.getModule(ParticleUtils.class);
 
-		Shape shape = getShape();
-		MaterialDataValue matData = shape.new MaterialDataValue(Material.RED_SANDSTONE);
-
-		// Bottom base layer
-		shape.setVectorData(new Vector(-3, 0, -3), matData);
-		shape.setVectorData(new Vector(-2, 0, -3), matData);
-		shape.setVectorData(new Vector(-1, 0, -3), matData);
-		shape.setVectorData(new Vector(0, 0, -3), matData);
-		shape.setVectorData(new Vector(1, 0, -3), matData);
-		shape.setVectorData(new Vector(2, 0, -3), matData);
-		shape.setVectorData(new Vector(3, 0, -3), matData);
-		shape.setVectorData(new Vector(-3, 0, -2), matData);
-		shape.setVectorData(new Vector(-2, 0, -2), matData);
-		shape.setVectorData(new Vector(-1, 0, -2), matData);
-		shape.setVectorData(new Vector(0, 0, -2), matData);
-		shape.setVectorData(new Vector(1, 0, -2), matData);
-		shape.setVectorData(new Vector(2, 0, -2), matData);
-		shape.setVectorData(new Vector(3, 0, -2), matData);
-		shape.setVectorData(new Vector(-3, 0, -1), matData);
-		shape.setVectorData(new Vector(-2, 0, -1), matData);
-		shape.setVectorData(new Vector(-1, 0, -1), matData);
-		shape.setVectorData(new Vector(0, 0, -1), matData);
-		shape.setVectorData(new Vector(1, 0, -1), matData);
-		shape.setVectorData(new Vector(2, 0, -1), matData);
-		shape.setVectorData(new Vector(3, 0, -1), matData);
-		shape.setVectorData(new Vector(-3, 0, 0), matData);
-		shape.setVectorData(new Vector(-2, 0, 0), matData);
-		shape.setVectorData(new Vector(-1, 0, 0), matData);
-		shape.setVectorData(new Vector(1, 0, 0), matData);
-		shape.setVectorData(new Vector(2, 0, 0), matData);
-		shape.setVectorData(new Vector(3, 0, 0), matData);
-		shape.setVectorData(new Vector(-3, 0, 1), matData);
-		shape.setVectorData(new Vector(-2, 0, 1), matData);
-		shape.setVectorData(new Vector(-1, 0, 1), matData);
-		shape.setVectorData(new Vector(0, 0, 1), matData);
-		shape.setVectorData(new Vector(1, 0, 1), matData);
-		shape.setVectorData(new Vector(2, 0, 1), matData);
-		shape.setVectorData(new Vector(3, 0, 1), matData);
-		shape.setVectorData(new Vector(-3, 0, 2), matData);
-		shape.setVectorData(new Vector(-2, 0, 2), matData);
-		shape.setVectorData(new Vector(-1, 0, 2), matData);
-		shape.setVectorData(new Vector(0, 0, 2), matData);
-		shape.setVectorData(new Vector(1, 0, 2), matData);
-		shape.setVectorData(new Vector(2, 0, 2), matData);
-		shape.setVectorData(new Vector(3, 0, 2), matData);
-		shape.setVectorData(new Vector(-3, 0, 3), matData);
-		shape.setVectorData(new Vector(-2, 0, 3), matData);
-		shape.setVectorData(new Vector(-1, 0, 3), matData);
-		shape.setVectorData(new Vector(0, 0, 3), matData);
-		shape.setVectorData(new Vector(1, 0, 3), matData);
-		shape.setVectorData(new Vector(2, 0, 3), matData);
-		shape.setVectorData(new Vector(3, 0, 3), matData);
-
-		// Top base layer
-		shape.setVectorData(new Vector(-2, 1, -3), matData);
-		shape.setVectorData(new Vector(-1, 1, -3), matData);
-		shape.setVectorData(new Vector(1, 1, -3), matData);
-		shape.setVectorData(new Vector(2, 1, -3), matData);
-		shape.setVectorData(new Vector(-3, 1, -2), matData);
-		shape.setVectorData(new Vector(3, 1, -2), matData);
-		shape.setVectorData(new Vector(-3, 1, -1), matData);
-		shape.setVectorData(new Vector(3, 1, -1), matData);
-		shape.setVectorData(new Vector(-3, 1, 1), matData);
-		shape.setVectorData(new Vector(3, 1, 1), matData);
-		shape.setVectorData(new Vector(-3, 1, 2), matData);
-		shape.setVectorData(new Vector(3, 1, 2), matData);
-		shape.setVectorData(new Vector(-2, 1, 3), matData);
-		shape.setVectorData(new Vector(-1, 1, 3), matData);
-		shape.setVectorData(new Vector(1, 1, 3), matData);
-		shape.setVectorData(new Vector(2, 1, 3), matData);
-
-		// Decorative arch keystone
-		shape.setVectorData(new Vector(0, 6, 0), matData);
-
-		// Top base redstone cog
-		matData = shape.new MaterialDataValue(Material.REDSTONE_BLOCK);
-		shape.setVectorData(new Vector(-3, 1, -3), matData);
-		shape.setVectorData(new Vector(0, 1, -3), matData);
-		shape.setVectorData(new Vector(3, 1, -3), matData);
-		shape.setVectorData(new Vector(-2, 1, -2), matData);
-		shape.setVectorData(new Vector(-1, 1, -2), matData);
-		shape.setVectorData(new Vector(0, 1, -2), matData);
-		shape.setVectorData(new Vector(1, 1, -2), matData);
-		shape.setVectorData(new Vector(2, 1, -2), matData);
-		shape.setVectorData(new Vector(-2, 1, -1), matData);
-		shape.setVectorData(new Vector(-1, 1, -1), matData);
-		shape.setVectorData(new Vector(0, 1, -1), matData);
-		shape.setVectorData(new Vector(1, 1, -1), matData);
-		shape.setVectorData(new Vector(2, 1, -1), matData);
-		shape.setVectorData(new Vector(-3, 1, 0), matData);
-		shape.setVectorData(new Vector(-2, 1, 0), matData);
-		shape.setVectorData(new Vector(-1, 1, 0), matData);
-		shape.setVectorData(new Vector(1, 1, 0), matData);
-		shape.setVectorData(new Vector(2, 1, 0), matData);
-		shape.setVectorData(new Vector(3, 1, 0), matData);
-		shape.setVectorData(new Vector(-2, 1, 1), matData);
-		shape.setVectorData(new Vector(-1, 1, 1), matData);
-		shape.setVectorData(new Vector(0, 1, 1), matData);
-		shape.setVectorData(new Vector(1, 1, 1), matData);
-		shape.setVectorData(new Vector(2, 1, 1), matData);
-		shape.setVectorData(new Vector(-2, 1, 2), matData);
-		shape.setVectorData(new Vector(-1, 1, 2), matData);
-		shape.setVectorData(new Vector(0, 1, 2), matData);
-		shape.setVectorData(new Vector(1, 1, 2), matData);
-		shape.setVectorData(new Vector(2, 1, 2), matData);
-		shape.setVectorData(new Vector(-3, 1, 3), matData);
-		shape.setVectorData(new Vector(0, 1, 3), matData);
-		shape.setVectorData(new Vector(3, 1, 3), matData);
-
-		// Central hopper
-		matData = shape.new MaterialDataValue(Material.HOPPER);
-		shape.setVectorData(new Vector(0, 0, 0), matData);
-
-		// Central carpet
-		matData = shape.new MaterialDataValue(Material.RED_CARPET);
-		shape.setVectorData(new Vector(0, 1, 0), matData);
-
-		// Central glass
-		matData = shape.new MaterialDataValue(Material.GLASS);
-		shape.setVectorData(new Vector(0, 3, 0), matData);
-
-		// Decorative arch
-		// TODO requires handling multiple BlockData types in Shape.MaterialDataValue
-/*		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.NORTH, "upperstair");
-		shape.setVectorData(new Vector(0, 4, 2), matData);
-		shape.setVectorData(new Vector(0, 5, 1), matData);
-
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.EAST, "upperstair");
-		shape.setVectorData(new Vector(2, 4, 0), matData);
-		shape.setVectorData(new Vector(1, 5, 0), matData);
-
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.SOUTH, "upperstair");
-		shape.setVectorData(new Vector(0, 4, -2), matData);
-		shape.setVectorData(new Vector(0, 5, -1), matData);
-
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.WEST, "upperstair");
-		shape.setVectorData(new Vector(-2, 4, 0), matData);
-		shape.setVectorData(new Vector(-1, 5, 0), matData);
-
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.SOUTH, "stair");
-		shape.setVectorData(new Vector(0, 5, 2), matData);
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.WEST, "stair");
-		shape.setVectorData(new Vector(2, 5, 0), matData);
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.NORTH, "stair");
-		shape.setVectorData(new Vector(0, 5, -2), matData);
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_STAIRS, Direction.EAST, "stair");
-		shape.setVectorData(new Vector(-2, 5, 0), matData);*/
-
-		matData = shape.new MaterialDataValue(Material.RED_SANDSTONE_SLAB);
-		shape.setVectorData(new Vector(0, 6, 1), matData);
-		shape.setVectorData(new Vector(1, 6, 0), matData);
-		shape.setVectorData(new Vector(0, 6, -1), matData);
-		shape.setVectorData(new Vector(-1, 6, 0), matData);
+		getShape().setVectorData(new Vector(0, 0, 0), Material.HOPPER);
+		getShape().setVectorData(new Vector(0, 1, 0), Material.RED_CARPET);
+		getShape().setVectorData(new Vector(0, 3, 0), Material.RED_STAINED_GLASS);
 
 		drop = new ItemStack(Material.RED_STAINED_GLASS);
-		ItemMeta meta = drop.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "RepairShrine");
-		drop.setItemMeta(meta);
+		InventoryUtils.consumeAs(ItemMeta.class, drop.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.WHITE + "RepairShrine");
+			drop.setItemMeta(itemMeta);
+		});
 	}
 
 	@Override
@@ -259,19 +111,18 @@ public class RepairShrine extends Machine {
 		event.getItem().setFireTicks(0);
 
 		int cost = 0;
-		if (inserted.getType().getMaxDurability() > 0 && inserted.getDurability() > 0) {
-			cost += inserted.getDurability() / 10 + 1;
-		}
-		ItemMeta meta = null;
+		ItemMeta meta = inserted.getItemMeta();
+		Damageable damageable = null;
 		Repairable repairable = null;
 		if (inserted.hasItemMeta()) {
-			meta = inserted.getItemMeta();
+			if (meta instanceof Damageable) {
+				damageable = (Damageable) meta;
+				cost += damageable.getDamage() / 10 + 1;
+			}
 			if (meta instanceof Repairable) {
 				repairable = (Repairable) meta;
 				if (repairable.getRepairCost() > 0) {
 					cost += repairable.getRepairCost() * 9;
-				} else {
-					repairable = null;
 				}
 			}
 		}
@@ -282,7 +133,9 @@ public class RepairShrine extends Machine {
 
 		if (cost > fuel) {
 			Location holo = this.getHoloLocation(storage);
-			holo.getWorld().playSound(holo, Sound.BLOCK_REDSTONE_TORCH_BURNOUT, 1F, 1F);
+			if (holo.getWorld() != null) {
+				holo.getWorld().playSound(holo, Sound.BLOCK_REDSTONE_TORCH_BURNOUT, 1F, 1F);
+			}
 			ArmorStand hologram = holograms.getOrCreateHologram(holo);
 			if (hologram != null) {
 				hologram.setCustomName(Language.getColor("emphasis.bad") + String.valueOf(fuel - cost));
@@ -299,8 +152,9 @@ public class RepairShrine extends Machine {
 
 		this.setFuel(storage, fuel - cost);
 
-		if (inserted.getType().getMaxDurability() > 0) {
-			inserted.setDurability((short) 0);
+		if (damageable != null) {
+			damageable.setDamage(0);
+			inserted.setItemMeta(meta);
 		}
 		if (repairable != null) {
 			repairable.setRepairCost(0);

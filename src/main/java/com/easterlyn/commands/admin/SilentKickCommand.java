@@ -9,6 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for silently kicking a player.
@@ -35,8 +36,9 @@ public class SilentKickCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
 			return com.google.common.collect.ImmutableList.of();

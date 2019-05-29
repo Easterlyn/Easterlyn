@@ -25,20 +25,20 @@ public abstract class Channel {
 	private final ChannelManager manager;
 	private final Set<UUID> listening;
 	/* Immutable Data regarding the channel */
-	protected final String name;
-	protected final UUID owner;
+	final String name;
+	final UUID owner;
 
 	/**
 	 * @param name the name of the channel
 	 * @param creator the owner of the channel
 	 */
-	public Channel(Easterlyn plugin, String name, UUID creator) {
+	Channel(Easterlyn plugin, String name, UUID creator) {
 		this.plugin = plugin;
 		this.users = plugin.getModule(Users.class);
 		this.manager = plugin.getModule(Chat.class).getChannelManager();
 		this.name = name;
 		this.owner = creator;
-		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		this.listening = Collections.newSetFromMap(new ConcurrentHashMap<>());
 	}
 
 	/**
@@ -141,7 +141,7 @@ public abstract class Channel {
 	 * 
 	 * @return the Users
 	 */
-	protected Users getUsers() {
+	Users getUsers() {
 		return users;
 	}
 

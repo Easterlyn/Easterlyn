@@ -20,7 +20,7 @@ public abstract class DiscordCommand {
 	private final String usage;
 	private final EnumSet<Permissions> permissions;
 
-	public DiscordCommand(Discord discord, String command, String usage, EnumSet<Permissions> permissions) {
+	protected DiscordCommand(Discord discord, String command, String usage, EnumSet<Permissions> permissions) {
 		this.discord = discord;
 		this.command = command;
 		this.usage = usage;

@@ -35,7 +35,7 @@ public class Halculator extends HalMessageHandler {
 				.setNameHover(JSONUtil.fromLegacyText(lang.getValue("chat.ai.calculator.hover")));
 		this.customReplies = new HashMap<>();
 		for (String reply : lang.getValue("chat.ai.calculator.replies").split("\n")) {
-			String[] split = reply.split("\\{RESPONSE\\}");
+			String[] split = reply.split("\\{RESPONSE}");
 			customReplies.put(Pattern.compile(split[0], Pattern.CASE_INSENSITIVE), split[1]);
 		}
 		this.lastAnswer = new HashMap<>();

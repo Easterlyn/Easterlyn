@@ -5,7 +5,13 @@ import com.easterlyn.discord.abstraction.DiscordModule;
 import com.easterlyn.discord.queue.CallPriority;
 import com.easterlyn.discord.queue.CallType;
 import com.easterlyn.discord.queue.DiscordCallable;
-import org.apache.http.message.BasicNameValuePair;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.EnumSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.bukkit.configuration.ConfigurationSection;
 import sx.blah.discord.api.internal.DiscordClientImpl;
 import sx.blah.discord.api.internal.DiscordEndpoints;
@@ -23,14 +29,6 @@ import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.PermissionUtils;
 import sx.blah.discord.util.RateLimitException;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.EnumSet;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * DiscordModule for message retention policies.
@@ -91,7 +89,7 @@ public class RetentionModule extends DiscordModule {
 								before = channel.messages.stream().mapToLong(IIDLinkedObject::getLongID).min().getAsLong();
 							}
 						}
-						if (addHistory(before, 100).length > 0) {
+						if (addHistory(before).length > 0) {
 
 							// Delete as soon as some messages are loaded, no need to wait.
 							queueDeletion(retentionDuration);
@@ -128,21 +126,21 @@ public class RetentionModule extends DiscordModule {
 		/**
 		 * @see sx.blah.discord.handle.impl.obj.Channel#getHistory(long before, int limit)
 		 */
-		private IMessage[] addHistory(Long before, int limit) {
+		private IMessage[] addHistory(Long before) {
 
 			if (!PermissionUtils.hasPermissions(this.channel, this.channel.getClient().getOurUser(), permissions)) {
 				throw new MissingPermissionsException(
 						"Need permissions READ_MESSAGES, READ_MESSAGE_HISTORY, MANAGE_MESSAGES to run retention",
 						permissions);
 			}
-			String queryParams = "?limit=" + limit;
+			String queryParams = "?limit=" + 100;
 			if (before != null) {
 				queryParams = queryParams + "&before=" + Long.toUnsignedString(before);
 			}
 
 			MessageObject[] messages = ((DiscordClientImpl) this.channel.getClient()).REQUESTS.GET
 					.makeRequest(DiscordEndpoints.CHANNELS + this.channel.getStringID() + "/messages" + queryParams,
-							MessageObject[].class, new BasicNameValuePair[0]);
+							MessageObject[].class);
 			if (messages.length == 0) {
 				return new IMessage[0];
 			} else {

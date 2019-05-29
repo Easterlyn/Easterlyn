@@ -45,8 +45,8 @@ public class MachineInventoryTracker {
 		this.machines = machines;
 	}
 
-	public boolean hasMachineOpen(Player p) {
-		return openMachines.containsKey(p.getUniqueId());
+	public boolean hasNoMachineOpen(Player p) {
+		return !openMachines.containsKey(p.getUniqueId());
 	}
 
 	public Pair<Machine, ConfigurationSection> getOpenMachine(Player p) {
@@ -81,14 +81,14 @@ public class MachineInventoryTracker {
 		this.openMachines.put(player.getUniqueId(), new Pair<>(m, key));
 	}
 
-	public class MerchantContainer extends ContainerMerchant {
+	class MerchantContainer extends ContainerMerchant {
 		MerchantContainer(int containerCounter, EntityPlayer player, Location location) {
 			super(containerCounter, player.inventory, new FakeNMSVillager(player, player.world, location));
 			this.checkReachable = false;
 		}
 	}
 
-	public class FakeNMSVillager extends EntityVillager {
+	class FakeNMSVillager extends EntityVillager {
 		FakeNMSVillager(EntityPlayer player, World world, Location location) {
 			super(EntityTypes.VILLAGER, world);
 			setTradingPlayer(player);

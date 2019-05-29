@@ -11,7 +11,7 @@ public abstract class DiscordModule {
 
 	private final Discord discord;
 
-	public DiscordModule(Discord discord) {
+	protected DiscordModule(Discord discord) {
 		this.discord = discord;
 	}
 

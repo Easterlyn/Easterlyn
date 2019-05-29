@@ -70,8 +70,8 @@ public class DeathListener extends EasterlynListener {
 				.replace("{X}", String.valueOf(location.getBlockX()))
 				.replace("{Y}", String.valueOf(location.getBlockY()))
 				.replace("{Z}", String.valueOf(location.getBlockZ()));
-		player.sendMessage(Language.getColor("bad") + locString.replaceAll("\\{WORLD\\}\\s?", "").replace("{OPTION}", randomMessage));
-		locString = locString.replace("{WORLD}", location.getWorld().getName()).replaceAll("\\{OPTION\\}\\s?", "");
+		player.sendMessage(Language.getColor("bad") + locString.replaceAll("\\{WORLD}\\s?", "").replace("{OPTION}", randomMessage));
+		locString = locString.replace("{WORLD}", location.getWorld().getName()).replaceAll("\\{OPTION}\\s?", "");
 
 		EntityDamageEvent lastDamage = player.getLastDamageCause();
 		if (lastDamage != null && (lastDamage.getCause() == DamageCause.WITHER

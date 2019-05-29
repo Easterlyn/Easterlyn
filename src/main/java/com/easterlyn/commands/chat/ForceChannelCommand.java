@@ -19,6 +19,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for forcing a User to change current channel.
@@ -61,8 +62,9 @@ public class ForceChannelCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
 		if (!sender.hasPermission(this.getPermission()) || args.length == 0 || args.length > 2) {
 			return ImmutableList.of();
 		}

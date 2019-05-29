@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 
 import java.util.List;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for using the halculate function just for yourself.
@@ -38,8 +39,9 @@ public class HalculatorCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
 		return ImmutableList.of();
 	}
 }

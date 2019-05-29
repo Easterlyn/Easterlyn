@@ -15,6 +15,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.handle.obj.IUser;
 
@@ -62,7 +63,7 @@ public class DiscordLinkCommand extends EasterlynCommand {
 			try {
 				long longID = Long.parseLong(discordID);
 				user = discord.getClient().getUserByID(longID);
-			} catch (NumberFormatException e) {}
+			} catch (NumberFormatException ignored) {}
 
 			if (user == null) {
 				for (IGuild guild : discord.getClient().getGuilds()) {
@@ -132,8 +133,9 @@ public class DiscordLinkCommand extends EasterlynCommand {
 		return false;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		return ImmutableList.of();
 	}

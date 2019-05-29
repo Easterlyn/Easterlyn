@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for manipulating the raw message announcer.
@@ -59,8 +60,9 @@ public class HalCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
 		return ImmutableList.of();
 	}
 }

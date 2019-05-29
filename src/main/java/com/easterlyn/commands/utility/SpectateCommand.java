@@ -14,6 +14,7 @@ import com.google.common.collect.ImmutableList;
 import org.bukkit.GameMode;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for toggling spectate mode.
@@ -74,8 +75,9 @@ public class SpectateCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		// CHAT: tab-complete allow/deny
 		return ImmutableList.of();

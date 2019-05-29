@@ -31,7 +31,7 @@ public class VillagerAdjustment extends Module {
 		EMERALD_BLOCK(new ItemStack(Material.EMERALD_BLOCK), 729),
 		NOPE(new ItemStack(Material.BARRIER, 65), Integer.MAX_VALUE);
 
-		public static int getValue(final ItemStack currencyItem) {
+		static int getValue(final ItemStack currencyItem) {
 			for (CurrencyType currencyType : CurrencyType.values()) {
 				if (currencyType.getCurrencyItem().isSimilar(currencyItem)) {
 					return currencyType.getValue() * currencyItem.getAmount();
@@ -39,7 +39,7 @@ public class VillagerAdjustment extends Module {
 			}
 			return 0;
 		}
-		public static boolean isCurrency(final ItemStack currencyItem) {
+		static boolean isCurrency(final ItemStack currencyItem) {
 			for (CurrencyType currencyType : CurrencyType.values()) {
 				if (currencyType.getCurrencyItem().isSimilar(currencyItem)) {
 					return true;
@@ -57,11 +57,11 @@ public class VillagerAdjustment extends Module {
 			this.value = value;
 		}
 
-		public ItemStack getCurrencyItem() {
+		ItemStack getCurrencyItem() {
 			return this.currencyItem.clone();
 		}
 
-		public int getValue() {
+		int getValue() {
 			return this.value;
 		}
 	}

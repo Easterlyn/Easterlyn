@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.EnchantmentStorageMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for enchanting a held item.
@@ -112,8 +113,9 @@ public class EnchantCommand extends EasterlynCommand {
 		item.setItemMeta(meta);
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!(sender instanceof Player) || !sender.hasPermission(this.getPermission())
 				|| args.length > 2) {

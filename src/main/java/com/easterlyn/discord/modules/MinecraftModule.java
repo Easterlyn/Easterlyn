@@ -95,7 +95,7 @@ public class MinecraftModule extends DiscordModule {
 				}
 				try {
 					Thread.sleep(200);
-				} catch (InterruptedException e) {}
+				} catch (InterruptedException ignored) {}
 				String message = player.stopMessages();
 				if (message.isEmpty()) {
 					return;
@@ -128,7 +128,7 @@ public class MinecraftModule extends DiscordModule {
 		}
 		builder.setSender(users.getUser(player.getUniqueId()))
 				.setMessage(sanitizeForMinecraft(content)).setChannel(manager.getChannel("#discord"));
-		if (!builder.canBuild(false)) {
+		if (builder.canNotBuild(false)) {
 			if (!message.getChannel().isPrivate()) {
 				getDiscord().queueMessageDeletion(CallPriority.LOW, message);
 			}

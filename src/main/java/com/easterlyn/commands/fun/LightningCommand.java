@@ -19,6 +19,7 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.StringUtil;
 
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for causing a lightning strike.
@@ -95,8 +96,9 @@ public class LightningCommand extends EasterlynCommand {
 		return false;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!sender.hasPermission(getPermission())) {
 			return ImmutableList.of();

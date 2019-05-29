@@ -167,7 +167,7 @@ public class Effects extends Module {
 		Map<Effect, Integer> applicableEffects = getEffects(bypassMax, entity.getEquipment().getArmorContents());
 
 		getEffects(false, entity.getEquipment().getItemInMainHand(), entity.getEquipment().getItemInOffHand()).forEach(
-				(key, value) -> applicableEffects.merge(key, value, (v1, v2) -> v1 + v2));
+				(key, value) -> applicableEffects.merge(key, value, Integer::sum));
 
 		if (!(entity instanceof Player)) {
 			return applicableEffects;

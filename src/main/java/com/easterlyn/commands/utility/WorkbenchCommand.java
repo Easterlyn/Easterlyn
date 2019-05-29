@@ -8,6 +8,7 @@ import com.easterlyn.users.UserRank;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for opening a workbench.
@@ -35,8 +36,9 @@ public class WorkbenchCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		return com.google.common.collect.ImmutableList.of();
 	}

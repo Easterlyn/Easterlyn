@@ -43,7 +43,7 @@ public class InventoryCreativeListener extends EasterlynListener {
 			return;
 		}
 
-		if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) {
+		if (event.getCursor().getType() == Material.AIR) {
 			return;
 		}
 
@@ -57,11 +57,6 @@ public class InventoryCreativeListener extends EasterlynListener {
 
 		if (cleanedItem == event.getCursor()) {
 			return;
-		}
-
-		// No invalid durabilities.
-		if (cleanedItem.getDurability() < 0) {
-			cleanedItem.setDurability((short) 0);
 		}
 
 		// No overstacking, no negative amounts

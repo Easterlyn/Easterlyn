@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommandAlias for teleporting a player to oneself.
@@ -39,8 +40,9 @@ public class TeleportHereCommand extends EasterlynCommandAlias {
 		return getCommand().execute(sender, label, newArgs);
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!(sender instanceof Player) || args.length != 1) {
 			return ImmutableList.of();

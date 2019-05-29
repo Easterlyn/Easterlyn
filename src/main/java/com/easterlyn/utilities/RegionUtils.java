@@ -14,8 +14,8 @@ import org.bukkit.util.Vector;
  */
 public class RegionUtils {
 
-	public static boolean regionsMatch(String worldName, String otherWorldName) {
-		return stripToBaseWorldName(worldName.toLowerCase())
+	public static boolean isDifferentRegion(String worldName, String otherWorldName) {
+		return !stripToBaseWorldName(worldName.toLowerCase())
 				.equals(stripToBaseWorldName(otherWorldName.toLowerCase()));
 	}
 

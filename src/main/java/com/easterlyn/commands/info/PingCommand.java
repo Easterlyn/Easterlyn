@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for getting a player's ping.
@@ -47,8 +48,9 @@ public class PingCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
 		if (args.length != 1 || !sender.hasPermission("easterlyn.command.ping.other")) {
 			return ImmutableList.of();
 		} else {

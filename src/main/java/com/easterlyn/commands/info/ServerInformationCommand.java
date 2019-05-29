@@ -1,31 +1,29 @@
 package com.easterlyn.commands.info;
 
+import com.easterlyn.Easterlyn;
+import com.easterlyn.chat.Language;
+import com.easterlyn.commands.EasterlynCommand;
+import com.easterlyn.users.UserRank;
+import com.google.common.collect.ImmutableList;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.Language;
-import com.easterlyn.commands.EasterlynAsynchronousCommand;
-import com.easterlyn.users.UserRank;
-
-import com.google.common.collect.ImmutableList;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.block.BlockState;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for obtaining more detailed server information. Writes to plugins/Easterlyn/report.txt
  * 
  * @author Jikoo
  */
-public class ServerInformationCommand extends EasterlynAsynchronousCommand {
+public class ServerInformationCommand extends EasterlynCommand {
 
 	public ServerInformationCommand(Easterlyn plugin) {
 		super(plugin, "serverinfo");
@@ -39,7 +37,6 @@ public class ServerInformationCommand extends EasterlynAsynchronousCommand {
 	protected boolean onCommand(final CommandSender sender, final String label, final String[] args) {
 		final List<World> worlds;
 		if (args.length == 0) {
-			// Minimal risk calling this async, not worried.
 			worlds = Bukkit.getWorlds();
 		} else {
 			final World world = Bukkit.getWorld(args[0]);
@@ -51,17 +48,6 @@ public class ServerInformationCommand extends EasterlynAsynchronousCommand {
 			worlds.add(world);
 		}
 		final File file = new File(getPlugin().getDataFolder(), "report.txt");
-		// Again, minimal risk calling async
-		if (file.exists()) {
-			file.delete();
-		}
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-			sender.sendMessage(Language.getColor("bad") + "IOException creating report.txt");
-			return true;
-		}
 		StringBuilder sb = new StringBuilder();
 		// This is slightly risky
 		for (World world : worlds) {
@@ -103,8 +89,9 @@ public class ServerInformationCommand extends EasterlynAsynchronousCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		return ImmutableList.of();
 	}

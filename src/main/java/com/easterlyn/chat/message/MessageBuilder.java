@@ -45,11 +45,11 @@ public class MessageBuilder {
 		CONSOLE_FORMAT = "%1$s[%2$s%3$s%1$s]%4$s <%5$s%6$s%4$s> " + ChatColor.WHITE + "%6$s";
 		CONSOLE_FORMAT_THIRD = CONSOLE_FORMAT.replace(">", "").replace(" <", "> ");
 
-		NAME_PATTERN = Pattern.compile("\\{PLAYER\\}");
-		REAL_NAME_PATTERN = Pattern.compile("\\{REALNAME\\}");
-		RANK_PATTERN = Pattern.compile("\\{RANK\\}");
-		CLASS_PATTERN = Pattern.compile("\\{CLASS\\}");
-		ASPECT_PATTERN = Pattern.compile("\\{ASPECT\\}"); // TODO -> Affinity
+		NAME_PATTERN = Pattern.compile("\\{PLAYER}");
+		REAL_NAME_PATTERN = Pattern.compile("\\{REALNAME}");
+		RANK_PATTERN = Pattern.compile("\\{RANK}");
+		CLASS_PATTERN = Pattern.compile("\\{CLASS}");
+		ASPECT_PATTERN = Pattern.compile("\\{ASPECT}"); // TODO -> Affinity
 	}
 
 	private final Language lang;
@@ -186,7 +186,7 @@ public class MessageBuilder {
 		return this;
 	}
 
-	public boolean canBuild(boolean informSender) {
+	public boolean canNotBuild(boolean informSender) {
 		informSender = this.sender != null && informSender;
 
 		// Channel must exist
@@ -196,7 +196,7 @@ public class MessageBuilder {
 			} else if (informSender) {
 				this.sender.sendMessage(this.lang.getValue("chat.error.noCurrentChannel"));
 			}
-			return false;
+			return true;
 		}
 
 		// No sending of blank messages.
@@ -204,12 +204,12 @@ public class MessageBuilder {
 			if (informSender) {
 				this.sender.sendMessage(this.lang.getValue("chat.error.emptyMessage"));
 			}
-			return false;
+			return true;
 		}
 
 		// No sender and no name, invalid message.
 		if (this.sender == null) {
-			return this.senderName != null;
+			return this.senderName == null;
 		}
 
 		// No sending messages to global chats while ignoring them.
@@ -219,25 +219,25 @@ public class MessageBuilder {
 						+ "You cannot talk in a global channel while suppressing!\nUse "
 						+ ChatColor.AQUA + "/suppress" + ChatColor.RED + " to toggle.");
 			}
-			return false;
+			return true;
 		}
 
-		return true;
+		return false;
 	}
 
-	public boolean isSenderInChannel(boolean informSender) {
+	public boolean isSenderNotInChannel(boolean informSender) {
 		// Must be in target channel to send messages.
 		if (sender == null || this.channel.getListening().contains(this.sender.getUUID())) {
-			return true;
+			return false;
 		}
 		if (informSender) {
 			this.sender.sendMessage(ChatColor.RED + "You are not listening to " + ChatColor.GOLD + channel.getName());
 		}
-		return false;
+		return true;
 	}
 
 	public Message toMessage() {
-		if (!canBuild(false)) {
+		if (canNotBuild(false)) {
 			throw new RuntimeException("Someone did something stupid with chat!");
 		}
 
@@ -328,7 +328,7 @@ public class MessageBuilder {
 			// Override rank color with scoreboard color if possible
 			try {
 				Team team = Bukkit.getScoreboardManager().getMainScoreboard().getEntryTeam(player.getName());
-				if (team != null && team.getPrefix() != null && team.getPrefix().length() > 0) {
+				if (team != null && team.getPrefix().length() > 0) {
 					ChatColor color = ChatColor.getByChar(team.getPrefix().charAt(team.getPrefix().length() - 1));
 					if (color != null) {
 						globalRank = color;

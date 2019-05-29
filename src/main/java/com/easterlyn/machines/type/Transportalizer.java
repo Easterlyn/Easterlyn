@@ -9,6 +9,7 @@ import com.easterlyn.machines.utilities.Shape.MaterialDataValue;
 import com.easterlyn.micromodules.Holograms;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
+import com.easterlyn.utilities.InventoryUtils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
@@ -68,29 +69,29 @@ public class Transportalizer extends Machine {
 		this.protections = plugin.getModule(Protections.class);
 		Shape shape = getShape();
 		shape.setVectorData(new Vector(0, 0, 0),
-				shape.new MaterialDataValue(Material.HOPPER).withBlockData(Directional.class, Direction.NORTH));
-		MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_BLOCK);
+				new Shape.MaterialDataValue(Material.HOPPER).withBlockData(Directional.class, Direction.NORTH));
+		MaterialDataValue m = new Shape.MaterialDataValue(Material.QUARTZ_BLOCK);
 		shape.setVectorData(new Vector(-1, 0, 0), m);
 		shape.setVectorData(new Vector(1, 0, 0), m);
-		m = shape.new MaterialDataValue(Material.CHISELED_QUARTZ_BLOCK);
+		m = new Shape.MaterialDataValue(Material.CHISELED_QUARTZ_BLOCK);
 		shape.setVectorData(new Vector(-1, 0, 1), m);
 		shape.setVectorData(new Vector(1, 0, 1), m);
 		shape.setVectorData(new Vector(-1, 2, 1), m);
 		shape.setVectorData(new Vector(1, 2, 1), m);
 		shape.setVectorData(new Vector(0, 2, 1),
-				shape.new MaterialDataValue(Material.QUARTZ_PILLAR).withBlockData(Orientable.class, Direction.WEST));
+				new Shape.MaterialDataValue(Material.QUARTZ_PILLAR).withBlockData(Orientable.class, Direction.WEST));
 		shape.setVectorData(new Vector(0, 0, 1),
-				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Bisected.class, Direction.UP)
+				new Shape.MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Bisected.class, Direction.UP)
 				.withBlockData(Directional.class, Direction.NORTH));
 		shape.setVectorData(new Vector(0, 1, 1), Material.WHITE_STAINED_GLASS);
-		m = shape.new MaterialDataValue(Material.STONE_BUTTON).withBlockData(Directional.class, Direction.SOUTH);
+		m = new Shape.MaterialDataValue(Material.STONE_BUTTON).withBlockData(Directional.class, Direction.SOUTH);
 		shape.setVectorData(new Vector(-1, 2, 0), m);
 		shape.setVectorData(new Vector(1, 2, 0), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.NORTH);
+		m = new Shape.MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.NORTH);
 		shape.setVectorData(new Vector(-1, 0, -1), m);
 		shape.setVectorData(new Vector(0, 0, -1), m);
 		shape.setVectorData(new Vector(1, 0, -1), m);
-		m = shape.new MaterialDataValue(Material.QUARTZ_PILLAR).withBlockData(Orientable.class, Direction.UP);
+		m = new Shape.MaterialDataValue(Material.QUARTZ_PILLAR).withBlockData(Orientable.class, Direction.UP);
 		shape.setVectorData(new Vector(-1, 1, 1), m);
 		shape.setVectorData(new Vector(1, 1, 1), m);
 		shape.setVectorData(new Vector(-1, 1, 0), Material.RED_CARPET);
@@ -98,9 +99,10 @@ public class Transportalizer extends Machine {
 		shape.setVectorData(new Vector(1, 1, 0), Material.LIME_CARPET);
 
 		drop = new ItemStack(Material.CHEST);
-		ItemMeta meta = drop.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "Transportalizer");
-		drop.setItemMeta(meta);
+		InventoryUtils.consumeAs(ItemMeta.class, drop.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.WHITE + "Transportalizer");
+			drop.setItemMeta(itemMeta);
+		});
 		this.requests = new HashMap<>();
 	}
 
@@ -137,7 +139,9 @@ public class Transportalizer extends Machine {
 		Location key = getKey(storage);
 		if (hasValue(inserted.getType())) {
 			setFuel(storage, getFuel(storage) + getValue(inserted.getType()) * inserted.getAmount());
-			key.getWorld().playSound(key, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+			if (key.getWorld() != null) {
+				key.getWorld().playSound(key, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+			}
 			event.getItem().remove();
 		} else {
 			event.getItem().teleport(
@@ -203,7 +207,7 @@ public class Transportalizer extends Machine {
 		}
 
 		// Hopper inventory has to suck up items from the world, it should not be openable.
-		if (event.getAction() == Action.RIGHT_CLICK_BLOCK
+		if (event.getClickedBlock() == null || event.getAction() == Action.RIGHT_CLICK_BLOCK
 				&& event.getClickedBlock().getType() == Material.HOPPER) {
 			return true;
 		}
@@ -213,6 +217,10 @@ public class Transportalizer extends Machine {
 		}
 
 		Location key = getKey(storage);
+
+		if (key.getWorld() == null) {
+			return true;
+		}
 
 		// Check for a sign in the proper location
 		Block signBlock = key.clone().add(new Vector(0, 2, 0)).getBlock();
@@ -374,9 +382,8 @@ public class Transportalizer extends Machine {
 
 	@Override
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
-		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
-			Location key = getKey(storage);
-			key.getWorld().dropItemNaturally(key, getUniqueDrop());
+		Location key = getKey(storage);
+		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL && key.getWorld() != null) {
 			int fuel = (int) (getFuel(storage) / getValue(Material.BLAZE_POWDER));
 			while (fuel > 0) {
 				int dropAmount = Material.BLAZE_POWDER.getMaxStackSize();
@@ -387,7 +394,7 @@ public class Transportalizer extends Machine {
 				key.getWorld().dropItemNaturally(key, new ItemStack(Material.BLAZE_POWDER, dropAmount));
 			}
 		}
-		remove(storage);
+		super.handleBreak(event, storage);
 		return true;
 	}
 

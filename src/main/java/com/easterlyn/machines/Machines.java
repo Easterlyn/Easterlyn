@@ -576,7 +576,7 @@ public class Machines extends Module {
 		return "Machines";
 	}
 
-	public static String pathFromLoc(Location location) {
+	private static String pathFromLoc(Location location) {
 		return location.getWorld().getName() + '.' + (location.getBlockX() >> 4) + '_' + (location.getBlockZ() >> 4)
 				+ '.' + location.getBlockX() + '_' + location.getBlockY() + '_' + location.getBlockZ();
 	}

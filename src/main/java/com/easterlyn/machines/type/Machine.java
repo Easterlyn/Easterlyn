@@ -7,6 +7,7 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.users.Users;
+import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -58,7 +59,7 @@ public abstract class Machine {
 	 * @param machines the Machines instance loading the Machine
 	 * @param shape the in-world representation of the machine
 	 */
-	protected Machine(Easterlyn plugin, Machines machines, Shape shape, String name) {
+	Machine(Easterlyn plugin, Machines machines, Shape shape, String name) {
 		this.plugin = plugin;
 		this.lang = plugin.getModule(Language.class);
 		this.machines = machines;
@@ -81,7 +82,7 @@ public abstract class Machine {
 	 *
 	 * @return the Easterlyn
 	 */
-	protected Easterlyn getPlugin() {
+	Easterlyn getPlugin() {
 		return this.plugin;
 	}
 
@@ -99,7 +100,7 @@ public abstract class Machine {
 	 *
 	 * @return the Machines
 	 */
-	protected Machines getMachines() {
+	Machines getMachines() {
 		return this.machines;
 	}
 
@@ -137,8 +138,8 @@ public abstract class Machine {
 	 *
 	 * @return the Location
 	 */
-	public Location getKey(ConfigurationSection storage) {
-		return Machines.locFromPath(storage.getCurrentPath());
+	Location getKey(ConfigurationSection storage) {
+		return Machines.locFromPath(Objects.requireNonNull(storage.getCurrentPath()));
 	}
 
 	/**
@@ -159,8 +160,8 @@ public abstract class Machine {
 	 *
 	 * @return the UUID
 	 */
-	public UUID getOwner(ConfigurationSection storage) {
-		return UUID.fromString(storage.getString("owner"));
+	UUID getOwner(ConfigurationSection storage) {
+		return UUID.fromString(Objects.requireNonNull(storage.getString("owner")));
 	}
 
 	/**
@@ -194,7 +195,7 @@ public abstract class Machine {
 	 * @param direction the facing of the Machine
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
-	protected void assemble(Location key, Direction direction, ConfigurationSection storage) {
+	private void assemble(Location key, Direction direction, ConfigurationSection storage) {
 		HashMap<Location, Shape.MaterialDataValue> buildData = shape.getBuildLocations(key, direction);
 		for (Entry<Location, Shape.MaterialDataValue> entry : buildData.entrySet()) {
 			if (key.equals(entry.getKey())) {
@@ -202,7 +203,7 @@ public abstract class Machine {
 				// A cancelled BlockPlaceEvent results in the block being restored to its previous state.
 				// Additionally, keys with tile entities (Looking at you, Transportalizer)
 				// can cause damage which is not fixed until the tile entity is accessed.
-				assembleKeyLater(key, entry.getValue(), storage);
+				assembleKeyLater(key, entry.getValue());
 				continue;
 			}
 			entry.getValue().build(entry.getKey().getBlock());
@@ -218,9 +219,8 @@ public abstract class Machine {
 	 *
 	 * @param key the key Location of the Machine
 	 * @param data the MaterialData the key is supposed to be set to
-	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
-	private void assembleKeyLater(Location key, Shape.MaterialDataValue data, ConfigurationSection storage) {
+	private void assembleKeyLater(Location key, Shape.MaterialDataValue data) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -262,7 +262,7 @@ public abstract class Machine {
 					((InventoryHolder) e.getKey().getBlock().getState()).getInventory().setContents(e.getValue());
 				} catch (ClassCastException e1) {
 					for (ItemStack is : e.getValue()) {
-						if (is != null) {
+						if (key.getWorld() != null && is != null && is.getType() != Material.AIR) {
 							key.getWorld().dropItem(key, is);
 						}
 					}
@@ -276,7 +276,7 @@ public abstract class Machine {
 	 *
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
-	public void remove(ConfigurationSection storage) {
+	void remove(ConfigurationSection storage) {
 		disable(storage);
 		Location key = getKey(storage);
 		for (Location l : this.getMachines().getMachineBlocks(key)) {
@@ -298,7 +298,9 @@ public abstract class Machine {
 	public boolean handleBreak(BlockBreakEvent event, ConfigurationSection storage) {
 		if (event.getPlayer().getGameMode() == GameMode.SURVIVAL) {
 			Location key = getKey(storage);
-			key.getWorld().dropItemNaturally(key.add(0.5, 0, 0.5), getUniqueDrop());
+			if (key.getWorld() != null) {
+				key.getWorld().dropItemNaturally(key.add(0.5, 0, 0.5), getUniqueDrop());
+			}
 		}
 		remove(storage);
 		return true;

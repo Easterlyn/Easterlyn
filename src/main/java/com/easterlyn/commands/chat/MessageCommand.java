@@ -20,6 +20,7 @@ import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Reimplementation of messaging.
@@ -105,7 +106,7 @@ public class MessageCommand extends EasterlynCommand {
 			builder.setSender(senderProfile.getName());
 		}
 
-		if (!builder.canBuild(true)) {
+		if (builder.canNotBuild(true)) {
 			return true;
 		}
 
@@ -134,8 +135,9 @@ public class MessageCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) throws IllegalArgumentException {
 		if (args.length == 1 && !(alias = alias.toLowerCase()).equals("r") && !alias.equals("reply")) {
 			return super.tabComplete(sender, alias, args);
 		}

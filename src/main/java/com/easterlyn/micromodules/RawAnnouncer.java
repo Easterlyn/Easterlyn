@@ -72,7 +72,6 @@ public class RawAnnouncer extends Module {
 		hover.setColor(Language.getColor("link_color"));
 
 		// Announcement: Try EnchantedFurnace
-		components.clear();
 		component = new TextComponent("Wasting time smelting?");
 		component.setColor(Language.getColor("bot_text"));
 		components.add(component);

@@ -4,6 +4,7 @@ import com.easterlyn.Easterlyn;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Base for commands that should be processed off the main thread.
@@ -17,7 +18,7 @@ public abstract class EasterlynAsynchronousCommand extends EasterlynCommand {
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
 		new BukkitRunnable() {
 			@Override
 			public void run() {

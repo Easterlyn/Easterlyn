@@ -3,14 +3,16 @@ package com.easterlyn.events.listeners.inventory;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.utilities.InventoryUtils;
-
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Furnace;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.inventory.FurnaceSmeltEvent;
-import org.bukkit.inventory.FurnaceRecipe;
+import org.bukkit.inventory.BlastingRecipe;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
 /**
@@ -24,35 +26,35 @@ public class FurnaceSmeltListener extends EasterlynListener {
 		super(plugin);
 
 		// Smelting: Revert armor to crafting material, 1 coal if durability% too low
-		// Deprecated constructor required to ignore item durability
-		FurnaceRecipe furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
+		BlastingRecipe furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_axe"),
+				new ItemStack(Material.COAL), Material.DIAMOND_AXE, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_BOOTS, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_boots"),
+				new ItemStack(Material.COAL), Material.DIAMOND_BOOTS, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_CHESTPLATE, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_chestplate"),
+				new ItemStack(Material.COAL), Material.DIAMOND_CHESTPLATE, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_HELMET, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_helmet"),
+				new ItemStack(Material.COAL), Material.DIAMOND_HELMET, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_HOE, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_hoe"),
+				new ItemStack(Material.COAL), Material.DIAMOND_HOE, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_LEGGINGS, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_leggings"),
+				new ItemStack(Material.COAL), Material.DIAMOND_LEGGINGS, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_PICKAXE, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_pickaxe"),
+				new ItemStack(Material.COAL), Material.DIAMOND_PICKAXE, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_SHOVEL, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_shovel"),
+				new ItemStack(Material.COAL), Material.DIAMOND_SHOVEL, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.DIAMOND_SWORD, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_diamond_sword"),
+				new ItemStack(Material.COAL), Material.DIAMOND_SWORD, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
-		furnace = new FurnaceRecipe(new ItemStack(Material.COAL), Material.DIAMOND_AXE, Short.MAX_VALUE);
-		furnace.setInput(Material.SHEARS, Short.MAX_VALUE);
+		furnace = new BlastingRecipe(new NamespacedKey(plugin, "smelt_down_shears"),
+				new ItemStack(Material.COAL), Material.SHEARS, 0.0F, 200);
 		plugin.getServer().addRecipe(furnace);
 	}
 
@@ -64,15 +66,21 @@ public class FurnaceSmeltListener extends EasterlynListener {
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onFurnaceSmelt(FurnaceSmeltEvent event) {
 
-		if (!canSalvage(event.getSource().getType())) {
+		ItemStack itemStack = event.getSource();
+		if (!canSalvage(itemStack.getType())) {
 			return;
 		}
 
-		final ItemStack result = getMainItem(event.getSource().getType());
+		final ItemStack result = getMainItem(itemStack.getType());
+		double damage = 0;
+		if (itemStack.hasItemMeta()) {
+			ItemMeta meta = itemStack.getItemMeta();
+			if (meta instanceof Damageable) {
+				damage = ((Damageable) meta).getDamage();
+			}
+		}
 		int amount = (int) (result.getAmount()
-				// This cast is actually necessary, prevents mid-calculation rounding.
-				* ((double) (event.getSource().getType().getMaxDurability() - event.getSource()
-						.getDurability())) / event.getSource().getType().getMaxDurability());
+				* (itemStack.getType().getMaxDurability() - damage) / itemStack.getType().getMaxDurability());
 
 		if (amount < 1) {
 			// Allow Minecraft to handle recipe normally
@@ -146,7 +154,7 @@ public class FurnaceSmeltListener extends EasterlynListener {
 				return true;
 			default:
 				return false;
-			}
+		}
 	}
 
 }

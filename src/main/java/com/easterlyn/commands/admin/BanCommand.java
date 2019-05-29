@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for a dual ip and UUID ban.
@@ -87,8 +88,9 @@ public class BanCommand extends EasterlynCommand {
 		}.runTaskAsynchronously(getPlugin());
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (args.length != 1) {
 			return com.google.common.collect.ImmutableList.of();

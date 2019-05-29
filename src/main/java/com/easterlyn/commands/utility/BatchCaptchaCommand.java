@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for creating lots of captchas of items at a time.
@@ -105,8 +106,9 @@ public class BatchCaptchaCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
 		if (args.length < 2 && sender instanceof Player && sender.hasPermission("easterlyn.command.baptcha.free")) {
 			return ImmutableList.of("free");
 		}

@@ -2,14 +2,14 @@ package com.easterlyn.micromodules;
 
 import com.easterlyn.Easterlyn;
 import com.easterlyn.module.Module;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.World;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
-import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -19,8 +19,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class Holograms extends Module {
 
+	private final NamespacedKey key;
+
 	public Holograms(Easterlyn plugin) {
 		super(plugin);
+		key = new NamespacedKey(getPlugin(), "hologram");
 	}
 
 	@Override
@@ -47,22 +50,27 @@ public class Holograms extends Module {
 	}
 
 	private ArmorStand getHologram(Location location, boolean create) {
-		return null;
-//		for (Entity entity : location.getWorld().getNearbyEntities(location, 0.1, 0.1, 0.1)) {
-//			if (isHologram(entity)) {
-//				return (ArmorStand) entity;
-//			}
-//		}
-//		return create ? makeHologram(location) : null;
+		if (location.getWorld() == null) {
+			return null;
+		}
+		for (Entity entity : location.getWorld().getNearbyEntities(location, 0.1, 0.1, 0.1)) {
+			if (isHologram(entity)) {
+				return (ArmorStand) entity;
+			}
+		}
+		return create ? makeHologram(location) : null;
 	}
 
 	private ArmorStand makeHologram(Location location) {
+		if (location.getWorld() == null) {
+			return null;
+		}
 		ArmorStand stand = location.getWorld().spawn(location, ArmorStand.class);
 		stand.setGravity(false);
 		stand.setMarker(true);
 		stand.setVisible(false);
 		stand.setCustomNameVisible(true);
-		stand.setMetadata("EasterlynHolo", new FixedMetadataValue(getPlugin(), true));
+		stand.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 0);
 		return stand;
 	}
 
@@ -75,7 +83,7 @@ public class Holograms extends Module {
 	}
 
 	private boolean isHologram(Entity entity) {
-		return entity instanceof ArmorStand && entity.hasMetadata("EasterlynHolo");
+		return entity instanceof ArmorStand && entity.getPersistentDataContainer().has(key, PersistentDataType.BYTE);
 	}
 
 	@Override

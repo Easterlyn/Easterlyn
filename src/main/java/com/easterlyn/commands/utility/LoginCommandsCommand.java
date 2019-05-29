@@ -13,6 +13,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for manipulating commands sent on login.
@@ -52,8 +53,8 @@ public class LoginCommandsCommand extends EasterlynCommand {
 				return true;
 			}
 			for (int i = 0; i < commands.size(); i++) {
-				sender.sendMessage(new StringBuilder().append(Language.getColor("emphasis.neutral")).append(i + 1)
-						.append(": ").append(Language.getColor("neutral")).append(commands.get(i)).toString());
+				sender.sendMessage(String.valueOf(Language.getColor("emphasis.neutral")) + (i + 1) +
+						": " + Language.getColor("neutral") + commands.get(i));
 			}
 			return true;
 		}
@@ -69,8 +70,9 @@ public class LoginCommandsCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!(sender instanceof Player) || !sender.hasPermission(this.getPermission())
 				|| args.length == 0) {

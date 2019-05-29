@@ -107,7 +107,7 @@ public class User {
 	 *
 	 * @return the OfflinePlayer
 	 */
-	public OfflinePlayer getOfflinePlayer() {
+	private OfflinePlayer getOfflinePlayer() {
 		return Bukkit.getOfflinePlayer(uuid);
 	}
 
@@ -408,19 +408,18 @@ public class User {
 	 *
 	 * @param channel the Channel to add
 	 *
-	 * @return true if the Channel was added
 	 */
-	public synchronized boolean addListening(Channel channel) {
+	public synchronized void addListening(Channel channel) {
 		if (channel == null) {
-			return false;
+			return;
 		}
 		if (channel.isBanned(this)) {
 			this.sendMessage(lang.getValue("chat.error.banned").replace("{CHANNEL}", channel.getName()));
-			return false;
+			return;
 		}
 		if (!channel.isApproved(this)) {
 			this.sendMessage(lang.getValue("chat.error.private").replace("{CHANNEL}", channel.getName()));
-			return false;
+			return;
 		}
 		this.getListening().add(channel.getName());
 		if (!channel.getListening().contains(this.getUUID())) {
@@ -429,10 +428,8 @@ public class User {
 			channel.sendMessage(lang.getValue("chat.channel.join", true)
 					.replace("{PLAYER}", this.getDisplayName())
 					.replace("{CHANNEL}", channel.getName()));
-			return true;
 		} else {
 			this.sendMessage(lang.getValue("chat.error.alreadyListening").replace("{CHANNEL}", channel.getName()));
-			return false;
 		}
 	}
 
@@ -743,12 +740,12 @@ public class User {
 	 * @return the profile information
 	 */
 	public String getProfile() {
-		return new StringBuilder().append(Language.getColor("neutral")).append(ChatColor.STRIKETHROUGH)
-				.append("+---").append(Language.getColor("emphasis.neutral")).append(' ').append(getPlayerName())
-				.append(' ').append(Language.getColor("neutral")).append(ChatColor.STRIKETHROUGH)
-				.append("---+\n").append(Language.getColor("neutral")).append(getUserClass().getDisplayName())
-				.append(Language.getColor("emphasis.neutral")).append(" of ").append(getUserAffinity().getColor())
-				.append(getUserAffinity().getDisplayName()).toString();
+		return String.valueOf(Language.getColor("neutral")) + ChatColor.STRIKETHROUGH +
+				"+---" + Language.getColor("emphasis.neutral") + ' ' + getPlayerName() +
+				' ' + Language.getColor("neutral") + ChatColor.STRIKETHROUGH +
+				"---+\n" + Language.getColor("neutral") + getUserClass().getDisplayName() +
+				Language.getColor("emphasis.neutral") + " of " + getUserAffinity().getColor() +
+				getUserAffinity().getDisplayName();
 	}
 
 	/**
@@ -824,18 +821,7 @@ public class User {
 	}
 
 	public void save() {
-		File folder = new File(getPlugin().getDataFolder(), "users");
-		if (!folder.exists()) {
-			folder.mkdirs();
-		}
-		File file = new File(folder, getUUID().toString() + ".yml");
-		if (!file.exists()) {
-			try {
-				file.createNewFile();
-			} catch (IOException e) {
-				throw new RuntimeException("Unable to save data for " + getUUID().toString(), e);
-			}
-		}
+		File file = new File(getPlugin().getDataFolder().getPath() + File.separatorChar + "users", getUUID().toString() + ".yml");
 		yaml.set("name", getPlayerName());
 		yaml.set("ip", getUserIP());
 		yaml.set("chat.current", getCurrentChannel() != null ? getCurrentChannel().getName() : "#");
@@ -848,21 +834,17 @@ public class User {
 		}
 	}
 
-	protected ChannelManager getChannelManager() {
+	private ChannelManager getChannelManager() {
 		return this.manager;
 	}
 
-	public Easterlyn getPlugin() {
+	private Easterlyn getPlugin() {
 		return this.plugin;
 	}
 
 	@SuppressWarnings("unchecked")
-	protected static User load(Easterlyn plugin, final UUID uuid) {
-		File folder = new File(plugin.getDataFolder(), "users");
-		if (!folder.exists()) {
-			folder.mkdirs();
-		}
-		File file = new File(folder, uuid.toString() + ".yml");
+	static User load(Easterlyn plugin, final UUID uuid) {
+		File file = new File(plugin.getDataFolder().getPath() + File.separatorChar + "users", uuid.toString() + ".yml");
 		if (!file.exists()) {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player == null) {

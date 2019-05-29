@@ -34,7 +34,7 @@ public class AwayFromKeyboard extends Module {
 	public AwayFromKeyboard(Easterlyn plugin) {
 		super(plugin);
 		this.lastLocations = new HashMap<>();
-		this.afkUUIDs = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		this.afkUUIDs = Collections.newSetFromMap(new ConcurrentHashMap<>());
 
 		PermissionUtils.addParent("easterlyn.afk.auto", UserRank.MEMBER.getPermission());
 	}
@@ -103,14 +103,11 @@ public class AwayFromKeyboard extends Module {
 	 *
 	 * @param player the Player
 	 *
-	 * @return true if time has been extended
 	 */
-	public boolean extendActivity(Player player) {
+	public void extendActivity(Player player) {
 		if (this.cooldowns.getRemainder(player, getName()) > 0) {
 			this.setActive(player);
-			return true;
 		}
-		return false;
 	}
 
 	/**
@@ -167,9 +164,7 @@ public class AwayFromKeyboard extends Module {
 			this.afkUUIDs.remove(uuid);
 			Users.team(player, null);
 		}
-		if (this.lastLocations.containsKey(uuid)) {
-			this.lastLocations.remove(uuid);
-		}
+		this.lastLocations.remove(uuid);
 		this.cooldowns.clearCooldown(player, getName());
 	}
 

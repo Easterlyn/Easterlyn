@@ -69,7 +69,7 @@ public class ParticleUtils extends Module {
 			effects.removeIf(particleEffectWrapper -> particleEffectWrapper.getParticle() == particleType);
 			return effects;
 		}
-		public HashSet<ParticleEffectWrapper> getEffects() {
+		HashSet<ParticleEffectWrapper> getEffects() {
 			return effects;
 		}
 	}

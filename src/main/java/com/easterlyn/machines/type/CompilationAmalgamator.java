@@ -6,9 +6,15 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.utilities.InventoryUtils;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.Function;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Directional;
@@ -27,10 +33,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.function.Function;
-
 /**
  * Automation at its finest!
  *
@@ -46,14 +48,15 @@ public class CompilationAmalgamator extends Machine {
 		this.captcha = plugin.getModule(Captcha.class);
 		Shape shape = getShape();
 		shape.setVectorData(new Vector(0, 0, 0),
-				shape.new MaterialDataValue(Material.DROPPER).withBlockData(Directional.class, Direction.SOUTH));
+				new Shape.MaterialDataValue(Material.DROPPER).withBlockData(Directional.class, Direction.SOUTH));
 		shape.setVectorData(new Vector(0, 0, 1),
-				shape.new MaterialDataValue(Material.HOPPER).withBlockData(Directional.class, Direction.SOUTH));
+				new Shape.MaterialDataValue(Material.HOPPER).withBlockData(Directional.class, Direction.SOUTH));
 
 		drop = new ItemStack(Material.DROPPER);
-		ItemMeta meta = drop.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "Compilation Amalgamator");
-		drop.setItemMeta(meta);
+		InventoryUtils.consumeAs(ItemMeta.class, drop.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.WHITE + "Compilation Amalgamator");
+			drop.setItemMeta(itemMeta);
+		});
 	}
 
 	@Override
@@ -161,7 +164,9 @@ public class CompilationAmalgamator extends Machine {
 			}
 			// This is safe, no CME because we're iterating over a copied array
 			inventory.removeItem(item);
-			this.ejectItem(inventory.getLocation(), item, storage);
+			if (inventory.getLocation() != null) {
+				this.ejectItem(inventory.getLocation(), item, storage);
+			}
 		}
 
 		if (captchaTarget == null) {
@@ -219,13 +224,14 @@ public class CompilationAmalgamator extends Machine {
 	}
 
 	private void ejectAllInvalidItems(Function<ItemStack, Boolean> func, Inventory inventory, ConfigurationSection storage) {
+		Location key = getKey(storage);
 		for (ItemStack item : inventory.getContents()) {
 			if (item == null || item.getType() == Material.AIR || func.apply(item)) {
 				continue;
 			}
 			// This is safe, no CME because we're iterating over a copied array
 			inventory.removeItem(item);
-			this.ejectItem(this.getKey(storage), item, storage);
+			this.ejectItem(key, item, storage);
 		}
 	}
 
@@ -254,8 +260,11 @@ public class CompilationAmalgamator extends Machine {
 		double motZ = face.getModZ() * motionRandom + random.nextGaussian() * 0.044999998994171622D;
 
 		// MACHINES BlockDispenseEvent
-		// TODO play click + smoke
-		key.getWorld().dropItem(key, item).setVelocity(new Vector(motX, motY, motZ));
+		if (key.getWorld() != null) {
+			key.getWorld().playSound(key, Sound.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 1F, 1F);
+			key.getWorld().playEffect(key, Effect.SMOKE, facing);
+			key.getWorld().dropItem(key, item).setVelocity(new Vector(motX, motY, motZ));
+		}
 	}
 
 	@Override

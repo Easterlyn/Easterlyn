@@ -16,6 +16,7 @@ import org.bukkit.BanList.Type;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for undoing a dual IP and UUID ban.
@@ -59,8 +60,9 @@ public class UnBanCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (args.length > 1 || !sender.hasPermission(this.getPermission())) {
 			return ImmutableList.of();

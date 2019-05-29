@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for spawning a temporary minecart.
@@ -55,8 +56,9 @@ public class TemporaryCartCommand extends EasterlynCommand {
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (args.length == 1) {
 			return super.tabComplete(sender, alias, args);

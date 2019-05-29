@@ -16,6 +16,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.util.StringUtil;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for setting travel speeds.
@@ -116,8 +117,9 @@ public class SpeedCommand extends EasterlynCommand {
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!sender.hasPermission(this.getPermission()) || args.length > 3) {
 			return ImmutableList.of();

@@ -42,13 +42,15 @@ public class Elevator extends Machine {
 	public Elevator(Easterlyn plugin, Machines machines) {
 		super(plugin, machines, new Shape(), "Elevator");
 		this.protections = plugin.getModule(Protections.class);
-		drop = new ItemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
-		ItemMeta meta = drop.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "Elevator");
-		drop.setItemMeta(meta);
 
 		getShape().setVectorData(new Vector(0, 0, 0),Material.PURPUR_PILLAR);
 		getShape().setVectorData(new Vector(0, 1, 0), Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+
+		drop = new ItemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+		InventoryUtils.consumeAs(ItemMeta.class, drop.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.WHITE + "Elevator");
+			drop.setItemMeta(itemMeta);
+		});
 	}
 
 	private int getCurrentBoost(ConfigurationSection storage) {
@@ -74,6 +76,9 @@ public class Elevator extends Machine {
 		if (player.isSneaking()) {
 			return event.getAction() == Action.PHYSICAL;
 		}
+		if (event.getClickedBlock() == null) {
+			return true;
+		}
 		if (event.getAction() == Action.PHYSICAL) {
 			event.getClickedBlock().getWorld().playSound(event.getClickedBlock().getLocation(),
 					Sound.ENTITY_ENDER_DRAGON_FLAP, 0.2F, 0F);
@@ -81,7 +86,9 @@ public class Elevator extends Machine {
 			// Effect power is 0-indexed.
 			player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, duration, 19, true), true);
 			PermissionAttachment attachment = player.addAttachment(getPlugin(), (int) (duration * 1.5));
-			attachment.setPermission("nocheatplus.checks.moving.creativefly", true);
+			if (attachment != null) {
+				attachment.setPermission("nocheatplus.checks.moving.creativefly", true);
+			}
 			return true;
 		}
 		Location interacted = event.getClickedBlock().getLocation();

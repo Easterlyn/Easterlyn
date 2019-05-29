@@ -15,6 +15,7 @@ import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for performing an emote.
@@ -44,7 +45,7 @@ public class MeCommand extends EasterlynAsynchronousCommand {
 				.setSender(users.getUser(player.getUniqueId()))
 				.setMessage(TextUtils.join(args, ' ', 0, args.length));
 
-		if (!builder.canBuild(true) || !builder.isSenderInChannel(true)) {
+		if (builder.canNotBuild(true) || builder.isSenderNotInChannel(true)) {
 			return true;
 		}
 
@@ -52,8 +53,9 @@ public class MeCommand extends EasterlynAsynchronousCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!(sender instanceof Player)) {
 			return ImmutableList.of("NoConsoleSupport");

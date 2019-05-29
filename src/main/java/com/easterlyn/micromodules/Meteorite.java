@@ -57,7 +57,7 @@ public class Meteorite {
 	 * @param radius the radius to drop the Meteorite within
 	 * @param explode true if the Meteorite should explode on contact with the ground
 	 */
-	public Meteorite(Easterlyn plugin, Location target, Material material, int radius, boolean explode, int bore) {
+	private Meteorite(Easterlyn plugin, Location target, Material material, int radius, boolean explode, int bore) {
 		this.plugin = plugin;
 		if (material == null) {
 			material = Material.NETHERRACK;

@@ -18,7 +18,7 @@ import java.util.concurrent.atomic.AtomicLong;
 public class NormalChannel extends Channel {
 
 	private final Language lang;
-	protected final AccessLevel access;
+	private final AccessLevel access;
 	private final Set<UUID> approvedList;
 	private final Set<UUID> modList;
 	private final Set<UUID> banList;
@@ -28,9 +28,9 @@ public class NormalChannel extends Channel {
 		super(plugin, name, creator);
 		this.lang = plugin.getModule(Language.class);
 		this.access = access;
-		approvedList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
-		modList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
-		banList = Collections.newSetFromMap(new ConcurrentHashMap<UUID, Boolean>());
+		approvedList = Collections.newSetFromMap(new ConcurrentHashMap<>());
+		modList = Collections.newSetFromMap(new ConcurrentHashMap<>());
+		banList = Collections.newSetFromMap(new ConcurrentHashMap<>());
 		this.lastAccessed = new AtomicLong(lastAccessed);
 		if (creator != null) {
 			modList.add(creator);
@@ -193,9 +193,7 @@ public class NormalChannel extends Channel {
 		if (this.isOwner(user)) {
 			sender.sendMessage(lang.getValue("chat.error.permissionLow").replace("{CHANNEL}", this.getName()));
 		} else if (!this.isBanned(user)) {
-			if (modList.contains(userID)) {
-				modList.remove(userID);
-			}
+			modList.remove(userID);
 			this.approvedList.remove(userID);
 			this.banList.add(userID);
 			this.sendMessage(message);

@@ -19,6 +19,7 @@ import org.bukkit.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Base to be extended by all commands registered by Easterlyn.
@@ -31,7 +32,7 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 	private final Easterlyn plugin;
 	private final Language lang;
 
-	public EasterlynCommand(Easterlyn plugin, String name) {
+	protected EasterlynCommand(Easterlyn plugin, String name) {
 		super(name);
 		this.plugin = plugin;
 		this.lang = plugin.getModule(Language.class);
@@ -42,19 +43,20 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 		this.setPermissionMessage("By the order of the Jarl, stop right there!");
 	}
 
+	@NotNull
 	@Override
-	public Command setUsage(String usage) {
+	public Command setUsage(@NotNull String usage) {
 		return super.setUsage(Language.getColor("bad") + ChatColor.translateAlternateColorCodes('&', usage));
 	}
 
+	@NotNull
 	@Override
-	public Command setDescription(String description) {
+	public Command setDescription(@NotNull String description) {
 		return super.setDescription(Language.getColor("neutral") + ChatColor.translateAlternateColorCodes('&', description));
 	}
 
-	public Command setPermissionLevel(UserRank rank) {
+	public void setPermissionLevel(UserRank rank) {
 		this.permissionLevel = rank;
-		return this;
 	}
 
 	public UserRank getPermissionLevel() {
@@ -68,19 +70,22 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 		permission.addParent(rank.getPermission(), true).recalculatePermissibles();
 	}
 
+	@NotNull
 	@Override
 	public Command setPermissionMessage(String permissionMessage) {
 		return super.setPermissionMessage(Language.getColor("bad") + ChatColor.translateAlternateColorCodes('&', permissionMessage));
 	}
 
-	public Command setAliases(String... aliases) {
-		return this.setAliases(Arrays.asList(aliases));
+	public void setAliases(String... aliases) {
+		this.setAliases(Arrays.asList(aliases));
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String label, String[] args) {
+	public boolean execute(@NotNull CommandSender sender, @NotNull String label, @NotNull String[] args) {
 		if (this.getPermission() != null && !sender.hasPermission(this.getPermission())) {
-			sender.sendMessage(this.getPermissionMessage());
+			if (this.getPermissionMessage() != null) {
+				sender.sendMessage(this.getPermissionMessage());
+			}
 			return true;
 		}
 		try {
@@ -100,8 +105,9 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 	protected abstract boolean onCommand(CommandSender sender, String label, String[] args);
 
 	// TODO revisit tab completion, implement location tab completion
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (this.getPermission() != null && this.getPermission().isEmpty()
 				&& !sender.hasPermission(getPermission())) {
@@ -110,8 +116,9 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 		return super.tabComplete(sender, alias, args);
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args, Location location) throws IllegalArgumentException {
 		return this.tabComplete(sender, alias, args);
 	}
 
@@ -125,6 +132,7 @@ public abstract class EasterlynCommand extends Command implements PluginIdentifi
 		return validCompletions;
 	}
 
+	@NotNull
 	@Override
 	public final Plugin getPlugin() {
 		return plugin;

@@ -25,6 +25,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import sx.blah.discord.api.ClientBuilder;
@@ -93,7 +94,7 @@ public class Discord extends Module {
 		authentications = CacheBuilder.newBuilder().expireAfterWrite(5L, TimeUnit.MINUTES).build(
 				new CacheLoader<Object, Object>() {
 					@Override
-					public Object load(Object key) throws Exception {
+					public Object load(@NotNull Object key) {
 						if (!(key instanceof UUID)) {
 							throw new IllegalArgumentException("Key must be a UUID");
 						}
@@ -366,7 +367,7 @@ public class Discord extends Module {
 		queueMessageDeletion(priority, Arrays.asList(messages));
 	}
 
-	public void queueMessageDeletion(CallPriority priority, Collection<IMessage> messages) {
+	private void queueMessageDeletion(CallPriority priority, Collection<IMessage> messages) {
 		if (!this.isEnabled()) {
 			return;
 		}
@@ -427,7 +428,7 @@ public class Discord extends Module {
 		return this.client;
 	}
 
-	public long getGeneralChannelID(IGuild guild) {
+	private long getGeneralChannelID(IGuild guild) {
 		return this.getChannelID(guild, "general");
 	}
 
@@ -443,11 +444,11 @@ public class Discord extends Module {
 		return this.getChannelIDs("main");
 	}
 
-	public long getLogChannelID(IGuild guild) {
+	private long getLogChannelID(IGuild guild) {
 		return this.getChannelID(guild, "log");
 	}
 
-	public Collection<Long> getLogChannelIDs() {
+	private Collection<Long> getLogChannelIDs() {
 		return this.getChannelIDs("log");
 	}
 
@@ -455,7 +456,7 @@ public class Discord extends Module {
 		return this.getChannelID(guild, "report");
 	}
 
-	public Collection<Long> getReportChannelIDs() {
+	private Collection<Long> getReportChannelIDs() {
 		return this.getChannelIDs("report");
 	}
 
@@ -568,7 +569,6 @@ public class Discord extends Module {
 						e.printStackTrace();
 						return;
 					}
-					return;
 				}
 				if (!channel.isPrivate() && channelID == this.getLogChannelID(channel.getGuild())) {
 					long now = System.currentTimeMillis();
@@ -685,7 +685,7 @@ public class Discord extends Module {
 						user = getClient().getUserByID(Long.parseLong(path));
 						break;
 					}
-				} catch (NumberFormatException e) {}
+				} catch (NumberFormatException ignored) {}
 			}
 		}
 
@@ -771,7 +771,7 @@ public class Discord extends Module {
 		return authentications;
 	}
 
-	public boolean isLinked(IUser user) {
+	private boolean isLinked(IUser user) {
 		return discordData.isString("users." + user.getLongID());
 	}
 

@@ -28,8 +28,8 @@ import java.util.Set;
  */
 public class Shape {
 
-	public class MaterialDataValue {
-		Material material;
+	public static class MaterialDataValue {
+		final Material material;
 		Multimap<Class<? extends BlockData>, Direction> transforms;
 
 		public MaterialDataValue(Material material) {

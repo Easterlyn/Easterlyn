@@ -14,6 +14,7 @@ import org.bukkit.util.StringUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Donator perk command, classpect reselection on the fly.
@@ -58,11 +59,12 @@ public class AffinityCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
-		if (!(sender instanceof Player) || !sender.hasPermission(this.getPermission())
-				|| args.length == 0 || args.length > 1) {
+		if (!(sender instanceof Player) || this.getPermission() != null && !sender.hasPermission(this.getPermission())
+				|| args.length != 1) {
 			return ImmutableList.of();
 		}
 		args[0] = args[0].toUpperCase();

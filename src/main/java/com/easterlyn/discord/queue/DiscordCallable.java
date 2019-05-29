@@ -1,7 +1,6 @@
 package com.easterlyn.discord.queue;
 
 import sx.blah.discord.handle.obj.IChannel;
-import sx.blah.discord.handle.obj.IGuild;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
 import sx.blah.discord.util.RateLimitException;
@@ -11,41 +10,24 @@ import sx.blah.discord.util.RateLimitException;
  * 
  * @author Jikoo
  */
-public abstract class DiscordCallable implements Comparable<DiscordCallable> {
+public abstract class DiscordCallable {
 
 	private final Long guildID;
 	private final CallType callType;
 	private final long queueTime;
 
-	private CallPriority priority;
 	private DiscordCallable chain, parent;
 	private int retries;
 
-	public DiscordCallable(IGuild guild, CallType callType) {
-		this(guild.getLongID(), callType);
-	}
-
-	public DiscordCallable(IChannel channel, CallType callType) {
+	protected DiscordCallable(IChannel channel, CallType callType) {
 		this(channel.isPrivate() ? channel.getLongID() : channel.getGuild().getLongID(), callType);
 	}
 
-	public DiscordCallable(Long guildID, CallType callType) {
+	protected DiscordCallable(Long guildID, CallType callType) {
 		this.guildID = guildID;
 		this.callType = callType;
 		this.queueTime = System.currentTimeMillis();
-		this.priority = CallPriority.MEDIUM;
 		this.retries = 0;
-	}
-
-	/**
-	 * Set the CallPriority for this DiscordCallable.
-	 * 
-	 * @param priority the CallPriority
-	 * @return this DiscordCallable for call chaining
-	 */
-	public DiscordCallable withPriority(CallPriority priority) {
-		this.priority = priority;
-		return this;
 	}
 
 	/**
@@ -81,45 +63,25 @@ public abstract class DiscordCallable implements Comparable<DiscordCallable> {
 		return this;
 	}
 
-	public Long getGuildID() {
+	Long getGuildID() {
 		return this.guildID;
 	}
 
-	public CallType getCallType() {
+	CallType getCallType() {
 		return this.callType;
 	}
 
-	public DiscordCallable getChainedCall() {
+	DiscordCallable getChainedCall() {
 		return this.chain;
 	}
 
 	public abstract void call() throws DiscordException, RateLimitException, MissingPermissionsException;
 
-	public final boolean retryOnException() {
+	final boolean retryOnException() {
 		return --retries >= 0;
 	}
 
-	@Override
-	public int compareTo(DiscordCallable o) {
-		// Lower priority, return 1.
-		if (this.priority.ordinal() < o.priority.ordinal()) {
-			return 1;
-		}
-		// Same priority, return based on queue time.
-		if (this.priority.ordinal() == o.priority.ordinal()) {
-			// Later queue time, return 1.
-			if (this.queueTime > o.queueTime) {
-				return 1;
-			}
-			// Same queue time, same priority.
-			if (this.queueTime == o.queueTime) {
-				return 0;
-			}
-			// Earlier queue time.
-			return -1;
-		}
-		// Higher queue priority.
-		return -1;
+	public long getQueueTime() {
+		return queueTime;
 	}
-
 }

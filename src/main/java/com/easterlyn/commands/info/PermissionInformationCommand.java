@@ -14,6 +14,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for printing out information about a permission.
@@ -59,24 +60,25 @@ public class PermissionInformationCommand extends EasterlynCommand {
 			return true;
 		}
 		sender.sendMessage(Language.getColor("emphasis.neutral") + "Permission: " + Language.getColor("neutral") + permission.getName());
-		if (permission.getDescription() != null) {
+		if (!permission.getDescription().isEmpty()) {
 			sender.sendMessage(Language.getColor("emphasis.neutral") + "Description: " + Language.getColor("neutral") + permission.getDescription());
 		}
 		if (permission.getChildren().size() > 0) {
 			sender.sendMessage(Language.getColor("emphasis.neutral") + "Children:");
 			for (Entry<String, Boolean> entry : permission.getChildren().entrySet()) {
-				sender.sendMessage(new StringBuilder().append(Language.getColor("neutral"))
-						.append(entry.getKey()).append(Language.getColor("emphasis.neutral")).append(": ")
-						.append(entry.getValue() ? Language.getColor("good") : Language.getColor("bad"))
-						.append(entry.getValue()).toString());
+				sender.sendMessage(Language.getColor("neutral") + entry.getKey()
+						+ Language.getColor("emphasis.neutral") + ": "
+						+ (entry.getValue() ? Language.getColor("good") : Language.getColor("bad"))
+						+ entry.getValue());
 			}
 		}
 		sender.sendMessage(Language.getColor("emphasis.neutral") + "Default: " + Language.getColor("neutral") + permission.getDefault().name());
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		return ImmutableList.of();
 	}

@@ -7,7 +7,6 @@ import com.easterlyn.machines.type.Machine;
 import com.easterlyn.utilities.tuple.Triple;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
-import io.netty.buffer.Unpooled;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -20,15 +19,14 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_14_R1.ChatMessage;
 import net.minecraft.server.v1_14_R1.EntityPlayer;
 import net.minecraft.server.v1_14_R1.MerchantRecipe;
 import net.minecraft.server.v1_14_R1.MerchantRecipeList;
-import net.minecraft.server.v1_14_R1.MinecraftKey;
-import net.minecraft.server.v1_14_R1.PacketDataSerializer;
-import net.minecraft.server.v1_14_R1.PacketPlayOutCustomPayload;
 import net.minecraft.server.v1_14_R1.PacketPlayOutOpenWindow;
+import net.minecraft.server.v1_14_R1.PacketPlayOutOpenWindowMerchant;
 import net.minecraft.server.v1_14_R1.PacketPlayOutSetSlot;
 import net.minecraft.server.v1_14_R1.PacketPlayOutWindowData;
 import org.bukkit.Bukkit;
@@ -225,11 +223,11 @@ public class InventoryUtils {
 		}
 
 		// Banners
-		handleSpecialMeta(BannerMeta.class, originalMeta, cleanedMeta,
+		biConsumeAs(BannerMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> newMeta.setPatterns(oldMeta.getPatterns()));
 
 		// Book and quill/Written books
-		handleSpecialMeta(BookMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+		biConsumeAs(BookMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 			if (oldMeta.hasPages()) {
 				newMeta.setPages(oldMeta.getPages());
 			}
@@ -241,27 +239,31 @@ public class InventoryUtils {
 			}
 		});
 
+		// Durability
+		biConsumeAs(Damageable.class, originalMeta, cleanedMeta, (oldMeta, newMeta) ->
+				newMeta.setDamage(Math.max(Math.min(oldMeta.getDamage(), originalItem.getType().getMaxDurability()), 0)));
+
 		// Single effect fireworks
-		handleSpecialMeta(FireworkEffectMeta.class, originalMeta, cleanedMeta,
+		biConsumeAs(FireworkEffectMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> newMeta.setEffect(oldMeta.getEffect()));
 
 		// Fireworks/Firework stars
-		handleSpecialMeta(FireworkMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+		biConsumeAs(FireworkMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 			newMeta.setPower(oldMeta.getPower());
 			newMeta.addEffects(oldMeta.getEffects());
 		});
 
 		// Leather armor color
-		handleSpecialMeta(LeatherArmorMeta.class, originalMeta, cleanedMeta,
+		biConsumeAs(LeatherArmorMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> newMeta.setColor(oldMeta.getColor()));
 
 		// Enchanted books
-		handleSpecialMeta(EnchantmentStorageMeta.class, originalMeta, cleanedMeta,
+		biConsumeAs(EnchantmentStorageMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> oldMeta.getStoredEnchants().forEach(
 						(enchantment, level) -> newMeta.addStoredEnchant(enchantment, level, true)));
 
 		// Map ID
-		handleSpecialMeta(MapMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+		biConsumeAs(MapMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 				newMeta.setMapView(oldMeta.getMapView());
 				newMeta.setColor(oldMeta.getColor());
 				newMeta.setLocationName(oldMeta.getLocationName());
@@ -269,7 +271,7 @@ public class InventoryUtils {
 		});
 
 		// Potions
-		handleSpecialMeta(PotionMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+		biConsumeAs(PotionMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 				newMeta.setBasePotionData(oldMeta.getBasePotionData());
 				newMeta.setColor(oldMeta.getColor());
 				oldMeta.getCustomEffects().forEach(effect -> {
@@ -283,7 +285,7 @@ public class InventoryUtils {
 		// Repairable would preserve anvil tags on tools, we'll avoid that
 
 		// Skulls
-		handleSpecialMeta(SkullMeta.class, originalMeta, cleanedMeta,
+		biConsumeAs(SkullMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> newMeta.setOwningPlayer(oldMeta.getOwningPlayer()));
 
 		// Normal meta
@@ -292,7 +294,7 @@ public class InventoryUtils {
 		}
 
 		if (originalMeta.hasEnchants()) {
-			for (Map.Entry<Enchantment, Integer> entry : originalMeta.getEnchants().entrySet()) {
+			for (Entry<Enchantment, Integer> entry : originalMeta.getEnchants().entrySet()) {
 				cleanedMeta.addEnchant(entry.getKey(), entry.getValue(), true);
 			}
 		}
@@ -301,23 +303,19 @@ public class InventoryUtils {
 			cleanedMeta.setLore(originalMeta.getLore());
 		}
 
-		if (originalMeta instanceof Damageable && cleanedMeta instanceof Damageable) {
-			((Damageable) cleanedMeta).setDamage(((Damageable) originalMeta).getDamage());
-		}
-
 		cleanedItem.setItemMeta(cleanedMeta);
 		return cleanedItem;
 	}
 
-	private static <T extends ItemMeta> void handleSpecialMeta(Class<T> metaClazz, ItemMeta originalMeta,
-			ItemMeta newMeta, BiConsumer<T, T> consumer) {
-		if (!metaClazz.isInstance(originalMeta)) {
+	public static <T> void consumeAs(Class<T> metaClazz, Object obj, Consumer<T> consumer) {
+		if (!metaClazz.isInstance(obj)) {
 			return;
 		}
-		if (!metaClazz.isInstance(newMeta)) {
-			return;
-		}
-		consumer.accept(metaClazz.cast(originalMeta), metaClazz.cast(newMeta));
+		consumer.accept(metaClazz.cast(obj));
+	}
+
+	public static <T> void biConsumeAs(Class<T> clazz, Object obj1, Object obj2, BiConsumer<T, T> consumer) {
+		consumeAs(clazz, obj1, cast1 -> consumeAs(clazz, obj2, cast2 -> consumer.accept(cast1, cast2)));
 	}
 
 	public static HashSet<ItemStack> getUniqueItems(Easterlyn plugin) {
@@ -398,7 +396,7 @@ public class InventoryUtils {
 		return getHeldItem(event.getPlayer().getInventory(), isMainHand(event));
 	}
 
-	public static ItemStack getHeldItem(PlayerInventory inv, boolean mainHand) {
+	private static ItemStack getHeldItem(PlayerInventory inv, boolean mainHand) {
 		return mainHand ? inv.getItemInMainHand() : inv.getItemInOffHand();
 	}
 
@@ -577,7 +575,7 @@ public class InventoryUtils {
 		return recipe.toString();
 	}
 
-	public static String itemToText(ItemStack item) {
+	private static String itemToText(ItemStack item) {
 		if (item == null || item.getType() == Material.AIR) {
 			return "AIR";
 		}

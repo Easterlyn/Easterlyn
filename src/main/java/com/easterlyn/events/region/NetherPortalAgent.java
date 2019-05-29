@@ -27,7 +27,7 @@ public class NetherPortalAgent {
 	public NetherPortalAgent() {
 		shape = new Shape();
 
-		MaterialDataValue value = shape.new MaterialDataValue(Material.OBSIDIAN);
+		MaterialDataValue value = new Shape.MaterialDataValue(Material.OBSIDIAN);
 
 		// Platform
 		shape.setVectorData(new Vector(-2, -1, 1), value);
@@ -55,7 +55,7 @@ public class NetherPortalAgent {
 		shape.setVectorData(new Vector(0, 3, 0), value);
 		shape.setVectorData(new Vector(1, 3, 0), value);
 
-		value = shape.new MaterialDataValue(Material.AIR);
+		value = new Shape.MaterialDataValue(Material.AIR);
 
 		// Surrounding air
 		shape.setVectorData(new Vector(-2, 0, 1), value);
@@ -91,7 +91,7 @@ public class NetherPortalAgent {
 		shape.setVectorData(new Vector(0, 3, -1), value);
 		shape.setVectorData(new Vector(1, 3, -1), value);
 
-		value = shape.new MaterialDataValue(Material.NETHER_PORTAL).withBlockData(Orientable.class, Direction.WEST);
+		value = new Shape.MaterialDataValue(Material.NETHER_PORTAL).withBlockData(Orientable.class, Direction.WEST);
 
 		// Portal
 		shape.setVectorData(new Vector(-1, 0, 0), value);

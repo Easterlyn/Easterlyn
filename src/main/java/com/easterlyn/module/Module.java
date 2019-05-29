@@ -54,10 +54,8 @@ public abstract class Module {
 
 	/**
 	 * Disables the Module.
-	 *
-	 * @return the Module disabled
 	 */
-	public final Module disable() {
+	public final void disable() {
 		this.getLogger().info("Disabling module " + this.getName());
 		this.saveConfig();
 		try {
@@ -67,7 +65,6 @@ public abstract class Module {
 			this.getLogger().severe("Unhandled exception in module " + this.getName() + ". Module failed to disable.");
 			this.getLogger().severe(TextUtils.getTrace(e));
 		}
-		return this;
 	}
 
 	/**

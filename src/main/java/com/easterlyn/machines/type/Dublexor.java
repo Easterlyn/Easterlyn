@@ -16,7 +16,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -61,29 +60,31 @@ public class Dublexor extends Machine {
 
 		shape.setVectorData(new Vector(0, 1, 0), Material.ENCHANTING_TABLE);
 		shape.setVectorData(new Vector(0, 0, -1),
-				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.NORTH));
+				new Shape.MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.NORTH));
 		shape.setVectorData(new Vector(1, 0, 0),
-				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.WEST));
+				new Shape.MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.WEST));
 		shape.setVectorData(new Vector(-1, 0, 0),
-				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.EAST));
+				new Shape.MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.EAST));
 		shape.setVectorData(new Vector(0, 0, 1),
-				shape.new MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.SOUTH));
+				new Shape.MaterialDataValue(Material.QUARTZ_STAIRS).withBlockData(Directional.class, Direction.SOUTH));
 
-		Shape.MaterialDataValue m = shape.new MaterialDataValue(Material.QUARTZ_SLAB);
+		Shape.MaterialDataValue m = new Shape.MaterialDataValue(Material.QUARTZ_SLAB);
 		shape.setVectorData(new Vector(1, 0, -1), m);
 		shape.setVectorData(new Vector(-1, 0, -1), m);
 		shape.setVectorData(new Vector(1, 0, 1), m);
 		shape.setVectorData(new Vector(-1, 0, 1), m);
 
-		this.drop = new ItemStack(Material.ENCHANTING_TABLE);
-		ItemMeta meta = this.drop.getItemMeta();
-		Objects.requireNonNull(meta).setDisplayName(ChatColor.WHITE + "Dublexor");
-		this.drop.setItemMeta(meta);
+		drop = new ItemStack(Material.ENCHANTING_TABLE);
+		InventoryUtils.consumeAs(ItemMeta.class, drop.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.WHITE + "Dublexor");
+			drop.setItemMeta(itemMeta);
+		});
 
-		this.barrier = new ItemStack(Material.BARRIER);
-		meta = this.barrier.getItemMeta();
-		Objects.requireNonNull(meta).setDisplayName(Language.getColor("emphasis.bad") + "No Result");
-		this.barrier.setItemMeta(meta);
+		barrier = new ItemStack(Material.BARRIER);
+		InventoryUtils.consumeAs(ItemMeta.class, barrier.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(Language.getColor("emphasis.bad") + "No Result");
+			barrier.setItemMeta(itemMeta);
+		});
 	}
 
 	@Override
@@ -134,6 +135,7 @@ public class Dublexor extends Machine {
 			Inventory top = event.getView().getTopInventory();
 
 			// Color code + "Mana cost: " = 13 characters, as is color code + "Cannot copy"
+			//noinspection ConstantConditions // This is guaranteed to be okay.
 			String costString = top.getItem(1).getItemMeta().getDisplayName().substring(13);
 			if (costString.isEmpty()) {
 				return true;
@@ -192,11 +194,11 @@ public class Dublexor extends Machine {
 	 *
 	 * @param id the UUID of the Player using the Dublexor
 	 */
-	public void updateInventory(final UUID id) {
+	private void updateInventory(final UUID id) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(getPlugin(), () -> {
 			// Must re-obtain player or update doesn't seem to happen
 			Player player = Bukkit.getPlayer(id);
-			if (player == null || !tracker.hasMachineOpen(player)) {
+			if (player == null || tracker.hasNoMachineOpen(player)) {
 				// Player has logged out or closed inventory. Inventories are per-player, ignore.
 				return;
 			}
@@ -210,9 +212,10 @@ public class Dublexor extends Machine {
 			}
 
 			ItemStack expCost = new ItemStack(Material.EXPERIENCE_BOTTLE);
-			ItemMeta im = expCost.getItemMeta();
-			im.setDisplayName(Language.getColor("emphasis.bad") + "Cannot copy");
-			expCost.setItemMeta(im);
+			InventoryUtils.consumeAs(ItemMeta.class, expCost.getItemMeta(), itemMeta -> {
+				itemMeta.setDisplayName(Language.getColor("emphasis.bad") + "Cannot copy");
+				expCost.setItemMeta(itemMeta);
+			});
 
 			ItemStack modifiedInput = originalInput.clone();
 			int multiplier = 1;
@@ -267,9 +270,11 @@ public class Dublexor extends Machine {
 				lore.add(Language.getColor("emphasis.good") + "Creative exp bypass engaged.");
 			}
 
-			im.setDisplayName(color + "Mana cost: " + exp);
-			im.setLore(lore);
-			expCost.setItemMeta(im);
+			InventoryUtils.consumeAs(ItemMeta.class, expCost.getItemMeta(), itemMeta -> {
+				itemMeta.setDisplayName(color + "Mana cost: " + exp);
+				itemMeta.setLore(lore);
+				expCost.setItemMeta(itemMeta);
+			});
 
 			// Set items
 			setSecondTrade(player, open, originalInput, expCost, result);
@@ -301,29 +306,32 @@ public class Dublexor extends Machine {
 	 * @return a Triple containing inputs and a result defining behavior
 	 */
 	private static Triple<ItemStack, ItemStack, ItemStack> createExampleRecipes() {
-		ItemStack is1 = new ItemStack(Material.DIRT, 64);
-		ItemMeta im = is1.getItemMeta();
-		im.setDisplayName(ChatColor.GOLD + "Input");
-		List<String> lore = Collections.singletonList(ChatColor.WHITE + "Insert item here.");
-		im.setLore(lore);
-		is1.setItemMeta(im);
+		ItemStack input = new ItemStack(Material.DIRT, 64);
+		InventoryUtils.consumeAs(ItemMeta.class, input.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.GOLD + "Input");
+			List<String> lore = Collections.singletonList(ChatColor.WHITE + "Insert item here.");
+			itemMeta.setLore(lore);
+			input.setItemMeta(itemMeta);
+		});
 
-		ItemStack is2 = new ItemStack(Material.EXPERIENCE_BOTTLE);
-		im = is2.getItemMeta();
-		im.setDisplayName(ChatColor.GOLD + "Mana Cost");
-		lore = Arrays.asList(ChatColor.WHITE + "Displays dublecation cost",
-				ChatColor.WHITE + "when an item is inserted.");
-		im.setLore(lore);
-		is2.setItemMeta(im);
+		ItemStack cost = new ItemStack(Material.EXPERIENCE_BOTTLE);
+		InventoryUtils.consumeAs(ItemMeta.class, cost.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.GOLD + "Mana Cost");
+			List<String> lore = Arrays.asList(ChatColor.WHITE + "Displays dublecation cost",
+					ChatColor.WHITE + "when an item is inserted.");
+			itemMeta.setLore(lore);
+			cost.setItemMeta(itemMeta);
+		});
 
-		ItemStack is3 = new ItemStack(Material.DIRT, 64);
-		im = is3.getItemMeta();
-		im.setDisplayName(ChatColor.GOLD + "Copy of Input");
-		lore = Collections.singletonList(ChatColor.WHITE + "Dublecate your items.");
-		im.setLore(lore);
-		is3.setItemMeta(im);
+		ItemStack result = new ItemStack(Material.DIRT, 64);
+		InventoryUtils.consumeAs(ItemMeta.class, cost.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.GOLD + "Copy of Input");
+			List<String> lore = Collections.singletonList(ChatColor.WHITE + "Dublecate your items.");
+			itemMeta.setLore(lore);
+			result.setItemMeta(itemMeta);
+		});
 
-		return new Triple<>(is1, is2, is3);
+		return new Triple<>(input, cost, result);
 	}
 
 }

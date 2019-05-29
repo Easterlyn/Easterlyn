@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableList;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for restoring health and saturation.
@@ -55,8 +56,9 @@ public class HealCommand extends EasterlynCommand {
 		player.setSaturation(20);
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!sender.hasPermission(this.getPermission()) || args.length > 1
 				|| !sender.hasPermission("easterlyn.command.heal.other")) {

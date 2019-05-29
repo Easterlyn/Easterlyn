@@ -100,9 +100,6 @@ public class Events extends Module {
 
 		try {
 			File file = new File(getPlugin().getDataFolder(), "ipcache.yml");
-			if (!file.exists()) {
-				file.createNewFile();
-			}
 			YamlConfiguration yaml = new YamlConfiguration();
 			for (Entry<String, String> entry : ipcache.entrySet()) {
 				yaml.set(entry.getKey().replace(".", "_"), entry.getValue());
@@ -180,7 +177,7 @@ public class Events extends Module {
 	 *
 	 * @return a Collection of all matching IPs.
 	 */
-	public Collection<String> getIPsFor(String name) {
+	private Collection<String> getIPsFor(String name) {
 		synchronized (ipcache) {
 			ArrayList<String> list = new ArrayList<>();
 			for (Map.Entry<String, String> entry : ipcache.entrySet()) {

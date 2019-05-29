@@ -18,8 +18,11 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Directional;
@@ -51,6 +54,7 @@ import java.util.Optional;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Condense items automatically!
@@ -65,7 +69,7 @@ public class Densificator extends Machine {
 		recipeCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(
 				new CacheLoader<Material, List<RecipeWrapper>>() {
 					@Override
-					public List<RecipeWrapper> load(Material material) {
+					public List<RecipeWrapper> load(@NotNull Material material) {
 						ArrayList<RecipeWrapper> list = new ArrayList<>();
 
 						Bukkit.recipeIterator().forEachRemaining(recipe -> {
@@ -80,7 +84,7 @@ public class Densificator extends Machine {
 							RecipeWrapper wrapper = new RecipeWrapper(recipe);
 
 							Map<EnumSet<Material>, Integer> ingredients = wrapper.getRecipeIngredients();
-							if (ingredients.isEmpty() || ingredients.size() > 1) {
+							if (ingredients.size() != 1) {
 								return;
 							}
 
@@ -113,14 +117,15 @@ public class Densificator extends Machine {
 		this.protections = plugin.getModule(Protections.class);
 
 		getShape().setVectorData(new Vector(0, 0, 0),
-				getShape().new MaterialDataValue(Material.DROPPER).withBlockData(Directional.class, Direction.SOUTH));
+				new Shape.MaterialDataValue(Material.DROPPER).withBlockData(Directional.class, Direction.SOUTH));
 		getShape().setVectorData(new Vector(0, 1, 0),
-				getShape().new MaterialDataValue(Material.PISTON).withBlockData(Directional.class, Direction.DOWN));
+				new Shape.MaterialDataValue(Material.PISTON).withBlockData(Directional.class, Direction.DOWN));
 
 		this.drop = new ItemStack(Material.PISTON);
-		ItemMeta meta = this.drop.getItemMeta();
-		meta.setDisplayName(ChatColor.WHITE + "Densificator");
-		this.drop.setItemMeta(meta);
+		InventoryUtils.consumeAs(ItemMeta.class, drop.getItemMeta(), itemMeta -> {
+			itemMeta.setDisplayName(ChatColor.WHITE + "Densificator");
+			this.drop.setItemMeta(itemMeta);
+		});
 	}
 
 	private int getDensificationMode(ConfigurationSection storage) {
@@ -144,11 +149,12 @@ public class Densificator extends Machine {
 	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
 		Player player = event.getPlayer();
 		// Allow sneaking players to cross or place blocks, but don't allow elevators to trigger redstone devices.
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK || player.isSneaking()) {
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK || player.isSneaking() || event.getClickedBlock() == null) {
 			return false;
 		}
 		Location interacted = event.getClickedBlock().getLocation();
-		if (this.getKey(storage).equals(interacted)) {
+		Location key = getKey(storage);
+		if (key.equals(interacted)) {
 			return false;
 		}
 		for (ProtectionHook hook : protections.getHooks()) {
@@ -159,7 +165,7 @@ public class Densificator extends Machine {
 		}
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 			Inventory inventory = ((Computer) getMachines().getMachineByName("Computer")).getInventory();
-			inventory = new BlockInventoryWrapper(inventory, this.getKey(storage));
+			inventory = new BlockInventoryWrapper(inventory, key);
 			inventory.setItem(5, ((GoodButton) Programs.getProgramByName("GoodButton"))
 					.getIconFor(ChatColor.GREEN + "Cycle Densification"));
 			ItemStack gauge = new ItemStack(Material.CRAFTING_TABLE);
@@ -229,6 +235,9 @@ public class Densificator extends Machine {
 
 	private void update(Inventory inventory, ConfigurationSection storage) {
 		// TODO
+		if (inventory.getLocation() == null) {
+			return;
+		}
 		Map<Material, Integer> contents = new HashMap<>();
 		int densificationMode = this.getDensificationMode(storage);
 		for (ItemStack stack : inventory.getContents()) {
@@ -317,8 +326,11 @@ public class Densificator extends Machine {
 		double motZ = face.getModZ() * motionRandom + random.nextGaussian() * 0.044999998994171622D;
 
 		// MACHINES BlockDispenseEvent
-		// TODO play click + smoke
-		key.getWorld().dropItem(key, item).setVelocity(new Vector(motX, motY, motZ));
+		if (key.getWorld() != null) {
+			key.getWorld().playSound(key, Sound.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 1F, 1F);
+			key.getWorld().playEffect(key, Effect.SMOKE, facing);
+			key.getWorld().dropItem(key, item).setVelocity(new Vector(motX, motY, motZ));
+		}
 	}
 
 	@Override

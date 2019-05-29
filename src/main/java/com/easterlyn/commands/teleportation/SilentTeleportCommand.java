@@ -15,6 +15,7 @@ import org.bukkit.World;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for silently teleporting a player.
@@ -60,8 +61,9 @@ public class SilentTeleportCommand extends EasterlynCommand {
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (args.length < 2) {
 			return super.tabComplete(sender, alias, args);

@@ -19,7 +19,7 @@ public class ChannelManager {
 	private final Chat chat;
 	private final ConcurrentHashMap<String, Channel> channelList = new ConcurrentHashMap<>();
 
-	protected ChannelManager(Chat chat) {
+	ChannelManager(Chat chat) {
 		this.chat = chat;
 	}
 

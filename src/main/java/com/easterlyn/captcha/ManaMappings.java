@@ -38,6 +38,7 @@ public class ManaMappings {
 
 	private static Map<Material, Double> manaMappings;
 
+	@SuppressWarnings("DuplicateBranchesInSwitch") // IDE does not recognize lack of break statement yielding differing results
 	public static double expCost(Effects effects, ItemStack toCreate) {
 		if (toCreate == null || toCreate.getAmount() < 1) {
 			return Double.MAX_VALUE;

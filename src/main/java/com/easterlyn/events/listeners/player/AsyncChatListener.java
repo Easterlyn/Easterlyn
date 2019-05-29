@@ -120,7 +120,7 @@ public class AsyncChatListener extends EasterlynListener {
 						.setSender(users.getUser(event.getPlayer().getUniqueId()))
 						.setMessage(event.getMessage());
 				// Ensure message can be sent
-				if (!mb.canBuild(true) || !mb.isSenderInChannel(true)) {
+				if (mb.canNotBuild(true) || mb.isSenderNotInChannel(true)) {
 					event.setCancelled(true);
 					return;
 				}

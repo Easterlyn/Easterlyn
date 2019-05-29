@@ -56,20 +56,15 @@ public class AetherCommand extends EasterlynAsynchronousCommand {
 			return true;
 		}
 
-		sendAether(sender, args[0], TextUtils.join(args, ' ', 1, args.length), label.equals("aetherme"));
-		return true;
-	}
-
-	public void sendAether(CommandSender sender, String name, String msg, boolean thirdPerson) {
-
 		// set channel before and after to prevent @channel changing while also stripping invalid characters
 		MessageBuilder builder = new MessageBuilder((Easterlyn) getPlugin())
-				.setSender(ChatColor.WHITE + name).setChannel(aether).setMessage(msg)
+				.setSender(ChatColor.WHITE + args[0]).setChannel(aether)
+				.setMessage(TextUtils.join(args, ' ', 1, args.length))
 				.setChannel(aether).setChannelClick("@# ").setNameClick("@# ").setNameHover(hover)
-				.setThirdPerson(thirdPerson);
+				.setThirdPerson(label.equals("aetherme"));
 
-		if (!builder.canBuild(false)) {
-			return;
+		if (builder.canNotBuild(false)) {
+			return false;
 		}
 
 		Message message = builder.toMessage();
@@ -78,7 +73,7 @@ public class AetherCommand extends EasterlynAsynchronousCommand {
 		players.removeIf(p -> users.getUser(p.getUniqueId()).getSuppression());
 
 		WrappedSenderPlayer senderPlayer = new WrappedSenderPlayer((Easterlyn) getPlugin(),
-				sender == null ? Bukkit.getConsoleSender() : sender, name);
+				sender == null ? Bukkit.getConsoleSender() : sender, args[0]);
 
 		EasterlynAsyncChatEvent event = new EasterlynAsyncChatEvent(true, senderPlayer, players, message);
 
@@ -98,6 +93,8 @@ public class AetherCommand extends EasterlynAsynchronousCommand {
 				discord.postMessage(senderPlayer.getDisplayName(), message.getDiscordMessage(), discord.getMainChannelIDs());
 			}
 		}
+
+		return true;
 	}
 
 }

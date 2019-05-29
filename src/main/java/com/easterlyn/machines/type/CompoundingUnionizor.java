@@ -41,7 +41,7 @@ public class CompoundingUnionizor extends Machine {
 		super(plugin, machines, new Shape(), "Compounding Unionizer");
 		Shape shape = getShape();
 		shape.setVectorData(new Vector(0, 0, 0),
-				shape.new MaterialDataValue(Material.DROPPER).withBlockData(Directional.class, Direction.SOUTH));
+				new Shape.MaterialDataValue(Material.DROPPER).withBlockData(Directional.class, Direction.SOUTH));
 		shape.setVectorData(new Vector(0, 1, 0), Material.CRAFTING_TABLE);
 
 		drop = null; // future
@@ -84,16 +84,15 @@ public class CompoundingUnionizor extends Machine {
 		return false;
 	}
 
-
-
 	private void ejectAllInvalidItems(Function<ItemStack, Boolean> func, Inventory inventory, ConfigurationSection storage) {
+		Location key = getKey(storage);
 		for (ItemStack item : inventory.getContents()) {
 			if (item == null || item.getType() == Material.AIR || func.apply(item)) {
 				continue;
 			}
 			// This is safe, no CME because we're iterating over a copied array
 			inventory.removeItem(item);
-			this.ejectItem(this.getKey(storage), item, storage);
+			this.ejectItem(key, item, storage);
 		}
 	}
 
@@ -123,7 +122,9 @@ public class CompoundingUnionizor extends Machine {
 
 		// MACHINES BlockDispenseEvent
 		// TODO play click + smoke
-		key.getWorld().dropItem(key, item).setVelocity(new Vector(motX, motY, motZ));
+		if (key.getWorld() != null) {
+			key.getWorld().dropItem(key, item).setVelocity(new Vector(motX, motY, motZ));
+		}
 	}
 
 	@Override

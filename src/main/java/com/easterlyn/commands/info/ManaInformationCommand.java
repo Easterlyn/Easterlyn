@@ -13,6 +13,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * ManaInformationCommand
@@ -32,25 +33,10 @@ public class ManaInformationCommand extends EasterlynAsynchronousCommand {
 	@Override
 	protected boolean onCommand(final CommandSender sender, final String label, final String[] args) {
 		StringBuilder sb = new StringBuilder();
-		// This is slightly risky
 		for (Material material : Material.values()) {
-			if (material.isLegacy()) {
-				continue;
-			}
 			sb.append(material.name()).append(": ").append(ManaMappings.getMana().get(material)).append('\n');
 		}
 		final File file = new File(getPlugin().getDataFolder(), "mana.txt");
-		// Again, minimal risk calling async
-		if (file.exists()) {
-			file.delete();
-		}
-		try {
-			file.createNewFile();
-		} catch (IOException e) {
-			e.printStackTrace();
-			sender.sendMessage(Language.getColor("bad") + "IOException creating mana.txt");
-			return true;
-		}
 		try (FileWriter writer = new FileWriter(file)) {
 			writer.write(sb.toString());
 		} catch (IOException e) {
@@ -61,8 +47,9 @@ public class ManaInformationCommand extends EasterlynAsynchronousCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		return ImmutableList.of();
 	}

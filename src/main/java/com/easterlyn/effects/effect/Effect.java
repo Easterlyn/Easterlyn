@@ -23,7 +23,7 @@ public abstract class Effect {
 	// Maximum level with any effect on play
 	private final int maximumCombinedLevel;
 
-	public Effect(Easterlyn plugin, int cost, int maximumLevel, int maximumCombinedLevel, String name) {
+	protected Effect(Easterlyn plugin, int cost, int maximumLevel, int maximumCombinedLevel, String name) {
 		this.plugin = plugin;
 		this.name = name;
 		this.cost = cost;

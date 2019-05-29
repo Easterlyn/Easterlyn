@@ -2,6 +2,7 @@ package com.easterlyn.discord.queue;
 
 import com.easterlyn.discord.Discord;
 import com.easterlyn.utilities.tuple.Wrapper;
+import java.util.Comparator;
 import sx.blah.discord.handle.obj.IChannel;
 import sx.blah.discord.util.DiscordException;
 import sx.blah.discord.util.MissingPermissionsException;
@@ -175,7 +176,8 @@ public class DiscordQueue extends Thread {
 			}
 			guildMap.compute(callable.getCallType(), (callType, callTypeQueue) -> {
 				if (callTypeQueue == null) {
-					callTypeQueue = new PriorityBlockingQueue<>();
+					callTypeQueue = new PriorityBlockingQueue<>(11,
+							Comparator.comparingLong(DiscordCallable::getQueueTime).reversed());
 				}
 				if (callType == CallType.MESSAGE_SEND && callable instanceof DiscordMessageCallable) {
 					DiscordCallable next = callTypeQueue.peek();
@@ -205,7 +207,7 @@ public class DiscordQueue extends Thread {
 		private final StringBuffer content = new StringBuffer();
 		private final IChannel channel;
 
-		public DiscordMessageCallable(IChannel channel, @Nullable String name, String message) {
+		DiscordMessageCallable(IChannel channel, @Nullable String name, String message) {
 			super(channel, CallType.MESSAGE_SEND);
 			this.channel = channel;
 			this.addMessage(name, message);
@@ -220,7 +222,7 @@ public class DiscordQueue extends Thread {
 			}
 		}
 
-		public void addMessage(@Nullable String name, String message) {
+		void addMessage(@Nullable String name, String message) {
 			StringBuilder assembledMessage = new StringBuilder();
 			if (this.content.length() > 0) {
 				assembledMessage.append('\n');
@@ -236,7 +238,7 @@ public class DiscordQueue extends Thread {
 			this.content.append(assembledMessage.toString());
 		}
 
-		public boolean addMessage(DiscordMessageCallable callable) {
+		boolean addMessage(DiscordMessageCallable callable) {
 			for (DiscordCallable chained = this;; chained = chained.getChainedCall()) {
 				if (chained == null) {
 					return false;

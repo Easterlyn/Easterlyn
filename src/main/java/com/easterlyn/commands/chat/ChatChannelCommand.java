@@ -23,6 +23,7 @@ import org.bukkit.util.StringUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Command for checking or manipulating channel data.
@@ -323,8 +324,9 @@ public class ChatChannelCommand extends EasterlynAsynchronousCommand {
 		return player != null ? player.getUniqueId() : null;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!(sender instanceof Player) || args.length > 4) {
 			return ImmutableList.of();

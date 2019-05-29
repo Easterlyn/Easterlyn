@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for repairing an item.
@@ -52,8 +53,9 @@ public class RepairCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
 		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
 			return ImmutableList.of();
 		}

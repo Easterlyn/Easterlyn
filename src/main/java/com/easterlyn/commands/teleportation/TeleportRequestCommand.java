@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Essentials' TPA just won't cut it.
@@ -111,7 +112,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.tpa.error.toSpectator"));
 			return;
 		}
-		if (!RegionUtils.regionsMatch(targetUser.getPlayer().getWorld().getName(),
+		if (RegionUtils.isDifferentRegion(targetUser.getPlayer().getWorld().getName(),
 				sourceUser.getPlayer().getWorld().getName())) {
 			sender.sendMessage(getLang().getValue("command.tpa.error.crossRegion"));
 			return;
@@ -154,7 +155,7 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			cooldowns.clearCooldown(issuer, "teleportRequest");
 			return;
 		}
-		if (!RegionUtils.regionsMatch(toTeleport.getWorld().getName(),
+		if (RegionUtils.isDifferentRegion(toTeleport.getWorld().getName(),
 				toArriveAt.getWorld().getName())) {
 			String message = getLang().getValue("command.tpa.error.crossRegion");
 			toTeleport.sendMessage(message);
@@ -204,13 +205,13 @@ public class TeleportRequestCommand extends EasterlynCommand {
 			this.here = here;
 			this.expiry = System.currentTimeMillis() + 60000L;
 		}
-		public UUID getSource() {
+		UUID getSource() {
 			return source;
 		}
-		public UUID getTarget() {
+		UUID getTarget() {
 			return target;
 		}
-		public boolean isHere() {
+		boolean isHere() {
 			return here;
 		}
 		long getExpiry() {
@@ -218,8 +219,9 @@ public class TeleportRequestCommand extends EasterlynCommand {
 		}
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
 			return com.google.common.collect.ImmutableList.of();

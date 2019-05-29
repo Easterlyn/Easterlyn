@@ -99,7 +99,7 @@ public class EffectsCommand extends EasterlynCommand {
 
 	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!(sender instanceof Player) || this.getPermission() != null && !sender.hasPermission(this.getPermission())
 				|| args.length == 0 || args.length > 2) {

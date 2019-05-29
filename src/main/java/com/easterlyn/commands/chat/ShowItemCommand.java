@@ -19,6 +19,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for displaying item in hand to the server.
@@ -72,7 +73,7 @@ public class ShowItemCommand extends EasterlynCommand {
 				.setSender(user).setThirdPerson(true).setMessage(new TextComponent("shows off "),
 						JSONUtil.getItemComponent(hand), new TextComponent("."));
 
-		if (!builder.canBuild(true) || !builder.isSenderInChannel(true)) {
+		if (builder.canNotBuild(true) || builder.isSenderNotInChannel(true)) {
 			return true;
 		}
 
@@ -80,8 +81,9 @@ public class ShowItemCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		return ImmutableList.of();
 	}

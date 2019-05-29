@@ -82,9 +82,7 @@ public class DamageByEntityListener extends EasterlynListener {
 		BukkitTask oldTask = events.getPVPTasks().put(damaged, new BukkitRunnable() {
 			@Override
 			public void run() {
-				if (events.getPVPTasks().containsKey(damaged)) {
-					events.getPVPTasks().remove(damaged);
-				}
+				events.getPVPTasks().remove(damaged);
 			}
 		}.runTaskLater(getPlugin(), 100L));
 		if (oldTask != null) {

@@ -35,7 +35,7 @@ public class Language extends Module {
 	}
 
 	private final SimpleDateFormat TIME_24 = new SimpleDateFormat("HH:mm");
-	private final Pattern specialContent = Pattern.compile("\\{([A-Z]+):(.*?)\\}");
+	private final Pattern specialContent = Pattern.compile("\\{([A-Z]+):(.*?)}");
 	private final Map<String, String> translatedValues;
 
 	private Discord discord;

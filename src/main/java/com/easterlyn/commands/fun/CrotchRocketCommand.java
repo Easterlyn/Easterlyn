@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for riding a firework in style.
@@ -38,10 +39,11 @@ public class CrotchRocketCommand extends EasterlynCommand {
 			sender.sendMessage(getLang().getValue("command.general.noConsole"));
 			return true;
 		}
-		return launch((Easterlyn) this.getPlugin(), (LivingEntity) sender);
+		launch((Easterlyn) this.getPlugin(), (LivingEntity) sender);
+		return true;
 	}
 
-	public static boolean launch(Easterlyn plugin, LivingEntity entity) {
+	public static void launch(Easterlyn plugin, LivingEntity entity) {
 		entity.setFallDistance(0);
 		entity.getWorld().spawnParticle(Particle.EXPLOSION_HUGE, entity.getLocation(), 1);
 
@@ -70,11 +72,11 @@ public class CrotchRocketCommand extends EasterlynCommand {
 				firework.setVelocity(new Vector(0, 1, 0));
 			}
 		}.runTaskTimer(plugin, 0L, 1L);
-		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args) {
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
 		return ImmutableList.of();
 	}
 }

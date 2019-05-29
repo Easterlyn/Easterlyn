@@ -13,6 +13,7 @@ import com.google.common.collect.ImmutableList;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginIdentifiableCommand;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * EasterlynCommand for printing out information about another command.
@@ -56,8 +57,9 @@ public class CommandInformationCommand extends EasterlynCommand {
 		return true;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String alias, String[] args)
+	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args)
 			throws IllegalArgumentException {
 		if (!sender.hasPermission(this.getPermission()) || args.length > 1) {
 			return ImmutableList.of();

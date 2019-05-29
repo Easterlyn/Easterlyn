@@ -13,7 +13,7 @@ public abstract class EasterlynListener implements Listener {
 
 	private final Easterlyn plugin;
 
-	public EasterlynListener(Easterlyn plugin) {
+	protected EasterlynListener(Easterlyn plugin) {
 		this.plugin = plugin;
 	}
 
