@@ -88,7 +88,7 @@ public class VillagerAdjustment extends Module {
 	}
 
 	private MerchantRecipe adjustRecipe(@NotNull ItemStack input1, @NotNull ItemStack input2, @NotNull ItemStack result,
-			final int uses, final int maxUses, final boolean giveExp) {
+			final int uses, final int maxUses, final boolean giveExp, final int villagerExperience) {
 		if (CurrencyType.isCurrency(input1) && (input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
 				&& !CurrencyType.isCurrency(result)) {
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
@@ -104,7 +104,7 @@ public class VillagerAdjustment extends Module {
 			}
 
 			double remainder = resultCost - CurrencyType.getValue(input1);
-			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp);
+			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp, villagerExperience, 0.0F);
 
 			if (remainder > 0) {
 				input2 = this.getSingleMoneyStack(remainder, RoundingMode.UP);
@@ -140,7 +140,7 @@ public class VillagerAdjustment extends Module {
 				return null;
 			}
 
-			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp);
+			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp, villagerExperience, 0.0F);
 			recipe.addIngredient(input1);
 			return recipe;
 		}
@@ -166,7 +166,7 @@ public class VillagerAdjustment extends Module {
 				return null;
 			}
 
-			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp);
+			MerchantRecipe recipe = new MerchantRecipe(result, uses, maxUses, giveExp, villagerExperience, 0.0F);
 			recipe.addIngredient(input1);
 			recipe.addIngredient(money);
 			return recipe;
@@ -186,7 +186,7 @@ public class VillagerAdjustment extends Module {
 
 		try {
 			adjusted = this.adjustRecipe(input1, input2, recipe.getResult(),
-				recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward());
+				recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward(), recipe.getVillagerExperience());
 		} catch (Exception e) {
 			this.getPlugin().getModule(Discord.class).postReport(String.format("Error adjusting villager trade:\n%s -> %s",
 					recipe.getIngredients(), recipe.getResult()));
