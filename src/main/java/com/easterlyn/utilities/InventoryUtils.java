@@ -521,26 +521,15 @@ public class InventoryUtils {
 		MerchantRecipeList list = new MerchantRecipeList();
 		for (Triple<ItemStack, ItemStack, ItemStack> recipe : recipes) {
 			// The client can handle having empty results for recipes, but will crash upon removing the result.
-			// To combat that, add a full empty recipe instead of a recipe with an empty result.
-			// We can't just remove the recipe in case the client has changed to a higher number
-			// recipe - it cannot handle a reduction below its current recipe number.
-			boolean hasNoResult = recipe.getRight().getType() == Material.AIR;
-			list.add(new MerchantRecipe(hasNoResult ? net.minecraft.server.v1_14_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getLeft()),
-					hasNoResult ? net.minecraft.server.v1_14_R1.ItemStack.a : CraftItemStack.asNMSCopy(recipe.getMiddle()),
-							CraftItemStack.asNMSCopy(recipe.getRight()), 0, Integer.MAX_VALUE, 0, 0));
+			if (recipe.getRight().getType() == Material.AIR) {
+				continue;
+			}
+			list.add(new MerchantRecipe(CraftItemStack.asNMSCopy(recipe.getLeft()), CraftItemStack.asNMSCopy(recipe.getMiddle()),
+					CraftItemStack.asNMSCopy(recipe.getRight()), 0, Integer.MAX_VALUE, 0, 0));
 		}
 
-		PacketDataSerializer out = new PacketDataSerializer(Unpooled.buffer());
-		try {
-			Field field = nmsPlayer.getClass().getDeclaredField("containerCounter");
-			field.setAccessible(true);
-			out.writeInt(field.getInt(nmsPlayer));
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.printStackTrace();
-			return;
-		}
-		list.a(out);
-		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutCustomPayload(new MinecraftKey("trader_list"), out));
+		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindowMerchant(nmsPlayer.activeContainer.windowId, list, 5, 0, false));
+		player.updateInventory();
 	}
 
 	public static String recipeToText(Recipe recipe) {
