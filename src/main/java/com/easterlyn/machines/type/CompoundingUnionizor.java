@@ -5,9 +5,12 @@ import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.utilities.InventoryUtils;
+import org.bukkit.Effect;
 import org.bukkit.Keyed;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Directional;
@@ -121,9 +124,10 @@ public class CompoundingUnionizor extends Machine {
 		double motZ = face.getModZ() * motionRandom + random.nextGaussian() * 0.044999998994171622D;
 
 		// MACHINES BlockDispenseEvent
-		// TODO play click + smoke
 		if (key.getWorld() != null) {
 			key.getWorld().dropItem(key, item).setVelocity(new Vector(motX, motY, motZ));
+			key.getWorld().playSound(key, Sound.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 1F, 1F);
+			key.getWorld().playEffect(key, Effect.SMOKE, face);
 		}
 	}
 

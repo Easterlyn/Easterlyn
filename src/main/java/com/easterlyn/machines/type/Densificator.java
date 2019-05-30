@@ -327,9 +327,10 @@ public class Densificator extends Machine {
 
 		// MACHINES BlockDispenseEvent
 		if (key.getWorld() != null) {
-			key.getWorld().playSound(key, Sound.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 1F, 1F);
-			key.getWorld().playEffect(key, Effect.SMOKE, facing);
 			key.getWorld().dropItem(key, item).setVelocity(new Vector(motX, motY, motZ));
+			key.getWorld().playSound(key, Sound.BLOCK_DISPENSER_DISPENSE, SoundCategory.BLOCKS, 1F, 1F);
+			key.getWorld().playEffect(key, Effect.SMOKE, face);
+			key.getWorld().playEffect(key, Effect.SMOKE, face);
 		}
 	}
 
