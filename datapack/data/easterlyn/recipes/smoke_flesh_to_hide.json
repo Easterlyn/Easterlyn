@@ -1,9 +1,9 @@
 {
-  "type": "minecraft:smelting",
+  "type": "minecraft:smoking",
   "ingredient": {
     "item": "minecraft:rotten_flesh"
   },
   "result": "minecraft:rabbit_hide",
   "experience": 0,
-  "cookingtime": 200
+  "cookingtime": 100
 }
