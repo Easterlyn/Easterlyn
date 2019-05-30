@@ -298,22 +298,23 @@ public class ManaMappings {
 		return cost > 0 ? cost : Integer.MAX_VALUE;
 	}
 
+	/**
+	 * Gets a value for an enchantment.
+	 * <p>
+	 *     This is based on internal rarity values and may need updating between versions.
+	 * </p>
+	 * @param enchantment the Enchantment
+	 * @param level the level of the Enchantment
+	 * @param stored whether or not the Enchantment is in a book and not useable
+	 * @return the cost of the enchantment
+	 */
 	private static double getEnchantCost(Enchantment enchantment, double level, boolean stored) {
-		// Note: All level values are from 1.7
-		// (16 - weight) * level * 20 seems to be a good rate.
-		// Sharpness 5: 6 * 5 * 20 = 300 exp, 0-26
-		// silk touch 1: 15 * 1 * 20 = 300 exp
-		// fortune 3: 14 * 3 * 20 = 840 exp, 0-30
-		// Rebalanced to *40, removed 2x multiplier from final cost
-		// Rebalanced weights to account for mending/frostwalker being rarer
-		/*
-		 * TODO recalc and explain reasoning, double check balance
-		 * Enchantment levels are a short, no risk of overflow until added to cost.
-		 */
-		double enchantCost = (20 - getWeight(enchantment));
-		enchantCost *= (stored ? 220 : 225);
+		double enchantCost = net.minecraft.server.v1_14_R1.Enchantment.Rarity.COMMON.a() + 10
+				- (enchantment instanceof CraftEnchantment ? ((CraftEnchantment) enchantment).getHandle().d().a()
+						: net.minecraft.server.v1_14_R1.Enchantment.Rarity.UNCOMMON.a());
+		enchantCost *= (stored ? 60 : 65);
 		// Balance: Base cost on percentage of max level, not only current level
-		enchantCost *= Math.abs(level) / enchantment.getMaxLevel();
+		enchantCost *= Math.pow(2D, Math.abs(level)) / Math.pow(2D, enchantment.getMaxLevel());
 		if (enchantment.getKey().getKey().contains("curse")) {
 			// Curses are also treasure, should be handled first.
 			enchantCost /= 2.5;
@@ -884,13 +885,6 @@ public class ManaMappings {
 		// Map and return.
 		manaMappings.put(material, minimum);
 		return minimum;
-	}
-
-	private static int getWeight(Enchantment enchantment) {
-		if (enchantment instanceof CraftEnchantment) {
-			return ((CraftEnchantment) enchantment).getHandle().d().a();
-		}
-		return 5;
 	}
 
 }
