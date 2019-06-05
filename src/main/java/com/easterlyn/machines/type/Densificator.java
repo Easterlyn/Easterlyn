@@ -4,7 +4,6 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.computer.BadButton;
-import com.easterlyn.machines.type.computer.BlockInventoryWrapper;
 import com.easterlyn.machines.type.computer.GoodButton;
 import com.easterlyn.machines.type.computer.Programs;
 import com.easterlyn.machines.utilities.Direction;
@@ -16,6 +15,16 @@ import com.easterlyn.utilities.recipe.RecipeWrapper;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.EnumSet;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
@@ -43,17 +52,6 @@ import org.bukkit.inventory.ShapelessRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -61,7 +59,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Jikoo
  */
-public class Densificator extends Machine {
+public class Densificator extends Machine implements InventoryHolder {
 
 	private static final LoadingCache<Material, List<RecipeWrapper>> recipeCache;
 
@@ -164,8 +162,7 @@ public class Densificator extends Machine {
 			}
 		}
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			Inventory inventory = ((Computer) getMachines().getMachineByName("Computer")).getInventory();
-			inventory = new BlockInventoryWrapper(inventory, key);
+			Inventory inventory = getInventory();
 			inventory.setItem(5, ((GoodButton) Programs.getProgramByName("GoodButton"))
 					.getIconFor(ChatColor.GREEN + "Cycle Densification"));
 			ItemStack gauge = new ItemStack(Material.CRAFTING_TABLE);
@@ -337,6 +334,12 @@ public class Densificator extends Machine {
 	@Override
 	public ItemStack getUniqueDrop() {
 		return this.drop;
+	}
+
+	@NotNull
+	@Override
+	public Inventory getInventory() {
+		return getPlugin().getServer().createInventory(this, 9, this.getName());
 	}
 
 }

@@ -4,7 +4,6 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.computer.BadButton;
-import com.easterlyn.machines.type.computer.BlockInventoryWrapper;
 import com.easterlyn.machines.type.computer.GoodButton;
 import com.easterlyn.machines.type.computer.Programs;
 import com.easterlyn.machines.utilities.Shape;
@@ -20,6 +19,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
@@ -28,13 +28,14 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.Arrays;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * power 20 * 1 second = 19 blocks up
  *
  * @author Jikoo
  */
-public class Elevator extends Machine {
+public class Elevator extends Machine implements InventoryHolder {
 
 	private final Protections protections;
 	private final ItemStack drop;
@@ -99,8 +100,7 @@ public class Elevator extends Machine {
 			}
 		}
 		if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			Inventory inventory = ((Computer) getMachines().getMachineByName("Computer")).getInventory();
-			inventory = new BlockInventoryWrapper(inventory, this.getKey(storage));
+			Inventory inventory = getInventory();
 			inventory.setItem(3, ((GoodButton) Programs.getProgramByName("GoodButton"))
 					.getIconFor(ChatColor.GREEN + "Increase Boost"));
 			ItemStack gauge = new ItemStack(Material.ELYTRA);
@@ -127,6 +127,12 @@ public class Elevator extends Machine {
 	@Override
 	public ItemStack getUniqueDrop() {
 		return drop;
+	}
+
+	@NotNull
+	@Override
+	public Inventory getInventory() {
+		return getPlugin().getServer().createInventory(this, 9, this.getName());
 	}
 
 }

@@ -7,7 +7,7 @@ authors: [Dublek, FireNG, tmathmeyer]
 description: https://www.youtube.com/watch?v=QHnJ9NmK3Pc
 depend: [GriefPrevention, ProtocolLib]
 softdepend: [CreeperHeal, dynmap, Regionerator, LuckPerms, WorldEdit, WorldGuard]
-api-version: 1.13
+api-version: "1.14"
 
 permissions:
  easterlyn.guildleader:
