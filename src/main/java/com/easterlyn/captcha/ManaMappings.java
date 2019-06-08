@@ -624,7 +624,6 @@ public class ManaMappings {
 					break;
 				case BLAZE_ROD:
 				case GRASS_BLOCK:
-				case WITHER_ROSE:
 					values.put(material, 30D);
 					break;
 				case BLACK_BANNER:
@@ -643,6 +642,7 @@ public class ManaMappings {
 				case RED_BANNER:
 				case WHITE_BANNER:
 				case YELLOW_BANNER:
+				case COBWEB:
 				case GHAST_TEAR:
 				case PHANTOM_MEMBRANE:
 				case PRISMARINE_CRYSTALS:
@@ -677,13 +677,12 @@ public class ManaMappings {
 				case MUSIC_DISC_WARD:
 					values.put(material, 70D);
 					break;
-				case PISTON:
 				case OBSIDIAN:
 				case REDSTONE_ORE:
 					values.put(material, 81D);
 					break;
 				case ENDER_PEARL:
-				case STICKY_PISTON:
+				case WITHER_ROSE:
 					values.put(material, 90D);
 					break;
 				case GOLD_INGOT:
@@ -693,7 +692,6 @@ public class ManaMappings {
 				case LAVA_BUCKET:
 				case MILK_BUCKET:
 				case WATER_BUCKET:
-				case COBWEB:
 					values.put(material, 138D);
 					break;
 				case DIAMOND:
@@ -763,24 +761,27 @@ public class ManaMappings {
 				case AIR:
 				case BARRIER:
 				case BEDROCK:
-				case WRITABLE_BOOK:
 				case COMMAND_BLOCK:
 				case COMMAND_BLOCK_MINECART:
 				case REPEATING_COMMAND_BLOCK:
 				case CHAIN_COMMAND_BLOCK:
-				case EMERALD: // Money
-				case EMERALD_BLOCK: // Money
-				case EMERALD_ORE: // Money
 				case END_PORTAL:
 				case END_PORTAL_FRAME:
-				case LAPIS_BLOCK: // Money
-				case LAPIS_ORE: // Money
 				case SPAWNER:
-				case POTION: // Removed until effects are accounted for
-				case TIPPED_ARROW: // ^
-				case SPLASH_POTION: // ^
-				case LINGERING_POTION: // ^
-				case WRITTEN_BOOK: // Duplicate via other means, not alchemy
+				// Money
+				case EMERALD:
+				case EMERALD_BLOCK:
+				case EMERALD_ORE:
+				case LAPIS_BLOCK:
+				case LAPIS_ORE:
+				// Added later
+				case POTION:
+				case TIPPED_ARROW:
+				case SPLASH_POTION:
+				case LINGERING_POTION:
+				// Duplicate via other means, not alchemy
+				case WRITTEN_BOOK:
+				case WRITABLE_BOOK:
 					values.put(material, Double.MAX_VALUE);
 				default:
 					break;

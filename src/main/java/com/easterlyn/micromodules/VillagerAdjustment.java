@@ -90,7 +90,7 @@ public class VillagerAdjustment extends Module {
 	private MerchantRecipe adjustRecipe(@NotNull ItemStack input1, @NotNull ItemStack input2, @NotNull ItemStack result,
 			final int uses, final int maxUses, final boolean giveExp, final int villagerExperience) {
 		if (CurrencyType.isCurrency(input1) && (input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
-				&& !CurrencyType.isCurrency(result)) {
+				&& !CurrencyType.isCurrency(result) && result.getType() != Material.EXPERIENCE_BOTTLE) {
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
 			// Purchase result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
@@ -152,7 +152,7 @@ public class VillagerAdjustment extends Module {
 			input2 = swap;
 		}
 		if (!CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(input2)
-				&& !CurrencyType.isCurrency(result)) {
+				&& !CurrencyType.isCurrency(result) && result.getType() != Material.EXPERIENCE_BOTTLE) {
 			// Modification of input for result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
 			double resultCost = ManaMappings.expCost(this.effects, result) * OVERPRICED_RATE;
