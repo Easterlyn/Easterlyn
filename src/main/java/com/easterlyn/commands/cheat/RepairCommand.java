@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 import org.jetbrains.annotations.NotNull;
@@ -24,7 +25,8 @@ import org.jetbrains.annotations.NotNull;
 public class RepairCommand extends EasterlynCommand {
 
 	public RepairCommand(Easterlyn plugin) {
-		super(plugin, "repair");
+		super(plugin, "repairitem");
+		this.setAliases("itemrepair");
 		this.setPermissionLevel(UserRank.ADMIN);
 	}
 
@@ -36,27 +38,26 @@ public class RepairCommand extends EasterlynCommand {
 		}
 		Player player = (Player) sender;
 		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand == null || hand.getType() == Material.AIR) {
+		if (hand.getType() == Material.AIR) {
 			return false;
 		}
-		if (hand.getType().getMaxDurability() > 0) {
-			hand.setDurability((short) 0);
+		ItemMeta meta = hand.getItemMeta();
+		if (meta instanceof Damageable) {
+			((Damageable) meta).setDamage(0);
 		}
-		if (args.length > 0 && hand.hasItemMeta() && args[0].equalsIgnoreCase("full")) {
-			ItemMeta meta = hand.getItemMeta();
-			Repairable repairable = (Repairable) meta;
-			repairable.setRepairCost(0);
-			hand.setItemMeta(meta);
+		if (args.length > 0 && hand.hasItemMeta() && args[0].equalsIgnoreCase("full") && meta instanceof Repairable) {
+			((Repairable) meta).setRepairCost(0);
 		}
+		hand.setItemMeta(meta);
 		player.getInventory().setItemInMainHand(hand);
-		player.sendMessage(getLang().getValue("command.repair.success"));
+		player.sendMessage(getLang().getValue("command.repairitem.success"));
 		return true;
 	}
 
 	@NotNull
 	@Override
 	public List<String> tabComplete(@NotNull CommandSender sender, @NotNull String alias, @NotNull String[] args) {
-		if (!sender.hasPermission(this.getPermission()) || args.length != 1) {
+		if (this.getPermission() != null && !sender.hasPermission(this.getPermission()) || args.length != 1) {
 			return ImmutableList.of();
 		}
 		return ImmutableList.of("full");

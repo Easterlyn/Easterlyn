@@ -224,7 +224,7 @@ command:
     description: 'Have all the things! Increase or decrease item in main hand.'
     usage: '/more [optional amount]'
     success: '{COLOR:neutral}Stack in hand set to {COLOR:emphasis.neutral}{PARAMETER}{COLOR:neutral}!'
-  repair:
+  repairitem:
     description: 'Fully repairs an item, including wiping the anvil tag.'
     usage: 'Run /repair [full] while holding an item in main hand.'
     success: '{COLOR:good}Repaired!'
