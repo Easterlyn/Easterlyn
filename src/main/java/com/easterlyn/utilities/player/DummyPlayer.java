@@ -1289,6 +1289,9 @@ public class DummyPlayer implements Player {
 	@Override
 	public void updateCommands() {}
 
+	@Override
+	public void openBook(@NotNull ItemStack itemStack) {}
+
 	@NotNull
 	@Override
 	public MainHand getMainHand() {

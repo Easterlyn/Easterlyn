@@ -1590,6 +1590,11 @@ public class PermissiblePlayer implements Player {
 		player.updateCommands();
 	}
 
+	@Override
+	public void openBook(@NotNull ItemStack itemStack) {
+		player.openBook(itemStack);
+	}
+
 	@NotNull
 	@Override
 	public MainHand getMainHand() {
