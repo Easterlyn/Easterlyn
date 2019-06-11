@@ -89,8 +89,11 @@ public class VillagerAdjustment extends Module {
 
 	private MerchantRecipe adjustRecipe(@NotNull ItemStack input1, @NotNull ItemStack input2, @NotNull ItemStack result,
 			final int uses, final int maxUses, final boolean giveExp, final int villagerExperience) {
+		if (result.getType() == Material.EXPERIENCE_BOTTLE || input1.getType() == Material.WRITTEN_BOOK) {
+			return null;
+		}
 		if (CurrencyType.isCurrency(input1) && (input2.getType() == Material.AIR || CurrencyType.isCurrency(input2))
-				&& !CurrencyType.isCurrency(result) && result.getType() != Material.EXPERIENCE_BOTTLE) {
+				&& !CurrencyType.isCurrency(result)) {
 			// TODO: Does not support value > 64EB (e.g. item worth 80 EB will be unpurchasable instead of 64 and 16 EB)
 			// Purchase result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
@@ -152,7 +155,7 @@ public class VillagerAdjustment extends Module {
 			input2 = swap;
 		}
 		if (!CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(input2)
-				&& !CurrencyType.isCurrency(result) && result.getType() != Material.EXPERIENCE_BOTTLE) {
+				&& !CurrencyType.isCurrency(result)) {
 			// Modification of input for result - deal is not supposed to be good.
 			// Use overpriced rate for worth of result.
 			double resultCost = ManaMappings.expCost(this.effects, result) * OVERPRICED_RATE;
@@ -188,16 +191,16 @@ public class VillagerAdjustment extends Module {
 			adjusted = this.adjustRecipe(input1, input2, recipe.getResult(),
 				recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward(), recipe.getVillagerExperience());
 		} catch (Exception e) {
-			this.getPlugin().getModule(Discord.class).postReport(String.format("Error adjusting villager trade:\n%s -> %s",
-					recipe.getIngredients(), recipe.getResult()));
+			this.getPlugin().getModule(Discord.class).postReport(String.format("Error adjusting trade: %s + %s -> %s",
+					input1, input2, recipe.getResult()));
 			this.getPlugin().getModule(Discord.class).postReport(TextUtils.getTrace(e, 5));
 			e.printStackTrace();
 			return null;
 		}
 
 		if (adjusted == null && input1.getType() != Material.WRITTEN_BOOK && !(CurrencyType.isCurrency(input1)
-				&& CurrencyType.isCurrency(recipe.getResult()))) {
-			// DEBUG: post report on un-adjustable trades (barring lapis buy trade from priests and written book buys)
+				&& CurrencyType.isCurrency(recipe.getResult())) && recipe.getResult().getType() != Material.EXPERIENCE_BOTTLE) {
+			// DEBUG: post report on un-adjustable trades
 			this.getPlugin().getModule(Discord.class).postReport(String.format("Unable to adjust trade: %s + %s -> %s",
 					input1, input2, recipe.getResult()));
 		}
