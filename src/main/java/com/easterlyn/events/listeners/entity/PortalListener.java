@@ -37,6 +37,13 @@ public class PortalListener extends EasterlynListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onEntityPortal(EntityPortalEvent event) {
+		if (event.getTo() == null || event.getTo().getWorld() == null
+				|| event.getTo().getWorld().getEnvironment() == Environment.THE_END
+				|| event.getFrom().getWorld() == null
+				|| event.getFrom().getWorld().getEnvironment() == Environment.THE_END) {
+			return;
+		}
+
 		Environment fromEnvironment = event.getFrom().getWorld().getEnvironment();
 		Block fromPortal = RegionUtils.getAdjacentPortalBlock(event.getEntity().getLocation().getBlock());
 

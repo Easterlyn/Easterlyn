@@ -1,6 +1,8 @@
 package com.easterlyn.utilities.player;
 
 import com.easterlyn.utilities.TextUtils;
+import java.util.Optional;
+import java.util.UUID;
 import me.lucko.luckperms.LuckPerms;
 import me.lucko.luckperms.api.Contexts;
 import me.lucko.luckperms.api.LuckPermsApi;
@@ -9,10 +11,6 @@ import me.lucko.luckperms.api.caching.PermissionData;
 import me.lucko.luckperms.api.caching.UserData;
 import me.lucko.luckperms.api.context.ContextSet;
 import org.bukkit.Bukkit;
-
-import java.util.Optional;
-import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * Bridge for permissions via LuckPerms. Used for cases where a player is not online.
@@ -24,6 +22,10 @@ public class PermissionBridge {
 	private PermissionBridge() {}
 
 	public static void loadPermissionData(UUID uuid) {
+		if (Bukkit.isPrimaryThread()) {
+			TextUtils.getTrace(new Throwable("Loading permission data on main thread"), 5);
+		}
+
 		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
 		if (!apiOptional.isPresent()) {
 			return;
@@ -36,13 +38,7 @@ public class PermissionBridge {
 			return;
 		}
 
-		CompletableFuture<Boolean> completableFuture = luckPermsApi.getStorage().loadUser(uuid);
-
-		if (!Bukkit.isPrimaryThread()) {
-			completableFuture.join();
-		} else {
-			TextUtils.getTrace(new Throwable("Loading permission data on main thread"), 5);
-		}
+		luckPermsApi.getStorage().loadUser(uuid).join();
 	}
 
 	public static boolean hasPermission(UUID uuid, String permission) {

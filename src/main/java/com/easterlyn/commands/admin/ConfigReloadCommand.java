@@ -31,7 +31,7 @@ public class ConfigReloadCommand extends EasterlynCommand {
 		try {
 			Class<?> clazz = Class.forName(args[0]);
 			if (Module.class.isAssignableFrom(clazz)) {
-				((Module) ((Easterlyn) getPlugin()).getModule(clazz)).loadConfig();
+				((Easterlyn) getPlugin()).getModule(Module.class.asSubclass(clazz)).loadConfig();
 				sender.sendMessage("Reloaded module configuration.");
 				return true;
 			}

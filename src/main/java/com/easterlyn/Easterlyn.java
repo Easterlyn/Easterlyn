@@ -249,13 +249,12 @@ public class Easterlyn extends JavaPlugin {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
-	public <T> T getModule(Class<T> clazz) {
+	public <T extends Module> T getModule(Class<T> clazz) {
 		Preconditions.checkArgument(Module.class.isAssignableFrom(clazz), "That's not a Module. Are you even trying?");
 		Preconditions.checkArgument(modules.containsKey(clazz), "Module not enabled!");
 		Object object = modules.get(clazz);
 		Preconditions.checkArgument(clazz.isAssignableFrom(object.getClass()));
-		return (T) object;
+		return clazz.cast(object);
 	}
 
 	/**
