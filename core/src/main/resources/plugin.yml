@@ -1,0 +1,8 @@
+name: ${project.name}
+
+main: com.easterlyn.Easterlyn
+version: ${project.version}-${timestamp}
+author: Jikoo
+description: https://www.youtube.com/watch?v=QHnJ9NmK3Pc
+api-version: "1.14"
+depend: [LuckPerms]
