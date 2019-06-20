@@ -4,12 +4,15 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.event.PlayerNameChangeEvent;
 import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.event.UserLoadEvent;
+import com.easterlyn.util.PlayerUtil;
+import com.easterlyn.util.StringUtil;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Statistic;
@@ -46,8 +49,23 @@ public class User {
 
 	@Nullable
 	public Player getPlayer() {
-		return Bukkit.getPlayer(getUniqueId());
-		// TODO offline support via player loader
+		try {
+			return PlayerUtil.getPlayer(plugin, getUniqueId());
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	public void sendMessage(String message) {
+		sendMessage(StringUtil.fromLegacyText(message));
+	}
+
+	public void sendMessage(BaseComponent... components) {
+		Player player = getPlayer();
+		if (player != null) {
+			player.sendMessage(components);
+		}
 	}
 
 	public YamlConfiguration getStorage() {

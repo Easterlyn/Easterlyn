@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +34,8 @@ public class Easterlyn extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
+
+		getServer().getServicesManager().register(Easterlyn.class, this, this, ServicePriority.Normal);
 
 		if (commandManager == null) {
 			commandManager = new PaperCommandManager(this);
