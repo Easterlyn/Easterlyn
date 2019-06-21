@@ -5,12 +5,15 @@ import co.aikar.commands.MessageKeys;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
+import com.easterlyn.util.event.SimpleListener;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -36,6 +39,16 @@ public class UserManager {
 				return User.load(plugin, uuid);
 			}
 		});
+
+		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class,
+				playerQuitEvent -> plugin.getServer().getScheduler().runTaskAsynchronously(
+						plugin, () -> {
+							// Keep permissions loaded if userdata is still loaded
+							if (userCache.getIfPresent(playerQuitEvent.getPlayer().getUniqueId()) != null) {
+								PermissionUtil.loadPermissionData(playerQuitEvent.getPlayer().getUniqueId());
+							}
+						}
+				), EventPriority.NORMAL, plugin, true));
 	}
 
 	public User getUser(UUID uuid) {

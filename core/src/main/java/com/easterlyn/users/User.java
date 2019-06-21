@@ -4,6 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.event.PlayerNameChangeEvent;
 import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.event.UserLoadEvent;
+import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.StringUtil;
 import java.io.File;
@@ -55,6 +56,20 @@ public class User {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	public boolean isOnline() {
+		return plugin.getServer().getPlayer(getUniqueId()) != null;
+	}
+
+	public boolean hasPermission(String permission) {
+		if (isOnline()) {
+			Player player = getPlayer();
+			if (player != null) {
+				return player.hasPermission(permission);
+			}
+		}
+		return PermissionUtil.hasPermission(getUniqueId(), permission);
 	}
 
 	public void sendMessage(String message) {
