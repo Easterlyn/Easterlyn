@@ -41,7 +41,6 @@ public class Easterlyn extends JavaPlugin {
 			commandManager = new PaperCommandManager(this);
 			//noinspection deprecation
 			commandManager.enableUnstableAPI("help");
-
 		}
 
 		userManager.registerCommandContext(this);
@@ -83,6 +82,7 @@ public class Easterlyn extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		// TODO purge and save users
 		commandManager.unregisterCommands();
 		simpleCommandMap = null;
 	}

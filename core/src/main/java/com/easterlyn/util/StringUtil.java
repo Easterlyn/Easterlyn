@@ -35,7 +35,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A ccollection of useful string manipulation functions.
+ * A collection of useful string manipulation functions.
  *
  * @author Jikoo
  */
@@ -47,7 +47,6 @@ public class StringUtil {
 	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([^A-Za-z0-9])?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 
-	@SuppressWarnings("WeakerAccess") // Inspection false positive - visibility required for comparison usage
 	public static abstract class Simplifier implements Function<String, String> {}
 
 	public static final Simplifier TO_LOWER_CASE = new Simplifier() {
@@ -128,6 +127,7 @@ public class StringUtil {
 			if (pos == -1) {
 				pos = message.length();
 			}
+			// TODO convert to modifiable matcher systems
 			Pair<String, String> url = matchURL(message.substring(i, pos));
 			if (url != null) { // Web link handling
 

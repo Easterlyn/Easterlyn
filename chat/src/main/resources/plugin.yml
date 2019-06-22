@@ -1,0 +1,8 @@
+name: ${project.name}
+
+main: com.easterlyn.chat.EasterlynChat
+version: ${project.version}-${timestamp}
+author: Jikoo
+description: Easterlyn's chat plugin.
+api-version: "1.14"
+depend: [Easterlyn-Core]

@@ -68,7 +68,7 @@ public class UserManager {
 			try {
 				return getUser(UUID.fromString(potentialIdentifier));
 			} catch (IllegalArgumentException ignored) {}
-			// TODO should other flag ignore self? Requires matcher modification
+			// TODO other flag should ignore self, requires PlayerUtil modification
 			Player player;
 			try {
 				player = PlayerUtil.matchPlayer(context.getSender(), potentialIdentifier, context.hasFlag("offline"), plugin);
