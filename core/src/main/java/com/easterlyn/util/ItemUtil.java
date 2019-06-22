@@ -16,8 +16,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
 import java.util.function.Function;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_14_R1.ChatMessage;
@@ -236,11 +234,11 @@ public class ItemUtil {
 		}
 
 		// Banners
-		biConsumeAs(BannerMeta.class, originalMeta, cleanedMeta,
+		GenericUtil.biConsumeAs(BannerMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> newMeta.setPatterns(oldMeta.getPatterns()));
 
 		// Book and quill/Written books
-		biConsumeAs(BookMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+		GenericUtil.biConsumeAs(BookMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 			if (oldMeta.hasPages()) {
 				newMeta.setPages(oldMeta.getPages());
 			}
@@ -253,30 +251,30 @@ public class ItemUtil {
 		});
 
 		// Durability
-		biConsumeAs(Damageable.class, originalMeta, cleanedMeta, (oldMeta, newMeta) ->
+		GenericUtil.biConsumeAs(Damageable.class, originalMeta, cleanedMeta, (oldMeta, newMeta) ->
 				newMeta.setDamage(Math.max(Math.min(oldMeta.getDamage(), originalItem.getType().getMaxDurability()), 0)));
 
 		// Single effect fireworks
-		biConsumeAs(FireworkEffectMeta.class, originalMeta, cleanedMeta,
+		GenericUtil.biConsumeAs(FireworkEffectMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> newMeta.setEffect(oldMeta.getEffect()));
 
 		// Fireworks/Firework stars
-		biConsumeAs(FireworkMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+		GenericUtil.biConsumeAs(FireworkMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 			newMeta.setPower(oldMeta.getPower());
 			newMeta.addEffects(oldMeta.getEffects());
 		});
 
 		// Leather armor color
-		biConsumeAs(LeatherArmorMeta.class, originalMeta, cleanedMeta,
+		GenericUtil.biConsumeAs(LeatherArmorMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> newMeta.setColor(oldMeta.getColor()));
 
 		// Enchanted books
-		biConsumeAs(EnchantmentStorageMeta.class, originalMeta, cleanedMeta,
+		GenericUtil.biConsumeAs(EnchantmentStorageMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> oldMeta.getStoredEnchants().forEach(
 						(enchantment, level) -> newMeta.addStoredEnchant(enchantment, level, true)));
 
 		// Map ID
-		biConsumeAs(MapMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+		GenericUtil.biConsumeAs(MapMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 				newMeta.setMapView(oldMeta.getMapView());
 				newMeta.setColor(oldMeta.getColor());
 				newMeta.setLocationName(oldMeta.getLocationName());
@@ -284,7 +282,7 @@ public class ItemUtil {
 		});
 
 		// Potions
-		biConsumeAs(PotionMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
+		GenericUtil.biConsumeAs(PotionMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 				newMeta.setBasePotionData(oldMeta.getBasePotionData());
 				newMeta.setColor(oldMeta.getColor());
 				oldMeta.getCustomEffects().forEach(effect -> {
@@ -298,7 +296,7 @@ public class ItemUtil {
 		// Repairable would preserve anvil tags on tools, we'll avoid that
 
 		// Skulls
-		biConsumeAs(SkullMeta.class, originalMeta, cleanedMeta,
+		GenericUtil.biConsumeAs(SkullMeta.class, originalMeta, cleanedMeta,
 				(oldMeta, newMeta) -> newMeta.setOwningPlayer(oldMeta.getOwningPlayer()));
 
 		// Normal meta
@@ -318,17 +316,6 @@ public class ItemUtil {
 
 		cleanedItem.setItemMeta(cleanedMeta);
 		return cleanedItem;
-	}
-
-	public static <T> void consumeAs(Class<T> metaClazz, Object obj, Consumer<T> consumer) {
-		if (!metaClazz.isInstance(obj)) {
-			return;
-		}
-		consumer.accept(metaClazz.cast(obj));
-	}
-
-	public static <T> void biConsumeAs(Class<T> clazz, Object obj1, Object obj2, BiConsumer<T, T> consumer) {
-		consumeAs(clazz, obj1, cast1 -> consumeAs(clazz, obj2, cast2 -> consumer.accept(cast1, cast2)));
 	}
 
 	public static boolean isUniqueItem(ItemStack toCheck) {

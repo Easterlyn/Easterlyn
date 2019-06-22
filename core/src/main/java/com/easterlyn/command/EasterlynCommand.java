@@ -11,6 +11,8 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Private;
+import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.Easterlyn;
@@ -46,6 +48,7 @@ public class EasterlynCommand extends BaseCommand {
 	}
 
 	@CommandAlias("colour|color")
+	@Private
 	@Description("Taste the rainbow!")
 	@CommandPermission("easterlyn.command.colour")
 	public void colour(CommandIssuer issuer) {
@@ -57,7 +60,8 @@ public class EasterlynCommand extends BaseCommand {
 		issuer.sendMessage(builder.toString());
 	}
 
-	@Subcommand("lel")
+	@CommandAlias("lel")
+	@Private
 	@Description("【ＴＡＳＴＥ　ＴＨＥ　ＰＡＩＮＢＯＷ】")
 	@Syntax("[painful to view sentence]")
 	@CommandPermission("easterlyn.command.lel")
@@ -83,11 +87,11 @@ public class EasterlynCommand extends BaseCommand {
 	}
 
 	@Subcommand("cmdinfo")
-	@CommandAlias("cmdinfo|commandinfo")
+	@CommandAlias("commandinfo")
 	@Syntax("<commandName>")
 	@CommandPermission("easterlyn.command.commandinfo")
 	@CommandRank(UserRank.STAFF)
-	public void commandInfo(CommandIssuer issuer, @Default("cmdinfo") String commandName) {
+	public void commandInfo(CommandIssuer issuer, @Default("commandinfo") @Single String commandName) {
 
 		SimpleCommandMap simpleCommandMap = plugin.getSimpleCommandMap();
 		if (simpleCommandMap == null) {

@@ -4,9 +4,11 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.event.PlayerNameChangeEvent;
 import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.event.UserLoadEvent;
+import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -17,7 +19,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Statistic;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -33,10 +34,10 @@ public class User {
 
 	private final Easterlyn plugin;
 	private final UUID uuid;
-	private final YamlConfiguration storage;
+	private final ConcurrentConfiguration storage;
 	private final Map<String, Object> tempStore;
 
-	private User(@NotNull Easterlyn plugin, @NotNull UUID uuid, @NotNull YamlConfiguration storage) {
+	private User(@NotNull Easterlyn plugin, @NotNull UUID uuid, @NotNull ConcurrentConfiguration storage) {
 		this.plugin = plugin;
 		this.uuid = uuid;
 		this.storage = storage;
@@ -56,6 +57,13 @@ public class User {
 			e.printStackTrace();
 			return null;
 		}
+	}
+
+	@NotNull
+	public String getDisplayName() {
+		return GenericUtil.orDefault(getStorage().getString("displayName"),
+				GenericUtil.orDefault(GenericUtil.functionAs(Player.class, getPlayer(), Player::getDisplayName),
+						getUniqueId().toString()));
 	}
 
 	public boolean isOnline() {
@@ -83,7 +91,7 @@ public class User {
 		}
 	}
 
-	public YamlConfiguration getStorage() {
+	public ConcurrentConfiguration getStorage() {
 		return storage;
 	}
 
@@ -147,16 +155,16 @@ public class User {
 		PluginManager pluginManager = plugin.getServer().getPluginManager();
 		File file = new File(plugin.getDataFolder().getPath() + File.separatorChar + "users", uuid.toString() + ".yml");
 		if (file.exists()) {
-			YamlConfiguration yaml = YamlConfiguration.loadConfiguration(file);
-			User user = new User(plugin, uuid, yaml);
+			ConcurrentConfiguration storage = ConcurrentConfiguration.load(file);
+			User user = new User(plugin, uuid, storage);
 			Player player = user.getPlayer();
 
 			if (player != null && player.getAddress() != null) {
-				yaml.set("ip", player.getAddress().getHostString());
-				String previousName = yaml.getString("name");
+				storage.set("ip", player.getAddress().getHostString());
+				String previousName = storage.getString("name");
 				if (previousName != null && !previousName.equals(player.getName())) {
-					yaml.set("previousName", previousName);
-					yaml.set("name", player.getName());
+					storage.set("previousName", previousName);
+					storage.set("name", player.getName());
 					pluginManager.callEvent(new PlayerNameChangeEvent(player, previousName, player.getName()));
 				}
 			}
@@ -167,7 +175,7 @@ public class User {
 
 		Player player = Bukkit.getPlayer(uuid);
 
-		User user = new User(plugin, uuid, new YamlConfiguration());
+		User user = new User(plugin, uuid, new ConcurrentConfiguration());
 		if (player != null) {
 			user.getStorage().set("name", player.getName());
 			if (player.getAddress() != null) {

@@ -5,6 +5,7 @@ import co.aikar.commands.MessageKeys;
 import com.easterlyn.Easterlyn;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
+import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -67,8 +68,15 @@ public class UserManager {
 			try {
 				return getUser(UUID.fromString(potentialIdentifier));
 			} catch (IllegalArgumentException ignored) {}
-			// TODO offline/improved matcher
-			Player player = plugin.getServer().getPlayer(potentialIdentifier);
+			// TODO should other flag ignore self? Requires matcher modification
+			Player player;
+			try {
+				player = PlayerUtil.matchPlayer(context.getSender(), potentialIdentifier, context.hasFlag("offline"), plugin);
+			} catch (IllegalAccessException e) {
+				context.getSender().sendMessage("Called PlayerUtil#matchPlayer on the main thread while executing! Please /report this message.");
+				e.printStackTrace();
+				player = PlayerUtil.matchOnlinePlayer(context.getSender(), potentialIdentifier);
+			}
 			if (player != null) {
 				context.popFirstArg();
 				return getUser(player.getUniqueId());
