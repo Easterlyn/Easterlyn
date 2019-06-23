@@ -1,6 +1,5 @@
 package com.easterlyn.util;
 
-import com.easterlyn.util.tuple.Pair;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.io.BufferedReader;
@@ -8,10 +7,13 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.Normalizer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -29,7 +31,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -44,42 +45,55 @@ public class StringUtil {
 
 	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
 	public static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
-	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([^A-Za-z0-9])?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
+	public static final Simplifier TO_LOWER_CASE = s -> s.toLowerCase(Locale.ENGLISH);
+	public static final Simplifier STRIP_URLS = s -> trimExtraWhitespace(URL_PATTERN.matcher(s).replaceAll(" "));
+	public static final Simplifier NORMALIZE = s -> Normalizer.normalize(s, Normalizer.Form.NFD);
+	private static final Set<BiFunction<String, TextComponent, TextComponent[]>> WORD_HANDLERS = new HashSet<>();
 
-	public static abstract class Simplifier implements Function<String, String> {}
-
-	public static final Simplifier TO_LOWER_CASE = new Simplifier() {
-		@Override
-		public String apply(String s) {
-			return s.toLowerCase(Locale.ENGLISH);
-		}
-	};
-
-	public static final Simplifier STRIP_URLS = new Simplifier() {
-		@Override
-		public String apply(String s) {
-			return trimExtraWhitespace(URL_PATTERN.matcher(s).replaceAll(" "));
-		}
-	};
-
-	public static final Simplifier NORMALIZE = new Simplifier() {
-		@Override
-		public String apply(String s) {
-			return Normalizer.normalize(s, Normalizer.Form.NFD);
-		}
-	};
+	static {
+		WORD_HANDLERS.add((url, ignored) -> {
+			if ("d.va".equalsIgnoreCase(url)) {
+				return null;
+			}
+			Matcher matcher = URL_PATTERN.matcher(url);
+			// No URL.
+			if (!matcher.find()) {
+				return null;
+			}
+			// Matches, but main group is somehow empty.
+			if (matcher.group(3) == null || matcher.group(3).isEmpty()) {
+				return null;
+			}
+			// Correct missing protocol
+			if (matcher.group(1) == null || matcher.group(1).isEmpty()) {
+				url = "http://" + url;
+			}
+			TextComponent component = new TextComponent();
+			component.setText('[' + matcher.group(3).toLowerCase(Locale.ENGLISH) + ']');
+			component.setColor(Colors.WEB_LINK);
+			component.setUnderlined(true);
+			TextComponent[] hover = { new TextComponent(url) };
+			hover[0].setColor(Colors.WEB_LINK);
+			hover[0].setUnderlined(true);
+			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+			component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+			return new TextComponent[] {component};
+		});
+	}
 
 	private static BiMap<String, String> items;
-	private static HashSet<ItemStack> uniques;
+
+	public static void addWordHandler(BiFunction<String, TextComponent, TextComponent[]> function) {
+		WORD_HANDLERS.add(function);
+	}
 
 	public static TextComponent[] fromLegacyText(String message) {
-		ArrayList<BaseComponent> components = new ArrayList<>();
+		ArrayList<TextComponent> components = new ArrayList<>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
-		Matcher channelMatcher = CHANNEL_PATTERN.matcher(message);
 
-		for (int i = 0; i < message.length(); i++) {
+		word: for (int i = 0; i < message.length(); i++) {
 			char c = message.charAt(i);
 			if (c == ChatColor.COLOR_CHAR) {
 				i++;
@@ -127,66 +141,27 @@ public class StringUtil {
 			if (pos == -1) {
 				pos = message.length();
 			}
-			// TODO convert to modifiable matcher systems
-			Pair<String, String> url = matchURL(message.substring(i, pos));
-			if (url != null) { // Web link handling
 
-				if (builder.length() > 0) {
-					TextComponent old = component;
-					component = new TextComponent(old);
-					old.setText(builder.toString());
-					builder = new StringBuilder();
-					components.add(old);
+			String word = message.substring(i, pos);
+
+			for (BiFunction<String, TextComponent, TextComponent[]> function : WORD_HANDLERS) {
+				TextComponent[] special = function.apply(word, component);
+				if (special != null) {
+					if (builder.length() > 0) {
+						TextComponent old = component;
+						component = new TextComponent(old);
+						old.setText(builder.toString());
+						builder = new StringBuilder();
+						components.add(old);
+					}
+					components.addAll(Arrays.asList(special));
+					i += pos - i - 1;
+					continue word;
 				}
-
-				TextComponent old = component;
-				component = new TextComponent(old);
-				component.setText('[' + url.getRight() + ']');
-				component.setColor(Colors.WEB_LINK);
-				component.setUnderlined(true);
-				TextComponent[] hover = { new TextComponent(url.getLeft()) };
-				hover[0].setColor(Colors.WEB_LINK);
-				hover[0].setUnderlined(true);
-				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
-				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url.getLeft()));
-				components.add(component);
-				i += pos - i - 1;
-				component = old;
-				continue;
-			}
-			if (channelMatcher.region(i, pos).find()) { // Channel mentions
-
-				if (builder.length() > 0) {
-					TextComponent old = component;
-					component = new TextComponent(old);
-					old.setText(builder.toString());
-					builder = new StringBuilder();
-					components.add(old);
-				}
-
-				TextComponent old = component;
-				component = new TextComponent(old);
-				String channelString = channelMatcher.group(1);
-				int end = channelMatcher.end(1);
-				component.setText(message.substring(i, end));
-				component.setColor(Colors.CHANNEL);
-				component.setUnderlined(true);
-				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-						TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelString)));
-				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelString));
-				components.add(component);
-
-				if (end < pos) {
-					component = new TextComponent(old);
-					component.setText(message.substring(end, pos));
-					components.add(component);
-				}
-				i += pos - i - 1;
-				component = old;
-				continue;
 			}
 			builder.append(c);
 		}
+
 		if (builder.length() > 0) {
 			component.setText(builder.toString());
 			components.add(component);
@@ -197,7 +172,6 @@ public class StringUtil {
 			components.add(new TextComponent(""));
 		}
 
-		//noinspection SuspiciousToArrayCall
 		return components.toArray(new TextComponent[0]);
 	}
 
@@ -227,28 +201,6 @@ public class StringUtil {
 	@NotNull
 	private static HoverEvent getItemHover(@NotNull ItemStack itemStack) {
 		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(getItemText(itemStack)) });
-	}
-
-	@Nullable
-	public static Pair<String, String> matchURL(String urlString) {
-		// Overwatch was shut down for a reason.
-		if ("d.va".equalsIgnoreCase(urlString)) {
-			return null;
-		}
-		Matcher matcher = URL_PATTERN.matcher(urlString);
-		// No URL.
-		if (!matcher.find()) {
-			return null;
-		}
-		// Matches, but main group is somehow empty.
-		if (matcher.group(3) == null || matcher.group(3).isEmpty()) {
-			return null;
-		}
-		// Correct missing protocol
-		if (matcher.group(1) == null || matcher.group(1).isEmpty()) {
-			urlString = "http://" + urlString;
-		}
-		return new Pair<>(urlString, matcher.group(3).toLowerCase());
 	}
 
 	/**
@@ -467,6 +419,9 @@ public class StringUtil {
 			if (base.isExtended()) {
 				name.append("Extended ");
 			}
+			if (meta.getCustomEffects().size() > 0) {
+				name.append("Custom ");
+			}
 			name.append(getFriendlyName(base.getType()));
 			if (base.isUpgraded()) {
 				name.append(" II");
@@ -480,13 +435,7 @@ public class StringUtil {
 			return "Multiple Effects";
 		}
 		PotionEffect effect = meta.getCustomEffects().get(0);
-		PotionEffectType type = effect.getType();
-		boolean extended = !type.isInstant() && effect.getDuration() > 3600 * type.getDurationModifier();
-		StringBuilder name = new StringBuilder();
-		if (extended) {
-			name.append("Extended ");
-		}
-		name.append(getFriendlyName(type.getName()));
+		StringBuilder name = new StringBuilder(getFriendlyName(effect.getType().getName()));
 		if (effect.getAmplifier() > 0) {
 			// Effect power is 0-indexed
 			name.append(' ').append(NumberUtil.romanFromInt(effect.getAmplifier() + 1));
@@ -696,5 +645,7 @@ public class StringUtil {
 	private static boolean validSurrogatePairAt(@NotNull CharSequence string, int index) {
 		return index >= 0 && index <= string.length() - 2 && Character.isHighSurrogate(string.charAt(index)) && Character.isLowSurrogate(string.charAt(index + 1));
 	}
+
+	public interface Simplifier extends Function<String, String> {}
 
 }
