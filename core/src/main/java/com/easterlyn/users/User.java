@@ -8,10 +8,13 @@ import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.command.UUIDTarget;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-public class User {
+public class User implements UUIDTarget {
 
 	private final Easterlyn plugin;
 	private final UUID uuid;
@@ -47,6 +50,11 @@ public class User {
 	@NotNull
 	public UUID getUniqueId() {
 		return uuid;
+	}
+
+	@Override
+	public Collection<UUID> getMembers() {
+		return Collections.singleton(getUniqueId());
 	}
 
 	@Nullable

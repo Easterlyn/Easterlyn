@@ -2,6 +2,7 @@ package com.easterlyn.chat.channel;
 
 import com.easterlyn.chat.AccessLevel;
 import com.easterlyn.users.User;
+import com.easterlyn.util.command.UUIDTarget;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
@@ -11,7 +12,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class Channel {
+public class Channel implements UUIDTarget {
 
 	private final String name;
 	private final UUID owner;
