@@ -1,6 +1,5 @@
 package com.easterlyn.chat.channel;
 
-import com.easterlyn.chat.AccessLevel;
 import com.easterlyn.users.User;
 import com.easterlyn.util.GenericUtil;
 import java.util.Collections;
@@ -88,6 +87,21 @@ public class NormalChannel extends Channel {
 		} else {
 			whitelist.remove(user.getUniqueId());
 		}
+	}
+
+	@Override
+	public boolean isBanned(@NotNull User user) {
+		return !isModerator(user) && bans.contains(user.getUniqueId());
+	}
+
+	@Override
+	public void setBanned(@NotNull User user, boolean banned) {
+		if (isModerator(user)) {
+			return;
+		}
+		bans.add(user.getUniqueId());
+		whitelist.remove(user.getUniqueId());
+		getMembers().remove(user.getUniqueId());
 	}
 
 	@Override

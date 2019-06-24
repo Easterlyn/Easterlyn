@@ -10,8 +10,8 @@ import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.AccessLevel;
 import com.easterlyn.chat.EasterlynChat;
+import com.easterlyn.chat.channel.AccessLevel;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.users.User;
@@ -183,7 +183,6 @@ public class ChannelCommand extends BaseCommand {
 
 		String message = user.getDisplayName() + (add ? " banned " : " unbanned ") + target.getDisplayName()
 				+ " from " + channel.getDisplayName() + " at " + timestamp.format(new Date());
-		channel.setBanned(target, add);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player != null) {
@@ -191,6 +190,7 @@ public class ChannelCommand extends BaseCommand {
 			}
 		});
 
+		channel.setBanned(target, add);
 		List<String> channels = target.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 		channels.remove(channel.getName());
 		// TODO if user was not in the channel, should they be notified?

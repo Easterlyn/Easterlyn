@@ -1,8 +1,8 @@
-package com.easterlyn.chat;
+package com.easterlyn.chat.channel;
 
 public enum  AccessLevel {
 
 	PUBLIC,
 	PRIVATE
-	
+
 }

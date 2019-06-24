@@ -651,6 +651,7 @@ public class StringUtil {
 	}
 
 	public interface Simplifier extends Function<String, String> {}
+
 	public static abstract class WordMatcher {
 		private Matcher matcher;
 		public WordMatcher(Pattern pattern, String match) {

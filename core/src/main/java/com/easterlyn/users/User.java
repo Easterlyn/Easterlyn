@@ -53,6 +53,7 @@ public class User implements UUIDTarget {
 	}
 
 	@Override
+	@NotNull
 	public Collection<UUID> getMembers() {
 		return Collections.singleton(getUniqueId());
 	}

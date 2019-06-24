@@ -1,6 +1,5 @@
 package com.easterlyn.chat.channel;
 
-import com.easterlyn.chat.AccessLevel;
 import com.easterlyn.users.User;
 import com.easterlyn.util.command.UUIDTarget;
 import java.util.Collections;
