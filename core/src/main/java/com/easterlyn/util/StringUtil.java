@@ -13,10 +13,10 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -49,42 +49,41 @@ public class StringUtil {
 	public static final Simplifier TO_LOWER_CASE = s -> s.toLowerCase(Locale.ENGLISH);
 	public static final Simplifier STRIP_URLS = s -> trimExtraWhitespace(URL_PATTERN.matcher(s).replaceAll(" "));
 	public static final Simplifier NORMALIZE = s -> Normalizer.normalize(s, Normalizer.Form.NFD);
-	private static final Set<BiFunction<String, TextComponent, TextComponent[]>> WORD_HANDLERS = new HashSet<>();
+	private static final Set<Function<String, WordMatcher>> WORD_HANDLERS = new HashSet<>();
 
 	static {
-		WORD_HANDLERS.add((url, ignored) -> {
-			if ("d.va".equalsIgnoreCase(url)) {
-				return null;
+		WORD_HANDLERS.add(string -> new WordMatcher(URL_PATTERN, string) {
+			@Override
+			protected TextComponent[] handleMatch(TextComponent previousComponent) {
+				if ("d.va".equalsIgnoreCase(string)) {
+					return null;
+				}
+				// Matches, but main group is somehow empty.
+				if (getMatcher().group(3) == null || getMatcher().group(3).isEmpty()) {
+					return null;
+				}
+				String url = string;
+				// Correct missing protocol
+				if (getMatcher().group(1) == null ||getMatcher().group(1).isEmpty()) {
+					url = "http://" + url;
+				}
+				TextComponent component = new TextComponent();
+				component.setText('[' + getMatcher().group(3).toLowerCase(Locale.ENGLISH) + ']');
+				component.setColor(Colors.WEB_LINK);
+				component.setUnderlined(true);
+				TextComponent[] hover = { new TextComponent(url) };
+				hover[0].setColor(Colors.WEB_LINK);
+				hover[0].setUnderlined(true);
+				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
+				return new TextComponent[] {component};
 			}
-			Matcher matcher = URL_PATTERN.matcher(url);
-			// No URL.
-			if (!matcher.find()) {
-				return null;
-			}
-			// Matches, but main group is somehow empty.
-			if (matcher.group(3) == null || matcher.group(3).isEmpty()) {
-				return null;
-			}
-			// Correct missing protocol
-			if (matcher.group(1) == null || matcher.group(1).isEmpty()) {
-				url = "http://" + url;
-			}
-			TextComponent component = new TextComponent();
-			component.setText('[' + matcher.group(3).toLowerCase(Locale.ENGLISH) + ']');
-			component.setColor(Colors.WEB_LINK);
-			component.setUnderlined(true);
-			TextComponent[] hover = { new TextComponent(url) };
-			hover[0].setColor(Colors.WEB_LINK);
-			hover[0].setUnderlined(true);
-			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
-			component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-			return new TextComponent[] {component};
 		});
 	}
 
 	private static BiMap<String, String> items;
 
-	public static void addWordHandler(BiFunction<String, TextComponent, TextComponent[]> function) {
+	public static void addWordHandler(Function<String, WordMatcher> function) {
 		WORD_HANDLERS.add(function);
 	}
 
@@ -92,8 +91,9 @@ public class StringUtil {
 		ArrayList<TextComponent> components = new ArrayList<>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
+		Stream<WordMatcher> wordMatcherStream = WORD_HANDLERS.stream().map(function -> function.apply(message));
 
-		word: for (int i = 0; i < message.length(); i++) {
+		for (int i = 0; i < message.length(); i++) {
 			char c = message.charAt(i);
 			if (c == ChatColor.COLOR_CHAR) {
 				i++;
@@ -142,22 +142,26 @@ public class StringUtil {
 				pos = message.length();
 			}
 
-			String word = message.substring(i, pos);
-
-			for (BiFunction<String, TextComponent, TextComponent[]> function : WORD_HANDLERS) {
-				TextComponent[] special = function.apply(word, component);
+			int start = i;
+			int end = pos;
+			TextComponent previousComponent = component;
+			if (wordMatcherStream.anyMatch(wordMatcher -> {
+				TextComponent[] special = wordMatcher.consumeSection(start, end, previousComponent);
 				if (special != null) {
-					if (builder.length() > 0) {
-						TextComponent old = component;
-						component = new TextComponent(old);
-						old.setText(builder.toString());
-						builder = new StringBuilder();
-						components.add(old);
-					}
 					components.addAll(Arrays.asList(special));
-					i += pos - i - 1;
-					continue word;
+					return true;
 				}
+				return false;
+			})) {
+				if (builder.length() > 0) {
+					TextComponent old = component;
+					component = new TextComponent(old);
+					old.setText(builder.toString());
+					builder = new StringBuilder();
+					components.add(old);
+				}
+				i = pos - 1;
+				continue;
 			}
 			builder.append(c);
 		}
@@ -647,5 +651,19 @@ public class StringUtil {
 	}
 
 	public interface Simplifier extends Function<String, String> {}
+	public static abstract class WordMatcher {
+		private Matcher matcher;
+		public WordMatcher(Pattern pattern, String match) {
+			matcher = pattern.matcher(match);
+		}
+		@Nullable
+		public final TextComponent[] consumeSection(int start, int end, TextComponent previousComponent) {
+			return matcher.region(start, end).find() ? handleMatch(previousComponent) : null;
+		}
+		protected final Matcher getMatcher() {
+			return matcher;
+		}
+		protected abstract TextComponent[] handleMatch(TextComponent previousComponent);
+	}
 
 }

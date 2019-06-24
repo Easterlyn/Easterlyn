@@ -19,14 +19,12 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -182,31 +180,30 @@ public class EasterlynChat extends JavaPlugin {
 	}
 
 	private void register(Easterlyn plugin) {
-		StringUtil.addWordHandler((word, previousComponent) -> {
-			Matcher matcher = CHANNEL_PATTERN.matcher(word);
-			if (!matcher.find()) {
-				return null;
+		StringUtil.addWordHandler(string -> new StringUtil.WordMatcher(CHANNEL_PATTERN, string) {
+			@Override
+			protected TextComponent[] handleMatch(TextComponent previousComponent) {
+				String word = getMatcher().group();
+				TextComponent component = new TextComponent();
+				String channelString = getMatcher().group(1);
+				int end = getMatcher().end(1);
+				component.setText(word.substring(0, end));
+				component.setColor(Colors.CHANNEL);
+				component.setUnderlined(true);
+				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+						TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelString)));
+				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelString));
+
+				String group = getMatcher().group(2);
+				if (group == null || group.isEmpty()) {
+					return new TextComponent[] {component};
+				}
+
+				TextComponent suffix = new TextComponent(previousComponent);
+				suffix.setText(group);
+
+				return new TextComponent[] {component, suffix};
 			}
-
-			TextComponent component = new TextComponent();
-			String channelString = matcher.group(1);
-			int end = matcher.end(1);
-			component.setText(word.substring(0, end));
-			component.setColor(Colors.CHANNEL);
-			component.setUnderlined(true);
-			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-					TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelString)));
-			component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelString));
-
-			String group = matcher.group(2);
-			if (group == null || group.isEmpty()) {
-				return new TextComponent[] {component};
-			}
-
-			TextComponent suffix = new TextComponent(previousComponent);
-			suffix.setText(group);
-
-			return new TextComponent[] {component, suffix};
 		});
 
 		plugin.getCommandManager().registerDependency(this.getClass(), this);
