@@ -5,6 +5,7 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.computer.BadButton;
 import com.easterlyn.machines.type.computer.GoodButton;
+import com.easterlyn.machines.type.computer.Program;
 import com.easterlyn.machines.type.computer.Programs;
 import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.micromodules.Protections;
@@ -16,7 +17,9 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -71,6 +74,20 @@ public class Elevator extends Machine implements InventoryHolder {
 	}
 
 	@Override
+	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+			event.setResult(Event.Result.DENY);
+			return true;
+		}
+		event.setResult(Event.Result.DENY);
+		Program program = Programs.getProgramByIcon(event.getCurrentItem());
+		if (program != null) {
+			program.execute((Player) event.getWhoClicked(), event.getCurrentItem());
+		}
+		return true;
+	}
+
+	@Override
 	public boolean handleInteract(PlayerInteractEvent event, ConfigurationSection storage) {
 		Player player = event.getPlayer();
 		// Allow sneaking players to cross or place blocks, but don't allow elevators to trigger redstone devices.
@@ -114,7 +131,6 @@ public class Elevator extends Machine implements InventoryHolder {
 			inventory.setItem(5, ((BadButton) Programs.getProgramByName("BadButton"))
 					.getIconFor(ChatColor.RED + "Decrease Boost"));
 			event.getPlayer().openInventory(inventory);
-			InventoryUtils.changeWindowName(event.getPlayer(), "Elevator Configuration");
 		}
 		return true;
 	}
@@ -132,7 +148,7 @@ public class Elevator extends Machine implements InventoryHolder {
 	@NotNull
 	@Override
 	public Inventory getInventory() {
-		return getPlugin().getServer().createInventory(this, 9, this.getName());
+		return getPlugin().getServer().createInventory(this, 9, "Elevator Configuration");
 	}
 
 }

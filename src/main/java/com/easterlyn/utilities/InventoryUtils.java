@@ -22,6 +22,8 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_14_R1.ChatMessage;
+import net.minecraft.server.v1_14_R1.Container;
+import net.minecraft.server.v1_14_R1.Containers;
 import net.minecraft.server.v1_14_R1.EntityPlayer;
 import net.minecraft.server.v1_14_R1.MerchantRecipe;
 import net.minecraft.server.v1_14_R1.MerchantRecipeList;
@@ -455,9 +457,30 @@ public class InventoryUtils {
 		}
 
 		entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(entityPlayer.activeContainer.windowId,
-				entityPlayer.activeContainer.getType(), new ChatMessage(name)));
+				smartContainerMatch(entityPlayer.activeContainer), new ChatMessage(name)));
 		entityPlayer.updateInventory(entityPlayer.activeContainer);
 
+	}
+
+	private static Containers smartContainerMatch(Container container) {
+		if (container.getType() != Containers.GENERIC_9X3) {
+			return container.getType();
+		}
+		switch (container.items.size()) {
+			case 9:
+				return Containers.GENERIC_9X1;
+			case 18:
+				return Containers.GENERIC_9X2;
+			case 36:
+				return Containers.GENERIC_9X4;
+			case 45:
+				return Containers.GENERIC_9X5;
+			case 54:
+				return Containers.GENERIC_9X6;
+			case 27:
+			default:
+				return Containers.GENERIC_9X3;
+		}
 	}
 
 	public static String getNameFromAnvil(InventoryView view) {

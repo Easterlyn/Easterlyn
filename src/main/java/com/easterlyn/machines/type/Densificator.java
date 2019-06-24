@@ -5,6 +5,7 @@ import com.easterlyn.chat.Language;
 import com.easterlyn.machines.Machines;
 import com.easterlyn.machines.type.computer.BadButton;
 import com.easterlyn.machines.type.computer.GoodButton;
+import com.easterlyn.machines.type.computer.Program;
 import com.easterlyn.machines.type.computer.Programs;
 import com.easterlyn.machines.utilities.Direction;
 import com.easterlyn.machines.utilities.Shape;
@@ -37,6 +38,7 @@ import org.bukkit.block.BlockState;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -176,7 +178,6 @@ public class Densificator extends Machine implements InventoryHolder {
 			inventory.setItem(3, ((BadButton) Programs.getProgramByName("BadButton"))
 					.getIconFor(ChatColor.RED + "Cycle Densification"));
 			event.getPlayer().openInventory(inventory);
-			InventoryUtils.changeWindowName(event.getPlayer(), "Densificator Configuration");
 		}
 		return true;
 	}
@@ -205,8 +206,20 @@ public class Densificator extends Machine implements InventoryHolder {
 
 	@Override
 	public boolean handleClick(InventoryClickEvent event, ConfigurationSection storage) {
-		this.updateLater(event.getView().getTopInventory(), storage);
-		return false;
+		if (event.getInventory().getType() == InventoryType.DROPPER) {
+			updateLater(event.getView().getTopInventory(), storage);
+			return false;
+		}
+		if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) {
+			event.setResult(Event.Result.DENY);
+			return true;
+		}
+		event.setResult(Event.Result.DENY);
+		Program program = Programs.getProgramByIcon(event.getCurrentItem());
+		if (program != null) {
+			program.execute((Player) event.getWhoClicked(), event.getCurrentItem());
+		}
+		return true;
 	}
 
 	@Override
@@ -231,7 +244,6 @@ public class Densificator extends Machine implements InventoryHolder {
 	}
 
 	private void update(Inventory inventory, ConfigurationSection storage) {
-		// TODO
 		if (inventory.getLocation() == null) {
 			return;
 		}
@@ -339,7 +351,7 @@ public class Densificator extends Machine implements InventoryHolder {
 	@NotNull
 	@Override
 	public Inventory getInventory() {
-		return getPlugin().getServer().createInventory(this, 9, this.getName());
+		return getPlugin().getServer().createInventory(this, 9, "Densificator Configuration");
 	}
 
 }
