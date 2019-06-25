@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Optional;
+import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.Easterlyn;
@@ -15,10 +16,12 @@ import com.easterlyn.chat.channel.AccessLevel;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.users.User;
+import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.command.AddRemove;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -56,7 +59,8 @@ public class ChannelCommand extends BaseCommand {
 
 		if (!channel.getMembers().contains(user.getUniqueId())) {
 			channel.getMembers().add(user.getUniqueId());
-			String message = user.getDisplayName() + " joined " + channel.getDisplayName() + " at " + timestamp.format(new Date());
+			TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + " joined " + channel.getDisplayName()
+					+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 			channel.getMembers().forEach(uuid -> {
 				Player player = Bukkit.getPlayer(uuid);
 				if (player != null) {
@@ -92,7 +96,8 @@ public class ChannelCommand extends BaseCommand {
 			channel.setWhitelisted(user, false);
 		}
 
-		String message = user.getDisplayName() + " quit " + channel.getDisplayName() + " at " + timestamp.format(new Date());
+		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + " quit " + channel.getDisplayName()
+				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player != null) {
@@ -123,8 +128,9 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		String message = user.getDisplayName() + (add ? " added " : " removed ") + target.getDisplayName()
-				+ (add ? " to" : " from") + " the whitelist in " + channel.getDisplayName() + " at " + timestamp.format(new Date());
+		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + (add ? " added " : " removed ")
+				+ target.getDisplayName() + (add ? " to" : " from") + " the whitelist in " + channel.getDisplayName()
+				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.setWhitelisted(target, add);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
@@ -150,8 +156,9 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		String message = user.getDisplayName() + (add ? " added " : " removed ") + target.getDisplayName()
-				+ (add ? " to" : " from") + " the mod list in " + channel.getDisplayName() + " at " + timestamp.format(new Date());
+		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + (add ? " added " : " removed ")
+				+ target.getDisplayName() + (add ? " to" : " from") + " the mod list in " + channel.getDisplayName()
+				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.setModerator(target, add);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
@@ -181,8 +188,9 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		String message = user.getDisplayName() + (add ? " banned " : " unbanned ") + target.getDisplayName()
-				+ " from " + channel.getDisplayName() + " at " + timestamp.format(new Date());
+		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + (add ? " banned " : " unbanned ")
+				+ target.getDisplayName() + " from " + channel.getDisplayName() + " at " + timestamp.format(new Date())
+		).toArray(new TextComponent[0]);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player != null) {
@@ -220,8 +228,8 @@ public class ChannelCommand extends BaseCommand {
 
 
 		channel.setAccess(accessLevel);
-		String message = user.getDisplayName() + " set " + channel.getDisplayName() + " to access level "
-				+ accessLevel.name() + " at " + timestamp.format(new Date());
+		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + " set " + channel.getDisplayName()
+				+ " to access level " + accessLevel.name() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player != null) {
@@ -250,13 +258,13 @@ public class ChannelCommand extends BaseCommand {
 			password = null;
 		}
 
-		String message;
+		TextComponent[] message;
 		if (password == null) {
-			message = user.getDisplayName() + " removed the password from " + channel.getDisplayName() + " at "
-					+ timestamp.format(new Date());
+			message = StringUtil.fromLegacyText(user.getDisplayName() + " removed the password from "
+					+ channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		} else {
-			message = user.getDisplayName() + " set the password to " + password + " in " + channel.getDisplayName() + " at "
-					+ timestamp.format(new Date());
+			message = StringUtil.fromLegacyText(user.getDisplayName() + " set the password to " + password
+					+ " in " + channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		}
 		channel.setPassword(password);
 		channel.getMembers().forEach(uuid -> {
@@ -267,23 +275,52 @@ public class ChannelCommand extends BaseCommand {
 		});
 	}
 
+	@Subcommand("create")
+	@Description("Create a new channel!")
+	@Syntax("#<channelname>")
+	@CommandPermission("easterlyn.command.channel.create")
+	public void create(@Flags("self") User user, @Single String name) {
+		if (!user.hasPermission("easterlyn.command.channel.create.anyname") && (name.length() < 2 || name.length() > 17
+				|| name.charAt(0) != '#' || !StringUtil.stripNonAlphanumerics(name).equals(name.substring(1)))) {
+			user.sendMessage("Invalid channel name. Valid channel names start with \"#\" and contain 1-16 alphabetical characters.");
+			return;
+		}
+
+		if (name.length() > 1 && name.charAt(0) == '#') {
+			name = name.substring(1);
+		}
+
+		if (chat.getChannels().containsKey(name)) {
+			user.sendMessage("Channel already exists, sorry chum.");
+			return;
+		}
+
+		chat.getChannels().put(name, new NormalChannel(name, user.getUniqueId()));
+		Player player = user.getPlayer();
+		user.sendMessage("Channel created! Manipulate it with `/channel modify");
+		if (player != null) {
+			player.chat("/channel join #" + name);
+		}
+	}
+
 	@Subcommand("delete")
 	@Description("DELET CHANEL")
 	@Syntax("<channel>")
-	public void disband(@Flags("self") User user, @Flags("other") NormalChannel channel, @Optional String name) {
+	public void delete(@Flags("self") User user, @Flags("other") NormalChannel channel, @Optional String name) {
 		if (!channel.isOwner(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
 			return;
 		}
 
 		if (!channel.getDisplayName().equals(name)) {
-			user.sendMessage("Please include the channel name again to confirm\nI.e. /channel delete #main #main");
+			user.sendMessage("Please include the channel name again to confirm.\nExample: `/channel delete #main #main`");
 			return;
 		}
 
 		chat.getChannels().remove(channel.getName());
 
-		String message = channel.getDisplayName() + " has been disbanded. That's all, folks!";
+		TextComponent[] message = StringUtil.fromLegacyText(channel.getDisplayName()
+				+ " has been disbanded. That's all, folks!").toArray(new TextComponent[0]);
 		channel.getMembers().stream().map(uuid -> easterlyn.getUserManager().getUser(uuid)).forEach(member -> {
 			member.sendMessage(message);
 			List<String> channels = member.getStorage().getStringList(EasterlynChat.USER_CHANNELS);

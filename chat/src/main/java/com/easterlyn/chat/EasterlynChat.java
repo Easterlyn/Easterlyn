@@ -82,7 +82,9 @@ public class EasterlynChat extends JavaPlugin {
 		// Permission to be recognized as a moderator in every channel.
 		PermissionUtil.addParent("easterlyn.chat.channel.moderator", UserRank.STAFF.getPermission());
 		// Permission to be recognized as an owner in every channel.
-		PermissionUtil.addParent("easterlyn.chat.channel.owner", UserRank.MODERATOR.getPermission());
+		PermissionUtil.addParent("easterlyn.chat.channel.owner", UserRank.ADMIN.getPermission());
+		// Permission to make funky channel names
+		PermissionUtil.addParent("easterlyn.command.channel.create.anyname", UserRank.HEAD_ADMIN.getPermission());
 
 		FileConfiguration config = getConfig();
 		Set<String> remove = new HashSet<>();
@@ -132,7 +134,7 @@ public class EasterlynChat extends JavaPlugin {
 				}
 				channel = getChannels().get(channelName);
 				if (channel == null) {
-					user.sendMessage("Invalid channel. Create it with `/channel new #" + channelName + "`!");
+					user.sendMessage("Invalid channel. Create it with `/channel create #" + channelName + "`!");
 					return;
 				}
 				event.setMessage(event.getMessage().substring(space));
