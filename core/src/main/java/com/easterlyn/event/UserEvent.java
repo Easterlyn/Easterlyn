@@ -1,6 +1,7 @@
 package com.easterlyn.event;
 
 import com.easterlyn.users.User;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.jetbrains.annotations.NotNull;
 
@@ -15,6 +16,7 @@ public abstract class UserEvent extends Event {
 	private User user;
 
 	public UserEvent(@NotNull User user) {
+		super(!Bukkit.isPrimaryThread());
 		this.user = user;
 	}
 

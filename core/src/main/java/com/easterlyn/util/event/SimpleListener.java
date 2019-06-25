@@ -16,8 +16,17 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SimpleListener<T extends Event> extends RegisteredListener {
 
-	public SimpleListener(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer,
-			@NotNull EventPriority priority, @NotNull Plugin plugin, boolean ignoreCancelled) {
+	public SimpleListener(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer, @NotNull Plugin plugin) {
+		this(eventClass, consumer, plugin, EventPriority.NORMAL, true);
+	}
+
+	public SimpleListener(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer, @NotNull Plugin plugin,
+			@NotNull EventPriority priority) {
+		this(eventClass, consumer, plugin, priority, true);
+	}
+
+	public SimpleListener(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer, @NotNull Plugin plugin,
+			@NotNull EventPriority priority, boolean ignoreCancelled) {
 		super(new Listener() {}, new ConsumerEventExecutor<>(eventClass, consumer), priority, plugin, ignoreCancelled);
 	}
 

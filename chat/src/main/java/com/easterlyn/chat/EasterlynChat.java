@@ -8,6 +8,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
+import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
@@ -20,11 +21,14 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -39,10 +43,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EasterlynChat extends JavaPlugin {
 
-	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([^A-Za-z0-9])?$");
+	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([\\W&&[^" + ChatColor.COLOR_CHAR + "}])?$");
 	public static final Channel DEFAULT = new Channel("main", UUID.fromString("902b498d-9909-4e78-b401-b7c4f2b1ab4c"));
 	public static final String USER_CHANNELS = "chat.channels";
 	public static final String USER_CURRENT = "chat.current";
+	static final String USER_HIGHLIGHTS = "chat.highlights";
 
 	private final Map<String, Channel> channels = new ConcurrentHashMap<>();
 
@@ -94,7 +99,7 @@ public class EasterlynChat extends JavaPlugin {
 					if (pluginEnableEvent.getPlugin() instanceof Easterlyn) {
 						register((Easterlyn) pluginEnableEvent.getPlugin());
 					}
-				}, EventPriority.NORMAL, this, true));
+				}, this));
 
 		channels.put("", DEFAULT);
 		channels.put("main", DEFAULT);
@@ -104,6 +109,43 @@ public class EasterlynChat extends JavaPlugin {
 		channels.put("sign", new SecretChannel("sign", DEFAULT.getOwner()));
 		channels.put("#", new SecretChannel("#", DEFAULT.getOwner()));
 		channels.put("@test@", new SecretChannel("@test@", DEFAULT.getOwner()));
+
+		// TODO rich messages
+		AsyncPlayerChatEvent.getHandlerList().register(new SimpleListener<>(AsyncPlayerChatEvent.class, event -> {
+			RegisteredServiceProvider<Easterlyn> easterlynRSP = getServer().getServicesManager().getRegistration(Easterlyn.class);
+			if (easterlynRSP == null) {
+				event.getPlayer().sendMessage("Easterlyn core plugin is not enabled! Please report this to @Staff on Discord immediately!");
+				return;
+			}
+			event.setCancelled(true);
+			User user = easterlynRSP.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+			Channel channel = null;
+			if (event.getMessage().length() > 0 && event.getMessage().charAt(0) == '#') {
+				int space = event.getMessage().indexOf(' ');
+				if (space == -1) {
+					space = event.getMessage().length();
+				}
+				String channelName = event.getMessage().substring(1, space);
+				if (space == event.getMessage().length()) {
+					user.sendMessage("What are you trying to say in #" + channelName + "?");
+					return;
+				}
+				channel = getChannels().get(channelName);
+				if (channel == null) {
+					user.sendMessage("Invalid channel. Create it with `/channel new #" + channelName + "`!");
+					return;
+				}
+				event.setMessage(event.getMessage().substring(space));
+			}
+			if (channel == null) {
+				channel = getChannels().get(user.getStorage().getString(EasterlynChat.USER_CURRENT));
+				if (channel == null) {
+					user.sendMessage("No current channel set! Focus on the main channel with `/join #`!");
+					return;
+				}
+			}
+			new UserChatEvent(user, channel, event.getMessage()).send();
+		}, this, EventPriority.MONITOR, true));
 
 	}
 
@@ -180,7 +222,7 @@ public class EasterlynChat extends JavaPlugin {
 	}
 
 	private void register(Easterlyn plugin) {
-		StringUtil.addWordHandler(string -> new StringUtil.WordMatcher(CHANNEL_PATTERN, string) {
+		StringUtil.addSectionHandler(string -> new StringUtil.SingleMatcher(CHANNEL_PATTERN.matcher(string)) {
 			@Override
 			protected TextComponent[] handleMatch(TextComponent previousComponent) {
 				String word = getMatcher().group();
