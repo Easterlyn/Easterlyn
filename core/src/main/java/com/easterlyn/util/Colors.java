@@ -6,6 +6,8 @@ import net.md_5.bungee.api.ChatColor;
 
 public class Colors {
 
+	// TODO should this be a Pair, etc. that gets provided by some form of Supplier/Function per-plugin per-path?
+	// At that rate it may be better to have separate color providers per-module
 	public static ChatColor WEB_LINK = ChatColor.BLUE;
 	public static ChatColor CHANNEL = ChatColor.GOLD;
 	public static ChatColor COMMAND = ChatColor.AQUA;
@@ -16,7 +18,7 @@ public class Colors {
 		COMMAND = getOrDefault(plugin.getConfig().getString("colors.command"), ChatColor.AQUA);
 	}
 
-	private static ChatColor getOrDefault(String colorName, ChatColor defaultColor) {
+	public static ChatColor getOrDefault(String colorName, ChatColor defaultColor) {
 		if (colorName == null) {
 			return defaultColor;
 		}

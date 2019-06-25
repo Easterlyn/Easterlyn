@@ -4,6 +4,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.event.PlayerNameChangeEvent;
 import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.event.UserLoadEvent;
+import com.easterlyn.util.Colors;
 import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
@@ -18,9 +19,14 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
@@ -75,6 +81,11 @@ public class User implements UUIDTarget {
 						getUniqueId().toString()));
 	}
 
+	@NotNull
+	public ChatColor getColor() {
+		return Colors.getOrDefault(getStorage().getString("color"), getRank().getColor());
+	}
+
 	public boolean isOnline() {
 		return plugin.getServer().getPlayer(getUniqueId()) != null;
 	}
@@ -89,21 +100,87 @@ public class User implements UUIDTarget {
 		return PermissionUtil.hasPermission(getUniqueId(), permission);
 	}
 
-	public void sendMessage(String message) {
-		sendMessage(StringUtil.fromLegacyText(message));
+	@NotNull
+	public UserRank getRank() {
+		UserRank[] userRanks = UserRank.values();
+		for (int i = userRanks.length - 1; i > 0; --i) {
+			if (hasPermission(userRanks[i].getPermission())) {
+				return userRanks[i];
+			}
+		}
+		return UserRank.MEMBER;
 	}
 
-	public void sendMessage(BaseComponent... components) {
+	@NotNull
+	protected Pattern getMentionPattern() {
+		Object storedPattern = getTemporaryStorage().get("mentionPattern");
+		if (storedPattern instanceof Pattern) {
+			return (Pattern) storedPattern;
+		}
+		StringBuilder builder = new StringBuilder("^@?(");
+		OfflinePlayer player = Bukkit.getOfflinePlayer(getUniqueId());
+		if (player.getName() != null) {
+			builder.append(player.getName()).append('|');
+			Player online = player.isOnline() ? player.getPlayer() : null;
+			if (online != null && !online.getDisplayName().isEmpty() && !online.getDisplayName().equals(player.getName())) {
+				builder.append("\\Q").append(online.getDisplayName()).append("\\E|");
+			}
+		}
+		builder.append(getUniqueId()).append(")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}])?$");
+		Pattern pattern = Pattern.compile(builder.toString());
+		getTemporaryStorage().put("mentionPattern", pattern);
+		return pattern;
+	}
+
+	public TextComponent getMention() {
+		TextComponent component = new TextComponent("@" + getDisplayName());
+		component.setColor(getColor());
+		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getUniqueId());
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
+				(offlinePlayer.isOnline() ? "/msg " : "/mail send ") + (offlinePlayer.getName() != null ? offlinePlayer.getName() : getUniqueId())));
+
+		TextComponent line = new TextComponent(getDisplayName());
+		line.setColor(getColor());
+		if (offlinePlayer.getName() != null && !offlinePlayer.getName().equals(line.getText())) {
+			TextComponent realName = new TextComponent(" (" + offlinePlayer.getName() + ")");
+			realName.setColor(ChatColor.WHITE);
+			line.addExtra(realName);
+		}
+		TextComponent extra = new TextComponent(" - ");
+		extra.setColor(ChatColor.WHITE);
+		line.addExtra(extra);
+		extra = new TextComponent("Click to message!");
+		extra.setColor(Colors.COMMAND);
+		line.addExtra(extra);
+		component.addExtra(line);
+
+		UserRank rank = getRank();
+		line = new TextComponent("\n" + rank.getFriendlyName());
+		line.setColor(rank.getColor());
+		component.addExtra(line);
+		// TODO class and affinity
+		// TODO could cache in temp store, but needs to be deleted on perm change (login/command)
+
+		return component;
+	}
+
+	public void sendMessage(@NotNull String message) {
+		sendMessage(StringUtil.fromLegacyText(message).toArray(new TextComponent[0]));
+	}
+
+	public void sendMessage(@NotNull BaseComponent... components) {
 		Player player = getPlayer();
 		if (player != null) {
 			player.sendMessage(components);
 		}
 	}
 
+	@NotNull
 	public ConcurrentConfiguration getStorage() {
 		return storage;
 	}
 
+	@NotNull
 	public Map<String, Object> getTemporaryStorage() {
 		return tempStore;
 	}
@@ -137,6 +214,7 @@ public class User implements UUIDTarget {
 	 *
 	 * @return the Player's time in game
 	 */
+	@NotNull
 	private String getTimePlayed() {
 		Player player = getPlayer();
 		if (player == null) {
@@ -151,6 +229,10 @@ public class User implements UUIDTarget {
 		return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
 	}
 
+	public Easterlyn getPlugin() {
+		return plugin;
+	}
+
 	void save() {
 		File file = new File(plugin.getDataFolder().getPath() + File.separatorChar + "users", getUniqueId().toString() + ".yml");
 		try {
@@ -160,7 +242,8 @@ public class User implements UUIDTarget {
 		}
 	}
 
-	static User load(Easterlyn plugin, final UUID uuid) {
+	@NotNull
+	static User load(@NotNull Easterlyn plugin, @NotNull final UUID uuid) {
 		PluginManager pluginManager = plugin.getServer().getPluginManager();
 		File file = new File(plugin.getDataFolder().getPath() + File.separatorChar + "users", uuid.toString() + ".yml");
 		if (file.exists()) {

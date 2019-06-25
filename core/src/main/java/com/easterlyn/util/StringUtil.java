@@ -1,14 +1,16 @@
 package com.easterlyn.util;
 
+import com.easterlyn.util.tuple.Pair;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.Normalizer;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Objects;
@@ -46,13 +48,15 @@ public class StringUtil {
 	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
 	public static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
+	private static final Pattern COMMAND_PATTERN = Pattern.compile("/.{1,}*");
+	private static final Pattern BACKTICK_END_PATTERN = Pattern.compile("(?:``)+?(`)(\\s|$)");
 	public static final Simplifier TO_LOWER_CASE = s -> s.toLowerCase(Locale.ENGLISH);
 	public static final Simplifier STRIP_URLS = s -> trimExtraWhitespace(URL_PATTERN.matcher(s).replaceAll(" "));
 	public static final Simplifier NORMALIZE = s -> Normalizer.normalize(s, Normalizer.Form.NFD);
-	private static final Set<Function<String, WordMatcher>> WORD_HANDLERS = new HashSet<>();
+	private static final Set<SectionMatcherFunction> SECTION_MATCHERS = new HashSet<>();
 
 	static {
-		WORD_HANDLERS.add(string -> new WordMatcher(URL_PATTERN, string) {
+		SECTION_MATCHERS.add(string -> new SingleMatcher(URL_PATTERN.matcher(string)) {
 			@Override
 			protected TextComponent[] handleMatch(TextComponent previousComponent) {
 				if ("d.va".equalsIgnoreCase(string)) {
@@ -79,19 +83,33 @@ public class StringUtil {
 				return new TextComponent[] {component};
 			}
 		});
+		SECTION_MATCHERS.add(string -> new SingleMatcher(COMMAND_PATTERN.matcher(string)) {
+			@Override
+			protected TextComponent[] handleMatch(TextComponent previousComponent) {
+				TextComponent textComponent = new TextComponent(getMatcher().group());
+				textComponent.setColor(Colors.COMMAND);
+				TextComponent hover = new TextComponent("Click to run!");
+				hover.setColor(Colors.COMMAND);
+				textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent[] {hover}));
+				textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ChatColor.stripColor(getMatcher().group().trim())));
+				return new TextComponent[] {textComponent};
+			}
+		});
+		// TODO item display matcher
 	}
 
 	private static BiMap<String, String> items;
 
-	public static void addWordHandler(Function<String, WordMatcher> function) {
-		WORD_HANDLERS.add(function);
+	public static void addSectionHandler(SectionMatcherFunction function) {
+		SECTION_MATCHERS.add(function);
 	}
 
-	public static TextComponent[] fromLegacyText(String message) {
-		ArrayList<TextComponent> components = new ArrayList<>();
+	public static List<TextComponent> fromLegacyText(String message, SectionMatcherFunction... additionalHandlers) {
+		List<TextComponent> components = new LinkedList<>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
-		Stream<WordMatcher> wordMatcherStream = WORD_HANDLERS.stream().map(function -> function.apply(message));
+		Stream<SectionMatcher> sectionMatcherStream = Stream.concat(Arrays.stream(additionalHandlers), SECTION_MATCHERS.stream())
+				.map(function -> function.apply(message));
 
 		for (int i = 0; i < message.length(); i++) {
 			char c = message.charAt(i);
@@ -137,21 +155,37 @@ public class StringUtil {
 				}
 				continue;
 			}
-			int pos = message.indexOf(' ', i);
+
+			if (c == ' ') {
+				builder.append(c);
+				continue;
+			}
+
+			int pos = -1;
+			if (c == '`') {
+				if (i == message.length() - 1) {
+					builder.append(c);
+					break;
+				}
+				Matcher matcher = BACKTICK_END_PATTERN.matcher(message.substring(i + 1));
+				if (matcher.find()) {
+					++i;
+					pos = matcher.end(1);
+				}
+			}
 			if (pos == -1) {
-				pos = message.length();
+				pos = message.indexOf(' ', i);
+				if (pos == -1) {
+					pos = message.length();
+				}
 			}
 
 			int start = i;
 			int end = pos;
 			TextComponent previousComponent = component;
-			if (wordMatcherStream.anyMatch(wordMatcher -> {
-				TextComponent[] special = wordMatcher.consumeSection(start, end, previousComponent);
-				if (special != null) {
-					components.addAll(Arrays.asList(special));
-					return true;
-				}
-				return false;
+			if (start > end && sectionMatcherStream.anyMatch(sectionMatcher -> {
+				TextComponent[] special = sectionMatcher.consumeSection(start, end, previousComponent);
+				return special != null && components.addAll(Arrays.asList(special));
 			})) {
 				if (builder.length() > 0) {
 					TextComponent old = component;
@@ -161,8 +195,18 @@ public class StringUtil {
 					components.add(old);
 				}
 				i = pos - 1;
+			}
+
+			if (c == '`' && end < message.length() && message.charAt(end +1) == c) {
+				builder.append(c);
+				++i;
 				continue;
 			}
+
+			if (i != start) {
+				continue;
+			}
+
 			builder.append(c);
 		}
 
@@ -176,13 +220,13 @@ public class StringUtil {
 			components.add(new TextComponent(""));
 		}
 
-		return components.toArray(new TextComponent[0]);
+		return components;
 	}
 
 	@NotNull
 	public static TextComponent getItemComponent(ItemStack itemStack) {
 		boolean named = itemStack.getItemMeta() != null && itemStack.getItemMeta().hasDisplayName();
-		TextComponent component = new TextComponent(fromLegacyText(named ? itemStack.getItemMeta().getDisplayName() : getItemName(itemStack)));
+		TextComponent component = new TextComponent(fromLegacyText(named ? itemStack.getItemMeta().getDisplayName() : getItemName(itemStack)).toArray(new TextComponent[0]));
 		for (int i = 0; i < component.getExtra().size(); i++) {
 			BaseComponent baseExtra = component.getExtra().get(i);
 			if (baseExtra.hasFormatting()) {
@@ -650,21 +694,56 @@ public class StringUtil {
 		return index >= 0 && index <= string.length() - 2 && Character.isHighSurrogate(string.charAt(index)) && Character.isLowSurrogate(string.charAt(index + 1));
 	}
 
-	public interface Simplifier extends Function<String, String> {}
+	public interface SectionMatcherFunction extends Function<String, SectionMatcher> {}
 
-	public static abstract class WordMatcher {
-		private Matcher matcher;
-		public WordMatcher(Pattern pattern, String match) {
-			matcher = pattern.matcher(match);
-		}
+	public interface SectionMatcher {
 		@Nullable
-		public final TextComponent[] consumeSection(int start, int end, TextComponent previousComponent) {
-			return matcher.region(start, end).find() ? handleMatch(previousComponent) : null;
+		TextComponent[] consumeSection(int start, int end, TextComponent previousComponent);
+	}
+
+	public static abstract class SingleMatcher implements SectionMatcher {
+
+		private Matcher matcher;
+
+		public SingleMatcher(@NotNull Matcher matcher) {
+			this.matcher = matcher;
 		}
+
 		protected final Matcher getMatcher() {
 			return matcher;
 		}
+
+		@Nullable
+		@Override
+		public final TextComponent[] consumeSection(int start, int end, TextComponent previousComponent) {
+			return matcher.region(start, end).find() ? handleMatch(previousComponent) : null;
+		}
+
 		protected abstract TextComponent[] handleMatch(TextComponent previousComponent);
 	}
+
+	public static abstract class MultiMatcher<T> implements SectionMatcher {
+
+		private final Set<Pair<T, Matcher>> matchers;
+
+		public MultiMatcher(Set<Pair<T, Matcher>> matchers) {
+			this.matchers = matchers;
+		}
+
+		@Nullable
+		@Override
+		public TextComponent[] consumeSection(int start, int end, TextComponent previousComponent) {
+			for (Pair<T, Matcher> pair : matchers) {
+				if (pair.getRight().region(start, end).find()) {
+					return handleMatch(pair.getRight(), pair.getLeft(), start, end, previousComponent);
+				}
+			}
+			return null;
+		}
+
+		protected abstract TextComponent[] handleMatch(Matcher matcher, T t, int start, int end, TextComponent previousComponent);
+	}
+
+	public interface Simplifier extends Function<String, String> {}
 
 }

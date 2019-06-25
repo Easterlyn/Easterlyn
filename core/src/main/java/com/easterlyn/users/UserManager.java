@@ -6,14 +6,19 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
+import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.tuple.Pair;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 
@@ -49,7 +54,19 @@ public class UserManager {
 								PermissionUtil.loadPermissionData(playerQuitEvent.getPlayer().getUniqueId());
 							}
 						}
-				), EventPriority.NORMAL, plugin, true));
+				), plugin));
+
+		StringUtil.addSectionHandler(string -> new StringUtil.MultiMatcher<User>(Bukkit.getOnlinePlayers().stream()
+				.map(Player::getUniqueId).map(UserManager.this::getUser)
+				.map(user -> new Pair<>(user, user.getMentionPattern().matcher(string))).collect(Collectors.toSet())) {
+			@Override
+			protected TextComponent[] handleMatch(Matcher matcher, User user, int start, int end, TextComponent previousComponent) {
+				if (matcher.group(2) == null || matcher.group(2).isEmpty()) {
+					return new TextComponent[] {user.getMention()};
+				}
+				return new TextComponent[] {user.getMention(), new TextComponent(matcher.group(2))};
+			}
+		});
 	}
 
 	public User getUser(UUID uuid) {
