@@ -9,7 +9,7 @@ import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.StringUtil;
-import com.easterlyn.util.command.UUIDTarget;
+import com.easterlyn.util.command.Group;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import java.io.File;
 import java.io.IOException;
@@ -39,7 +39,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-public class User implements UUIDTarget {
+public class User implements Group {
 
 	private final Easterlyn plugin;
 	private final UUID uuid;

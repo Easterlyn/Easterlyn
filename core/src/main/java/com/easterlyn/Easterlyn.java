@@ -41,7 +41,7 @@ public class Easterlyn extends JavaPlugin {
 			commandManager = new PaperCommandManager(this);
 			//noinspection deprecation
 			commandManager.enableUnstableAPI("help");
-			// TODO system for UUIDTarget resolvers
+			// TODO system for Group resolvers
 		}
 
 		userManager.registerCommandContext(this);
