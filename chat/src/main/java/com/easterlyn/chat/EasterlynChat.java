@@ -8,6 +8,7 @@ import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
+import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.util.Colors;
@@ -47,7 +48,7 @@ public class EasterlynChat extends JavaPlugin {
 	public static final Channel DEFAULT = new Channel("main", UUID.fromString("902b498d-9909-4e78-b401-b7c4f2b1ab4c"));
 	public static final String USER_CHANNELS = "chat.channels";
 	public static final String USER_CURRENT = "chat.current";
-	static final String USER_HIGHLIGHTS = "chat.highlights";
+	public static final String USER_HIGHLIGHTS = "chat.highlights";
 
 	private final Map<String, Channel> channels = new ConcurrentHashMap<>();
 
@@ -119,9 +120,14 @@ public class EasterlynChat extends JavaPlugin {
 				event.getPlayer().sendMessage("Easterlyn core plugin is not enabled! Please report this to @Staff on Discord immediately!");
 				return;
 			}
+
 			event.setCancelled(true);
+
 			User user = easterlynRSP.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+
 			Channel channel = null;
+
+			// #channel message parsing
 			if (event.getMessage().length() > 0 && event.getMessage().charAt(0) == '#') {
 				int space = event.getMessage().indexOf(' ');
 				if (space == -1) {
@@ -139,6 +145,8 @@ public class EasterlynChat extends JavaPlugin {
 				}
 				event.setMessage(event.getMessage().substring(space));
 			}
+
+			// User's channel
 			if (channel == null) {
 				channel = getChannels().get(user.getStorage().getString(EasterlynChat.USER_CURRENT));
 				if (channel == null) {
@@ -146,9 +154,11 @@ public class EasterlynChat extends JavaPlugin {
 					return;
 				}
 			}
+
 			new UserChatEvent(user, channel, event.getMessage()).send();
 		}, this, EventPriority.MONITOR, true));
 
+		// TODO anti-spam section
 	}
 
 	public Map<String, Channel> getChannels() {

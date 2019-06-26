@@ -40,7 +40,7 @@ public class EconomyUtil {
 		modifiers.add(function);
 	}
 
-	public double getWorth(@NotNull ItemStack itemStack) throws ArithmeticException {
+	public static double getWorth(@NotNull ItemStack itemStack) throws ArithmeticException {
 		if (itemStack.getAmount() < 1) {
 			throw new ArithmeticException("Cannot calculate worth of stack size < 1");
 		}
