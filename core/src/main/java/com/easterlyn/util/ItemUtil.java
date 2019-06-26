@@ -224,8 +224,6 @@ public class ItemUtil {
 		}
 
 		ItemStack cleanedItem = new ItemStack(originalItem.getType());
-		// Why Bukkit doesn't have a constructor ItemStack(MaterialData) I don't know.
-		cleanedItem.setData(originalItem.getData());
 		cleanedItem.setAmount(originalItem.getAmount());
 
 		ItemMeta cleanedMeta = cleanedItem.getItemMeta();
@@ -273,7 +271,7 @@ public class ItemUtil {
 				(oldMeta, newMeta) -> oldMeta.getStoredEnchants().forEach(
 						(enchantment, level) -> newMeta.addStoredEnchant(enchantment, level, true)));
 
-		// Map ID
+		// Maps
 		GenericUtil.biConsumeAs(MapMeta.class, originalMeta, cleanedMeta, (oldMeta, newMeta) -> {
 				newMeta.setMapView(oldMeta.getMapView());
 				newMeta.setColor(oldMeta.getColor());

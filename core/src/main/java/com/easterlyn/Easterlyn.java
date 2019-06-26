@@ -6,6 +6,7 @@ import co.aikar.commands.RegisteredCommand;
 import com.easterlyn.command.CommandRank;
 import com.easterlyn.users.UserManager;
 import com.easterlyn.users.UserRank;
+import com.easterlyn.util.BlockUpdateManager;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
@@ -30,6 +31,7 @@ public class Easterlyn extends JavaPlugin {
 	private UserManager userManager = new UserManager(this);
 	private PaperCommandManager commandManager;
 	private SimpleCommandMap simpleCommandMap;
+	private BlockUpdateManager blockUpdateManager = new BlockUpdateManager(this);
 
 	@Override
 	public void onEnable() {
@@ -85,6 +87,7 @@ public class Easterlyn extends JavaPlugin {
 	public void onDisable() {
 		// TODO purge and save users
 		commandManager.unregisterCommands();
+		blockUpdateManager.forceAllUpdates();
 		simpleCommandMap = null;
 	}
 
@@ -100,6 +103,11 @@ public class Easterlyn extends JavaPlugin {
 	@NotNull
 	public UserManager getUserManager() throws IllegalStateException {
 		return userManager;
+	}
+
+	@NotNull
+	public BlockUpdateManager getBlockUpdateManager() {
+		return blockUpdateManager;
 	}
 
 	@Nullable
