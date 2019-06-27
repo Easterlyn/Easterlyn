@@ -23,10 +23,12 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -44,6 +46,7 @@ import org.jetbrains.annotations.Nullable;
 public class EasterlynCaptcha extends JavaPlugin {
 
 	private static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
+	private static final String RECIPE_KEY = ItemUtil.UNIQUE_KEYED_PREFIX + "captcha_uncraft";
 
 	private final LoadingCache<String, ItemStack> cache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES)
 			.removalListener((RemovalListener<String, ItemStack>) notification -> save(notification.getKey(), notification.getValue()))
@@ -70,22 +73,60 @@ public class EasterlynCaptcha extends JavaPlugin {
 		ItemStack captchaItem = getBlankCaptchacard();
 		ShapelessRecipe captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha1"), captchaItem);
 		captchaRecipe.addIngredient(2, Material.PAPER);
-		Bukkit.addRecipe(captchaRecipe);
+		getServer().addRecipe(captchaRecipe);
 		captchaItem = captchaItem.clone();
 		captchaItem.setAmount(2);
 		captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha2"), captchaItem);
 		captchaRecipe.addIngredient(4, Material.PAPER);
-		Bukkit.addRecipe(captchaRecipe);
+		getServer().addRecipe(captchaRecipe);
 		captchaItem = captchaItem.clone();
 		captchaItem.setAmount(3);
 		captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha3"), captchaItem);
 		captchaRecipe.addIngredient(6, Material.PAPER);
-		Bukkit.addRecipe(captchaRecipe);
+		getServer().addRecipe(captchaRecipe);
 		captchaItem = captchaItem.clone();
 		captchaItem.setAmount(4);
 		captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha4"), captchaItem);
 		captchaRecipe.addIngredient(8, Material.PAPER);
-		Bukkit.addRecipe(captchaRecipe);
+		getServer().addRecipe(captchaRecipe);
+
+		captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, RECIPE_KEY), new ItemStack(Material.DIRT));
+		captchaRecipe.addIngredient(Material.BOOK);
+		getServer().addRecipe(captchaRecipe);
+
+		PrepareItemCraftEvent.getHandlerList().register(new SimpleListener<>(PrepareItemCraftEvent.class, event -> {
+			if (event.getRecipe() instanceof Keyed
+					&& ((Keyed) event.getRecipe()).getKey().getKey().equals(RECIPE_KEY)) {
+				for (ItemStack itemStack : event.getInventory().getMatrix()) {
+					if (itemStack == null || itemStack.getType() == Material.AIR) {
+						continue;
+					}
+					if (!isUsedCaptcha(itemStack)) {
+						event.getInventory().setResult(ItemUtil.AIR);
+					} else {
+						event.getInventory().setResult(getItemByCaptcha(itemStack));
+					}
+					return;
+				}
+			}
+		}, this));
+
+		CraftItemEvent.getHandlerList().register(new SimpleListener<>(CraftItemEvent.class, event -> {
+			if (event.getRecipe() instanceof Keyed
+					&& ((Keyed) event.getRecipe()).getKey().getKey().equals(RECIPE_KEY)) {
+				for (ItemStack itemStack : event.getInventory().getMatrix()) {
+					if (itemStack == null || itemStack.getType() == Material.AIR) {
+						continue;
+					}
+					if (!isUsedCaptcha(itemStack)) {
+						event.setCurrentItem(ItemUtil.AIR);
+					} else {
+						event.setCurrentItem(getItemByCaptcha(itemStack));
+					}
+					return;
+				}
+			}
+		}, this));
 
 		RegisteredServiceProvider<Easterlyn> registration = getServer().getServicesManager().getRegistration(Easterlyn.class);
 		if (registration != null) {
@@ -110,6 +151,7 @@ public class EasterlynCaptcha extends JavaPlugin {
 	 * @return true if the ItemStack is a blank captchacard
 	 */
 	public static boolean isBlankCaptcha(ItemStack item) {
+		//noinspection ConstantConditions // Must have lore or isCaptcha would fail.
 		return isCaptcha(item) && item.getItemMeta().getLore().contains("Blank");
 	}
 
@@ -121,6 +163,7 @@ public class EasterlynCaptcha extends JavaPlugin {
 	 * @return true if the ItemStack is a captchacard
 	 */
 	public static boolean isUsedCaptcha(ItemStack item) {
+		//noinspection ConstantConditions // Must have lore or isCaptcha would fail.
 		return isCaptcha(item) && !item.getItemMeta().getLore().contains("Blank");
 	}
 
@@ -144,7 +187,8 @@ public class EasterlynCaptcha extends JavaPlugin {
 				return true;
 			}
 		}
-		return !ItemUtil.isUniqueItem(item) || isUsedCaptcha(item) && item.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$");
+		//noinspection ConstantConditions // Must have lore or isUsedCaptcha would fail.
+		return ItemUtil.isUniqueItem(item) || isUsedCaptcha(item) && item.getItemMeta().getLore().get(0).matches("^(.3-?[0-9]+ Captcha of )+.+$");
 	}
 
 	/**
@@ -206,6 +250,7 @@ public class EasterlynCaptcha extends JavaPlugin {
 		ArrayList<String> cardLore = new ArrayList<>();
 		StringBuilder builder = new StringBuilder().append(ChatColor.DARK_AQUA).append(item.getAmount()).append(' ');
 		if (isCaptcha(item)) {
+			//noinspection ConstantConditions // Must have lore or isCaptcha would fail.
 			builder.append("Captcha of ").append(meta.getLore().get(0));
 		} else if (meta.hasDisplayName() && !ItemUtil.isMisleadinglyNamed(meta.getDisplayName(), item.getType())) {
 			builder.append(meta.getDisplayName());
@@ -228,6 +273,43 @@ public class EasterlynCaptcha extends JavaPlugin {
 		cardMeta.setLore(cardLore);
 		card.setItemMeta(cardMeta);
 		return card;
+	}
+
+	/**
+	 * Converts a captchacard into an ItemStack. Also used for punchcards and
+	 * cruxite dowels.
+	 *
+	 * @param captcha the captchacard ItemStack
+	 *
+	 * @return the ItemStack represented by this captchacard
+	 */
+	public ItemStack getItemByCaptcha(ItemStack captcha) {
+		if (captcha == null) {
+			return null;
+		}
+		if (!isCaptcha(captcha)) {
+			// Not a card.
+			captcha = captcha.clone();
+			captcha.setAmount(1);
+			return captcha;
+		}
+		//noinspection ConstantConditions // Must have lore or isCaptcha would fail.
+		for (String lore : captcha.getItemMeta().getLore()) {
+			if (!lore.startsWith(HASH_PREFIX)) {
+				continue;
+			}
+			lore = lore.substring(HASH_PREFIX.length());
+			if (!lore.matches("[0-9A-Za-z]{8,}")) {
+				continue;
+			}
+			ItemStack item = getItemByHash(lore);
+			if (item != null) {
+				return item;
+			}
+		}
+		captcha = captcha.clone();
+		captcha.setAmount(1);
+		return captcha;
 	}
 
 	@Nullable
@@ -271,6 +353,7 @@ public class EasterlynCaptcha extends JavaPlugin {
 			if (!isUsedCaptcha(is)) {
 				continue;
 			}
+			//noinspection ConstantConditions // Must have lore or isUsedCaptcha would fail.
 			String hash = findHashIfPresent(is.getItemMeta().getLore());
 			if (hash == null) {
 				continue;
@@ -282,6 +365,7 @@ public class EasterlynCaptcha extends JavaPlugin {
 			if (isUsedCaptcha(storedItem)) {
 				// Properly convert contents of double captchas
 				int amount = storedItem.getAmount();
+				//noinspection ConstantConditions // Must have lore or isUsedCaptcha would fail.
 				String internalHash = this.findHashIfPresent(storedItem.getItemMeta().getLore());
 				if (internalHash == null) {
 					continue;
@@ -292,6 +376,9 @@ public class EasterlynCaptcha extends JavaPlugin {
 				}
 				String newInternalHash = this.getHashByItem(convertedItem);
 				storedItem = this.getCaptchaForHash(newInternalHash);
+				if (storedItem == null) {
+					continue;
+				}
 				storedItem.setAmount(amount);
 			}
 			String newHash = this.getHashByItem(storedItem);

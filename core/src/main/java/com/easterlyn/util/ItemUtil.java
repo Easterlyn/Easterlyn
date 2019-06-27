@@ -69,6 +69,7 @@ import org.bukkit.potion.PotionType;
 public class ItemUtil {
 
 	public static final ItemStack AIR = new ItemStack(Material.AIR);
+	public static final String UNIQUE_KEYED_PREFIX = "easterlyn_unique_";
 	private static final Set<Function<ItemStack, Boolean>> UNIQUE_CHECKS = new HashSet<>();
 
 	static {

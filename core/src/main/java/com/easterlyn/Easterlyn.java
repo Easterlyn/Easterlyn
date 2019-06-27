@@ -8,13 +8,20 @@ import com.easterlyn.users.UserManager;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.util.BlockUpdateManager;
 import com.easterlyn.util.Colors;
+import com.easterlyn.util.ItemUtil;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.event.SimpleListener;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import org.bukkit.GameMode;
+import org.bukkit.Keyed;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -50,6 +57,42 @@ public class Easterlyn extends JavaPlugin {
 		Colors.load(this);
 
 		registerCommands("com.easterlyn.command");
+
+		PrepareItemCraftEvent.getHandlerList().register(new SimpleListener<>(PrepareItemCraftEvent.class, event -> {
+			if (event.getRecipe() instanceof Keyed
+					&& ((Keyed) event.getRecipe()).getKey().getKey().startsWith(ItemUtil.UNIQUE_KEYED_PREFIX)) {
+				// Allow custom recipes using unique items
+				return;
+			}
+
+			for (ItemStack itemStack : event.getInventory().getMatrix()) {
+				if (ItemUtil.isUniqueItem(itemStack)) {
+					event.getInventory().setResult(ItemUtil.AIR);
+					return;
+				}
+			}
+		}, this));
+
+		CraftItemEvent.getHandlerList().register(new SimpleListener<>(CraftItemEvent.class, event -> {
+			if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE
+					&& !event.getWhoClicked().hasPermission("easterlyn.events.creative.unfiltered")) {
+				event.setCurrentItem(ItemUtil.cleanNBT(event.getCurrentItem()));
+			}
+
+			if (event.getRecipe() instanceof Keyed
+					&& ((Keyed) event.getRecipe()).getKey().getKey().startsWith(ItemUtil.UNIQUE_KEYED_PREFIX)) {
+				// Allow custom recipes using unique items
+				return;
+			}
+
+			for (ItemStack itemStack : event.getInventory().getMatrix()) {
+				if (ItemUtil.isUniqueItem(itemStack)) {
+					event.getWhoClicked().sendMessage("events.craft.unique".replace("{ITEM}", ItemUtil.getItemName(itemStack)));
+					event.setCancelled(true);
+					return;
+				}
+			}
+		}, this));
 	}
 
 	public void registerCommands(String packageName) {
