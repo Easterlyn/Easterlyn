@@ -1,0 +1,4 @@
+# World names must be alphanumeric, cannot conflict with disabled worlds setting. Smile.
++disabled-worlds+:
+  - creative
+  - fantasy

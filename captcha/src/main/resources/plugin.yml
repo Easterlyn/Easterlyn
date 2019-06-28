@@ -5,4 +5,4 @@ version: ${project.version}-${timestamp}
 author: Jikoo
 description: Captcha cards!
 api-version: "1.14"
-softdepend: [Easterlyn-Core]
+depend: [Easterlyn-Core]

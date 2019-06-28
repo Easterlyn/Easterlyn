@@ -185,6 +185,7 @@ public class EconomyUtil {
 					break;
 				case SLOWNESS:
 					// Corrupted speed/leaping, speed is cheaper
+					//noinspection DuplicateBranchesInSwitch // Branches are not duplicates
 					cost = NumberUtil.addSafe(cost, getMappings().get(Material.FERMENTED_SPIDER_EYE));
 				case SPEED:
 					cost = NumberUtil.addSafe(cost, getMappings().get(Material.NETHER_WART) + getMappings().get(Material.SUGAR));
@@ -197,6 +198,7 @@ public class EconomyUtil {
 					break;
 				case INSTANT_DAMAGE:
 					// Corrupted poison/instant health, poison is cheaper
+					//noinspection DuplicateBranchesInSwitch // Branches are not duplicates
 					cost = NumberUtil.addSafe(cost, getMappings().get(Material.FERMENTED_SPIDER_EYE));
 				case POISON:
 					cost = NumberUtil.addSafe(cost, getMappings().get(Material.NETHER_WART) + getMappings().get(Material.SPIDER_EYE));

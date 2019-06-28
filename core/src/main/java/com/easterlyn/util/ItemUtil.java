@@ -59,6 +59,8 @@ import org.bukkit.potion.PotionData;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A set of useful methods for inventory functions.
@@ -345,23 +347,24 @@ public class ItemUtil {
 
 	/**
 	 * Reduces an ItemStack by the given quantity. If the ItemStack would have a
-	 * quantity of 0, returns null.
+	 * quantity of 0, returns air.
 	 *
-	 * @param is the ItemStack to reduce
+	 * @param itemStack the ItemStack to reduce
 	 * @param amount the amount to reduce the ItemStack by
 	 *
 	 * @return the reduced ItemStack
 	 */
-	public static ItemStack decrement(ItemStack is, int amount) {
-		if (is == null || is.getType() == Material.AIR) {
-			return null;
+	@NotNull
+	public static ItemStack decrement(@Nullable ItemStack itemStack, int amount) {
+		if (itemStack == null || itemStack.getType() == Material.AIR) {
+			return AIR;
 		}
-		if (is.getAmount() > amount) {
-			is.setAmount(is.getAmount() - amount);
+		if (itemStack.getAmount() > amount) {
+			itemStack.setAmount(itemStack.getAmount() - amount);
 		} else {
-			is = null;
+			itemStack = AIR;
 		}
-		return is;
+		return itemStack;
 	}
 
 	public static void decrementHeldItem(PlayerInteractEvent event, int amount) {

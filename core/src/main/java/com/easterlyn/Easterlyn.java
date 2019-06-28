@@ -93,6 +93,8 @@ public class Easterlyn extends JavaPlugin {
 				}
 			}
 		}, this));
+
+		// TODO uniques in anvils
 	}
 
 	public void registerCommands(String packageName) {

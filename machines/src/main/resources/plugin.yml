@@ -1,0 +1,9 @@
+name: ${project.name}
+
+main: com.easterlyn.machines.EasterlynMachines
+version: ${project.version}-${timestamp}
+author: Jikoo
+description: Multi-block machines!
+api-version: "1.14"
+depend: [Easterlyn-Core]
+softdepend: [CreeperHeal, Easterlyn-Captcha]

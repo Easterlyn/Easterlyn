@@ -37,6 +37,7 @@ import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
@@ -68,6 +69,7 @@ public class EasterlynCaptcha extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
+		getServer().getServicesManager().register(EasterlynCaptcha.class, this, this, ServicePriority.Normal);
 
 		// Add the captchacard recipes
 		ItemStack captchaItem = getBlankCaptchacard();
