@@ -174,7 +174,7 @@ public class EasterlynMachines extends JavaPlugin {
 			}
 		}, this, EventPriority.LOW));
 		registerInventoryEvent(InventoryClickEvent.class, InventoryClickEvent.getHandlerList(), machine -> machine::handleClick);
-		registerInventoryEvent(InventoryDragEvent.class, InventoryDragEvent.getHandlerList(), machine -> machine::handleClick);
+		registerInventoryEvent(InventoryDragEvent.class, InventoryDragEvent.getHandlerList(), machine -> machine::handleDrag);
 		registerInventoryEvent(InventoryOpenEvent.class, InventoryOpenEvent.getHandlerList(), machine -> machine::handleOpen);
 		BlockPistonExtendEvent.getHandlerList().register(new SimpleListener<>(BlockPistonExtendEvent.class, event -> {
 			if (isMachine(event.getBlock()) || event.getBlocks().stream().anyMatch(this::isMachine)) {

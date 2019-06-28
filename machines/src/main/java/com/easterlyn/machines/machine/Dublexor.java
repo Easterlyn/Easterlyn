@@ -184,7 +184,7 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 	}
 
 	@Override
-	public void handleClick(@NotNull InventoryDragEvent event, ConfigurationSection storage) {
+	public void handleDrag(@NotNull InventoryDragEvent event, ConfigurationSection storage) {
 		updateInventory(event.getWhoClicked().getUniqueId());
 		// Raw slot 1 = second slot of top inventory
 		if (event.getRawSlots().contains(1)) {

@@ -398,7 +398,7 @@ public abstract class Machine {
 	 * @param event the InventoryClickEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
-	public void handleClick(@NotNull InventoryDragEvent event, @Nullable ConfigurationSection storage) {
+	public void handleDrag(@NotNull InventoryDragEvent event, @Nullable ConfigurationSection storage) {
 		event.setResult(Result.DENY);
 		event.setCancelled(true);
 	}
