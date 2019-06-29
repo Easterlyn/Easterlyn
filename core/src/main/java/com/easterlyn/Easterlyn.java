@@ -8,7 +8,7 @@ import com.easterlyn.users.UserManager;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.util.BlockUpdateManager;
 import com.easterlyn.util.Colors;
-import com.easterlyn.util.ItemUtil;
+import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;

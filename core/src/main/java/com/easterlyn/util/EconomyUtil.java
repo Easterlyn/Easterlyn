@@ -1,5 +1,6 @@
 package com.easterlyn.util;
 
+import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.wrapper.RecipeWrapper;
 import java.util.EnumSet;
 import java.util.HashMap;

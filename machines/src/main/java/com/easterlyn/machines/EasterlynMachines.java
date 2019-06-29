@@ -3,7 +3,7 @@ package com.easterlyn.machines;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.CoordinateUtil;
 import com.easterlyn.util.Direction;
-import com.easterlyn.util.ItemUtil;
+import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.wrapper.BlockMap;

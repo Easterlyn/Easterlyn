@@ -1,7 +1,7 @@
 package com.easterlyn.captcha;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.util.ItemUtil;
+import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;

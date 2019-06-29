@@ -1,6 +1,6 @@
 package com.easterlyn.captcha;
 
-import com.easterlyn.util.ItemUtil;
+import com.easterlyn.util.inventory.ItemUtil;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;

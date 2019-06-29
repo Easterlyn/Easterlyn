@@ -7,7 +7,7 @@ import com.easterlyn.util.Direction;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
 import com.easterlyn.util.GenericUtil;
-import com.easterlyn.util.ItemUtil;
+import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.Shape;
 import com.easterlyn.util.tuple.Pair;

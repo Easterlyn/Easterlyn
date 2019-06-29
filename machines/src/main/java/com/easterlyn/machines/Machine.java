@@ -348,7 +348,7 @@ public abstract class Machine {
 		for (Block block : getMachines().getMachineBlocks(getKey(storage).getBlock())) {
 			if (getMachines().isExplodedMachine(block)) {
 				event.getPlayer().sendMessage("This machine is too damaged to use!");
-				event.setCancelled(true);
+				event.setUseInteractedBlock(Result.DENY);
 			}
 		}
 	}
