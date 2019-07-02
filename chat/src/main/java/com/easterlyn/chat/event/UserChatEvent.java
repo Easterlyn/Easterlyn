@@ -60,6 +60,10 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 		this.message = message;
 	}
 
+	public boolean isThirdPerson() {
+		return thirdPerson;
+	}
+
 	@Override
 	public boolean isCancelled() {
 		return cancelled;

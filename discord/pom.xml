@@ -9,8 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>chat</artifactId>
-    <name>Easterlyn-Chat</name>
+    <artifactId>discord</artifactId>
+    <name>Easterlyn-Discord</name>
 
     <repositories>
         <repository>
@@ -45,6 +45,17 @@
             <artifactId>core</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.easterlyn</groupId>
+            <artifactId>chat</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.discord4j</groupId>
+            <artifactId>discord4j-core</artifactId>
+            <version>3.0.7</version>
         </dependency>
     </dependencies>
 

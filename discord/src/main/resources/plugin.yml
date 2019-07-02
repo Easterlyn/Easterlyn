@@ -1,0 +1,8 @@
+name: ${project.name}
+
+main: com.easterlyn.discord.EasterlynDiscord
+version: ${project.version}-${timestamp}
+author: Jikoo
+description: Discord-Minecraft bridge plugin.
+api-version: "1.14"
+depend: [Easterlyn-Core, Easterlyn-Chat]

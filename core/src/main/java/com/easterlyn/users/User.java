@@ -53,6 +53,13 @@ public class User implements Group {
 		tempStore = new ConcurrentHashMap<>();
 	}
 
+	protected User(User user) {
+		plugin = user.plugin;
+		uuid = user.uuid;
+		storage = user.storage;
+		tempStore = user.tempStore;
+	}
+
 	@NotNull
 	public UUID getUniqueId() {
 		return uuid;

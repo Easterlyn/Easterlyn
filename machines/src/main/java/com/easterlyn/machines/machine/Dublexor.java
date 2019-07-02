@@ -7,6 +7,7 @@ import com.easterlyn.util.Direction;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
 import com.easterlyn.util.GenericUtil;
+import com.easterlyn.util.inventory.InventoryUtil;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.Shape;
@@ -303,7 +304,7 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 			@NotNull ItemStack expCost, @NotNull ItemStack result) {
 		open.setItem(1, expCost);
 		open.setItem(2, result);
-		ItemUtil.updateVillagerTrades(player, getExampleRecipes(), new Triple<>(input, expCost, result));
+		InventoryUtil.updateVillagerTrades(player, getExampleRecipes(), new Triple<>(input, expCost, result));
 		player.updateInventory();
 	}
 

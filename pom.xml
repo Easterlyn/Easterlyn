@@ -7,13 +7,14 @@
     <groupId>com.easterlyn</groupId>
     <artifactId>Easterlyn</artifactId>
     <packaging>pom</packaging>
-    <version>2.0-SNAPSHOT</version>
+    <version>2.0</version>
 
     <modules>
         <module>core</module>
         <module>chat</module>
         <module>captcha</module>
         <module>machines</module>
+        <module>discord</module>
     </modules>
 
 </project>

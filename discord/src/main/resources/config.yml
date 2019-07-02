@@ -1,0 +1,83 @@
+token: ''
+guilds:
+  '0123456789':
+    channels:
+      welcome:
+        - '0123456789'
+      main:
+        - '0123456790'
+      log:
+        - '0123456791'
+      report:
+        - '0123456792'
+    roles:
+      member: '0123456793'
+command-whitelist:
+  - help
+  - channel
+  - general
+  - rules
+  - delhome
+  - itemdb
+  - kick
+  - list
+  - mail
+  - ms
+  - time
+  - weather
+  - mvs
+  - spawn
+  - checknamehistory
+  - bal
+  - balance
+  - oops
+  - whois
+  - channel
+  - totalfocus
+  - seen
+  - forcechannel
+  - perminfo
+  - cmdinfo
+  - ban
+  - unban
+  - silenttp
+  - tempcart
+  - meteor
+  - setplayer
+  - silentkick
+  - numbercrunch
+  - aether
+  - lel
+  - serverinfo
+  - tp
+  - burn
+  - delwarp
+  - warp
+  - fly
+  - gamemode
+  - heal
+  - give
+  - kill
+  - lightning
+  - mute
+  - cadmin
+  - mv
+  - tps
+  - gc
+  - test
+  - tempban
+  - prism
+  - onlogin
+  - halculate
+  - whitelist
+  - plugins
+  - permissions
+  - luckperms
+command-log-blacklist:
+  - me
+  - m
+  - lwc
+  - cpassword
+  - cunlock
+  - we
+  - checknamehistory
