@@ -32,6 +32,10 @@ import org.jetbrains.annotations.NotNull;
 
 public class EconomyUtil {
 
+	public static final double OVERPRICED_RATE = 2.18265;
+	public static final double NORMAL_RATE = 0.72755;
+	public static final double UNDERPRICED_RATE = 0.24252;
+
 	private EconomyUtil() {}
 
 	private static Set<Function<ItemStack, Double>> modifiers = new HashSet<>();

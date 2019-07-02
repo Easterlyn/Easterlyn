@@ -15,6 +15,7 @@
         <module>captcha</module>
         <module>machines</module>
         <module>discord</module>
+        <module>villagers</module>
     </modules>
 
 </project>
