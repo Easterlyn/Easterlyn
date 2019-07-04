@@ -1,4 +1,4 @@
-package com.easterlyn.villagers;
+package com.easterlyn;
 
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.EconomyUtil;

@@ -1,6 +1,7 @@
-package com.easterlyn.machines;
+package com.easterlyn;
 
 import com.easterlyn.event.ReportableEvent;
+import com.easterlyn.machine.Machine;
 import com.easterlyn.util.CoordinateUtil;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.inventory.ItemUtil;
@@ -54,10 +55,12 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -214,6 +217,24 @@ public class EasterlynMachines extends JavaPlugin {
 				loadChunkMachines(chunk);
 			}
 		}
+
+		RegisteredServiceProvider<Easterlyn> registration = getServer().getServicesManager().getRegistration(Easterlyn.class);
+		if (registration != null) {
+			register(registration.getProvider());
+		}
+
+		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class,
+				pluginEnableEvent -> {
+					if (pluginEnableEvent.getPlugin() instanceof Easterlyn) {
+						register((Easterlyn) pluginEnableEvent.getPlugin());
+					}
+				}, this));
+	}
+
+	private void register(Easterlyn provider) {
+		ItemUtil.addUniqueCheck(itemStack -> iconRegistry.keySet().stream().anyMatch(itemStack::isSimilar));
+
+		provider.registerCommands("com.easterlyn.machine.command");
 	}
 
 	@Override
@@ -283,11 +304,11 @@ public class EasterlynMachines extends JavaPlugin {
 	 * @param block the Block to check
 	 * @return true if the Block is part of a Machine
 	 */
-	boolean isMachine(@NotNull Block block) {
+	public boolean isMachine(@NotNull Block block) {
 		return blocksToKeys.get(block) != null;
 	}
 
-	boolean isExplodedMachine(@NotNull Block block) {
+	public boolean isExplodedMachine(@NotNull Block block) {
 		return exploded.get(block) != null;
 	}
 
@@ -328,7 +349,7 @@ public class EasterlynMachines extends JavaPlugin {
 	 * @return the associated Blocks
 	 */
 	@NotNull
-	Collection<Block> getMachineBlocks(@NotNull Block block) {
+	public Collection<Block> getMachineBlocks(@NotNull Block block) {
 		Block key = blocksToKeys.get(block);
 
 		if (key == null) {
@@ -348,7 +369,7 @@ public class EasterlynMachines extends JavaPlugin {
 	 *
 	 * @param block a Block in the Machine
 	 */
-	void removeMachineFromMemory(@NotNull Block block) {
+	public void removeMachineFromMemory(@NotNull Block block) {
 		Block key = blocksToKeys.get(block);
 		if (key == null) {
 			return;

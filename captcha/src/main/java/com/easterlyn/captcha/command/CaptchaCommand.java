@@ -11,7 +11,7 @@ import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
-import com.easterlyn.captcha.EasterlynCaptcha;
+import com.easterlyn.EasterlynCaptcha;
 import com.easterlyn.command.CommandRank;
 import com.easterlyn.users.UserRank;
 import org.bukkit.GameMode;

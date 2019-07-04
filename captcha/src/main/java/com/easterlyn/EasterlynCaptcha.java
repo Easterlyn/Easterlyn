@@ -1,6 +1,6 @@
-package com.easterlyn.captcha;
+package com.easterlyn;
 
-import com.easterlyn.Easterlyn;
+import com.easterlyn.captcha.CaptchaListener;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.StringUtil;
@@ -135,12 +135,11 @@ public class EasterlynCaptcha extends JavaPlugin {
 			register(registration.getProvider());
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class,
-				pluginEnableEvent -> {
-					if (pluginEnableEvent.getPlugin() instanceof Easterlyn) {
-						register((Easterlyn) pluginEnableEvent.getPlugin());
-					}
-				}, this));
+		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
+			if (event.getPlugin() instanceof Easterlyn) {
+				register((Easterlyn) event.getPlugin());
+			}
+		}, this));
 
 		getServer().getPluginManager().registerEvents(new CaptchaListener(this), this);
 	}

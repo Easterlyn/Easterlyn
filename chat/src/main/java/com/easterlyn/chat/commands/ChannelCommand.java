@@ -11,7 +11,7 @@ import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.EasterlynChat;
+import com.easterlyn.EasterlynChat;
 import com.easterlyn.chat.channel.AccessLevel;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;

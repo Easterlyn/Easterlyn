@@ -1,6 +1,6 @@
 name: ${project.name}
 
-main: com.easterlyn.chat.EasterlynChat
+main: com.easterlyn.EasterlynChat
 version: ${project.version}-${timestamp}
 author: Jikoo
 description: Easterlyn's chat plugin.

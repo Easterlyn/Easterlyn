@@ -1,6 +1,7 @@
-package com.easterlyn.machines;
+package com.easterlyn.machine;
 
 import com.easterlyn.Easterlyn;
+import com.easterlyn.EasterlynMachines;
 import com.easterlyn.util.CoordinateUtil;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.Shape;

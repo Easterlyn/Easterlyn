@@ -1,6 +1,6 @@
 name: ${project.name}
 
-main: com.easterlyn.machines.EasterlynMachines
+main: com.easterlyn.EasterlynMachines
 version: ${project.version}-${timestamp}
 author: Jikoo
 description: Multi-block machines!

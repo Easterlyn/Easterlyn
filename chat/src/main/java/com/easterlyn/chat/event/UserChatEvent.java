@@ -1,6 +1,6 @@
 package com.easterlyn.chat.event;
 
-import com.easterlyn.chat.EasterlynChat;
+import com.easterlyn.EasterlynChat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.event.UserEvent;
 import com.easterlyn.users.User;

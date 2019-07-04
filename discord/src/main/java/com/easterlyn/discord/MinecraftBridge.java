@@ -1,7 +1,8 @@
 package com.easterlyn.discord;
 
 import com.easterlyn.Easterlyn;
-import com.easterlyn.chat.EasterlynChat;
+import com.easterlyn.EasterlynChat;
+import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.util.PermissionUtil;
@@ -29,14 +30,14 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-class MinecraftBridge {
+public class MinecraftBridge {
 
 	private final EasterlynDiscord plugin;
 	private final DiscordClient client;
 	private final Cache<Snowflake, Boolean> warnings;
 	private final Pattern mention = Pattern.compile("<([@#]|:\\w+:)(\\d+)>");
 
-	MinecraftBridge(EasterlynDiscord plugin, DiscordClient client) {
+	public MinecraftBridge(EasterlynDiscord plugin, DiscordClient client) {
 		this.plugin = plugin;
 		this.client = client;
 
@@ -44,7 +45,7 @@ class MinecraftBridge {
 				.expireAfterWrite(2, TimeUnit.MINUTES).build();
 	}
 
-	void setup() {
+	public void setup() {
 		PermissionUtil.addParent("easterlyn.commands.unlogged", UserRank.MODERATOR.getPermission());
 
 		client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {

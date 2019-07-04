@@ -1,6 +1,6 @@
 name: ${project.name}
 
-main: com.easterlyn.discord.EasterlynDiscord
+main: com.easterlyn.EasterlynDiscord
 version: ${project.version}-${timestamp}
 author: Jikoo
 description: Discord-Minecraft bridge plugin.

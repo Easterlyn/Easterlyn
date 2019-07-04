@@ -1,6 +1,8 @@
-package com.easterlyn.discord;
+package com.easterlyn;
 
-import com.easterlyn.Easterlyn;
+import com.easterlyn.discord.ChannelType;
+import com.easterlyn.discord.DiscordUser;
+import com.easterlyn.discord.MinecraftBridge;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.event.SimpleListener;
 import com.easterlyn.util.tuple.Pair;
@@ -22,6 +24,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -50,9 +53,24 @@ public class EasterlynDiscord extends JavaPlugin {
 			client.login().subscribe(aVoid -> new MinecraftBridge(this, client).setup());
 		});
 
-		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event -> {
-			postMessage(ChannelType.REPORT, event.getMessage() + (event.hasTrace() ? event.getTrace() : ""));
+		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event ->
+				postMessage(ChannelType.REPORT, event.getMessage() + (event.hasTrace() ? event.getTrace() : "")), this));
+
+		RegisteredServiceProvider<Easterlyn> registration = getServer().getServicesManager().getRegistration(Easterlyn.class);
+		if (registration != null) {
+			register(registration.getProvider());
+		}
+
+		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
+			if (event.getPlugin() instanceof Easterlyn) {
+				register((Easterlyn) event.getPlugin());
+			}
 		}, this));
+	}
+
+	private void register(Easterlyn plugin) {
+		plugin.registerCommands("com.easterlyn.discord.command");
+		plugin.getCommandManager().registerDependency(this.getClass(), this);
 	}
 
 	public Collection<TextChannel> getChannelIDs(ChannelType type) {

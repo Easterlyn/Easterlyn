@@ -1,8 +1,7 @@
-package com.easterlyn.machines.machine;
+package com.easterlyn.machine;
 
-import com.easterlyn.captcha.EasterlynCaptcha;
-import com.easterlyn.machines.EasterlynMachines;
-import com.easterlyn.machines.Machine;
+import com.easterlyn.EasterlynMachines;
+import com.easterlyn.EasterlynCaptcha;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
@@ -275,7 +274,7 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 
 	private Pair<ItemStack, Integer> unCaptcha(ItemStack potentialCaptcha) {
 		try {
-			Class.forName("com.easterlyn.captcha.EasterlynCaptcha");
+			Class.forName("com.easterlyn.EasterlynCaptcha");
 		} catch (ClassNotFoundException e) {
 			return new Pair<>(potentialCaptcha, 1);
 		}

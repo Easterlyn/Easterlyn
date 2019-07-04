@@ -1,10 +1,9 @@
-package com.easterlyn.chat;
+package com.easterlyn;
 
 import co.aikar.commands.BukkitCommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
-import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
@@ -59,6 +58,12 @@ public class EasterlynChat extends JavaPlugin {
 			register(registration.getProvider());
 		}
 
+		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
+			if (event.getPlugin() instanceof Easterlyn) {
+				register((Easterlyn) event.getPlugin());
+			}
+		}, this));
+
 		// Permission to use >greentext.
 		PermissionUtil.getOrCreate("easterlyn.chat.greentext", PermissionDefault.TRUE);
 		// Permission to bypass all chat filtering.
@@ -96,13 +101,6 @@ public class EasterlynChat extends JavaPlugin {
 		});
 
 		remove.forEach(key -> config.set(key, null));
-
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class,
-				pluginEnableEvent -> {
-					if (pluginEnableEvent.getPlugin() instanceof Easterlyn) {
-						register((Easterlyn) pluginEnableEvent.getPlugin());
-					}
-				}, this));
 
 		channels.put("", DEFAULT);
 		channels.put("main", DEFAULT);

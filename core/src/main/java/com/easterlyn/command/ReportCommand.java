@@ -1,4 +1,4 @@
-package com.easterlyn.discord;
+package com.easterlyn.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
@@ -14,7 +14,7 @@ import java.text.DecimalFormat;
 import org.bukkit.Location;
 
 @CommandAlias("report")
-@Description("")
+@Description("Create a report for staff.")
 @CommandPermission("easterlyn.command.report")
 public class ReportCommand extends BaseCommand {
 
@@ -28,8 +28,8 @@ public class ReportCommand extends BaseCommand {
 		String message = "Report by " + issuer.getIssuer().getName();
 		if (issuer.isPlayer()) {
 			Location location = issuer.getPlayer().getLocation();
-			message += String.format(" - /wtp @p %.2f %.2f %.2f %.2f %.2f", location.getX(), location.getY(),
-					location.getZ(), location.getPitch(), location.getYaw());
+			message += String.format(" - /wtp @p %s %.2f %.2f %.2f %.2f %.2f", location.getWorld().getName(),
+					location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw());
 		}
 		message += '\n' + args;
 
@@ -38,7 +38,6 @@ public class ReportCommand extends BaseCommand {
 			issuer.sendMessage("No report handlers are enabled! Please use an alternate contact method.");
 		}
 
-		// TODO since all this does is fire a ReportableEvent, should it be part of the core?
 		easterlyn.getServer().getPluginManager().callEvent(new ReportableEvent(message));
 	}
 

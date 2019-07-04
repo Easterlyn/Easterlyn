@@ -1,7 +1,6 @@
-package com.easterlyn.machines.machine;
+package com.easterlyn.machine;
 
-import com.easterlyn.machines.EasterlynMachines;
-import com.easterlyn.machines.Machine;
+import com.easterlyn.EasterlynMachines;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.HologramUtil;

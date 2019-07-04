@@ -1,6 +1,6 @@
 name: ${project.name}
 
-main: com.easterlyn.villagers.EasterlynVillagers
+main: com.easterlyn.EasterlynVillagers
 version: ${project.version}-${timestamp}
 author: Jikoo
 description: Adjust villager trades using Easterlyn's economic values.
