@@ -11,11 +11,12 @@
 
     <modules>
         <module>core</module>
-        <module>chat</module>
-        <module>captcha</module>
-        <module>machines</module>
-        <module>discord</module>
-        <module>villagers</module>
+        <module>chat</module> <!-- depends: core -->
+        <module>captcha</module> <!-- depends: core -->
+        <module>discord</module> <!-- depends: core, chat -->
+        <module>effect</module> <!-- depends: core -->
+        <module>machine</module> <!-- depends: core, captcha -->
+        <module>villagers</module> <!-- depends: core -->
     </modules>
 
 </project>

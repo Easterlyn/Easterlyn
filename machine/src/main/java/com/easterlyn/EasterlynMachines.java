@@ -78,8 +78,6 @@ public class EasterlynMachines extends JavaPlugin {
 	public void onEnable() {
 		saveDefaultConfig();
 
-		ItemUtil.addUniqueCheck(itemStack -> iconRegistry.keySet().stream().anyMatch(itemStack::isSimilar));
-
 		new Reflections("com.easterlyn.machines.machine").getSubTypesOf(Machine.class).stream()
 		.filter(clazz -> !Modifier.isAbstract(clazz.getModifiers())).forEach(clazz -> {
 			Constructor<? extends Machine> constructor;
@@ -235,11 +233,14 @@ public class EasterlynMachines extends JavaPlugin {
 		ItemUtil.addUniqueCheck(itemStack -> iconRegistry.keySet().stream().anyMatch(itemStack::isSimilar));
 
 		provider.registerCommands("com.easterlyn.machine.command");
+		// TODO obtain machine icon command
 	}
 
 	@Override
 	public void onDisable() {
 		saveConfig();
+		iconRegistry.clear();
+		nameRegistry.clear();
 	}
 
 	private void loadChunkMachines(Chunk chunk) {
