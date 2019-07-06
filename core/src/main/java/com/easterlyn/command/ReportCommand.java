@@ -8,9 +8,8 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Private;
-import com.easterlyn.Easterlyn;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.ReportableEvent;
-import java.text.DecimalFormat;
 import org.bukkit.Location;
 
 @CommandAlias("report")
@@ -19,8 +18,7 @@ import org.bukkit.Location;
 public class ReportCommand extends BaseCommand {
 
 	@Dependency
-	private Easterlyn easterlyn;
-	private final DecimalFormat format = new DecimalFormat("#.##");
+	private EasterlynCore easterlynCore;
 
 	@Default
 	@Private
@@ -38,7 +36,7 @@ public class ReportCommand extends BaseCommand {
 			issuer.sendMessage("No report handlers are enabled! Please use an alternate contact method.");
 		}
 
-		easterlyn.getServer().getPluginManager().callEvent(new ReportableEvent(message));
+		easterlynCore.getServer().getPluginManager().callEvent(new ReportableEvent(message));
 	}
 
 }

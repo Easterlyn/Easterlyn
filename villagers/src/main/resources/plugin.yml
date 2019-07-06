@@ -1,8 +1,8 @@
 name: ${project.name}
 
-main: com.easterlyn.EasterlynVillagers
+main: com.easterlyn.${project.name}
 version: ${project.version}-${timestamp}
 author: Jikoo
-description: Adjust villager trades using Easterlyn's economic values.
+description: ${project.description}
 api-version: "1.14"
-depend: [Easterlyn-Core]
+depend: [EasterlynCore]

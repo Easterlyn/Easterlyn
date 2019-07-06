@@ -414,7 +414,7 @@ public class StringUtil {
 			return items;
 		}
 		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Objects.requireNonNull(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("Easterlyn")).getResource("items.csv"))))) {
+				Objects.requireNonNull(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("EasterlynCore")).getResource("items.csv"))))) {
 			items = HashBiMap.create();
 			String line;
 			while ((line = reader.readLine()) != null) {

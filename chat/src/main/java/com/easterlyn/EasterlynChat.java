@@ -53,14 +53,14 @@ public class EasterlynChat extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		RegisteredServiceProvider<Easterlyn> registration = getServer().getServicesManager().getRegistration(Easterlyn.class);
+		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {
 			register(registration.getProvider());
 		}
 
 		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
-			if (event.getPlugin() instanceof Easterlyn) {
-				register((Easterlyn) event.getPlugin());
+			if (event.getPlugin() instanceof EasterlynCore) {
+				register((EasterlynCore) event.getPlugin());
 			}
 		}, this));
 
@@ -113,7 +113,7 @@ public class EasterlynChat extends JavaPlugin {
 
 		// TODO rich messages
 		AsyncPlayerChatEvent.getHandlerList().register(new SimpleListener<>(AsyncPlayerChatEvent.class, event -> {
-			RegisteredServiceProvider<Easterlyn> easterlynRSP = getServer().getServicesManager().getRegistration(Easterlyn.class);
+			RegisteredServiceProvider<EasterlynCore> easterlynRSP = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 			if (easterlynRSP == null) {
 				event.getPlayer().sendMessage("Easterlyn core plugin is not enabled! Please report this to @Staff on Discord immediately!");
 				return;
@@ -231,7 +231,7 @@ public class EasterlynChat extends JavaPlugin {
 
 	}
 
-	private void register(Easterlyn plugin) {
+	private void register(EasterlynCore plugin) {
 		StringUtil.addSectionHandler(string -> new StringUtil.SingleMatcher(CHANNEL_PATTERN.matcher(string)) {
 			@Override
 			protected TextComponent[] handleMatch(TextComponent previousComponent) {

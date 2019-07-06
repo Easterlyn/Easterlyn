@@ -1,6 +1,6 @@
 package com.easterlyn.users;
 
-import com.easterlyn.Easterlyn;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.PlayerNameChangeEvent;
 import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.event.UserLoadEvent;
@@ -41,12 +41,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public class User implements Group {
 
-	private final Easterlyn plugin;
+	private final EasterlynCore plugin;
 	private final UUID uuid;
 	private final ConcurrentConfiguration storage;
 	private final Map<String, Object> tempStore;
 
-	private User(@NotNull Easterlyn plugin, @NotNull UUID uuid, @NotNull ConcurrentConfiguration storage) {
+	private User(@NotNull EasterlynCore plugin, @NotNull UUID uuid, @NotNull ConcurrentConfiguration storage) {
 		this.plugin = plugin;
 		this.uuid = uuid;
 		this.storage = storage;
@@ -236,7 +236,7 @@ public class User implements Group {
 		return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
 	}
 
-	public Easterlyn getPlugin() {
+	public EasterlynCore getPlugin() {
 		return plugin;
 	}
 
@@ -250,7 +250,7 @@ public class User implements Group {
 	}
 
 	@NotNull
-	static User load(@NotNull Easterlyn plugin, @NotNull final UUID uuid) {
+	static User load(@NotNull EasterlynCore plugin, @NotNull final UUID uuid) {
 		PluginManager pluginManager = plugin.getServer().getPluginManager();
 		File file = new File(plugin.getDataFolder().getPath() + File.separatorChar + "users", uuid.toString() + ".yml");
 		if (file.exists()) {

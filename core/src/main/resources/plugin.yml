@@ -1,9 +1,8 @@
 name: ${project.name}
 
-main: com.easterlyn.Easterlyn
+main: com.easterlyn.${project.name}
 version: ${project.version}-${timestamp}
 author: Jikoo
-description: https://www.youtube.com/watch?v=QHnJ9NmK3Pc
-api-version: "1.14"
+description: ${project.description}
 depend: [LuckPerms]
 softdepend: [GriefPrevention, WorldGuard]

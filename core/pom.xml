@@ -10,20 +10,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>core</artifactId>
-    <name>Easterlyn-Core</name>
+    <name>EasterlynCore</name>
+    <description>https://www.youtube.com/watch?v=QHnJ9NmK3Pc</description>
 
     <repositories>
         <repository>
-            <id>aikar</id>
-            <url>https://repo.aikar.co/content/groups/aikar/</url>
-        </repository>
-        <repository>
             <id>jitpack.io</id>
             <url>https://jitpack.io</url>
-        </repository>
-        <repository>
-            <id>destroystokyo-repo</id>
-            <url>https://repo.destroystokyo.com/repository/maven-public//</url>
         </repository>
     </repositories>
 
@@ -39,12 +32,6 @@
             <artifactId>spigot</artifactId>
             <version>1.14.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>co.aikar</groupId>
-            <artifactId>acf-paper</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.reflections</groupId>

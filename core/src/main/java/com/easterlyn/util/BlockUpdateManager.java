@@ -1,6 +1,6 @@
 package com.easterlyn.util;
 
-import com.easterlyn.Easterlyn;
+import com.easterlyn.EasterlynCore;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -23,12 +23,12 @@ import org.bukkit.scheduler.BukkitTask;
  */
 public class BlockUpdateManager {
 
-	private final Easterlyn plugin;
+	private final EasterlynCore plugin;
 	private final Map<Block, Block> pending;
 	private BukkitTask queueDrain;
 	private final BlockFace[] adjacent;
 
-	public BlockUpdateManager(Easterlyn plugin) {
+	public BlockUpdateManager(EasterlynCore plugin) {
 		this.plugin = plugin;
 		this.pending = new LinkedHashMap<>();
 		this.adjacent = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH,

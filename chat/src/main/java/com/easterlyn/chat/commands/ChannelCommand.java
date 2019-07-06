@@ -10,7 +10,7 @@ import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
-import com.easterlyn.Easterlyn;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.chat.channel.AccessLevel;
 import com.easterlyn.chat.channel.Channel;
@@ -33,7 +33,7 @@ public class ChannelCommand extends BaseCommand {
 	private final SimpleDateFormat timestamp = new SimpleDateFormat("HH:mm");
 
 	@Dependency
-	private Easterlyn easterlyn;
+	private EasterlynCore easterlynCore;
 	@Dependency
 	private EasterlynChat chat;
 
@@ -321,7 +321,7 @@ public class ChannelCommand extends BaseCommand {
 
 		TextComponent[] message = StringUtil.fromLegacyText(channel.getDisplayName()
 				+ " has been disbanded. That's all, folks!").toArray(new TextComponent[0]);
-		channel.getMembers().stream().map(uuid -> easterlyn.getUserManager().getUser(uuid)).forEach(member -> {
+		channel.getMembers().stream().map(uuid -> easterlynCore.getUserManager().getUser(uuid)).forEach(member -> {
 			member.sendMessage(message);
 			List<String> channels = member.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 			channels.remove(channel.getName());

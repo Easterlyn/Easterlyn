@@ -9,13 +9,39 @@
     <packaging>pom</packaging>
     <version>2.0</version>
 
+    <repositories>
+        <repository>
+            <id>aikar</id>
+            <url>https://repo.aikar.co/content/groups/aikar/</url>
+        </repository>
+        <repository>
+            <id>destroystokyo-repo</id>
+            <url>https://repo.destroystokyo.com/repository/maven-public//</url>
+        </repository>
+    </repositories>
+    <dependencies>
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-api</artifactId>
+            <version>1.14.2-R0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>co.aikar</groupId>
+            <artifactId>acf-paper</artifactId>
+            <version>0.5.0-SNAPSHOT</version>
+            <scope>compile</scope>
+        </dependency>
+    </dependencies>
+
     <modules>
         <module>core</module>
         <module>chat</module> <!-- depends: core -->
-        <module>captcha</module> <!-- depends: core -->
+        <module>captchas</module> <!-- depends: core -->
         <module>discord</module> <!-- depends: core, chat -->
-        <module>effect</module> <!-- depends: core -->
-        <module>machine</module> <!-- depends: core, captcha -->
+        <module>effects</module> <!-- depends: core -->
+        <module>kitchensink</module> <!-- depends: core -->
+        <module>machines</module> <!-- depends: core, captcha -->
         <module>villagers</module> <!-- depends: core -->
     </modules>
 

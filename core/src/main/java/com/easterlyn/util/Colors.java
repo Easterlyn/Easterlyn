@@ -1,6 +1,6 @@
 package com.easterlyn.util;
 
-import com.easterlyn.Easterlyn;
+import com.easterlyn.EasterlynCore;
 import java.util.Locale;
 import net.md_5.bungee.api.ChatColor;
 
@@ -23,7 +23,7 @@ public class Colors {
 	public static ChatColor RANK_ADMIN = ChatColor.GOLD;
 	public static ChatColor RANK_HEAD_ADMIN = ChatColor.GOLD;
 
-	public static void load(Easterlyn plugin) {
+	public static void load(EasterlynCore plugin) {
 		WEB_LINK = getOrDefault(plugin.getConfig().getString("colors.web_link"), ChatColor.BLUE);
 		COMMAND = getOrDefault(plugin.getConfig().getString("colors.command"), ChatColor.AQUA);
 		HIGHLIGHT = getOrDefault(plugin.getConfig().getString("colors.highlight"), ChatColor.AQUA);

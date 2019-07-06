@@ -56,19 +56,19 @@ public class EasterlynDiscord extends JavaPlugin {
 		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event ->
 				postMessage(ChannelType.REPORT, event.getMessage() + (event.hasTrace() ? event.getTrace() : "")), this));
 
-		RegisteredServiceProvider<Easterlyn> registration = getServer().getServicesManager().getRegistration(Easterlyn.class);
+		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {
 			register(registration.getProvider());
 		}
 
 		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
-			if (event.getPlugin() instanceof Easterlyn) {
-				register((Easterlyn) event.getPlugin());
+			if (event.getPlugin() instanceof EasterlynCore) {
+				register((EasterlynCore) event.getPlugin());
 			}
 		}, this));
 	}
 
-	private void register(Easterlyn plugin) {
+	private void register(EasterlynCore plugin) {
 		plugin.registerCommands("com.easterlyn.discord.command");
 		plugin.getCommandManager().registerDependency(this.getClass(), this);
 	}
@@ -132,9 +132,9 @@ public class EasterlynDiscord extends JavaPlugin {
 
 	@NotNull
 	public DiscordUser getUser(@NotNull UUID uuid) throws IllegalStateException {
-		RegisteredServiceProvider<Easterlyn> registration = getServer().getServicesManager().getRegistration(Easterlyn.class);
+		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration == null) {
-			throw new IllegalStateException("Easterlyn-Core not enabled!");
+			throw new IllegalStateException("EasterlynCore not enabled!");
 		}
 		return new DiscordUser(registration.getProvider().getUserManager().getUser(uuid));
 	}

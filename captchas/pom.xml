@@ -9,20 +9,9 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>villagers</artifactId>
-    <name>EasterlynVillagers</name>
-    <description>Adjust villager trades using calculated economic values.</description>
-
-    <repositories>
-        <repository>
-            <id>aikar</id>
-            <url>https://repo.aikar.co/content/groups/aikar/</url>
-        </repository>
-        <repository>
-            <id>destroystokyo-repo</id>
-            <url>https://repo.destroystokyo.com/repository/maven-public//</url>
-        </repository>
-    </repositories>
+    <artifactId>captchas</artifactId>
+    <name>EasterlynCaptchas</name>
+    <description>Captcha cards, because shulker boxes aren't good enough storage.</description>
 
     <dependencies>
         <dependency>

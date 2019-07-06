@@ -9,25 +9,33 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>villagers</artifactId>
-    <name>EasterlynVillagers</name>
-    <description>Adjust villager trades using calculated economic values.</description>
+    <artifactId>machines</artifactId>
+    <name>EasterlynMachines</name>
+    <description>Multi-block machines!</description>
 
     <repositories>
         <repository>
-            <id>aikar</id>
-            <url>https://repo.aikar.co/content/groups/aikar/</url>
-        </repository>
-        <repository>
-            <id>destroystokyo-repo</id>
-            <url>https://repo.destroystokyo.com/repository/maven-public//</url>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
         </repository>
     </repositories>
 
     <dependencies>
         <dependency>
+            <groupId>com.github.nitnelave</groupId>
+            <artifactId>CreeperHeal</artifactId>
+            <version>f0388aa524</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.easterlyn</groupId>
             <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.easterlyn</groupId>
+            <artifactId>captchas</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>

@@ -2,7 +2,7 @@ package com.easterlyn.users;
 
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
-import com.easterlyn.Easterlyn;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
@@ -31,7 +31,7 @@ public class UserManager {
 
 	private final LoadingCache<UUID, User> userCache;
 
-	public UserManager(Easterlyn plugin) {
+	public UserManager(EasterlynCore plugin) {
 		this.userCache = CacheBuilder.newBuilder()
 				.expireAfterAccess(30L, TimeUnit.MINUTES)
 				.removalListener(notification -> {
@@ -73,7 +73,7 @@ public class UserManager {
 		return userCache.getUnchecked(uuid);
 	}
 
-	public void registerCommandContext(Easterlyn plugin) {
+	public void registerCommandContext(EasterlynCore plugin) {
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(User.class, context -> {
 			if (context.hasFlag("self")) {
 				if (context.getSender() instanceof Player) {

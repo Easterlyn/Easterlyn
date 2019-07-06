@@ -1,6 +1,6 @@
 package com.easterlyn.discord;
 
-import com.easterlyn.Easterlyn;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
@@ -113,7 +113,7 @@ public class MinecraftBridge {
 			if (event.getPlayer().hasPermission("easterlyn.commands.unlogged")) {
 				return;
 			}
-			RegisteredServiceProvider<Easterlyn> registration = plugin.getServer().getServicesManager().getRegistration(Easterlyn.class);
+			RegisteredServiceProvider<EasterlynCore> registration = plugin.getServer().getServicesManager().getRegistration(EasterlynCore.class);
 			if (registration == null) {
 				return;
 			}
