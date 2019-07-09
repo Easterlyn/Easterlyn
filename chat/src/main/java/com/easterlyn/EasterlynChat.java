@@ -8,6 +8,7 @@ import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
 import com.easterlyn.chat.event.UserChatEvent;
+import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.users.User;
 import com.easterlyn.users.UserRank;
 import com.easterlyn.util.Colors;
@@ -15,6 +16,7 @@ import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
 import java.lang.reflect.Constructor;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -43,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EasterlynChat extends JavaPlugin {
 
-	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([\\W&&[^" + ChatColor.COLOR_CHAR + "}])?$");
+	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([\\W&&[^" + ChatColor.COLOR_CHAR + "}]])?$");
 	public static final Channel DEFAULT = new Channel("main", UUID.fromString("902b498d-9909-4e78-b401-b7c4f2b1ab4c"));
 	public static final String USER_CHANNELS = "chat.channels";
 	public static final String USER_CURRENT = "chat.current";
@@ -157,6 +159,11 @@ public class EasterlynChat extends JavaPlugin {
 		}, this, EventPriority.MONITOR, true));
 
 		// TODO anti-spam section
+
+		UserCreationEvent.getHandlerList().register(new SimpleListener<>(UserCreationEvent.class, event -> {
+			event.getUser().getStorage().set(USER_CURRENT, DEFAULT.getName());
+			event.getUser().getStorage().set(USER_CHANNELS, Collections.singletonList(DEFAULT.getName()));
+		}, this));
 	}
 
 	public Map<String, Channel> getChannels() {
@@ -303,7 +310,7 @@ public class EasterlynChat extends JavaPlugin {
 		});
 
 		// TODO completions: Channel, NormalChannel
-		plugin.registerCommands("com.easterlyn.chat.commands");
+		plugin.registerCommands(getClassLoader(), "com.easterlyn.chat.command");
 	}
 
 }

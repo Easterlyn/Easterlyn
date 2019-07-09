@@ -92,7 +92,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 			return;
 		}
 
-		TextComponent channelElement = new TextComponent(channel.getDisplayName());
+		TextComponent channelElement = new TextComponent();
 		TextComponent[] channelHover = new TextComponent[] {new TextComponent("/join "), new TextComponent(channel.getDisplayName())};
 		channelHover[0].setColor(Colors.COMMAND);
 		channelHover[1].setColor(Colors.CHANNEL);
@@ -102,8 +102,14 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 		TextComponent channelName = new TextComponent(channel.getDisplayName());
 		channelName.setColor(channel.isOwner(getUser()) ? Colors.CHANNEL_OWNER : channel.isModerator(getUser()) ? Colors.CHANNEL_MODERATOR : Colors.CHANNEL_MEMBER);
 
-		TextComponent nameElement = getUser().getMention();
-		nameElement.setText(nameElement.getText().substring(1));
+		TextComponent nameElement = new TextComponent(thirdPerson ? "> " : " <");
+		TextComponent userElement = getUser().getMention();
+		nameElement.setHoverEvent(userElement.getHoverEvent());
+		nameElement.setClickEvent(userElement.getClickEvent());
+		TextComponent nameText = new TextComponent(userElement.getText().substring(1));
+		nameText.setColor(userElement.getColor());
+		nameElement.addExtra(nameText);
+		nameElement.addExtra(new TextComponent(thirdPerson ? " " : "> "));
 
 		List<TextComponent> messageComponents = StringUtil.fromLegacyText(message);
 
@@ -186,7 +192,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 		}
 		StringBuilder builder = new StringBuilder("(?:^|\\s)@?(");
 		getHighlights(user).forEach(string -> builder.append("\\Q").append(string).append("\\E|"));
-		builder.replace(builder.length() - 1, builder.length(), ")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}])?(?:$|\\s)");
+		builder.replace(builder.length() - 1, builder.length(), ")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}]])?(?:$|\\s)");
 		Pattern pattern = Pattern.compile(builder.toString());
 		user.getTemporaryStorage().put(EasterlynChat.USER_HIGHLIGHTS, pattern);
 		return pattern;

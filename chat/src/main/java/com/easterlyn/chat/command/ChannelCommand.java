@@ -1,4 +1,4 @@
-package com.easterlyn.chat.commands;
+package com.easterlyn.chat.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
@@ -335,6 +335,6 @@ public class ChannelCommand extends BaseCommand {
 		});
 	}
 
-	// TODO info commands: info, list, members, listening
+	// TODO info command: info, list, members, listening
 
 }

@@ -15,6 +15,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
+import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.FluidCollisionMode;
@@ -359,7 +360,7 @@ public class PermissiblePlayer implements Player {
 
 	@Override
 	public void setKiller(@Nullable Player player) {
-		player.setKiller(player);
+		this.player.setKiller(player);
 	}
 
 	@Override
@@ -1437,6 +1438,12 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void sendSignChange(@NotNull Location arg0, String[] arg1) throws IllegalArgumentException {
 		player.sendSignChange(arg0, arg1);
+	}
+
+	@Override
+	public void sendSignChange(@NotNull Location location, @Nullable String[] strings,
+			@NotNull DyeColor dyeColor) throws IllegalArgumentException {
+		sendSignChange(location, strings, dyeColor);
 	}
 
 	@Override

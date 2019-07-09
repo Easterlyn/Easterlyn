@@ -48,7 +48,7 @@ public class StringUtil {
 	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
 	public static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
-	private static final Pattern COMMAND_PATTERN = Pattern.compile("/.{1,}*");
+	private static final Pattern COMMAND_PATTERN = Pattern.compile("/.{1,}");
 	private static final Pattern BACKTICK_END_PATTERN = Pattern.compile("(?:``)+?(`)(\\s|$)");
 	public static final Simplifier TO_LOWER_CASE = s -> s.toLowerCase(Locale.ENGLISH);
 	public static final Simplifier STRIP_URLS = s -> trimExtraWhitespace(URL_PATTERN.matcher(s).replaceAll(" "));

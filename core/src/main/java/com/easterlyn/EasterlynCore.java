@@ -1,6 +1,8 @@
 package com.easterlyn;
 
 import co.aikar.commands.BaseCommand;
+import co.aikar.commands.BukkitCommandIssuer;
+import co.aikar.commands.CommandExecutionContext;
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.RegisteredCommand;
 import com.easterlyn.command.CommandRank;
@@ -54,9 +56,10 @@ public class EasterlynCore extends JavaPlugin {
 		}
 
 		userManager.registerCommandContext(this);
+		commandManager.getCommandContexts().registerIssuerAwareContext(BukkitCommandIssuer.class, CommandExecutionContext::getIssuer);
 		Colors.load(this);
 
-		registerCommands("com.easterlyn.command");
+		registerCommands(getClassLoader(), "com.easterlyn.command");
 
 		PrepareItemCraftEvent.getHandlerList().register(new SimpleListener<>(PrepareItemCraftEvent.class, event -> {
 			if (event.getRecipe() instanceof Keyed
@@ -97,22 +100,21 @@ public class EasterlynCore extends JavaPlugin {
 		// TODO uniques in anvils
 	}
 
-	public void registerCommands(String packageName) {
-		new Reflections(packageName).getSubTypesOf(BaseCommand.class).stream()
+	public void registerCommands(ClassLoader loader, String packageName) {
+		new Reflections(packageName, loader).getSubTypesOf(BaseCommand.class).stream()
 				.filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
 				.forEach(clazz -> {
 					Constructor<? extends BaseCommand> constructor;
 					BaseCommand command;
 					try {
-						constructor = clazz.getConstructor(this.getClass());
-						command = constructor.newInstance(this);
+						constructor = clazz.getConstructor();
+						command = constructor.newInstance();
 					} catch (ReflectiveOperationException e) {
 						getLogger().severe("Unable to register command " + clazz.getName());
 						e.printStackTrace();
 						return;
 					}
 					commandManager.registerCommand(command);
-					addPermissions(command.getDefaultRegisteredCommand());
 					command.getRegisteredCommands().forEach(this::addPermissions);
 				});
 	}
@@ -130,7 +132,7 @@ public class EasterlynCore extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		// TODO purge and save users
+		userManager.clearCache();
 		commandManager.unregisterCommands();
 		blockUpdateManager.forceAllUpdates();
 		simpleCommandMap = null;
@@ -166,7 +168,7 @@ public class EasterlynCore extends JavaPlugin {
 			simpleCommandMap = (SimpleCommandMap) getCommandMap.invoke(getServer());
 		} catch (IllegalArgumentException | IllegalAccessException | SecurityException
 				| NoSuchMethodException | InvocationTargetException e) {
-			getLogger().severe("Could not fetch SimpleCommandMap from CraftServer, Easterlyn commands will fail to register.");
+			getLogger().severe("Could not fetch SimpleCommandMap from CraftServer, Easterlyn command will fail to register.");
 			getLogger().severe(StringUtil.getTrace(e));
 		}
 		return simpleCommandMap;

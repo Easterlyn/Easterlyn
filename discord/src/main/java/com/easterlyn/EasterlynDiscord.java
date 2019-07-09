@@ -69,7 +69,7 @@ public class EasterlynDiscord extends JavaPlugin {
 	}
 
 	private void register(EasterlynCore plugin) {
-		plugin.registerCommands("com.easterlyn.discord.command");
+		plugin.registerCommands(getClassLoader(), "com.easterlyn.discord.command");
 		plugin.getCommandManager().registerDependency(this.getClass(), this);
 	}
 

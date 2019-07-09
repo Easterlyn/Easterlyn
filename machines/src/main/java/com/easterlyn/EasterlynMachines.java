@@ -78,7 +78,7 @@ public class EasterlynMachines extends JavaPlugin {
 	public void onEnable() {
 		saveDefaultConfig();
 
-		new Reflections("com.easterlyn.machines.machine").getSubTypesOf(Machine.class).stream()
+		new Reflections("com.easterlyn.machines.machine", getClassLoader()).getSubTypesOf(Machine.class).stream()
 		.filter(clazz -> !Modifier.isAbstract(clazz.getModifiers())).forEach(clazz -> {
 			Constructor<? extends Machine> constructor;
 			Machine machine;
@@ -232,7 +232,7 @@ public class EasterlynMachines extends JavaPlugin {
 	private void register(EasterlynCore plugin) {
 		ItemUtil.addUniqueCheck(itemStack -> iconRegistry.keySet().stream().anyMatch(itemStack::isSimilar));
 
-		plugin.registerCommands("com.easterlyn.machine.command");
+		plugin.registerCommands(getClassLoader(), "com.easterlyn.machine.command");
 		// TODO obtain machine icon command
 	}
 

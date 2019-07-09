@@ -51,7 +51,7 @@ public class EasterlynEffects extends JavaPlugin {
 		equipmentSlotMap.put(EquipmentSlot.OFF_HAND, EntityEquipment::getItemInOffHand);
 
 		// TODO green thumb, autotorch, pshoooot
-		Reflections reflections = new Reflections("com.easterlyn.effects.effect");
+		Reflections reflections = new Reflections("com.easterlyn.effects.effect", getClassLoader());
 		Set<Class<? extends Effect>> allEffects = reflections.getSubTypesOf(Effect.class);
 		for (Class<? extends Effect> effect : allEffects) {
 			if (Modifier.isAbstract(effect.getModifiers())) {
@@ -99,7 +99,7 @@ public class EasterlynEffects extends JavaPlugin {
 	}
 
 	private void register(EasterlynCore plugin) {
-		plugin.registerCommands("com.easterlyn.effect.command");
+		plugin.registerCommands(getClassLoader(), "com.easterlyn.effect.command");
 		// TODO fx command
 
 		EconomyUtil.addWorthModifier(itemStack -> getEffects(true, itemStack).keySet().stream()

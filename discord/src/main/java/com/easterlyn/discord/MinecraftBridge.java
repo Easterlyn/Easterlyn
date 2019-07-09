@@ -46,7 +46,7 @@ public class MinecraftBridge {
 	}
 
 	public void setup() {
-		PermissionUtil.addParent("easterlyn.commands.unlogged", UserRank.MODERATOR.getPermission());
+		PermissionUtil.addParent("easterlyn.command.unlogged", UserRank.MODERATOR.getPermission());
 
 		client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {
 			if (!event.getMessage().getAuthor().isPresent() || event.getMessage().getAuthor().get().isBot()) {
@@ -110,7 +110,7 @@ public class MinecraftBridge {
 		}, plugin));
 
 		PlayerCommandPreprocessEvent.getHandlerList().register(new SimpleListener<>(PlayerCommandPreprocessEvent.class, event -> {
-			if (event.getPlayer().hasPermission("easterlyn.commands.unlogged")) {
+			if (event.getPlayer().hasPermission("easterlyn.command.unlogged")) {
 				return;
 			}
 			RegisteredServiceProvider<EasterlynCore> registration = plugin.getServer().getServicesManager().getRegistration(EasterlynCore.class);

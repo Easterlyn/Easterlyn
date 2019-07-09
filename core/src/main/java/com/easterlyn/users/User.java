@@ -14,8 +14,10 @@ import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
@@ -23,6 +25,7 @@ import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -133,7 +136,7 @@ public class User implements Group {
 				builder.append("\\Q").append(online.getDisplayName()).append("\\E|");
 			}
 		}
-		builder.append(getUniqueId()).append(")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}])?$");
+		builder.append(getUniqueId()).append(")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}]])?$");
 		Pattern pattern = Pattern.compile(builder.toString());
 		getTemporaryStorage().put("mentionPattern", pattern);
 		return pattern;
@@ -146,6 +149,7 @@ public class User implements Group {
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 				(offlinePlayer.isOnline() ? "/msg " : "/mail send ") + (offlinePlayer.getName() != null ? offlinePlayer.getName() : getUniqueId())));
 
+		List<TextComponent> hovers = new ArrayList<>();
 		TextComponent line = new TextComponent(getDisplayName());
 		line.setColor(getColor());
 		if (offlinePlayer.getName() != null && !offlinePlayer.getName().equals(line.getText())) {
@@ -159,15 +163,16 @@ public class User implements Group {
 		extra = new TextComponent("Click to message!");
 		extra.setColor(Colors.COMMAND);
 		line.addExtra(extra);
-		component.addExtra(line);
+		hovers.add(line);
 
 		UserRank rank = getRank();
 		line = new TextComponent("\n" + rank.getFriendlyName());
 		line.setColor(rank.getColor());
-		component.addExtra(line);
+		hovers.add(line);
 		// TODO class and affinity
 		// TODO could cache in temp store, but needs to be deleted on perm change (login/command)
 
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hovers.toArray(new TextComponent[0])));
 		return component;
 	}
 

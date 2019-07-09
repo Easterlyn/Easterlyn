@@ -13,17 +13,6 @@
     <name>EasterlynVillagers</name>
     <description>Adjust villager trades using calculated economic values.</description>
 
-    <repositories>
-        <repository>
-            <id>aikar</id>
-            <url>https://repo.aikar.co/content/groups/aikar/</url>
-        </repository>
-        <repository>
-            <id>destroystokyo-repo</id>
-            <url>https://repo.destroystokyo.com/repository/maven-public//</url>
-        </repository>
-    </repositories>
-
     <dependencies>
         <dependency>
             <groupId>com.easterlyn</groupId>

@@ -44,7 +44,7 @@ public class PlayerUtil {
 			}).build();
 
 	static {
-		PermissionUtil.addParent("easterlyn.commands.selector", UserRank.STAFF.getPermission());
+		PermissionUtil.addParent("easterlyn.command.selector", UserRank.STAFF.getPermission());
 	}
 
 	/**
@@ -239,7 +239,7 @@ public class PlayerUtil {
 		}
 
 		Player senderPlayer = sender instanceof Player ? (Player) sender : null;
-		if (sender != null && sender.hasPermission("easterlyn.commands.selector") && id.length() > 1 && id.charAt(0) == '@') {
+		if (sender != null && sender.hasPermission("easterlyn.command.selector") && id.length() > 1 && id.charAt(0) == '@') {
 			for (Entity entity : Bukkit.selectEntities(sender, id)) {
 				if (entity instanceof Player && (senderPlayer == null || senderPlayer.canSee((Player) entity))) {
 					return (Player) entity;

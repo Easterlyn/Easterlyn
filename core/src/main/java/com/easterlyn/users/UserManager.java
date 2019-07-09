@@ -105,4 +105,9 @@ public class UserManager {
 		});
 	}
 
+	public void clearCache() {
+		userCache.invalidateAll();
+		userCache.cleanUp();
+	}
+
 }

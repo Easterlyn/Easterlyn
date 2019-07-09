@@ -30,7 +30,7 @@ public abstract class EffectPotion extends Effect {
 	}
 
 	@Override
-	void applyEffect(@NotNull LivingEntity entity, int level, @Nullable Event event) {
+	public void applyEffect(@NotNull LivingEntity entity, int level, @Nullable Event event) {
 		if (event != null) {
 			return;
 		}
