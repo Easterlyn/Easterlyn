@@ -51,7 +51,7 @@ public class EasterlynEffects extends JavaPlugin {
 		equipmentSlotMap.put(EquipmentSlot.OFF_HAND, EntityEquipment::getItemInOffHand);
 
 		// TODO green thumb, autotorch, pshoooot
-		Reflections reflections = new Reflections("com.easterlyn.effects.effect", getClassLoader());
+		Reflections reflections = new Reflections("com.easterlyn.effect", getClassLoader());
 		Set<Class<? extends Effect>> allEffects = reflections.getSubTypesOf(Effect.class);
 		for (Class<? extends Effect> effect : allEffects) {
 			if (Modifier.isAbstract(effect.getModifiers())) {

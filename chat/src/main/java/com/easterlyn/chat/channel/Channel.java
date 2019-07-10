@@ -1,6 +1,6 @@
 package com.easterlyn.chat.channel;
 
-import com.easterlyn.users.User;
+import com.easterlyn.user.User;
 import com.easterlyn.util.command.Group;
 import java.util.Collections;
 import java.util.Set;
@@ -43,21 +43,20 @@ public class Channel implements Group {
 	}
 
 	/**
-	 * Gets the AccessLevel of the channel.
+	 * Gets whether the channel is private or public.
 	 *
-	 * @return the AccessLevel
+	 * @return true if the channel is private
 	 */
-	@NotNull
-	public AccessLevel getAccess() {
-		return AccessLevel.PUBLIC;
+	public boolean isPrivate() {
+		return false;
 	}
 
 	/**
-	 * Sets the AccessLevel of the channel.
+	 * Sets whether the channel is private or public.
 	 *
-	 * @param access the AccessLevel
+	 * @param isPrivate true if the channel is private
 	 */
-	public void setAccess(@NotNull AccessLevel access) {}
+	public void setPrivate(boolean isPrivate) {}
 
 	/**
 	 * Gets the password for the channel.
@@ -121,7 +120,7 @@ public class Channel implements Group {
 	 * @return whether or not the user is allowed to join
 	 */
 	public boolean isWhitelisted(@NotNull User user) {
-		return !isBanned(user) && (getAccess() == AccessLevel.PUBLIC || isModerator(user));
+		return !isBanned(user) && (!isPrivate() || isModerator(user));
 	}
 
 	/**

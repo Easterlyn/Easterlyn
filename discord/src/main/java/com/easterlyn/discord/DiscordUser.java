@@ -1,7 +1,7 @@
 package com.easterlyn.discord;
 
-import com.easterlyn.users.User;
-import com.easterlyn.users.UserRank;
+import com.easterlyn.user.User;
+import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;

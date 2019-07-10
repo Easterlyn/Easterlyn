@@ -3,7 +3,7 @@ package com.easterlyn.chat.event;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.event.UserEvent;
-import com.easterlyn.users.User;
+import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.StringUtil;
 import java.util.LinkedList;
@@ -27,7 +27,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 	private static final HandlerList HANDLER_LIST = new HandlerList();
 
 	private Channel channel;
-	private String message;
+	private final String message;
 	private final boolean thirdPerson;
 	private boolean cancelled = false;
 
@@ -54,10 +54,6 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 	@NotNull
 	public String getMessage() {
 		return message;
-	}
-
-	public void setMessage(@NotNull String message) {
-		this.message = message;
 	}
 
 	public boolean isThirdPerson() {

@@ -13,7 +13,7 @@ import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.command.CommandRank;
-import com.easterlyn.users.UserRank;
+import com.easterlyn.user.UserRank;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;

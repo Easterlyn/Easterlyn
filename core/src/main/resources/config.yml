@@ -1,4 +1,15 @@
 colors:
+  rank:
+    member: DARK_PURPLE
+    retired_staff: DARK_PURPLE
+    staff: DARK_AQUA
+    moderator: DARK_AQUA
+    admin: GOLD
+    head_admin: GOLD
   web_link: BLUE
-  channel: GOLD
   command: AQUA
+  highlight: AQUA
+  channel: GOLD
+  channel_owner: RED
+  channel_moderator: AQUA
+  channel_member: GOLD

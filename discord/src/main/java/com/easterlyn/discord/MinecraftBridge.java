@@ -4,7 +4,7 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
-import com.easterlyn.users.UserRank;
+import com.easterlyn.user.UserRank;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.google.common.cache.Cache;

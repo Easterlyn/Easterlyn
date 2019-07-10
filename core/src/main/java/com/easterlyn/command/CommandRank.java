@@ -1,6 +1,6 @@
 package com.easterlyn.command;
 
-import com.easterlyn.users.UserRank;
+import com.easterlyn.user.UserRank;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

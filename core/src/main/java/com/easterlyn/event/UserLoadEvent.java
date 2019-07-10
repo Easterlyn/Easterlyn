@@ -1,6 +1,6 @@
 package com.easterlyn.event;
 
-import com.easterlyn.users.User;
+import com.easterlyn.user.User;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
 

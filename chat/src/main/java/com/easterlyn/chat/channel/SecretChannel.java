@@ -1,6 +1,6 @@
 package com.easterlyn.chat.channel;
 
-import com.easterlyn.users.User;
+import com.easterlyn.user.User;
 import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 

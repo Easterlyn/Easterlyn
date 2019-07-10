@@ -1,0 +1,7 @@
+auto_user:
+  name: "The Scribe"
+  color: DARK_RED
+  hover: |-
+    &cClick to &b/report
+    &cAutomated Message
+  click: "/report "

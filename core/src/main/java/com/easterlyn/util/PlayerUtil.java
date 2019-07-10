@@ -1,6 +1,6 @@
 package com.easterlyn.util;
 
-import com.easterlyn.users.UserRank;
+import com.easterlyn.user.UserRank;
 import com.easterlyn.util.wrapper.PermissiblePlayer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;

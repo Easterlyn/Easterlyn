@@ -1,9 +1,8 @@
-package com.easterlyn.users;
+package com.easterlyn.user;
 
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.PlayerNameChangeEvent;
 import com.easterlyn.event.UserCreationEvent;
-import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.PermissionUtil;
@@ -49,7 +48,7 @@ public class User implements Group {
 	private final ConcurrentConfiguration storage;
 	private final Map<String, Object> tempStore;
 
-	private User(@NotNull EasterlynCore plugin, @NotNull UUID uuid, @NotNull ConcurrentConfiguration storage) {
+	User(@NotNull EasterlynCore plugin, @NotNull UUID uuid, @NotNull ConcurrentConfiguration storage) {
 		this.plugin = plugin;
 		this.uuid = uuid;
 		this.storage = storage;
@@ -273,7 +272,6 @@ public class User implements Group {
 				}
 			}
 
-			pluginManager.callEvent(new UserLoadEvent(user));
 			return user;
 		}
 
@@ -291,7 +289,6 @@ public class User implements Group {
 			}
 		}
 
-		pluginManager.callEvent(new UserLoadEvent(user));
 		return user;
 	}
 

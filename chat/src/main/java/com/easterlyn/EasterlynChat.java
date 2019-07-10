@@ -9,20 +9,28 @@ import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.event.UserCreationEvent;
-import com.easterlyn.users.User;
-import com.easterlyn.users.UserRank;
+import com.easterlyn.event.UserLoadEvent;
+import com.easterlyn.user.AutoUser;
+import com.easterlyn.user.User;
+import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
 import java.lang.reflect.Constructor;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -31,6 +39,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -158,12 +167,81 @@ public class EasterlynChat extends JavaPlugin {
 			new UserChatEvent(user, channel, event.getMessage()).send();
 		}, this, EventPriority.MONITOR, true));
 
-		// TODO anti-spam section
+		// TODO anti-spam listener
 
 		UserCreationEvent.getHandlerList().register(new SimpleListener<>(UserCreationEvent.class, event -> {
+			RegisteredServiceProvider<EasterlynCore> easterlynProvider = getServer().getServicesManager().getRegistration(EasterlynCore.class);
+			if (easterlynProvider != null) {
+				new UserChatEvent(new AutoUser(easterlynProvider.getProvider(), this), DEFAULT,
+						event.getUser().getDisplayName() + " is new! Please welcome them.");
+			}
 			event.getUser().getStorage().set(USER_CURRENT, DEFAULT.getName());
 			event.getUser().getStorage().set(USER_CHANNELS, Collections.singletonList(DEFAULT.getName()));
+			DEFAULT.getMembers().add(event.getUser().getUniqueId());
 		}, this));
+
+		UserLoadEvent.getHandlerList().register(new SimpleListener<>(UserCreationEvent.class, event -> {
+			RegisteredServiceProvider<EasterlynCore> easterlynProvider = getServer().getServicesManager().getRegistration(EasterlynCore.class);
+			if (easterlynProvider == null) {
+				return;
+			}
+
+			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+			String joinMessage = event.getUser().getDisplayName() + " joined {channels}at " + dateFormat.format(new Date());
+
+			List<String> savedChannels = event.getUser().getStorage().getStringList(USER_CHANNELS);
+			List<String> channels = savedChannels.stream().filter(channelName -> {
+				Channel channel = this.channels.get(channelName);
+				if (channel == null) {
+					return false;
+				}
+				if (!channel.isPrivate() || channel.isWhitelisted(event.getUser())) {
+					channel.getMembers().add(event.getUser().getUniqueId());
+					return true;
+				}
+				return false;
+			}).collect(Collectors.toList());
+
+			if (channels.size() != savedChannels.size()) {
+				event.getUser().getStorage().set(USER_CHANNELS, channels);
+				if (!savedChannels.contains(event.getUser().getStorage().getString(USER_CURRENT))) {
+					event.getUser().getStorage().set(USER_CURRENT, null);
+				}
+			}
+
+			getServer().getOnlinePlayers().forEach(player -> {
+				User user;
+				if (player.getUniqueId().equals(event.getUser().getUniqueId())) {
+					user = event.getUser();
+				} else {
+					user = easterlynProvider.getProvider().getUserManager().getUser(player.getUniqueId());
+				}
+
+				List<String> commonChannels = new ArrayList<>(user.getStorage().getStringList(USER_CHANNELS));
+				commonChannels.retainAll(channels);
+				StringBuilder commonBuilder = new StringBuilder();
+				Iterator<String> channelIterator = commonChannels.iterator();
+
+				while (channelIterator.hasNext()) {
+					String channelName = channelIterator.next();
+					if (!channelIterator.hasNext() && commonBuilder.length() > 0) {
+						commonBuilder.append("and ");
+					}
+					commonBuilder.append('#').append(channelName);
+					if (channelIterator.hasNext()) {
+						commonBuilder.append(',');
+					}
+					commonBuilder.append(' ');
+				}
+
+				// TODO construct rich instead? Not hard, just annoying.
+				user.sendMessage(joinMessage.replace("{channels}", commonBuilder.toString()));
+			});
+		}, this));
+
+		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class,
+				event -> event.setJoinMessage(""), this));
+
 	}
 
 	public Map<String, Channel> getChannels() {

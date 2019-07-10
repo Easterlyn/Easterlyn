@@ -78,7 +78,7 @@ public class EasterlynMachines extends JavaPlugin {
 	public void onEnable() {
 		saveDefaultConfig();
 
-		new Reflections("com.easterlyn.machines.machine", getClassLoader()).getSubTypesOf(Machine.class).stream()
+		new Reflections("com.easterlyn.machine", getClassLoader()).getSubTypesOf(Machine.class).stream()
 		.filter(clazz -> !Modifier.isAbstract(clazz.getModifiers())).forEach(clazz -> {
 			Constructor<? extends Machine> constructor;
 			Machine machine;

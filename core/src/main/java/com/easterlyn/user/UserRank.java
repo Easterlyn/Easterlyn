@@ -1,4 +1,4 @@
-package com.easterlyn.users;
+package com.easterlyn.user;
 
 import com.easterlyn.util.Colors;
 import java.util.function.Supplier;

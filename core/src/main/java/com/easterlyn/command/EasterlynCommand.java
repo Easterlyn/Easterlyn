@@ -16,7 +16,7 @@ import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.users.UserRank;
+import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;

@@ -1,8 +1,9 @@
-package com.easterlyn.users;
+package com.easterlyn.user;
 
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
@@ -42,7 +43,9 @@ public class UserManager {
 		}).build(new CacheLoader<UUID, User>() {
 			@Override
 			public User load(@NotNull final UUID uuid) {
-				return User.load(plugin, uuid);
+				User user = User.load(plugin, uuid);
+				plugin.getServer().getPluginManager().callEvent(new UserLoadEvent(user));
+				return user;
 			}
 		});
 

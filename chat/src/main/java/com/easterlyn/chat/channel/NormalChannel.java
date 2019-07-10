@@ -1,11 +1,11 @@
 package com.easterlyn.chat.channel;
 
-import com.easterlyn.users.User;
-import com.easterlyn.util.GenericUtil;
+import com.easterlyn.user.User;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import org.bukkit.configuration.Configuration;
@@ -19,12 +19,12 @@ public class NormalChannel extends Channel {
 	private final Set<UUID> whitelist;
 	private final Set<UUID> bans;
 	private final AtomicLong lastAccessed;
-	private AccessLevel accessLevel;
+	private final AtomicBoolean isPrivate;
 	private String password;
 
 	public NormalChannel(@NotNull String name, @NotNull UUID owner) {
 		super(name, owner);
-		accessLevel = AccessLevel.PUBLIC;
+		isPrivate = new AtomicBoolean(false);
 		moderators = Collections.newSetFromMap(new ConcurrentHashMap<>());
 		whitelist = Collections.newSetFromMap(new ConcurrentHashMap<>());
 		bans = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -32,16 +32,15 @@ public class NormalChannel extends Channel {
 		password = null;
 	}
 
-	@NotNull
 	@Override
-	public AccessLevel getAccess() {
-		return this.accessLevel;
+	public boolean isPrivate() {
+		return isPrivate.get();
 	}
 
 	@Override
-	public void setAccess(@NotNull AccessLevel access) {
-		this.accessLevel = access;
-		if (access == AccessLevel.PUBLIC) {
+	public void setPrivate(boolean isPrivate) {
+		this.isPrivate.set(isPrivate);
+		if (!isPrivate) {
 			setPassword(null);
 		}
 	}
@@ -54,7 +53,7 @@ public class NormalChannel extends Channel {
 
 	@Override
 	public void setPassword(String password) {
-		if (getAccess() == AccessLevel.PRIVATE) {
+		if (isPrivate.get()) {
 			this.password = password;
 		}
 	}
@@ -76,7 +75,7 @@ public class NormalChannel extends Channel {
 
 	@Override
 	public boolean isWhitelisted(@NotNull User user) {
-		return !isBanned(user) && (getAccess() == AccessLevel.PUBLIC || isModerator(user) || whitelist.contains(user.getUniqueId()));
+		return !isBanned(user) && (!isPrivate() || isModerator(user) || whitelist.contains(user.getUniqueId()));
 	}
 
 	@Override
@@ -118,7 +117,7 @@ public class NormalChannel extends Channel {
 	@Override
 	public void save(@NotNull Configuration channelStorage) {
 		super.save(channelStorage);
-		channelStorage.set(getName() + ".accessLevel", getAccess().name());
+		channelStorage.set(getName() + ".private", isPrivate.get());
 		channelStorage.set(getName() + ".password", password);
 		channelStorage.set(getName() + ".moderators", moderators.stream().map(UUID::toString).collect(Collectors.toList()));
 		channelStorage.set(getName() + ".whitelist", whitelist.stream().map(UUID::toString).collect(Collectors.toList()));
@@ -129,11 +128,7 @@ public class NormalChannel extends Channel {
 	@Override
 	public void load(@NotNull ConfigurationSection data) {
 		super.load(data);
-		GenericUtil.consumeAs(String.class, data.getString("accessLevel"), accessString -> {
-			try {
-				accessLevel = AccessLevel.valueOf(accessString);
-			} catch (IllegalArgumentException ignored) {}
-		});
+		isPrivate.set(data.getBoolean("private"));
 		password = data.getString("password");
 		data.getStringList("moderators").forEach(uuidString -> {
 			try {

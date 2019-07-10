@@ -12,10 +12,9 @@ import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynChat;
-import com.easterlyn.chat.channel.AccessLevel;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
-import com.easterlyn.users.User;
+import com.easterlyn.user.User;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.command.AddRemove;
 import java.text.SimpleDateFormat;
@@ -91,7 +90,7 @@ public class ChannelCommand extends BaseCommand {
 		}
 
 		user.getStorage().set(EasterlynChat.USER_CHANNELS, channels);
-		if (channel.getAccess() == AccessLevel.PRIVATE && channel.getPassword() != null) {
+		if (channel.isPrivate() && channel.getPassword() != null) {
 			// Our clubhouse requires the secret knock on every entry.
 			channel.setWhitelisted(user, false);
 		}
@@ -214,22 +213,22 @@ public class ChannelCommand extends BaseCommand {
 	@Subcommand("modify access")
 	@Description("Set a channel's access level.")
 	@Syntax("[channel] <access>")
-	public void setAccessLevel(@Flags("self") User user, NormalChannel channel, AccessLevel accessLevel) {
+	public void setAccessLevel(@Flags("self") User user, NormalChannel channel, boolean isPrivate) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
 			return;
 		}
 
-		if (channel.getAccess() == accessLevel) {
+		if (channel.isPrivate() == isPrivate) {
 			user.sendMessage("Buddy, that's not a change.");
 			return;
 		}
 
 
-		channel.setAccess(accessLevel);
-		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + " set " + channel.getDisplayName()
-				+ " to access level " + accessLevel.name() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
+		channel.setPrivate(isPrivate);
+		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + " set private: " + isPrivate
+				+ " in " + channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
 			if (player != null) {
@@ -248,7 +247,7 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		if (channel.getAccess() == AccessLevel.PUBLIC) {
+		if (!channel.isPrivate()) {
 			user.sendMessage("Buddy, that's a public channel. You gotta make it private to set a password.");
 			return;
 		}
