@@ -42,9 +42,110 @@
         <module>effects</module> <!-- depends: core -->
         <module>kitchensink</module> <!-- depends: core -->
         <module>machines</module> <!-- depends: core, captcha -->
-        <module>villagers</module>
-        <module>spectators</module>
         <module>sleepvote</module> <!-- depends: core -->
+        <module>spectators</module> <!-- depends: core -->
+        <module>villagers</module> <!-- depends: core -->
     </modules>
+
+    <build>
+
+        <finalName>${project.name}</finalName>
+
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>true</filtering>
+            </resource>
+        </resources>
+
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <id>timestamp-property</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                        <configuration>
+                            <name>timestamp</name>
+                            <pattern>MM/dd/yyyy@HH:mm</pattern>
+                            <locale>en_US</locale>
+                            <timeZone>America/New_York</timeZone>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.2.1</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>ch.mfrey.maven.plugin</groupId>
+                <artifactId>copy-maven-plugin</artifactId>
+                <version>0.0.6</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <resources>
+                                <resource>
+                                    <id>copy</id>
+                                    <directory>${project.build.directory}</directory>
+                                    <workOnFullPath>true</workOnFullPath>
+                                    <includes>
+                                        <include>*.jar</include>
+                                    </includes>
+                                    <excludes>
+                                        <exclude>original-*.jar</exclude>
+                                    </excludes>
+                                    <paths>
+                                        <path>
+                                            <from>${project.build.directory}</from>
+                                            <!--suppress UnresolvedMavenProperty -->
+                                            <to>${project.build.finaldir}</to>
+                                        </path>
+                                    </paths>
+                                    <replaces>
+                                        <replace>
+                                            <from>${project.build.directory}</from>
+                                            <!--suppress UnresolvedMavenProperty -->
+                                            <to>${project.build.finaldir}</to>
+                                        </replace>
+                                    </replaces>
+                                </resource>
+                            </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
