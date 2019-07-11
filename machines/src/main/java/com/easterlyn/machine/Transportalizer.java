@@ -9,7 +9,7 @@ import com.easterlyn.util.Shape;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;

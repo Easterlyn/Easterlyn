@@ -9,7 +9,6 @@ import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.event.UserCreationEvent;
-import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.user.AutoUser;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
@@ -31,15 +30,16 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -167,7 +167,12 @@ public class EasterlynChat extends JavaPlugin {
 			new UserChatEvent(user, channel, event.getMessage()).send();
 		}, this, EventPriority.MONITOR, true));
 
-		// TODO anti-spam listener
+		// TODO
+		//  - anti-spam listener
+		//  - mute
+		//    - chat, signs, books
+		//  - PMs
+		//  - log signs to #sign
 
 		UserCreationEvent.getHandlerList().register(new SimpleListener<>(UserCreationEvent.class, event -> {
 			RegisteredServiceProvider<EasterlynCore> easterlynProvider = getServer().getServicesManager().getRegistration(EasterlynCore.class);
@@ -180,44 +185,47 @@ public class EasterlynChat extends JavaPlugin {
 			DEFAULT.getMembers().add(event.getUser().getUniqueId());
 		}, this));
 
-		UserLoadEvent.getHandlerList().register(new SimpleListener<>(UserCreationEvent.class, event -> {
+		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class, event -> {
 			RegisteredServiceProvider<EasterlynCore> easterlynProvider = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 			if (easterlynProvider == null) {
 				return;
 			}
 
 			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-			String joinMessage = event.getUser().getDisplayName() + " joined {channels}at " + dateFormat.format(new Date());
+			User user = easterlynProvider.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+			String joinMessage = user.getDisplayName() + " joined {channels}at " + dateFormat.format(new Date());
 
-			List<String> savedChannels = event.getUser().getStorage().getStringList(USER_CHANNELS);
+			List<String> savedChannels = user.getStorage().getStringList(USER_CHANNELS);
 			List<String> channels = savedChannels.stream().filter(channelName -> {
 				Channel channel = this.channels.get(channelName);
 				if (channel == null) {
 					return false;
 				}
-				if (!channel.isPrivate() || channel.isWhitelisted(event.getUser())) {
-					channel.getMembers().add(event.getUser().getUniqueId());
+				if (!channel.isPrivate() || channel.isWhitelisted(user)) {
+					channel.getMembers().add(user.getUniqueId());
 					return true;
 				}
 				return false;
 			}).collect(Collectors.toList());
 
 			if (channels.size() != savedChannels.size()) {
-				event.getUser().getStorage().set(USER_CHANNELS, channels);
-				if (!savedChannels.contains(event.getUser().getStorage().getString(USER_CURRENT))) {
-					event.getUser().getStorage().set(USER_CURRENT, null);
+				user.getStorage().set(USER_CHANNELS, channels);
+				if (!channels.contains(user.getStorage().getString(USER_CURRENT))) {
+					user.getStorage().set(USER_CURRENT, null);
 				}
 			}
 
+			event.setJoinMessage("");
+
 			getServer().getOnlinePlayers().forEach(player -> {
-				User user;
-				if (player.getUniqueId().equals(event.getUser().getUniqueId())) {
-					user = event.getUser();
+				User otherUser;
+				if (player.getUniqueId().equals(user.getUniqueId())) {
+					otherUser = user;
 				} else {
-					user = easterlynProvider.getProvider().getUserManager().getUser(player.getUniqueId());
+					otherUser = easterlynProvider.getProvider().getUserManager().getUser(player.getUniqueId());
 				}
 
-				List<String> commonChannels = new ArrayList<>(user.getStorage().getStringList(USER_CHANNELS));
+				List<String> commonChannels = new ArrayList<>(otherUser.getStorage().getStringList(USER_CHANNELS));
 				commonChannels.retainAll(channels);
 				StringBuilder commonBuilder = new StringBuilder();
 				Iterator<String> channelIterator = commonChannels.iterator();
@@ -235,12 +243,35 @@ public class EasterlynChat extends JavaPlugin {
 				}
 
 				// TODO construct rich instead? Not hard, just annoying.
-				user.sendMessage(joinMessage.replace("{channels}", commonBuilder.toString()));
+				otherUser.sendMessage(joinMessage.replace("{channels}", commonBuilder.toString()));
 			});
-		}, this));
+		}, this, EventPriority.LOWEST));
 
-		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class,
-				event -> event.setJoinMessage(""), this));
+		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event -> {
+			RegisteredServiceProvider<EasterlynCore> easterlynProvider = getServer().getServicesManager().getRegistration(EasterlynCore.class);
+			if (easterlynProvider == null) {
+				return;
+			}
+
+			User user = easterlynProvider.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+			List<String> savedChannels = user.getStorage().getStringList(USER_CHANNELS);
+
+			List<String> channels = savedChannels.stream().filter(channelName -> {
+				Channel channel = this.channels.get(channelName);
+				if (channel == null) {
+					return false;
+				}
+				channel.getMembers().remove(user.getUniqueId());
+				return true;
+			}).collect(Collectors.toList());
+
+			if (channels.size() != savedChannels.size()) {
+				user.getStorage().set(USER_CHANNELS, channels);
+				if (!channels.contains(user.getStorage().getString(USER_CURRENT))) {
+					user.getStorage().set(USER_CURRENT, null);
+				}
+			}
+		}, this));
 
 	}
 
@@ -325,7 +356,7 @@ public class EasterlynChat extends JavaPlugin {
 				String channelString = getMatcher().group(1);
 				int end = getMatcher().end(1);
 				component.setText(word.substring(0, end));
-				component.setColor(Colors.CHANNEL);
+				component.setColor(Colors.CHANNEL.asBungee());
 				component.setUnderlined(true);
 				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 						TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelString)));

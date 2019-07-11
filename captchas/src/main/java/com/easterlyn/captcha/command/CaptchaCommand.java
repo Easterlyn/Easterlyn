@@ -104,6 +104,7 @@ public class CaptchaCommand extends BaseCommand {
 				}
 				ItemStack slot = inventory.getItem(i);
 				if (blankCaptcha.isSimilar(slot)) {
+					//noinspection ConstantConditions // isSimilar guarantees item is not null
 					max += slot.getAmount();
 				}
 			}

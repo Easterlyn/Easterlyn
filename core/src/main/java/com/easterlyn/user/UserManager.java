@@ -52,8 +52,11 @@ public class UserManager {
 		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class,
 				playerQuitEvent -> plugin.getServer().getScheduler().runTaskAsynchronously(
 						plugin, () -> {
-							// Keep permissions loaded if userdata is still loaded
-							if (userCache.getIfPresent(playerQuitEvent.getPlayer().getUniqueId()) != null) {
+							User user = userCache.getIfPresent(playerQuitEvent.getPlayer().getUniqueId());
+							if (user != null) {
+								// Save on quit as well as unload just in case
+								user.save();
+								// Keep permissions loaded if userdata is still loaded
 								PermissionUtil.loadPermissionData(playerQuitEvent.getPlayer().getUniqueId());
 							}
 						}

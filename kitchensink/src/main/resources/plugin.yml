@@ -1,0 +1,8 @@
+name: ${project.name}
+
+main: com.easterlyn.${project.name}
+version: ${project.version}-${timestamp}
+author: Jikoo
+description: ${project.description}
+api-version: "1.14"
+depend: [EasterlynCore]

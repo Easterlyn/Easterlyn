@@ -90,13 +90,13 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 
 		TextComponent channelElement = new TextComponent();
 		TextComponent[] channelHover = new TextComponent[] {new TextComponent("/join "), new TextComponent(channel.getDisplayName())};
-		channelHover[0].setColor(Colors.COMMAND);
-		channelHover[1].setColor(Colors.CHANNEL);
+		channelHover[0].setColor(Colors.COMMAND.asBungee());
+		channelHover[1].setColor(Colors.CHANNEL.asBungee());
 		channelElement.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, channelHover));
 		channelElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channel.getDisplayName()));
 
 		TextComponent channelName = new TextComponent(channel.getDisplayName());
-		channelName.setColor(channel.isOwner(getUser()) ? Colors.CHANNEL_OWNER : channel.isModerator(getUser()) ? Colors.CHANNEL_MODERATOR : Colors.CHANNEL_MEMBER);
+		channelName.setColor((channel.isOwner(getUser()) ? Colors.CHANNEL_OWNER : channel.isModerator(getUser()) ? Colors.CHANNEL_MODERATOR : Colors.CHANNEL_MEMBER).asBungee());
 
 		TextComponent nameElement = new TextComponent(thirdPerson ? "> " : " <");
 		TextComponent userElement = getUser().getMention();
@@ -127,7 +127,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 						highlightedComponents.add(start);
 					}
 					TextComponent mention = user.getMention();
-					mention.setColor(Colors.HIGHLIGHT);
+					mention.setColor(Colors.HIGHLIGHT.asBungee());
 					highlightedComponents.add(mention);
 					// Set previous match to end of group 1 so next component will pick up group 2 if it exists.
 					previousMatch = matcher.end(1);
@@ -153,7 +153,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 			TextComponent channelBrace;
 			if (highlight) {
 				channelBrace = new TextComponent("!!");
-				channelBrace.setColor(Colors.HIGHLIGHT);
+				channelBrace.setColor(Colors.HIGHLIGHT.asBungee());
 			} else {
 				channelBrace = new TextComponent("[");
 			}

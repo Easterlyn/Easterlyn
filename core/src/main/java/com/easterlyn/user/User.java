@@ -21,18 +21,16 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
+import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -95,6 +93,17 @@ public class User implements Group {
 		return Colors.getOrDefault(getStorage().getString("color"), getRank().getColor());
 	}
 
+	public void setColor(@NotNull ChatColor color) {
+		if (color == ChatColor.RESET) {
+			getStorage().set("color", null);
+			return;
+		}
+		if (!color.isColor()) {
+			throw new IllegalArgumentException("Color must be a color, not a format code!");
+		}
+		getStorage().set("color", color.name());
+	}
+
 	public boolean isOnline() {
 		return plugin.getServer().getPlayer(getUniqueId()) != null;
 	}
@@ -143,30 +152,30 @@ public class User implements Group {
 
 	public TextComponent getMention() {
 		TextComponent component = new TextComponent("@" + getDisplayName());
-		component.setColor(getColor());
+		component.setColor(getColor().asBungee());
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getUniqueId());
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 				(offlinePlayer.isOnline() ? "/msg " : "/mail send ") + (offlinePlayer.getName() != null ? offlinePlayer.getName() : getUniqueId())));
 
 		List<TextComponent> hovers = new ArrayList<>();
 		TextComponent line = new TextComponent(getDisplayName());
-		line.setColor(getColor());
+		line.setColor(getColor().asBungee());
 		if (offlinePlayer.getName() != null && !offlinePlayer.getName().equals(line.getText())) {
 			TextComponent realName = new TextComponent(" (" + offlinePlayer.getName() + ")");
-			realName.setColor(ChatColor.WHITE);
+			realName.setColor(net.md_5.bungee.api.ChatColor.WHITE);
 			line.addExtra(realName);
 		}
 		TextComponent extra = new TextComponent(" - ");
-		extra.setColor(ChatColor.WHITE);
+		extra.setColor(net.md_5.bungee.api.ChatColor.WHITE);
 		line.addExtra(extra);
 		extra = new TextComponent("Click to message!");
-		extra.setColor(Colors.COMMAND);
+		extra.setColor(Colors.COMMAND.asBungee());
 		line.addExtra(extra);
 		hovers.add(line);
 
 		UserRank rank = getRank();
 		line = new TextComponent("\n" + rank.getFriendlyName());
-		line.setColor(rank.getColor());
+		line.setColor(rank.getColor().asBungee());
 		hovers.add(line);
 		// TODO class and affinity
 		// TODO could cache in temp store, but needs to be deleted on perm change (login/command)
@@ -194,30 +203,6 @@ public class User implements Group {
 	@NotNull
 	public Map<String, Object> getTemporaryStorage() {
 		return tempStore;
-	}
-
-	/**
-	 * Updates the user's ability to fly.
-	 */
-	public void updateFlight() {
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				Player player = getPlayer();
-				if (player == null) {
-					storage.set("flying", false);
-					return;
-				}
-				boolean allowFlight = player.getGameMode() == GameMode.CREATIVE || player.getGameMode() == GameMode.SPECTATOR;
-				if (!allowFlight && player.hasPermission("easterlyn.command.fly.safe")) {
-					allowFlight = player.getLocation().add(0, -1, 0).getBlock().getType().isSolid();
-					// TODO use bounding box?
-				}
-				player.setAllowFlight(allowFlight);
-				player.setFlying(allowFlight);
-				getStorage().set("flying", allowFlight);
-			}
-		}.runTaskLater(plugin, 10L);
 	}
 
 	/**

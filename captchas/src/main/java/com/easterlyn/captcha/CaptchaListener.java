@@ -92,4 +92,26 @@ public class CaptchaListener implements Listener {
 		((Player) event.getWhoClicked()).updateInventory();
 	}
 
+	// TODO uncaptcha
+	/*
+		// PlayerInteractEvent - Uncaptcha on right click
+		// Ensure correct hand
+		// Ensure block does not have right click function - CORE: Listener to set event.useItem DENY earlier
+		if (Captcha.isUsedCaptcha(held)) {
+			ItemStack captchaStack = captcha.getItemForCaptcha(held);
+			if (held.getAmount() > 1) {
+				held.setAmount(held.getAmount() - 1);
+				if (event.getPlayer().getInventory().firstEmpty() != -1) {
+					event.getPlayer().getInventory().addItem(captchaStack);
+				} else {
+					event.getPlayer().getWorld().dropItem(event.getPlayer().getEyeLocation(), captchaStack)
+							.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
+				}
+			} else {
+				InventoryUtils.setHeldItem(inv, mainHand, captchaStack);
+			}
+			event.getPlayer().updateInventory();
+		}
+	 */
+
 }

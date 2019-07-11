@@ -4,8 +4,8 @@ import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.machine.Machine;
 import com.easterlyn.util.CoordinateUtil;
 import com.easterlyn.util.Direction;
-import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.wrapper.BlockMap;
 import com.easterlyn.util.wrapper.BlockMultiMap;
@@ -40,10 +40,12 @@ import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -201,6 +203,18 @@ public class EasterlynMachines extends JavaPlugin {
 		registerBlockEvent(BlockIgniteEvent.class, BlockIgniteEvent.getHandlerList(), machine -> machine::handleIgnite);
 		registerBlockEvent(BlockSpreadEvent.class, BlockSpreadEvent.getHandlerList(), machine -> machine::handleSpread);
 
+		// Prevent all external machine manipulation
+		BlockPhysicsEvent.getHandlerList().register(new SimpleListener<>(BlockPhysicsEvent.class, event -> {
+			if (isMachine(event.getBlock())) {
+				event.setCancelled(true);
+			}
+		}, this));
+		EntityChangeBlockEvent.getHandlerList().register(new SimpleListener<>(EntityChangeBlockEvent.class, event -> {
+			if (isMachine(event.getBlock())) {
+				event.setCancelled(true);
+			}
+		}, this));
+
 		ChunkLoadEvent.getHandlerList().register(new SimpleListener<>(ChunkLoadEvent.class,
 				event -> getServer().getScheduler().runTask(this, () -> loadChunkMachines(event.getChunk())), this));
 		// TODO periodic save system (timer triggered by chunk unload?)
@@ -229,7 +243,7 @@ public class EasterlynMachines extends JavaPlugin {
 				}, this));
 	}
 
-	private void register(EasterlynCore plugin) {
+	private void register(@NotNull EasterlynCore plugin) {
 		ItemUtil.addUniqueCheck(itemStack -> iconRegistry.keySet().stream().anyMatch(itemStack::isSimilar));
 
 		plugin.getCommandManager().registerDependency(this.getClass(), this);

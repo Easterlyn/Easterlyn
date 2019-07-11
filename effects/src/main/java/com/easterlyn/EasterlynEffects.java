@@ -17,13 +17,15 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -74,12 +76,17 @@ public class EasterlynEffects extends JavaPlugin {
 				event -> applyEffects(event.getPlayer(), event), this));
 		FurnaceExtractEvent.getHandlerList().register(new SimpleListener<>(FurnaceExtractEvent.class,
 				event -> applyEffects(event.getPlayer(), event), this));
-		EntityDamageByEntityEvent.getHandlerList().register(new SimpleListener<>(EntityDamageByEntityEvent.class, event -> {
+		EntityDamageEvent.getHandlerList().register(new SimpleListener<>(EntityDamageEvent.class, event -> {
 			if (event.getEntity() instanceof LivingEntity) {
-				applyEffects((LivingEntity) event.getDamager(), event);
+				applyEffects((LivingEntity) event.getEntity(), event);
+			}
+			if (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof LivingEntity) {
+				applyEffects((LivingEntity) ((EntityDamageByEntityEvent) event).getDamager(), event);
 			}
 		}, this));
 		PlayerInteractEvent.getHandlerList().register(new SimpleListener<>(PlayerInteractEvent.class,
+				event -> applyEffects(event.getPlayer(), event), this));
+		PlayerChangedWorldEvent.getHandlerList().register(new SimpleListener<>(PlayerChangedWorldEvent.class,
 				event -> applyEffects(event.getPlayer(), event), this));
 
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);

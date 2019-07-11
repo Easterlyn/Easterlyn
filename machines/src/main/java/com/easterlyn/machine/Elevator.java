@@ -7,7 +7,7 @@ import com.easterlyn.util.Shape;
 import com.easterlyn.util.inventory.Button;
 import com.easterlyn.util.inventory.SimpleUI;
 import java.util.Arrays;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;

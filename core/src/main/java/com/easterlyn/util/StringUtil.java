@@ -73,10 +73,10 @@ public class StringUtil {
 				}
 				TextComponent component = new TextComponent();
 				component.setText('[' + getMatcher().group(3).toLowerCase(Locale.ENGLISH) + ']');
-				component.setColor(Colors.WEB_LINK);
+				component.setColor(Colors.WEB_LINK.asBungee());
 				component.setUnderlined(true);
 				TextComponent[] hover = { new TextComponent(url) };
-				hover[0].setColor(Colors.WEB_LINK);
+				hover[0].setColor(Colors.WEB_LINK.asBungee());
 				hover[0].setUnderlined(true);
 				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
@@ -87,9 +87,9 @@ public class StringUtil {
 			@Override
 			protected TextComponent[] handleMatch(TextComponent previousComponent) {
 				TextComponent textComponent = new TextComponent(getMatcher().group());
-				textComponent.setColor(Colors.COMMAND);
+				textComponent.setColor(Colors.COMMAND.asBungee());
 				TextComponent hover = new TextComponent("Click to run!");
-				hover.setColor(Colors.COMMAND);
+				hover.setColor(Colors.COMMAND.asBungee());
 				textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent[] {hover}));
 				textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ChatColor.stripColor(getMatcher().group().trim())));
 				return new TextComponent[] {textComponent};

@@ -6,11 +6,11 @@ import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import java.util.UUID;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -59,7 +59,7 @@ public class AutoUser extends User {
 
 	public TextComponent getMention() {
 		TextComponent component = new TextComponent("@" + getDisplayName());
-		component.setColor(getColor());
+		component.setColor(getColor().asBungee());
 
 		String click = plugin.getConfig().getString("auto_user.click");
 		if (click != null && !click.isEmpty()) {

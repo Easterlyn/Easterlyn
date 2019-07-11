@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.MessageType;
+import co.aikar.commands.MinecraftMessageKeys;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
@@ -16,8 +17,7 @@ import com.easterlyn.user.UserRank;
 import com.easterlyn.util.NumberUtil;
 import java.util.ArrayList;
 import java.util.List;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -43,19 +43,14 @@ public class EffectCommand extends BaseCommand {
 		Player player = issuer.getPlayer();
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand.getType() == Material.AIR) {
-			issuer.sendMessage("You must have an item in hand to apply effects to!");
+			issuer.sendError(MinecraftMessageKeys.YOU_MUST_BE_HOLDING_ITEM);
 			return;
 		}
 
-		ItemMeta meta;
-		if (!hand.hasItemMeta()) {
-			meta = Bukkit.getItemFactory().getItemMeta(hand.getType());
-		} else {
-			meta = hand.getItemMeta();
-		}
+		ItemMeta meta = hand.getItemMeta();
 
 		if (meta == null) {
-			issuer.sendMessage("Item does not support meta.");
+			issuer.sendError(MinecraftMessageKeys.YOU_MUST_BE_HOLDING_ITEM);
 			return;
 		}
 

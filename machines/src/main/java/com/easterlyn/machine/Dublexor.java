@@ -1,15 +1,15 @@
 package com.easterlyn.machine;
 
-import com.easterlyn.EasterlynMachines;
 import com.easterlyn.EasterlynCaptchas;
+import com.easterlyn.EasterlynMachines;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
 import com.easterlyn.util.GenericUtil;
-import com.easterlyn.util.inventory.InventoryUtil;
-import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.Shape;
+import com.easterlyn.util.inventory.InventoryUtil;
+import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.tuple.Triple;
 import java.util.ArrayList;
@@ -17,8 +17,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.data.Directional;

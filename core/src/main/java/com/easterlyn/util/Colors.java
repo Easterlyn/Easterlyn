@@ -2,7 +2,7 @@ package com.easterlyn.util;
 
 import com.easterlyn.EasterlynCore;
 import java.util.Locale;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 
 public class Colors {
 

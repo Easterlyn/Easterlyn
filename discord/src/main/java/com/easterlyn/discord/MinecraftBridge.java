@@ -1,7 +1,7 @@
 package com.easterlyn.discord;
 
-import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynChat;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.user.UserRank;
@@ -23,7 +23,7 @@ import discord4j.core.object.util.Snowflake;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.EventPriority;
@@ -47,6 +47,10 @@ public class MinecraftBridge {
 
 	public void setup() {
 		PermissionUtil.addParent("easterlyn.command.unlogged", UserRank.MODERATOR.getPermission());
+
+		// TODO
+		// PlayerCommandPreprocessEvent MONITOR -> log commands
+		// PlayerJoinEvent/PlayerQuitEvent -> post
 
 		client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {
 			if (!event.getMessage().getAuthor().isPresent() || event.getMessage().getAuthor().get().isBot()) {

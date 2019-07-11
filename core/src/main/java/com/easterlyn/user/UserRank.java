@@ -2,7 +2,7 @@ package com.easterlyn.user;
 
 import com.easterlyn.util.Colors;
 import java.util.function.Supplier;
-import net.md_5.bungee.api.ChatColor;
+import org.bukkit.ChatColor;
 import org.bukkit.permissions.PermissionDefault;
 
 /**

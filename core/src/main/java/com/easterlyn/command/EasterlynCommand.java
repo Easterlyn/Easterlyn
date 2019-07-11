@@ -11,15 +11,12 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
-import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
-import net.md_5.bungee.api.ChatColor;
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
@@ -45,45 +42,6 @@ public class EasterlynCommand extends BaseCommand {
 	public void reload() {
 		plugin.reloadConfig();
 		Colors.load(plugin);
-	}
-
-	@CommandAlias("colour|color")
-	@Private
-	@Description("Taste the rainbow!")
-	@CommandPermission("easterlyn.command.colour")
-	public void colour(CommandIssuer issuer) {
-		StringBuilder builder = new StringBuilder();
-		for (ChatColor color : ChatColor.values()) {
-			builder.append(color).append('&').append(color.toString().substring(1)).append(' ');
-			builder.append(color.name().toLowerCase()).append(ChatColor.RESET).append(' ');
-		}
-		issuer.sendMessage(builder.toString());
-	}
-
-	@CommandAlias("lel")
-	@Private
-	@Description("【ＴＡＳＴＥ　ＴＨＥ　ＰＡＩＮＢＯＷ】")
-	@Syntax("[painful to view sentence]")
-	@CommandPermission("easterlyn.command.lel")
-	@CommandRank(UserRank.ADMIN)
-	public void requestLordEnglishEyeFuck(String message) {
-		ChatColor[] rainbow = { ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD,
-			ChatColor.YELLOW, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.AQUA,
-			ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.DARK_BLUE, ChatColor.LIGHT_PURPLE,
-			ChatColor.DARK_PURPLE };
-		StringBuilder lelOut = new StringBuilder();
-		for (int i = 0; i < message.length();) {
-			for (int j = 0; i < message.length() && j < rainbow.length; ++i, ++j) {
-				char charAt = message.charAt(i);
-				if (Character.isWhitespace(charAt)) {
-					--j;
-					lelOut.append(i);
-					continue;
-				}
-				lelOut.append(rainbow[j]).append(ChatColor.MAGIC).append(charAt);
-			}
-		}
-		Bukkit.broadcastMessage(lelOut.substring(0, lelOut.length() - 1 > 0 ? lelOut.length() - 1 : 0));
 	}
 
 	@Subcommand("cmdinfo")

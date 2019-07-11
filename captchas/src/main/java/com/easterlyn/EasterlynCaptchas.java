@@ -1,10 +1,10 @@
 package com.easterlyn;
 
 import com.easterlyn.captcha.CaptchaListener;
-import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.inventory.ItemUtil;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -21,12 +21,13 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -96,6 +97,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 		captchaRecipe.addIngredient(Material.BOOK);
 		getServer().addRecipe(captchaRecipe);
 
+		// TODO all listeners -> CaptchaListener
 		PrepareItemCraftEvent.getHandlerList().register(new SimpleListener<>(PrepareItemCraftEvent.class, event -> {
 			if (event.getRecipe() instanceof Keyed
 					&& ((Keyed) event.getRecipe()).getKey().getKey().equals(RECIPE_KEY)) {
@@ -127,6 +129,12 @@ public class EasterlynCaptchas extends JavaPlugin {
 					}
 					return;
 				}
+			}
+		}, this));
+
+		PrepareItemEnchantEvent.getHandlerList().register(new SimpleListener<>(PrepareItemEnchantEvent.class, event -> {
+			if (isCaptcha(event.getItem())) {
+				event.setCancelled(true);
 			}
 		}, this));
 
