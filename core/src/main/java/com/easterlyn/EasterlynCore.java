@@ -115,14 +115,19 @@ public class EasterlynCore extends JavaPlugin {
 						return;
 					}
 					commandManager.registerCommand(command);
-					command.getRegisteredCommands().forEach(this::addPermissions);
+					CommandRank commandRank = clazz.getAnnotation(CommandRank.class);
+					UserRank defaultRank = commandRank != null ? commandRank.value() : UserRank.MEMBER;
+					command.getRegisteredCommands().forEach(registeredCommand -> addPermissions(defaultRank, registeredCommand));
 				});
 	}
 
-	private void addPermissions(RegisteredCommand<?> command) {
-		CommandRank commandRank = command.getAnnotation(CommandRank.class);
-		UserRank rank = commandRank == null ? UserRank.MEMBER : commandRank.value();
-		command.getRequiredPermissions().forEach(permission -> {
+	private void addPermissions(UserRank defaultRank, RegisteredCommand<?> registeredCommand) {
+		CommandRank commandRank = registeredCommand.getAnnotation(CommandRank.class);
+		UserRank rank = commandRank != null ? commandRank.value() : defaultRank;
+		registeredCommand.getRequiredPermissions().forEach(permission -> {
+			if (permission == null || permission.isEmpty()) {
+				return;
+			}
 			PermissionUtil.addParent(permission, rank.getPermission());
 			if (rank != UserRank.DANGER_DANGER_HIGH_VOLTAGE) {
 				PermissionUtil.addParent(permission, "easterlyn.command.*");

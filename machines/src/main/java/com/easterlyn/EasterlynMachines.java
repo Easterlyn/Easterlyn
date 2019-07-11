@@ -90,8 +90,8 @@ public class EasterlynMachines extends JavaPlugin {
 				e.printStackTrace();
 				return;
 			}
-			nameRegistry.put(machine.getClass().getSimpleName(), machine);
-			nameRegistry.put(machine.getName(), machine);
+			nameRegistry.put(machine.getClass().getSimpleName().toLowerCase(), machine);
+			nameRegistry.put(machine.getName().toLowerCase(), machine);
 			iconRegistry.put(machine.getUniqueDrop(), machine);
 		});
 
@@ -232,8 +232,8 @@ public class EasterlynMachines extends JavaPlugin {
 	private void register(EasterlynCore plugin) {
 		ItemUtil.addUniqueCheck(itemStack -> iconRegistry.keySet().stream().anyMatch(itemStack::isSimilar));
 
+		plugin.getCommandManager().registerDependency(this.getClass(), this);
 		plugin.registerCommands(getClassLoader(), "com.easterlyn.machine.command");
-		// TODO obtain machine icon command
 	}
 
 	@Override
@@ -241,6 +241,11 @@ public class EasterlynMachines extends JavaPlugin {
 		saveConfig();
 		iconRegistry.clear();
 		nameRegistry.clear();
+	}
+
+	@Nullable
+	public Machine getByName(@NotNull String name) {
+		return nameRegistry.get(name.toLowerCase());
 	}
 
 	private void loadChunkMachines(Chunk chunk) {
@@ -401,7 +406,7 @@ public class EasterlynMachines extends JavaPlugin {
 			return null;
 		}
 		ConfigurationSection section = getConfig().createSection(CoordinateUtil.pathFromLoc(key.getLocation()));
-		section.set("type", machine.getName());
+		section.set("type", machine.getName().toLowerCase());
 		section.set("owner", owner.toString());
 		section.set("direction", direction.name());
 

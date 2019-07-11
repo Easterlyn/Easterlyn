@@ -4,10 +4,14 @@ import com.easterlyn.effect.Effect;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.tuple.Pair;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -17,11 +21,9 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.FurnaceExtractEvent;
-import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.inventory.EntityEquipment;
@@ -90,6 +92,8 @@ public class EasterlynEffects extends JavaPlugin {
 				register((EasterlynCore) event.getPlugin());
 			}
 		}, this));
+
+
 	}
 
 	@Override
@@ -98,17 +102,12 @@ public class EasterlynEffects extends JavaPlugin {
 		effects.clear();
 	}
 
-	private void register(EasterlynCore plugin) {
+	private void register(@NotNull EasterlynCore plugin) {
+		plugin.getCommandManager().registerDependency(this.getClass(), this);
 		plugin.registerCommands(getClassLoader(), "com.easterlyn.effect.command");
-		// TODO fx command
 
 		EconomyUtil.addWorthModifier(itemStack -> getEffects(true, itemStack).keySet().stream()
 				.mapToDouble(Effect::getCost).sum());
-	}
-
-	private void registerEvent(PlayerEvent playerEvent, HandlerList handlerList) {
-		handlerList.register(new SimpleListener<>(playerEvent.getClass(),
-				event -> applyEffects(event.getPlayer(), event), this));
 	}
 
 	/**
@@ -118,6 +117,7 @@ public class EasterlynEffects extends JavaPlugin {
 	 * @param items the item(s) to get effects from
 	 * @return the Effects and corresponding levels
 	 */
+	@NotNull
 	private Map<Effect, Integer> getEffects(boolean bypass, ItemStack... items) {
 		Map<Effect, Integer> applicableEffects = new HashMap<>();
 		for (ItemStack item : items) {
@@ -126,28 +126,18 @@ public class EasterlynEffects extends JavaPlugin {
 				continue;
 			}
 			for (String lore : item.getItemMeta().getLore()) {
-				Matcher match = effectPattern.matcher(lore);
-				if (!match.find()) {
+				Pair<Effect, Integer> pair = getEffectFromLore(lore, false);
+				if (pair == null) {
 					continue;
 				}
-				String effectName = ChatColor.stripColor(match.group(1));
-				if (!effects.containsKey(effectName)) {
-					continue;
+				int level = pair.getRight();
+				if (applicableEffects.containsKey(pair.getLeft())) {
+					level += applicableEffects.get(pair.getLeft());
 				}
-				int level;
-				try {
-					level = NumberUtil.intFromRoman(match.group(2));
-				} catch (NumberFormatException e) {
-					continue;
+				if (!bypass && level > pair.getLeft().getMaxLevel()) {
+					level = pair.getLeft().getMaxTotalLevel();
 				}
-				Effect effect = effects.get(effectName);
-				if (applicableEffects.containsKey(effect)) {
-					level += applicableEffects.get(effect);
-				}
-				if (!bypass && level > effect.getMaxLevel()) {
-					level = effect.getMaxTotalLevel();
-				}
-				applicableEffects.put(effect, level);
+				applicableEffects.put(pair.getLeft(), level);
 			}
 		}
 		return applicableEffects;
@@ -179,6 +169,104 @@ public class EasterlynEffects extends JavaPlugin {
 					});
 				}));
 		effects.forEach((effect, level) -> effect.applyEffect(entity, level, event));
+	}
+
+	/**
+	 * Organize and correct Effects in ItemStack lore.
+	 *
+	 * @param lore the List of lore containing Effects
+	 * @param ignoreCase whether lore matching should ignore case
+	 * @param overwrite whether any duplicate Effects in toAdd should be ignored
+	 * @param cap whether Effect levels should be capped to the maximum
+	 * @param toAdd additional Strings to be merged with the lore
+	 *
+	 * @return the organized lore
+	 */
+	@NotNull
+	public List<String> organizeEffectLore(@NotNull List<String> lore, boolean ignoreCase,
+			boolean overwrite, boolean cap, String... toAdd) {
+		ArrayList<String> oldLore = new ArrayList<>();
+		if (lore != null) {
+			oldLore.addAll(lore);
+		}
+		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
+		Iterator<String> iterator = oldLore.iterator();
+		while (iterator.hasNext()) {
+			Pair<Effect, Integer> pair = getEffectFromLore(iterator.next(), false);
+			if (pair == null) {
+				continue;
+			}
+			iterator.remove();
+			if (applicableEffects.containsKey(pair.getLeft())) {
+				applicableEffects.put(pair.getLeft(), applicableEffects.get(pair.getLeft()) + pair.getRight());
+				continue;
+			}
+			applicableEffects.put(pair.getLeft(), pair.getRight());
+		}
+
+		for (String string : toAdd) {
+			Pair<Effect, Integer> pair = getEffectFromLore(string, ignoreCase);
+			if (pair == null) {
+				oldLore.add(string);
+				continue;
+			}
+			if (!overwrite && applicableEffects.containsKey(pair.getLeft())) {
+				applicableEffects.put(pair.getLeft(), applicableEffects.get(pair.getLeft()) + pair.getRight());
+				continue;
+			}
+			applicableEffects.put(pair.getLeft(), pair.getRight());
+		}
+
+		ArrayList<String> newLore = new ArrayList<>();
+		for (Map.Entry<Effect, Integer> entry : applicableEffects.entrySet()) {
+			if (entry.getValue() < 1) {
+				continue;
+			}
+			if (cap) {
+				entry.setValue(Math.min(entry.getKey().getMaxLevel(), entry.getValue()));
+			}
+			newLore.add(ChatColor.GRAY + entry.getKey().getName() + ' ' + NumberUtil.romanFromInt(entry.getValue()));
+		}
+		newLore.addAll(oldLore);
+
+		return newLore;
+	}
+
+	/**
+	 * Gets the Effect and level represented by a String in an ItemStack's lore.
+	 *
+	 * @param lore the String
+	 * @param ignoreCase if case should be ignored when matching Effect
+	 */
+	@Nullable
+	public Pair<Effect, Integer> getEffectFromLore(@NotNull String lore, boolean ignoreCase) {
+		Matcher match = effectPattern.matcher(lore);
+		if (!match.find()) {
+			return null;
+		}
+		lore = ChatColor.stripColor(match.group(1));
+		Effect effect = null;
+		if (effects.containsKey(lore)) {
+			effect = effects.get(lore);
+		} else {
+			if (!ignoreCase) {
+				return null;
+			}
+			for (Map.Entry<String, Effect> entry : effects.entrySet()) {
+				if (entry.getKey().equalsIgnoreCase(lore)) {
+					effect = entry.getValue();
+					break;
+				}
+			}
+			if (effect == null) {
+				return null;
+			}
+		}
+		try {
+			return new Pair<>(effect, NumberUtil.intFromRoman(match.group(2)));
+		} catch (NumberFormatException e) {
+			return null;
+		}
 	}
 
 }

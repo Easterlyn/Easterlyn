@@ -12,7 +12,7 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.ReportableEvent;
 import org.bukkit.Location;
 
-@CommandAlias("report")
+@CommandAlias("report|mail @staff")
 @Description("Create a report for staff.")
 @CommandPermission("easterlyn.command.report")
 public class ReportCommand extends BaseCommand {
