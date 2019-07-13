@@ -7,39 +7,26 @@ import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
-import com.easterlyn.chat.event.UserChatEvent;
-import com.easterlyn.event.UserCreationEvent;
-import com.easterlyn.user.AutoUser;
-import com.easterlyn.user.User;
+import com.easterlyn.chat.listener.ChannelManagementListener;
+import com.easterlyn.chat.listener.MuteListener;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
 import java.lang.reflect.Constructor;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -59,6 +46,7 @@ public class EasterlynChat extends JavaPlugin {
 	public static final String USER_CHANNELS = "chat.channels";
 	public static final String USER_CURRENT = "chat.current";
 	public static final String USER_HIGHLIGHTS = "chat.highlights";
+	public static final String USER_MUTE = "chat.mute";
 
 	private final Map<String, Channel> channels = new ConcurrentHashMap<>();
 
@@ -120,52 +108,9 @@ public class EasterlynChat extends JavaPlugin {
 		channels.put("pm", new SecretChannel("pm", DEFAULT.getOwner()));
 		channels.put("sign", new SecretChannel("sign", DEFAULT.getOwner()));
 		channels.put("#", new SecretChannel("#", DEFAULT.getOwner()));
-		channels.put("@test@", new SecretChannel("@test@", DEFAULT.getOwner()));
 
-		// TODO rich messages
-		AsyncPlayerChatEvent.getHandlerList().register(new SimpleListener<>(AsyncPlayerChatEvent.class, event -> {
-			RegisteredServiceProvider<EasterlynCore> easterlynRSP = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (easterlynRSP == null) {
-				event.getPlayer().sendMessage("Easterlyn core plugin is not enabled! Please report this to @Staff on Discord immediately!");
-				return;
-			}
-
-			event.setCancelled(true);
-
-			User user = easterlynRSP.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
-
-			Channel channel = null;
-
-			// #channel message parsing
-			if (event.getMessage().length() > 0 && event.getMessage().charAt(0) == '#') {
-				int space = event.getMessage().indexOf(' ');
-				if (space == -1) {
-					space = event.getMessage().length();
-				}
-				String channelName = event.getMessage().substring(1, space);
-				if (space == event.getMessage().length()) {
-					user.sendMessage("What are you trying to say in #" + channelName + "?");
-					return;
-				}
-				channel = getChannels().get(channelName);
-				if (channel == null) {
-					user.sendMessage("Invalid channel. Create it with `/channel create #" + channelName + "`!");
-					return;
-				}
-				event.setMessage(event.getMessage().substring(space));
-			}
-
-			// User's channel
-			if (channel == null) {
-				channel = getChannels().get(user.getStorage().getString(EasterlynChat.USER_CURRENT));
-				if (channel == null) {
-					user.sendMessage("No current channel set! Focus on the main channel with `/join #`!");
-					return;
-				}
-			}
-
-			new UserChatEvent(user, channel, event.getMessage()).send();
-		}, this, EventPriority.MONITOR, true));
+		getServer().getPluginManager().registerEvents(new ChannelManagementListener(this), this);
+		getServer().getPluginManager().registerEvents(new MuteListener(), this);
 
 		// TODO
 		//  - anti-spam listener
@@ -173,105 +118,6 @@ public class EasterlynChat extends JavaPlugin {
 		//    - chat, signs, books
 		//  - PMs
 		//  - log signs to #sign
-
-		UserCreationEvent.getHandlerList().register(new SimpleListener<>(UserCreationEvent.class, event -> {
-			RegisteredServiceProvider<EasterlynCore> easterlynProvider = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (easterlynProvider != null) {
-				new UserChatEvent(new AutoUser(easterlynProvider.getProvider(), this), DEFAULT,
-						event.getUser().getDisplayName() + " is new! Please welcome them.");
-			}
-			event.getUser().getStorage().set(USER_CURRENT, DEFAULT.getName());
-			event.getUser().getStorage().set(USER_CHANNELS, Collections.singletonList(DEFAULT.getName()));
-			DEFAULT.getMembers().add(event.getUser().getUniqueId());
-		}, this));
-
-		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class, event -> {
-			RegisteredServiceProvider<EasterlynCore> easterlynProvider = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (easterlynProvider == null) {
-				return;
-			}
-
-			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-			User user = easterlynProvider.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
-			String joinMessage = user.getDisplayName() + " joined {channels}at " + dateFormat.format(new Date());
-
-			List<String> savedChannels = user.getStorage().getStringList(USER_CHANNELS);
-			List<String> channels = savedChannels.stream().filter(channelName -> {
-				Channel channel = this.channels.get(channelName);
-				if (channel == null) {
-					return false;
-				}
-				if (!channel.isPrivate() || channel.isWhitelisted(user)) {
-					channel.getMembers().add(user.getUniqueId());
-					return true;
-				}
-				return false;
-			}).collect(Collectors.toList());
-
-			if (channels.size() != savedChannels.size()) {
-				user.getStorage().set(USER_CHANNELS, channels);
-				if (!channels.contains(user.getStorage().getString(USER_CURRENT))) {
-					user.getStorage().set(USER_CURRENT, null);
-				}
-			}
-
-			event.setJoinMessage("");
-
-			getServer().getOnlinePlayers().forEach(player -> {
-				User otherUser;
-				if (player.getUniqueId().equals(user.getUniqueId())) {
-					otherUser = user;
-				} else {
-					otherUser = easterlynProvider.getProvider().getUserManager().getUser(player.getUniqueId());
-				}
-
-				List<String> commonChannels = new ArrayList<>(otherUser.getStorage().getStringList(USER_CHANNELS));
-				commonChannels.retainAll(channels);
-				StringBuilder commonBuilder = new StringBuilder();
-				Iterator<String> channelIterator = commonChannels.iterator();
-
-				while (channelIterator.hasNext()) {
-					String channelName = channelIterator.next();
-					if (!channelIterator.hasNext() && commonBuilder.length() > 0) {
-						commonBuilder.append("and ");
-					}
-					commonBuilder.append('#').append(channelName);
-					if (channelIterator.hasNext()) {
-						commonBuilder.append(',');
-					}
-					commonBuilder.append(' ');
-				}
-
-				// TODO construct rich instead? Not hard, just annoying.
-				otherUser.sendMessage(joinMessage.replace("{channels}", commonBuilder.toString()));
-			});
-		}, this, EventPriority.LOWEST));
-
-		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event -> {
-			RegisteredServiceProvider<EasterlynCore> easterlynProvider = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (easterlynProvider == null) {
-				return;
-			}
-
-			User user = easterlynProvider.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
-			List<String> savedChannels = user.getStorage().getStringList(USER_CHANNELS);
-
-			List<String> channels = savedChannels.stream().filter(channelName -> {
-				Channel channel = this.channels.get(channelName);
-				if (channel == null) {
-					return false;
-				}
-				channel.getMembers().remove(user.getUniqueId());
-				return true;
-			}).collect(Collectors.toList());
-
-			if (channels.size() != savedChannels.size()) {
-				user.getStorage().set(USER_CHANNELS, channels);
-				if (!channels.contains(user.getStorage().getString(USER_CURRENT))) {
-					user.getStorage().set(USER_CURRENT, null);
-				}
-			}
-		}, this));
 
 	}
 
@@ -375,6 +221,7 @@ public class EasterlynChat extends JavaPlugin {
 		});
 
 		IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext> channelContext = context -> {
+			// TODO no selecting banned/not whitelisted
 			if (context.hasFlag("self")) {
 				if (!context.getIssuer().isPlayer()) {
 					throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);

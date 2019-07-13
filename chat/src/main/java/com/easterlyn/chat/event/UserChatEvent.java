@@ -26,7 +26,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 
 	private static final HandlerList HANDLER_LIST = new HandlerList();
 
-	private Channel channel;
+	private final Channel channel;
 	private final String message;
 	private final boolean thirdPerson;
 	private boolean cancelled = false;
@@ -45,10 +45,6 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 	@NotNull
 	public Channel getChannel() {
 		return channel;
-	}
-
-	public void setChannel(@NotNull Channel channel) {
-		this.channel = channel;
 	}
 
 	@NotNull
@@ -84,7 +80,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 	public void send() {
 		Bukkit.getPluginManager().callEvent(this);
 
-		if (this.isCancelled() || channel.getName().equals("@test@")) {
+		if (this.isCancelled()) {
 			return;
 		}
 
