@@ -27,7 +27,7 @@ public class WitherFacts implements Listener {
 		});
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = event.getEntity();
 		EntityDamageEvent lastDamage = player.getLastDamageCause();

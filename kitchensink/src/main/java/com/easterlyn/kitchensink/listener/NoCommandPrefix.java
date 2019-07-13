@@ -12,7 +12,7 @@ public class NoCommandPrefix implements Listener {
 		PermissionUtil.addParent("easterlyn.commands.unfiltered", UserRank.MODERATOR.getPermission());
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		int colon = event.getMessage().indexOf(':');
 		int space = event.getMessage().indexOf(' ');

@@ -9,7 +9,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class DeathCoordinates implements Listener {
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		// TODO fun messages, clickable location component
 		Player player = event.getEntity();

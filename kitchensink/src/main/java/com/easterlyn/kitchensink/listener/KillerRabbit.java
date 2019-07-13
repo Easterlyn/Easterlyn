@@ -9,7 +9,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 
 public class KillerRabbit implements Listener {
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onEntitySpawn(CreatureSpawnEvent event) {
 		if (event.getEntityType() != EntityType.RABBIT
 				|| event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL

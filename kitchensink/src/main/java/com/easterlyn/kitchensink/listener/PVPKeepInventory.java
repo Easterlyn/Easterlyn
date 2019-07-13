@@ -3,6 +3,7 @@ package com.easterlyn.kitchensink.listener;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.user.User;
 import com.easterlyn.util.ExperienceUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -10,17 +11,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 public class PVPKeepInventory implements Listener {
 
 	private final String key = "lastPVPDamage";
-	private EasterlynCore core;
 
-	public PVPKeepInventory(EasterlynCore core) {
-		this.core = core;
-	}
-
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
 		if (!(event.getEntity() instanceof Player)) {
 			return;
@@ -39,13 +36,23 @@ public class PVPKeepInventory implements Listener {
 			return;
 		}
 
-		User user = core.getUserManager().getUser(event.getEntity().getUniqueId());
+		RegisteredServiceProvider<EasterlynCore> easterlynProvider = Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
+		if (easterlynProvider == null) {
+			return;
+		}
+
+		User user = easterlynProvider.getProvider().getUserManager().getUser(event.getEntity().getUniqueId());
 		user.getTemporaryStorage().put(key, System.currentTimeMillis());
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		User user = core.getUserManager().getUser(event.getEntity().getUniqueId());
+		RegisteredServiceProvider<EasterlynCore> easterlynProvider = Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
+		if (easterlynProvider == null) {
+			return;
+		}
+
+		User user = easterlynProvider.getProvider().getUserManager().getUser(event.getEntity().getUniqueId());
 		Object object = user.getTemporaryStorage().get(key);
 		if (!(object instanceof Long)) {
 			return;

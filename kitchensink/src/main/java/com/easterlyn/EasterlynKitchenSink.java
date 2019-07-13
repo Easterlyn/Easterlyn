@@ -1,22 +1,30 @@
 package com.easterlyn;
 
+import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.ContextResolver;
+import com.easterlyn.kitchensink.combo.Meteors;
+import com.easterlyn.kitchensink.listener.BottleExperience;
+import com.easterlyn.kitchensink.listener.CartContainerCrasher;
 import com.easterlyn.kitchensink.listener.ColorSignText;
-import com.easterlyn.kitchensink.listener.FortuneShears;
-import com.easterlyn.kitchensink.listener.NoCommandPrefix;
-import com.easterlyn.kitchensink.listener.NoIllegalName;
-import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
 import com.easterlyn.kitchensink.listener.DeathCoordinates;
+import com.easterlyn.kitchensink.listener.FortuneShears;
 import com.easterlyn.kitchensink.listener.KillerRabbit;
+import com.easterlyn.kitchensink.listener.NoCommandPrefix;
 import com.easterlyn.kitchensink.listener.NoCreativeCrammingDrops;
+import com.easterlyn.kitchensink.listener.NoIllegalName;
+import com.easterlyn.kitchensink.listener.OnlyWitherKillsItems;
 import com.easterlyn.kitchensink.listener.PVPKeepInventory;
+import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
 import com.easterlyn.kitchensink.listener.WitherFacts;
 import com.easterlyn.util.event.SimpleListener;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -25,6 +33,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class EasterlynKitchenSink extends JavaPlugin {
 
+	private List<BaseCommand> extraCommands = new ArrayList<>();
+
 	@Override
 	public void onEnable() {
 
@@ -32,34 +42,29 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		 *  - DeathDropProtection
 		 *    - Tag death drops to prevent lava burn
 		 *    - EntityDamageEvent +> EntityDamageByEntityEvent
-		 *  - ItemProtection
-		 *    - Only allow wither/skulls to destroy items
-		 *  - BottleExperience
-		 *    - ExpBottleEvent -> 10 exp flat, no effect shown
-		 *    - PlayerItemConsumeEvent -> update fill cooldown
-		 *    - PlayerInteractEvent -> fill if not on create cooldown, update throw cooldown
-		 *    - ProjectileLaunchEvent -> throw if not on cooldown
 		 *  - CommandRedirect? probably unnecessary, replacing essentials
 		 *    - PlayerCommandPreprocessEvent
 		 *  - Portals?
-		 *  - RebalancedScrap? mcMMO repair kinda replaces smelting down gear
 		 *  - FreeCart
 		 *    - PlayerDeathEvent -> remove cart
 		 *    - PlayerQuitEvent -> remove cart
 		 *    - Vehicle events, oh boy
-		 *  - CartContainerCrasher
-		 *    - VehicleBlockCollisionEvent -> into block inventory
 		 *  - DeathPointCommand
 		 *    - PlayerDeathEvent -> set
-		 *  - Meteors
 		 *  - PlayerListHeaderFooterWelcome
 		 *  - IPCache
 		 *    - Used for seen
 		 *    - ServerListPingEvent -> replace "Player"
 		 */
 
+		// Feature: Bottle experience by right clicking with an empty bottle.
+		getServer().getPluginManager().registerEvents(new BottleExperience(), this);
+
 		// Feature: Allow color codes on signs via &
 		getServer().getPluginManager().registerEvents(new ColorSignText(), this);
+
+		// Feature: Insert carts into dispensers/droppers when crashed into.
+		getServer().getPluginManager().registerEvents(new CartContainerCrasher(), this);
 
 		// Feature: Send player their coordinates when they die.
 		getServer().getPluginManager().registerEvents(new DeathCoordinates(), this);
@@ -79,11 +84,22 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		// Feature: Prevent players joining with illegal names
 		getServer().getPluginManager().registerEvents(new NoIllegalName(), this);
 
+		// Feature: Dropped items cannot be harmed by any entities other than the Wither.
+		getServer().getPluginManager().registerEvents(new OnlyWitherKillsItems(), this);
+
+		// Feature: Keep inventory when dying in PVP, drop a max of 30 exp.
+		getServer().getPluginManager().registerEvents(new PVPKeepInventory(), this);
+
 		// Feature: Restrict and clean NBT on items spawned and used in creative.
 		getServer().getPluginManager().registerEvents(new RestrictCreativeItems(), this);
 
 		// Fact: Withers are awesome.
 		getServer().getPluginManager().registerEvents(new WitherFacts(), this);
+
+		// Feature: Meteorites. Who doesn't love 'em? Most people, that's who.
+		Meteors meteors = new Meteors(this);
+		getServer().getPluginManager().registerEvents(meteors, this);
+		extraCommands.add(meteors);
 
 
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
@@ -97,6 +113,18 @@ public class EasterlynKitchenSink extends JavaPlugin {
 						register((EasterlynCore) pluginEnableEvent.getPlugin());
 					}
 				}, this));
+	}
+
+	@Override
+	public void onDisable() {
+		RegisteredServiceProvider<EasterlynCore> easterlynProvider = Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
+		if (easterlynProvider == null) {
+			return;
+		}
+
+		EasterlynCore plugin = easterlynProvider.getProvider();
+
+		extraCommands.forEach(command -> plugin.getCommandManager().unregisterCommand(command));
 	}
 
 	private void register(@NotNull EasterlynCore plugin) {
@@ -129,8 +157,8 @@ public class EasterlynKitchenSink extends JavaPlugin {
 
 		plugin.registerCommands(getClassLoader(), "com.easterlyn.kitchensink.command");
 
-		// Feature: Keep inventory when dying in PVP, drop a max of 30 exp.
-		getServer().getPluginManager().registerEvents(new PVPKeepInventory(plugin), plugin);
+		extraCommands.forEach(command -> plugin.getCommandManager().registerCommand(command));
+
 	}
 
 }
