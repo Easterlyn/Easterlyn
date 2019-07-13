@@ -6,8 +6,12 @@ import com.easterlyn.event.UserEvent;
 import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.inventory.ItemUtil;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -20,11 +24,13 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class UserChatEvent extends UserEvent implements Cancellable {
 
 	private static final HandlerList HANDLER_LIST = new HandlerList();
+	private static final Pattern PLAYER_ITEMS = Pattern.compile("${ITEM:(\\d+)}^");
 
 	private final Channel channel;
 	private final String message;
@@ -78,6 +84,10 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 	}
 
 	public void send() {
+		send(Collections.emptyList());
+	}
+
+	public void send(Collection<UUID> additionalRecipients) {
 		Bukkit.getPluginManager().callEvent(this);
 
 		if (this.isCancelled()) {
@@ -103,9 +113,35 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 		nameElement.addExtra(nameText);
 		nameElement.addExtra(new TextComponent(thirdPerson ? " " : "> "));
 
-		List<TextComponent> messageComponents = StringUtil.fromLegacyText(message);
+		List<TextComponent> messageComponents;
+		Player player = getUser().getPlayer();
+		if (player == null) {
+			messageComponents = StringUtil.fromLegacyText(message);
+		} else {
+			messageComponents = StringUtil.fromLegacyText(message, string -> new StringUtil.SingleMatcher(PLAYER_ITEMS.matcher(string)) {
+				@Override
+				protected TextComponent[] handleMatch(TextComponent previousComponent) {
+					int slot;
+					try {
+						slot = Integer.valueOf(getMatcher().group(1));
+					} catch (NumberFormatException e) {
+						return null;
+					}
+					if (slot < 0 || slot >= player.getInventory().getSize()) {
+						return null;
+					}
+					ItemStack item = player.getInventory().getItem(slot);
+					if (item == null) {
+						item = ItemUtil.AIR;
+					}
 
-		channel.getMembers().stream().map(uuid -> getUser().getPlugin().getUserManager().getUser(uuid)).forEach(user ->  {
+					return new TextComponent[] { StringUtil.getItemComponent(item) };
+				}
+			});
+		}
+
+		Stream.concat(additionalRecipients.stream(), channel.getMembers().stream()).distinct()
+				.map(uuid -> getUser().getPlugin().getUserManager().getUser(uuid)).forEach(user ->  {
 			boolean highlight = false;
 
 			// Copy and convert TextComponents from parsed message

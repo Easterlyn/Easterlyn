@@ -2,7 +2,7 @@ package com.easterlyn.chat.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
-import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import com.easterlyn.chat.channel.Channel;
@@ -13,7 +13,7 @@ public class MeCommand extends BaseCommand {
 
 	@CommandAlias("me")
 	@Description("Do an action!")
-	@Default
+	@CommandPermission("easterlyn.command.me")
 	public void me(@Flags("self") User sender, Channel channel, String args) {
 		new UserChatEvent(sender, channel, args, true).send();
 	}

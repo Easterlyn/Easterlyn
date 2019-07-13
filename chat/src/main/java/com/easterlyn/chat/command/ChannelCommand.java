@@ -75,7 +75,7 @@ public class ChannelCommand extends BaseCommand {
 	@Description("Leave a channel.")
 	@Syntax("[channel]")
 	@CommandPermission("easterlyn.command.leave")
-	public void leave(@Flags("self") User user, Channel channel) {
+	public void leave(@Flags("self") User user, @Flags("listening") Channel channel) {
 		channel.updateLastAccess();
 		List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 		String currentChannelName = user.getStorage().getString(EasterlynChat.USER_CURRENT);

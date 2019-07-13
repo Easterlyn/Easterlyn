@@ -221,8 +221,10 @@ public class EasterlynChat extends JavaPlugin {
 		});
 
 		IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext> channelContext = context -> {
-			// TODO no selecting banned/not whitelisted
-			if (context.hasFlag("self")) {
+			// TODO
+			//  - no selecting banned/not whitelisted
+			//  - flag "listening" select from listening only
+			if (context.hasFlag("current")) {
 				if (!context.getIssuer().isPlayer()) {
 					throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
 				}

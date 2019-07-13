@@ -5,6 +5,7 @@ import com.easterlyn.util.Colors;
 import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
+import java.util.Map;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -14,17 +15,16 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class AutoUser extends User {
 
-	private final Plugin plugin;
+	private final Map<String, String> userData;
 
-	public AutoUser(@NotNull EasterlynCore core, @NotNull Plugin plugin) {
+	public AutoUser(@NotNull EasterlynCore core, @NotNull Map<String, String> userData) {
 		super(core, new UUID(0, 0), new ConcurrentConfiguration());
-		this.plugin = plugin;
+		this.userData = userData;
 	}
 
 	@Nullable
@@ -35,12 +35,12 @@ public class AutoUser extends User {
 	@NotNull
 	public String getDisplayName() {
 		return ChatColor.translateAlternateColorCodes('&',
-				GenericUtil.orDefault(plugin.getConfig().getString("auto_user.name"), "Auto User"));
+				GenericUtil.orDefault(userData.get("name"), "Auto User"));
 	}
 
 	@NotNull
 	public ChatColor getColor() {
-		return Colors.getOrDefault(plugin.getConfig().getString("auto_user.color"), getRank().getColor());
+		return Colors.getOrDefault(userData.get("color"), getRank().getColor());
 	}
 
 	public boolean isOnline() {
@@ -61,12 +61,12 @@ public class AutoUser extends User {
 		TextComponent component = new TextComponent("@" + getDisplayName());
 		component.setColor(getColor().asBungee());
 
-		String click = plugin.getConfig().getString("auto_user.click");
+		String click = userData.get("click");
 		if (click != null && !click.isEmpty()) {
 			component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click));
 		}
 
-		String hover = plugin.getConfig().getString("auto_user.hover");
+		String hover = userData.get("hover");
 		if (hover != null && !hover.isEmpty()) {
 			hover = ChatColor.translateAlternateColorCodes('&', hover);
 			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, StringUtil.fromLegacyText(hover).toArray(new TextComponent[0])));

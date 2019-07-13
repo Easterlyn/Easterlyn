@@ -11,9 +11,12 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -42,6 +45,7 @@ public class ChannelManagementListener implements Listener {
 		event.setCancelled(true);
 
 		User user = easterlynRSP.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+		event.getPlayer().setDisplayName(user.getDisplayName());
 
 		Channel channel = null;
 
@@ -80,7 +84,12 @@ public class ChannelManagementListener implements Listener {
 	public void onUserCreate(UserCreationEvent event) {
 		RegisteredServiceProvider<EasterlynCore> easterlynProvider = chat.getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (easterlynProvider != null) {
-			new UserChatEvent(new AutoUser(easterlynProvider.getProvider(), chat), EasterlynChat.DEFAULT,
+			ConfigurationSection userSection = chat.getConfig().getConfigurationSection("auto_user");
+			Map<String, String> userData = new HashMap<>();
+			if (userSection != null) {
+				userSection.getKeys(false).forEach(key -> userData.put(key, userSection.getString(key)));
+			}
+			new UserChatEvent(new AutoUser(easterlynProvider.getProvider(), userData), EasterlynChat.DEFAULT,
 					event.getUser().getDisplayName() + " is new! Please welcome them.");
 		}
 		event.getUser().getStorage().set(EasterlynChat.USER_CURRENT, EasterlynChat.DEFAULT.getName());
@@ -97,6 +106,7 @@ public class ChannelManagementListener implements Listener {
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 		User user = easterlynProvider.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+		event.getPlayer().setDisplayName(user.getDisplayName());
 		String joinMessage = user.getDisplayName() + " joined {channels}at " + dateFormat.format(new Date());
 
 		List<String> savedChannels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
