@@ -1,23 +1,40 @@
 package com.easterlyn.util;
 
+import com.easterlyn.util.inventory.ItemUtil;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.function.BiFunction;
 import net.minecraft.server.v1_14_R1.BlockPosition;
 import net.minecraft.server.v1_14_R1.IBlockData;
 import net.minecraft.server.v1_14_R1.TileEntity;
 import net.minecraft.server.v1_14_R1.TileEntityFurnace;
 import net.minecraft.server.v1_14_R1.WorldServer;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.Tag;
+import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Levelled;
+import org.bukkit.block.data.Powerable;
+import org.bukkit.block.data.Waterlogged;
+import org.bukkit.block.data.type.Bed;
+import org.bukkit.block.data.type.Observer;
+import org.bukkit.block.data.type.RedstoneRail;
 import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
 import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.RayTraceResult;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -27,7 +44,9 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-public class BlockDropUtil {
+public class BlockUtil {
+
+	private static final Set<BiFunction<Block, ItemStack, Boolean>> BLOCK_FUNCTIONS = new HashSet<>();
 
 	public static Collection<ItemStack> getDrops(@Nullable ItemStack tool, @NotNull Block block) {
 		if (tool == null) {
@@ -92,7 +111,7 @@ public class BlockDropUtil {
 		}
 	}
 
-	private static boolean isUsableTool(ItemStack tool, Material broken) {
+	private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material broken) {
 		net.minecraft.server.v1_14_R1.Block block = CraftMagicNumbers.getBlock(broken);
 		if (block == null) {
 			return false;
@@ -101,5 +120,73 @@ public class BlockDropUtil {
 		return data.getMaterial().isAlwaysDestroyable() || tool != null && tool.getType() != Material.AIR
 				&& CraftMagicNumbers.getItem(tool.getType()).canDestroySpecialBlock(data);
 	}
+
+	public static void addRightClickFunction(@NotNull BiFunction<Block, ItemStack, Boolean> function) {
+		BLOCK_FUNCTIONS.add(function);
+	}
+
+	public static boolean hasRightClickFunction(@NotNull PlayerInteractEvent event) {
+
+		if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) {
+			return false;
+		}
+
+		Block block = event.getClickedBlock();
+		ItemStack hand = ItemUtil.getHeldItem(event);
+
+		switch (block.getType()) {
+			case END_STONE:
+				// Special case: player is probably attempting to bottle dragon's breath
+				return block.getWorld().getEnvironment() == World.Environment.THE_END
+						&& hand.getType() == Material.GLASS_BOTTLE;
+			case ANVIL:
+			case BEACON:
+			case CARTOGRAPHY_TABLE:
+			case CHAIN_COMMAND_BLOCK:
+			case COMMAND_BLOCK:
+			case CRAFTING_TABLE:
+			case DRAGON_EGG:
+			case ENCHANTING_TABLE:
+			case ENDER_CHEST:
+			case JUKEBOX:
+			case REPEATING_COMMAND_BLOCK:
+				return true;
+			default:
+				break;
+		}
+
+		BlockData blockData = block.getBlockData();
+		if (blockData instanceof Bed || blockData instanceof Levelled) {
+			return true;
+		}
+
+		if (blockData instanceof Powerable) {
+			return !(blockData instanceof Observer || blockData instanceof RedstoneRail);
+		}
+
+		if (blockData instanceof Waterlogged && (hand.getType() == Material.BUCKET || hand.getType() == Material.WATER_BUCKET)) {
+			return true;
+		}
+
+		if (hand.getType() == Material.GLASS_BOTTLE) {
+			RayTraceResult rayTraceResult = event.getPlayer().rayTraceBlocks(4, FluidCollisionMode.ALWAYS);
+			if (rayTraceResult == null) {
+				return false;
+			}
+			Block hitBlock = rayTraceResult.getHitBlock();
+			return hitBlock != null && (hitBlock.getType() == Material.WATER || hitBlock.getType() == Material.CAULDRON);
+		}
+
+		for (BiFunction<Block, ItemStack, Boolean> function : BLOCK_FUNCTIONS) {
+			if (function.apply(block, hand)) {
+				return true;
+			}
+		}
+
+		return block.getState() instanceof InventoryHolder;
+
+	}
+
+	private BlockUtil() {}
 
 }

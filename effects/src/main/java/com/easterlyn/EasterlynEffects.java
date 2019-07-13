@@ -110,8 +110,7 @@ public class EasterlynEffects extends JavaPlugin {
 	}
 
 	private void register(@NotNull EasterlynCore plugin) {
-		plugin.getCommandManager().registerDependency(this.getClass(), this);
-		plugin.registerCommands(getClassLoader(), "com.easterlyn.effect.command");
+		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.effect.command");
 
 		EconomyUtil.addWorthModifier(itemStack -> getEffects(true, itemStack).keySet().stream()
 				.mapToDouble(Effect::getCost).sum());

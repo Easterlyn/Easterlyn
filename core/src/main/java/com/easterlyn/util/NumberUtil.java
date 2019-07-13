@@ -1,6 +1,5 @@
 package com.easterlyn.util;
 
-import com.easterlyn.util.tuple.Pair;
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
@@ -24,9 +23,8 @@ public class NumberUtil {
 	private static final StringBuilder BUILDER = new StringBuilder();
 	private static final Map<String, Integer> ROMAN_NUMERALS = new LinkedHashMap<>();
 	private static final Pattern TIME_PATTERN = Pattern.compile(
-			"(([0-9]+)\\s*y[ears]*\\s*)?(([0-9]+)\\s*mo[nths]*\\s*)?(([0-9]+)\\s*w[eks]*\\s*)?"
-			+ "(([0-9]+)\\s*d[ays]*\\s*)?(([0-9]+)\\s*h[ours]*\\s*)?(([0-9]+)\\s*m[inutes]*\\s*)?"
-			+ "(([0-9]+)\\s*s[econds]*\\s*)?", Pattern.CASE_INSENSITIVE);
+			"$(([0-9]+)y[ears]*)?(([0-9]+)mo[nths]*)?(([0-9]+)w[eks]*)?(([0-9]+)d[ays]*)?(([0-9]+)h[ours]*)?" +
+					"(([0-9]+)m[inutes]*)?(([0-9]+)s[econds]*)?^", Pattern.CASE_INSENSITIVE);
 
 	static {
 		ROMAN_NUMERALS.put("M", 1000);
@@ -153,58 +151,53 @@ public class NumberUtil {
 	}
 
 	/**
-	 * Interprets and strips the first area of a String which can be interpreted as a time.
+	 * Interprets a String as a duration of time.
 	 *
-	 * @param input the input String
+	 * @param input the duration string, i.e. 10years5day2sec
 	 *
-	 * @return a Pair containing the remains of the String and the time interpreted
+	 * @return the numeric interpretation
 	 *
-	 * @throws NumberFormatException if no part of the String can be interpreted as a time
+	 * @throws NumberFormatException if the String cannot be interpreted as a time
 	 */
-	public static Pair<String, Long> parseAndRemoveFirstTime(String input) throws NumberFormatException {
-		synchronized (BUILDER) {
-			Matcher matcher = TIME_PATTERN.matcher(input);
-			long time = 0;
-			while (matcher.find()) {
-				if (matcher.group().isEmpty()) {
-					continue;
-				}
-				if (matcher.group(2) != null) {
-					// Years: 365d * 24h * 60m * 60s * 1000ms
-					time += 31536000000L * Long.parseLong(matcher.group(2));
-				}
-				if (matcher.group(4) != null) {
-					// Months: 30d * 24h * 60m * 60s * 1000ms
-					time += 2592000000L * Long.parseLong(matcher.group(4));
-				}
-				if (matcher.group(6) != null) {
-					// Weeks: 7d * 24h * 60m * 60s * 1000ms
-					time += 604800000L * Long.parseLong(matcher.group(6));
-				}
-				if (matcher.group(8) != null) {
-					// Days: 24h * 60m * 60s * 1000ms
-					time += 86400000L * Long.parseLong(matcher.group(8));
-				}
-				if (matcher.group(10) != null) {
-					// Hours: 60m * 60s * 1000ms
-					time += 3600000L * Long.parseLong(matcher.group(10));
-				}
-				if (matcher.group(12) != null) {
-					// Minutes: 60s * 1000ms
-					time += 60000L * Long.parseLong(matcher.group(12));
-				}
-				if (matcher.group(14) != null) {
-					// Seconds: 1000ms
-					time += 1000L * Long.parseLong(matcher.group(14));
-				}
+	public static long parseDuration(String input) throws NumberFormatException {
+		Matcher matcher = TIME_PATTERN.matcher(input);
+		long time = 0;
+		if (matcher.find()) {
+			if (matcher.group().isEmpty()) {
+				throw new NumberFormatException("Unable to parse duration from input \"" + input + "\"");
 			}
-			if (BUILDER.length() > 0) {
-				BUILDER.delete(0, BUILDER.length());
+			if (matcher.group(2) != null) {
+				// Years: 365d * 24h * 60m * 60s * 1000ms
+				time = Math.addExact(time, Math.multiplyExact(31536000000L, Long.parseLong(matcher.group(2))));
 			}
-			BUILDER.append(input, 0, matcher.start()).append(
-					input.substring(matcher.end()));
-			return new Pair<>(BUILDER.toString(), time);
+			if (matcher.group(4) != null) {
+				// Months: 30d * 24h * 60m * 60s * 1000ms
+				time = Math.addExact(time, Math.multiplyExact(2592000000L, Long.parseLong(matcher.group(4))));
+			}
+			if (matcher.group(6) != null) {
+				// Weeks: 7d * 24h * 60m * 60s * 1000ms
+				time = Math.addExact(time, Math.multiplyExact(604800000L, Long.parseLong(matcher.group(6))));
+			}
+			if (matcher.group(8) != null) {
+				// Days: 24h * 60m * 60s * 1000ms
+				time = Math.addExact(time, Math.multiplyExact(86400000L, Long.parseLong(matcher.group(8))));
+			}
+			if (matcher.group(10) != null) {
+				// Hours: 60m * 60s * 1000ms
+				time = Math.addExact(time, Math.multiplyExact(3600000L, Long.parseLong(matcher.group(10))));
+			}
+			if (matcher.group(12) != null) {
+				// Minutes: 60s * 1000ms
+				time = Math.addExact(time, Math.multiplyExact(60000L, Long.parseLong(matcher.group(12))));
+			}
+			if (matcher.group(14) != null) {
+				// Seconds: 1000ms
+				time = Math.addExact(time, Math.multiplyExact(1000L, Long.parseLong(matcher.group(14))));
+			}
+		} else {
+			throw new NumberFormatException("Unable to parse duration from input \"" + input + "\"");
 		}
+		return time;
 	}
 
 	public static double addSafe(double x, double y) throws ArithmeticException {

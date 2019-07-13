@@ -431,8 +431,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 	}
 
 	private void register(EasterlynCore plugin) {
-		plugin.getCommandManager().registerDependency(this.getClass(), this);
-		plugin.registerCommands(getClassLoader(), "com.easterlyn.captcha.command");
+		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.captcha.command");
 		ItemUtil.addUniqueCheck(EasterlynCaptchas::isCaptcha);
 	}
 

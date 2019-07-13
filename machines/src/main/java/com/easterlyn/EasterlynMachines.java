@@ -2,6 +2,7 @@ package com.easterlyn;
 
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.machine.Machine;
+import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.CoordinateUtil;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.event.SimpleListener;
@@ -245,9 +246,9 @@ public class EasterlynMachines extends JavaPlugin {
 
 	private void register(@NotNull EasterlynCore plugin) {
 		ItemUtil.addUniqueCheck(itemStack -> iconRegistry.keySet().stream().anyMatch(itemStack::isSimilar));
+		BlockUtil.addRightClickFunction(((block, itemStack) -> isMachine(block)));
 
-		plugin.getCommandManager().registerDependency(this.getClass(), this);
-		plugin.registerCommands(getClassLoader(), "com.easterlyn.machine.command");
+		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.machine.command");
 	}
 
 	@Override

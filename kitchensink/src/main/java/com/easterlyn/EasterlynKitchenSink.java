@@ -128,8 +128,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 	}
 
 	private void register(@NotNull EasterlynCore plugin) {
-		plugin.getCommandManager().registerDependency(this.getClass(), this);
-
 		ContextResolver<ChatColor, BukkitCommandExecutionContext> colourResolver = supplier -> {
 			String firstArg = supplier.popFirstArg();
 			ChatColor matchedColor = null;
@@ -155,7 +153,7 @@ public class EasterlynKitchenSink extends JavaPlugin {
 
 		plugin.getCommandManager().getCommandContexts().registerContext(net.md_5.bungee.api.ChatColor.class, context -> colourResolver.getContext(context).asBungee());
 
-		plugin.registerCommands(getClassLoader(), "com.easterlyn.kitchensink.command");
+		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.kitchensink.command");
 
 		extraCommands.forEach(command -> plugin.getCommandManager().registerCommand(command));
 

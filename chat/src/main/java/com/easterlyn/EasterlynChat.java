@@ -374,8 +374,6 @@ public class EasterlynChat extends JavaPlugin {
 			}
 		});
 
-		plugin.getCommandManager().registerDependency(this.getClass(), this);
-
 		IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext> channelContext = context -> {
 			if (context.hasFlag("self")) {
 				if (!context.getIssuer().isPlayer()) {
@@ -419,7 +417,7 @@ public class EasterlynChat extends JavaPlugin {
 		});
 
 		// TODO completions: Channel, NormalChannel
-		plugin.registerCommands(getClassLoader(), "com.easterlyn.chat.command");
+		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.chat.command");
 	}
 
 }

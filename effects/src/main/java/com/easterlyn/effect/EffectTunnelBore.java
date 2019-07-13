@@ -3,7 +3,7 @@ package com.easterlyn.effect;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynEffects;
 import com.easterlyn.effect.event.IndirectBreakEvent;
-import com.easterlyn.util.BlockDropUtil;
+import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.BlockUpdateManager;
 import com.easterlyn.util.ExperienceUtil;
 import java.util.Collection;
@@ -103,8 +103,8 @@ public class EffectTunnelBore extends Effect {
 		}
 		// Item breaking blocks has to be in main hand
 		ItemStack hand = player.getInventory().getItemInMainHand();
-		Collection<ItemStack> drops = BlockDropUtil.getDrops(hand, block);
-		int exp = BlockDropUtil.getExp(player, hand, block);
+		Collection<ItemStack> drops = BlockUtil.getDrops(hand, block);
+		int exp = BlockUtil.getExp(player, hand, block);
 		block.setType(Material.AIR, false);
 		budManager.queueBlock(block);
 		for (ItemStack is : drops) {

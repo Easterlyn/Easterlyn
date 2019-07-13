@@ -1,12 +1,9 @@
 package com.easterlyn.user;
 
-import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.MessageKeys;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
-import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.easterlyn.util.tuple.Pair;
@@ -77,38 +74,6 @@ public class UserManager {
 
 	public User getUser(UUID uuid) {
 		return userCache.getUnchecked(uuid);
-	}
-
-	public void registerCommandContext(EasterlynCore plugin) {
-		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(User.class, context -> {
-			if (context.hasFlag("self")) {
-				if (context.getSender() instanceof Player) {
-					return getUser(((Player) context.getSender()).getUniqueId());
-				}
-				throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
-			}
-			String potentialIdentifier = context.getFirstArg();
-			try {
-				return getUser(UUID.fromString(potentialIdentifier));
-			} catch (IllegalArgumentException ignored) {}
-			// TODO other flag should ignore self, requires PlayerUtil modification
-			Player player;
-			try {
-				player = PlayerUtil.matchPlayer(context.getSender(), potentialIdentifier, context.hasFlag("offline"), plugin);
-			} catch (IllegalAccessException e) {
-				context.getSender().sendMessage("Called PlayerUtil#matchPlayer on the main thread while executing! Please /report this message.");
-				e.printStackTrace();
-				player = PlayerUtil.matchOnlinePlayer(context.getSender(), potentialIdentifier);
-			}
-			if (player != null) {
-				context.popFirstArg();
-				return getUser(player.getUniqueId());
-			}
-			if (context.hasFlag("other") || !(context.getSender() instanceof Player)) {
-				throw new InvalidCommandArgument(MessageKeys.COULD_NOT_FIND_PLAYER);
-			}
-			return getUser(((Player) context.getSender()).getUniqueId());
-		});
 	}
 
 	public void clearCache() {

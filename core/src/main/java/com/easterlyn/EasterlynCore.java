@@ -1,10 +1,9 @@
 package com.easterlyn;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.BukkitCommandIssuer;
-import co.aikar.commands.CommandExecutionContext;
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.RegisteredCommand;
+import com.easterlyn.command.CommandExecutionContexts;
 import com.easterlyn.command.CommandRank;
 import com.easterlyn.user.UserManager;
 import com.easterlyn.user.UserRank;
@@ -14,6 +13,8 @@ import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.easterlyn.util.inventory.ItemUtil;
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -23,7 +24,9 @@ import org.bukkit.Keyed;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -41,6 +44,7 @@ public class EasterlynCore extends JavaPlugin {
 	private PaperCommandManager commandManager;
 	private SimpleCommandMap simpleCommandMap;
 	private BlockUpdateManager blockUpdateManager = new BlockUpdateManager(this);
+	private Multimap<Class<? extends Plugin>, BaseCommand> pluginCommands = HashMultimap.create();
 
 	@Override
 	public void onEnable() {
@@ -52,14 +56,13 @@ public class EasterlynCore extends JavaPlugin {
 			commandManager = new PaperCommandManager(this);
 			//noinspection deprecation
 			commandManager.enableUnstableAPI("help");
+			CommandExecutionContexts.register(this);
 			// TODO system for Group resolvers
 		}
 
-		userManager.registerCommandContext(this);
-		commandManager.getCommandContexts().registerIssuerAwareContext(BukkitCommandIssuer.class, CommandExecutionContext::getIssuer);
 		Colors.load(this);
 
-		registerCommands(getClassLoader(), "com.easterlyn.command");
+		registerCommands(this, getClassLoader(), "com.easterlyn.command");
 
 		PrepareItemCraftEvent.getHandlerList().register(new SimpleListener<>(PrepareItemCraftEvent.class, event -> {
 			if (event.getRecipe() instanceof Keyed
@@ -98,9 +101,17 @@ public class EasterlynCore extends JavaPlugin {
 		}, this));
 
 		// TODO uniques in anvils
+
+		PluginDisableEvent.getHandlerList().register(new SimpleListener<>(PluginDisableEvent.class, event -> {
+			if (pluginCommands.containsKey(event.getPlugin().getClass())) {
+				pluginCommands.get(event.getPlugin().getClass()).forEach(commandManager::unregisterCommand);
+			}
+		}, this));
+
 	}
 
-	public void registerCommands(ClassLoader loader, String packageName) {
+	public void registerCommands(Plugin plugin, ClassLoader loader, String packageName) {
+		commandManager.registerDependency(plugin.getClass(), plugin);
 		new Reflections(packageName, loader).getSubTypesOf(BaseCommand.class).stream()
 				.filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
 				.forEach(clazz -> {
@@ -118,6 +129,9 @@ public class EasterlynCore extends JavaPlugin {
 					CommandRank commandRank = clazz.getAnnotation(CommandRank.class);
 					UserRank defaultRank = commandRank != null ? commandRank.value() : UserRank.MEMBER;
 					command.getRegisteredCommands().forEach(registeredCommand -> addPermissions(defaultRank, registeredCommand));
+					if (!this.equals(plugin)) {
+						pluginCommands.put(plugin.getClass(), command);
+					}
 				});
 	}
 

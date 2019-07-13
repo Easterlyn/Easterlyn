@@ -22,6 +22,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.CookingRecipe;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.FurnaceRecipe;
 import org.bukkit.inventory.Inventory;
@@ -353,25 +354,27 @@ public class ItemUtil {
 		return itemStack;
 	}
 
-	public static void decrementHeldItem(PlayerInteractEvent event, int amount) {
+	public static void decrementHeldItem(@NotNull PlayerInteractEvent event, int amount) {
 		boolean main = isMainHand(event);
 		PlayerInventory inv = event.getPlayer().getInventory();
 		setHeldItem(inv, main, decrement(getHeldItem(inv, main), amount));
 	}
 
-	public static boolean isMainHand(PlayerInteractEvent event) {
+	public static boolean isMainHand(@NotNull PlayerInteractEvent event) {
 		return event.getHand() == EquipmentSlot.HAND;
 	}
 
-	public static ItemStack getHeldItem(PlayerInteractEvent event) {
+	@NotNull
+	public static ItemStack getHeldItem(@NotNull PlayerInteractEvent event) {
 		return getHeldItem(event.getPlayer().getInventory(), isMainHand(event));
 	}
 
-	private static ItemStack getHeldItem(PlayerInventory inv, boolean mainHand) {
+	@NotNull
+	private static ItemStack getHeldItem(@NotNull PlayerInventory inv, boolean mainHand) {
 		return mainHand ? inv.getItemInMainHand() : inv.getItemInOffHand();
 	}
 
-	public static void setHeldItem(PlayerInventory inv, boolean mainHand, ItemStack item) {
+	public static void setHeldItem(@NotNull PlayerInventory inv, boolean mainHand, @Nullable ItemStack item) {
 		if (mainHand) {
 			inv.setItemInMainHand(item);
 		} else {
@@ -387,7 +390,7 @@ public class ItemUtil {
 	 *
 	 * @return true if the ItemStack can be fully added
 	 */
-	public static boolean hasSpaceFor(ItemStack is, Inventory inv) {
+	public static boolean hasSpaceFor(@Nullable ItemStack is, @NotNull Inventory inv) {
 		if (is == null || is.getType() == Material.AIR) {
 			return true;
 		}
@@ -407,9 +410,11 @@ public class ItemUtil {
 		return false;
 	}
 
-	public static String recipeToText(Recipe recipe) {
-		if (recipe instanceof FurnaceRecipe) {
-			return String.format("SMELT: %s -> %s", itemToText(((FurnaceRecipe) recipe).getInput()), itemToText(recipe.getResult()));
+	@NotNull
+	public static String recipeToText(@NotNull Recipe recipe) {
+		if (recipe instanceof CookingRecipe) {
+			String type = recipe.getClass().getName().toUpperCase().replace("RECIPE", "");
+			return String.format("%s: %s -> %s", type, itemToText(((FurnaceRecipe) recipe).getInput()), itemToText(recipe.getResult()));
 		} else if (recipe instanceof ShapelessRecipe) {
 			StringBuilder builder = new StringBuilder("SHAPELESS: ");
 			for (ItemStack ingredient : ((ShapelessRecipe) recipe).getIngredientList()) {
@@ -452,7 +457,8 @@ public class ItemUtil {
 		return recipe.toString();
 	}
 
-	private static String itemToText(ItemStack item) {
+	@NotNull
+	private static String itemToText(@Nullable ItemStack item) {
 		if (item == null || item.getType() == Material.AIR) {
 			return "AIR";
 		}
