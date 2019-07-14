@@ -101,7 +101,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(meteors, this);
 		extraCommands.add(meteors);
 
-
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {
 			register(registration.getProvider());
