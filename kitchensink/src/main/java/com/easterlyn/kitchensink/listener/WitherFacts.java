@@ -34,7 +34,7 @@ public class WitherFacts implements Listener {
 		if (lastDamage != null && (lastDamage.getCause() == EntityDamageEvent.DamageCause.WITHER
 				|| (lastDamage instanceof EntityDamageByEntityEvent
 				&& ((EntityDamageByEntityEvent) lastDamage).getDamager().getType() == EntityType.WITHER))) {
-			player.getWorld().dropItem(player.getLocation(), facts);
+			event.getItemsToKeep().add(facts);
 		}
 	}
 

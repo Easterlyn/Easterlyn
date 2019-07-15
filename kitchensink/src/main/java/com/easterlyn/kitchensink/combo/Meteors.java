@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
-import co.aikar.commands.annotation.Private;
 import com.easterlyn.command.CommandRank;
 import com.easterlyn.user.UserRank;
 import java.util.Collections;
@@ -29,7 +28,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-@CommandAlias("kitchensink")
 public class Meteors extends BaseCommand implements Listener {
 
 	private final Plugin plugin;
@@ -43,8 +41,6 @@ public class Meteors extends BaseCommand implements Listener {
 	}
 
 	@CommandAlias("meteor")
-	@Private
-	@Default
 	@Description("Summon a meteor.")
 	@CommandPermission("easterlyn.command.meteor")
 	@CommandRank(UserRank.MODERATOR)
@@ -65,7 +61,6 @@ public class Meteors extends BaseCommand implements Listener {
 	}
 
 	@CommandAlias("meteor")
-	@Private
 	@Description("Summon a meteor.")
 	@CommandPermission("easterlyn.command.meteor")
 	@CommandRank(UserRank.MODERATOR)
@@ -81,7 +76,6 @@ public class Meteors extends BaseCommand implements Listener {
 	}
 
 	@CommandAlias("meteor")
-	@Private
 	@Description("Summon a meteor.")
 	@CommandPermission("easterlyn.command.meteor")
 	@CommandRank(UserRank.MODERATOR)

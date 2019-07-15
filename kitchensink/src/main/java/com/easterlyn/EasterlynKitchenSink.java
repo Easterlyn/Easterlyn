@@ -5,11 +5,15 @@ import co.aikar.commands.BukkitCommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.ContextResolver;
+import com.easterlyn.kitchensink.combo.BackCommand;
+import com.easterlyn.kitchensink.combo.DeathPointCommand;
+import com.easterlyn.kitchensink.combo.FreeCarts;
 import com.easterlyn.kitchensink.combo.Meteors;
 import com.easterlyn.kitchensink.listener.BottleExperience;
 import com.easterlyn.kitchensink.listener.CartContainerCrasher;
 import com.easterlyn.kitchensink.listener.ColorSignText;
 import com.easterlyn.kitchensink.listener.DeathCoordinates;
+import com.easterlyn.kitchensink.listener.DeathDropProtection;
 import com.easterlyn.kitchensink.listener.FortuneShears;
 import com.easterlyn.kitchensink.listener.KillerRabbit;
 import com.easterlyn.kitchensink.listener.NoCommandPrefix;
@@ -39,23 +43,34 @@ public class EasterlynKitchenSink extends JavaPlugin {
 	public void onEnable() {
 
 		/* TODO
-		 *  - DeathDropProtection
-		 *    - Tag death drops to prevent lava burn
-		 *    - EntityDamageEvent +> EntityDamageByEntityEvent
 		 *  - CommandRedirect? probably unnecessary, replacing essentials
 		 *    - PlayerCommandPreprocessEvent
 		 *  - Portals?
-		 *  - FreeCart
-		 *    - PlayerDeathEvent -> remove cart
-		 *    - PlayerQuitEvent -> remove cart
-		 *    - Vehicle events, oh boy
-		 *  - DeathPointCommand
-		 *    - PlayerDeathEvent -> set
 		 *  - PlayerListHeaderFooterWelcome
 		 *  - IPCache
 		 *    - Used for seen
 		 *    - ServerListPingEvent -> replace "Player"
 		 */
+
+		// Feature: Command for returning to last location teleported (unnaturally) from.
+		BackCommand backCommand = new BackCommand();
+		getServer().getPluginManager().registerEvents(backCommand, this);
+		extraCommands.add(backCommand);
+
+		// Feature: Command for teleporting to last death location.
+		DeathPointCommand deathCommand = new DeathPointCommand();
+		getServer().getPluginManager().registerEvents(deathCommand, this);
+		extraCommands.add(deathCommand);
+
+		// Feature: Temporary carts for official server rails. No clogging, no running low.
+		FreeCarts freeCarts = new FreeCarts(this);
+		getServer().getPluginManager().registerEvents(freeCarts, this);
+		extraCommands.add(freeCarts);
+
+		// Feature: Meteorites. Who doesn't love 'em? Most people, that's who.
+		Meteors meteors = new Meteors(this);
+		getServer().getPluginManager().registerEvents(meteors, this);
+		extraCommands.add(meteors);
 
 		// Feature: Bottle experience by right clicking with an empty bottle.
 		getServer().getPluginManager().registerEvents(new BottleExperience(), this);
@@ -68,6 +83,9 @@ public class EasterlynKitchenSink extends JavaPlugin {
 
 		// Feature: Send player their coordinates when they die.
 		getServer().getPluginManager().registerEvents(new DeathCoordinates(), this);
+
+		// Feature: Items dropped on death cannot be damaged.
+		getServer().getPluginManager().registerEvents(new DeathDropProtection(this), this);
 
 		// Feature: Fortune works on shears
 		getServer().getPluginManager().registerEvents(new FortuneShears(), this);
@@ -95,11 +113,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 
 		// Fact: Withers are awesome.
 		getServer().getPluginManager().registerEvents(new WitherFacts(), this);
-
-		// Feature: Meteorites. Who doesn't love 'em? Most people, that's who.
-		Meteors meteors = new Meteors(this);
-		getServer().getPluginManager().registerEvents(meteors, this);
-		extraCommands.add(meteors);
 
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {

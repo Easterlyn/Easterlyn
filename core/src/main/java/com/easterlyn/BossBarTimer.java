@@ -52,33 +52,38 @@ public class BossBarTimer {
 		this.players.addAll(Arrays.asList(players));
 	}
 
+	@NotNull
 	public BossBarTimer withFailureFunction(@NotNull Supplier<Boolean> continueCheck, @NotNull Runnable onFailure) {
 		this.shouldContinue = continueCheck;
 		this.onFailure = onFailure;
 		return this;
 	}
 
-	public BossBarTimer withBarColor(BarColor barColor) {
+	@NotNull
+	public BossBarTimer withBarColor(@NotNull BarColor barColor) {
 		this.barColor = barColor;
 		return this;
 	}
 
-	public BossBarTimer withBarStyle(BarStyle barStyle) {
+	@NotNull
+	public BossBarTimer withBarStyle(@NotNull BarStyle barStyle) {
 		this.barStyle = barStyle;
 		return this;
 	}
 
-	public BossBarTimer withDisplayType(DisplayType displayType) {
+	@NotNull
+	public BossBarTimer withDisplayType(@NotNull DisplayType displayType) {
 		this.displayType = displayType;
 		return this;
 	}
 
+	@NotNull
 	public BossBarTimer withBarFlags(@NotNull BarFlag flag, @NotNull BarFlag... flags) {
 		barFlags = EnumSet.of(flag, flags).toArray(new BarFlag[0]);
 		return this;
 	}
 
-	public void schedule(Plugin plugin, String barKey, long duration, TimeUnit durationUnit) {
+	public void schedule(@NotNull Plugin plugin, @NotNull String barKey, long duration, @NotNull TimeUnit durationUnit) {
 		long tickDuration = TimeUnit.SECONDS.convert(duration, durationUnit) * 20;
 		if (tickDuration < 1) {
 			onComplete.run();
@@ -133,7 +138,8 @@ public class BossBarTimer {
 		}.runTaskTimer(plugin, period, period);
 	}
 
-	public static Supplier<Boolean> supplierPlayerImmobile(Player player) {
+	@NotNull
+	public static Supplier<Boolean> supplierPlayerImmobile(@NotNull Player player) {
 		World world = player.getWorld();
 		BoundingBox boundingBox = BoundingBox.of(player.getLocation(), 0.5, 0.5, 0.5);
 		return () -> player.getWorld().equals(world) && boundingBox.contains(player.getLocation().toVector());

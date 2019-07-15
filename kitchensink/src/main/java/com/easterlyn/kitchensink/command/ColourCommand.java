@@ -8,10 +8,11 @@ import co.aikar.commands.MessageKeys;
 import co.aikar.commands.MinecraftMessageKeys;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
-import co.aikar.commands.annotation.Private;
+import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CommandRank;
@@ -22,16 +23,15 @@ import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-@CommandAlias("kitchensink")
+@CommandAlias("colour|color")
+@Description("Taste the rainbow!")
+@CommandPermission("easterlyn.command.colour")
 public class ColourCommand extends BaseCommand {
 
 	@Dependency
 	EasterlynCore core;
 
-	@CommandAlias("colour|color")
-	@Private
-	@Description("Taste the rainbow!")
-	@CommandPermission("easterlyn.command.colour")
+	@Default
 	public void colour(BukkitCommandIssuer issuer) {
 		StringBuilder builder = new StringBuilder();
 		for (ChatColor colour : ChatColor.values()) {
@@ -42,8 +42,7 @@ public class ColourCommand extends BaseCommand {
 		issuer.getIssuer().sendMessage(builder.toString());
 	}
 
-	@CommandAlias("colour|color")
-	@Private
+	@Subcommand("select")
 	@Description("Select your colour.")
 	@CommandPermission("easterlyn.command.colour.select")
 	public void colour(CommandIssuer issuer, @Flags("colour") ChatColor colour) {
@@ -70,7 +69,6 @@ public class ColourCommand extends BaseCommand {
 	}
 
 	@CommandAlias("colour|color")
-	@Private
 	@Description("Set someone's colour. Bypasses selection limitations.")
 	@CommandPermission("easterlyn.command.colour.select.other")
 	@CommandRank(UserRank.MODERATOR)
@@ -81,7 +79,6 @@ public class ColourCommand extends BaseCommand {
 	}
 
 	@CommandAlias("lel")
-	@Private
 	@Description("【ＴＡＳＴＥ　ＴＨＥ　ＰＡＩＮＢＯＷ】")
 	@Syntax("[painful to view sentence]")
 	@CommandPermission("easterlyn.command.lel")
