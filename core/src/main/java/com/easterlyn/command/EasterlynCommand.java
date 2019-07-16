@@ -1,6 +1,7 @@
 package com.easterlyn.command;
 
 import co.aikar.commands.BaseCommand;
+import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.BukkitCommandManager;
 import co.aikar.commands.BukkitRootCommand;
 import co.aikar.commands.CommandIssuer;
@@ -17,9 +18,12 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
+import com.easterlyn.util.PermissionUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.entity.Player;
 
 /**
  * Root command for Easterlyn's core functions.
@@ -33,7 +37,9 @@ public class EasterlynCommand extends BaseCommand {
 	@Dependency
 	private EasterlynCore plugin;
 
-	public EasterlynCommand() {}
+	public EasterlynCommand() {
+		PermissionUtil.addParent("easterlyn.command.ping.other", UserRank.MODERATOR.getPermission());
+	}
 
 	@Subcommand("reload")
 	@Description("Reload core configurations.")
@@ -79,6 +85,29 @@ public class EasterlynCommand extends BaseCommand {
 			return;
 		}
 		issuer.sendInfo(MessageKeys.INFO_MESSAGE, "{message}", "<c1>Owning plugin:</c1> <c2>" + pluginName + "</c2>");
+	}
+
+	@CommandAlias("ping")
+	@Description("Check your connection to the server!")
+	@CommandPermission("easterlyn.command.ping")
+	public void ping(BukkitCommandIssuer issuer, Player player) {
+		if (issuer.isPlayer() && !issuer.hasPermission("easterlyn.command.ping.other")) {
+			player = issuer.getPlayer();
+		}
+
+		if (player.getLastLogin() > System.currentTimeMillis() - 15000) {
+			issuer.sendError(MessageKeys.ERROR_PREFIX, "{message}", "Ping is wildly inaccurate just after login!");
+			return;
+		}
+
+		if (!(player instanceof CraftPlayer)) {
+			issuer.sendError(MessageKeys.ERROR_PREFIX, "{message}", "Unknown player implementation!");
+			return;
+		}
+
+		CraftPlayer obcPlayer = (CraftPlayer) player;
+		issuer.sendInfo(MessageKeys.INFO_MESSAGE, "{message}", player.getName() + "'s ping is " + obcPlayer.getHandle().ping + "ms!");
+
 	}
 
 }
