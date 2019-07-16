@@ -6,7 +6,7 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
-import com.easterlyn.BossBarTimer;
+import com.easterlyn.util.BossBarTimer;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
@@ -45,7 +45,6 @@ public class BackCommand extends BaseCommand implements Listener {
 		}
 		boolean other = !issuer.getUniqueId().equals(target.getUniqueId());
 
-		// TODO rich messages
 		if (!other && target.getStorage().getLong(BACK_COOLDOWN) >= System.currentTimeMillis()) {
 			SimpleDateFormat dateFormat = new SimpleDateFormat("m:ss");
 			target.sendMessage("You're on cooldown for `/back`! Next usage in "

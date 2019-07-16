@@ -53,7 +53,6 @@ public class CaptchaCommand extends BaseCommand {
 
 	@Subcommand("get")
 	@Description("Get a captcha by hash.")
-	// TODO command completion
 	@Syntax("<hash>")
 	@CommandRank(UserRank.ADMIN)
 	public void get(BukkitCommandIssuer issuer, @Single String hash) {

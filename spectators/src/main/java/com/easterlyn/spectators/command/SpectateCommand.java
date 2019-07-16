@@ -18,7 +18,6 @@ import org.bukkit.entity.Player;
 @CommandPermission("easterlyn.command.spectate")
 public class SpectateCommand extends BaseCommand {
 
-	// TODO rich messages
 	@Default
 	@Private
 	public void spectate(@Flags("self") User user) {

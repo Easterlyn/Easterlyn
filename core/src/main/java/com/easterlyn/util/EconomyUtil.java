@@ -297,7 +297,7 @@ public class EconomyUtil {
 		return enchantCost;
 	}
 
-	private static Map<Material, Double> getMappings() {
+	public static Map<Material, Double> getMappings() {
 		if (mappings != null) {
 			return mappings;
 		}

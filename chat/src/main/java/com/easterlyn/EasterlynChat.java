@@ -114,9 +114,6 @@ public class EasterlynChat extends JavaPlugin {
 
 		// TODO
 		//  - anti-spam listener
-		//  - mute
-		//    - chat, signs, books
-		//  - PMs
 		//  - log signs to #sign
 
 	}

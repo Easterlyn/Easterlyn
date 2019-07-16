@@ -46,7 +46,6 @@ public class ColourCommand extends BaseCommand {
 	@Description("Select your colour.")
 	@CommandPermission("easterlyn.command.colour.select")
 	public void colour(CommandIssuer issuer, @Flags("colour") ChatColor colour) {
-		// TODO rich messages
 		if (!issuer.isPlayer()) {
 			issuer.sendError(MinecraftMessageKeys.NO_PLAYER_FOUND, "{search}", "null");
 			return;

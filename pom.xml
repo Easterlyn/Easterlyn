@@ -19,6 +19,7 @@
             <url>https://repo.destroystokyo.com/repository/maven-public//</url>
         </repository>
     </repositories>
+
     <dependencies>
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>

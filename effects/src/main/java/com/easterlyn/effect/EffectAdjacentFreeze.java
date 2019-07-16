@@ -11,7 +11,7 @@ import org.bukkit.entity.Player;
  *
  * @author Jikoo
  */
-public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement { // TODO godtier: water
+public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement {
 
 	public EffectAdjacentFreeze(EasterlynEffects plugin) {
 		super(plugin, "Eternally Frozen", 400);

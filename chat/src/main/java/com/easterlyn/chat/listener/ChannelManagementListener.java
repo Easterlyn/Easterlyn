@@ -25,7 +25,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
-// TODO rich messages
 public class ChannelManagementListener implements Listener {
 
 	private final EasterlynChat chat;

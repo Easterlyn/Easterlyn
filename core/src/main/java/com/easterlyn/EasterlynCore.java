@@ -5,6 +5,7 @@ import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.RegisteredCommand;
 import com.easterlyn.command.CommandExecutionContexts;
 import com.easterlyn.command.CommandRank;
+import com.easterlyn.listener.UniqueListener;
 import com.easterlyn.user.UserManager;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.BlockUpdateManager;
@@ -12,20 +13,14 @@ import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
-import com.easterlyn.util.inventory.ItemUtil;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
-import org.bukkit.GameMode;
-import org.bukkit.Keyed;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.server.PluginDisableEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -40,6 +35,13 @@ import org.reflections.Reflections;
  */
 public class EasterlynCore extends JavaPlugin {
 
+	/*
+	 * TODO
+	 *  - System for rich(er) messages
+	 *  - Flag system, a la "self" "other" "otherIfPerm" for Player/User contexts
+	 *  - Extract command feedback out of commands
+	 *  - Command completion contexts
+	 */
 	private UserManager userManager = new UserManager(this);
 	private PaperCommandManager commandManager;
 	private SimpleCommandMap simpleCommandMap;
@@ -64,43 +66,8 @@ public class EasterlynCore extends JavaPlugin {
 
 		registerCommands(this, getClassLoader(), "com.easterlyn.command");
 
-		PrepareItemCraftEvent.getHandlerList().register(new SimpleListener<>(PrepareItemCraftEvent.class, event -> {
-			if (event.getRecipe() instanceof Keyed
-					&& ((Keyed) event.getRecipe()).getKey().getKey().startsWith(ItemUtil.UNIQUE_KEYED_PREFIX)) {
-				// Allow custom recipes using unique items
-				return;
-			}
-
-			for (ItemStack itemStack : event.getInventory().getMatrix()) {
-				if (ItemUtil.isUniqueItem(itemStack)) {
-					event.getInventory().setResult(ItemUtil.AIR);
-					return;
-				}
-			}
-		}, this));
-
-		CraftItemEvent.getHandlerList().register(new SimpleListener<>(CraftItemEvent.class, event -> {
-			if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE
-					&& !event.getWhoClicked().hasPermission("easterlyn.events.creative.unfiltered")) {
-				event.setCurrentItem(ItemUtil.cleanNBT(event.getCurrentItem()));
-			}
-
-			if (event.getRecipe() instanceof Keyed
-					&& ((Keyed) event.getRecipe()).getKey().getKey().startsWith(ItemUtil.UNIQUE_KEYED_PREFIX)) {
-				// Allow custom recipes using unique items
-				return;
-			}
-
-			for (ItemStack itemStack : event.getInventory().getMatrix()) {
-				if (ItemUtil.isUniqueItem(itemStack)) {
-					event.getWhoClicked().sendMessage("events.craft.unique".replace("{ITEM}", ItemUtil.getItemName(itemStack)));
-					event.setCancelled(true);
-					return;
-				}
-			}
-		}, this));
-
-		// TODO uniques in anvils
+		// Listener for preventing ruining unique items
+		getServer().getPluginManager().registerEvents(new UniqueListener(), this);
 
 		PluginDisableEvent.getHandlerList().register(new SimpleListener<>(PluginDisableEvent.class, event -> {
 			if (pluginCommands.containsKey(event.getPlugin().getClass())) {

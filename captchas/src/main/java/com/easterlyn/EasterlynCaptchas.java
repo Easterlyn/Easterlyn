@@ -159,7 +159,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 	 *
 	 * @return true if the ItemStack is a blank captchacard
 	 */
-	public static boolean isBlankCaptcha(ItemStack item) {
+	public static boolean isBlankCaptcha(@Nullable ItemStack item) {
 		//noinspection ConstantConditions // Must have lore or isCaptcha would fail.
 		return isCaptcha(item) && item.getItemMeta().getLore().contains("Blank");
 	}
@@ -171,7 +171,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 	 *
 	 * @return true if the ItemStack is a captchacard
 	 */
-	public static boolean isUsedCaptcha(ItemStack item) {
+	public static boolean isUsedCaptcha(@Nullable ItemStack item) {
 		//noinspection ConstantConditions // Must have lore or isCaptcha would fail.
 		return isCaptcha(item) && !item.getItemMeta().getLore().contains("Blank");
 	}
@@ -183,7 +183,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 	 * @param item the ItemStack to check
 	 * @return true if the ItemStack cannot be saved as a captchacard
 	 */
-	public boolean canNotCaptcha(ItemStack item) {
+	public boolean canNotCaptcha(@Nullable ItemStack item) {
 		if (item == null || item.getType() == Material.AIR
 				/* Book meta is very volatile, no reason to allow creation of codes that will never be reused. */
 				|| item.getType() == Material.WRITABLE_BOOK
@@ -207,7 +207,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 	 *
 	 * @return true if the ItemStack is a captchacard
 	 */
-	private static boolean isCaptcha(ItemStack item) {
+	private static boolean isCaptcha(@Nullable ItemStack item) {
 		if (item == null || item.getType() != Material.BOOK || !item.hasItemMeta()) {
 			return false;
 		}
@@ -215,7 +215,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 		return meta != null && meta.hasLore() && meta.hasDisplayName() && meta.getDisplayName().equals("Captchacard");
 	}
 
-	public boolean addCustomHash(String hash, ItemStack item) {
+	public boolean addCustomHash(@NotNull String hash, @NotNull ItemStack item) {
 		if (getItemByHash(hash) != null) {
 			return false;
 		}
@@ -240,7 +240,8 @@ public class EasterlynCaptchas extends JavaPlugin {
 	 *
 	 * @return the captchacard representing by this ItemStack
 	 */
-	public ItemStack getCaptchaForItem(ItemStack item) {
+	@Nullable
+	public ItemStack getCaptchaForItem(@NotNull ItemStack item) {
 		return getCaptchaForHash(getHashByItem(item));
 	}
 
@@ -292,7 +293,8 @@ public class EasterlynCaptchas extends JavaPlugin {
 	 *
 	 * @return the ItemStack represented by this captchacard
 	 */
-	public ItemStack getItemByCaptcha(ItemStack captcha) {
+	@Nullable
+	public ItemStack getItemByCaptcha(@Nullable ItemStack captcha) {
 		if (captcha == null) {
 			return null;
 		}
@@ -322,7 +324,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 	}
 
 	@Nullable
-	private ItemStack getItemByHash(String hash) {
+	private ItemStack getItemByHash(@NotNull String hash) {
 		try {
 			return cache.get(hash).clone();
 		} catch (ExecutionException e) {
@@ -334,7 +336,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 	}
 
 	@NotNull
-	private String getHashByItem(ItemStack item) {
+	private String getHashByItem(@NotNull ItemStack item) {
 		item = item.clone();
 		String itemHash = calculateHashForItem(item);
 		this.cache.put(itemHash, item);
@@ -343,7 +345,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 	}
 
 	@NotNull
-	private String calculateHashForItem(ItemStack item) {
+	public String calculateHashForItem(@NotNull ItemStack item) {
 		String itemString = new TextComponent(StringUtil.getItemText(item)).toString();
 		BigInteger hash = NumberUtil.md5(itemString);
 		String itemHash = NumberUtil.getBase(hash, 62, 8);
@@ -355,7 +357,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 		return itemHash;
 	}
 
-	public int convert(Player player) {
+	public int convert(@NotNull Player player) {
 		int conversions = 0;
 		for (int i = 0; i < player.getInventory().getSize(); i++) {
 			ItemStack is = player.getInventory().getItem(i);
@@ -394,6 +396,9 @@ public class EasterlynCaptchas extends JavaPlugin {
 			if (!newHash.equals(hash)) {
 				int amount = is.getAmount();
 				ItemStack captchas = getCaptchaForItem(storedItem);
+				if (captchas == null) {
+					continue;
+				}
 				captchas.setAmount(amount);
 				player.getInventory().setItem(i, captchas);
 				conversions += amount;
@@ -402,6 +407,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 		return conversions;
 	}
 
+	@Nullable
 	private String findHashIfPresent(List<String> lore) {
 		for (String line : lore) {
 			if (!line.startsWith(HASH_PREFIX)) {
@@ -416,7 +422,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 		return null;
 	}
 
-	private void save(String hash, ItemStack item) {
+	private void save(@NotNull String hash, @NotNull ItemStack item) {
 		try {
 			File file = new File(getDataFolder().getPath() + File.separator + "captcha", hash);
 			if (file.exists()) {

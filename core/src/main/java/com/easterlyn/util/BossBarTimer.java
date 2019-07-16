@@ -1,4 +1,4 @@
-package com.easterlyn;
+package com.easterlyn.util;
 
 import java.util.Arrays;
 import java.util.Collection;

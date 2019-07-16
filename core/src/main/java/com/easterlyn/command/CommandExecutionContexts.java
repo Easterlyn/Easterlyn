@@ -30,7 +30,6 @@ public class CommandExecutionContexts {
 			try {
 				return plugin.getUserManager().getUser(UUID.fromString(potentialIdentifier));
 			} catch (IllegalArgumentException ignored) {}
-			// TODO other flag should ignore self, requires PlayerUtil modification
 			Player player;
 			try {
 				player = PlayerUtil.matchPlayer(context.getSender(), potentialIdentifier, context.hasFlag("offline"), plugin);

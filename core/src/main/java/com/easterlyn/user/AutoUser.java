@@ -11,6 +11,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -76,11 +77,11 @@ public class AutoUser extends User {
 	}
 
 	public void sendMessage(@NotNull String message) {
-		// TODO should send to console
+		Bukkit.getConsoleSender().sendMessage(message);
 	}
 
 	public void sendMessage(@NotNull BaseComponent... components) {
-		// ^
+		Bukkit.getConsoleSender().sendMessage(components);
 	}
 
 	void save() {}

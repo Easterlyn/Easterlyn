@@ -21,7 +21,6 @@ public class NicknameCommand extends BaseCommand {
 		nickname = ChatColor.translateAlternateColorCodes('&', nickname);
 		user.getStorage().set("displayName", nickname);
 		Player player = user.getPlayer();
-		// TODO rich messages
 		if (player != null) {
 			player.setDisplayName(nickname);
 			player.sendMessage("Nickname set to " + nickname);

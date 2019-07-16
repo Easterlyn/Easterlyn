@@ -33,7 +33,6 @@ public class ReportCommand extends BaseCommand {
 		message += '\n' + args;
 
 		if (ReportableEvent.getHandlerList().getRegisteredListeners().length == 0) {
-			// TODO rich text
 			issuer.sendError(MessageKeys.ERROR_PREFIX, "{message}", "No report handlers are enabled! Please use an alternate contact method.");
 		}
 

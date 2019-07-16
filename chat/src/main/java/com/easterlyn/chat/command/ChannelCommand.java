@@ -24,7 +24,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-// TODO rich notify
 @CommandAlias("channel")
 @CommandPermission("easterlyn.command.channel")
 public class ChannelCommand extends BaseCommand {

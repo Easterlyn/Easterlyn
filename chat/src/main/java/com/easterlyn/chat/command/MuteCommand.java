@@ -4,7 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Private;
 import com.easterlyn.EasterlynChat;
@@ -18,7 +17,6 @@ import java.util.Date;
 public class MuteCommand extends BaseCommand {
 
 	@CommandAlias("mute")
-	@Default
 	@Private
 	@Description("Mute a player.")
 	@CommandPermission("easterlyn.command.mute")
@@ -28,7 +26,6 @@ public class MuteCommand extends BaseCommand {
 	}
 
 	@CommandAlias("mute")
-	@Default
 	@Private
 	@CommandPermission("easterlyn.command.mute")
 	@Description("Mute a player for a time period.")
