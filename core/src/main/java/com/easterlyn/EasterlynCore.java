@@ -3,7 +3,7 @@ package com.easterlyn;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.RegisteredCommand;
-import com.easterlyn.command.CommandExecutionContexts;
+import com.easterlyn.command.CoreCommandContexts;
 import com.easterlyn.command.CommandRank;
 import com.easterlyn.listener.UniqueListener;
 import com.easterlyn.user.UserManager;
@@ -38,9 +38,9 @@ public class EasterlynCore extends JavaPlugin {
 	/*
 	 * TODO
 	 *  - System for rich(er) messages
-	 *  - Flag system, a la "self" "other" "otherIfPerm" for Player/User contexts
-	 *  - Extract command feedback out of commands
+	 *  - Extract command feedback out of commands to lang files
 	 *  - Command completion contexts
+	 *  - Generic useful command conditions
 	 */
 	private UserManager userManager = new UserManager(this);
 	private PaperCommandManager commandManager;
@@ -58,7 +58,7 @@ public class EasterlynCore extends JavaPlugin {
 			commandManager = new PaperCommandManager(this);
 			//noinspection deprecation
 			commandManager.enableUnstableAPI("help");
-			CommandExecutionContexts.register(this);
+			CoreCommandContexts.register(this);
 			// TODO system for Group resolvers
 		}
 
@@ -92,7 +92,7 @@ public class EasterlynCore extends JavaPlugin {
 						e.printStackTrace();
 						return;
 					}
-					commandManager.registerCommand(command);
+					commandManager.registerCommand(command, true);
 					CommandRank commandRank = clazz.getAnnotation(CommandRank.class);
 					UserRank defaultRank = commandRank != null ? commandRank.value() : UserRank.MEMBER;
 					command.getRegisteredCommands().forEach(registeredCommand -> addPermissions(defaultRank, registeredCommand));

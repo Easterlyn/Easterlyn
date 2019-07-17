@@ -30,14 +30,18 @@ import org.bukkit.command.CommandSender;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.bukkit.command.PluginIdentifiableCommand;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
-public class BukkitRootCommand extends Command implements RootCommand {
+public class BukkitRootCommand extends Command implements RootCommand, PluginIdentifiableCommand {
 
 	private final BukkitCommandManager manager;
 	private final String name;
 	private BaseCommand defCommand;
 	private SetMultimap<String, RegisteredCommand> subCommands = HashMultimap.create();
 	private List<BaseCommand> children = new ArrayList<>();
+	@SuppressWarnings("unused") // Used in registration by BukkitCommandManager
 	boolean isRegistered = false;
 
 	BukkitRootCommand(BukkitCommandManager manager, String name) {
@@ -46,6 +50,7 @@ public class BukkitRootCommand extends Command implements RootCommand {
 		this.name = name;
 	}
 
+	@NotNull
 	@Override
 	public String getDescription() {
 		RegisteredCommand command = getDefaultRegisteredCommand();
@@ -67,21 +72,43 @@ public class BukkitRootCommand extends Command implements RootCommand {
 		return name;
 	}
 
+	@NotNull
 	@Override
-	public List<String> tabComplete(CommandSender sender, String commandLabel, String[] args) throws IllegalArgumentException {
+	public List<String> tabComplete(@NotNull CommandSender sender, String commandLabel, @NotNull String[] args) throws IllegalArgumentException {
 		if (commandLabel.contains(":")) commandLabel = ACFPatterns.COLON.split(commandLabel, 2)[1];
 		return getTabCompletions(manager.getCommandIssuer(sender), commandLabel, args);
 	}
 
 	@Override
-	public boolean execute(CommandSender sender, String commandLabel, String[] args) {
+	public boolean execute(@NotNull CommandSender sender, String commandLabel, @NotNull String[] args) {
 		if (commandLabel.contains(":")) commandLabel = ACFPatterns.COLON.split(commandLabel, 2)[1];
-		execute(manager.getCommandIssuer(sender), commandLabel, args);
+		final String finalLabel = commandLabel;
+		getPlugin().getServer().getScheduler().runTaskAsynchronously(getPlugin(), () -> {
+			CommandRouter router = manager.getRouter();
+			CommandRouter.RouteSearch search = router.routeCommand(this, finalLabel, args, false);
+			BaseCommand defCommand = this.getDefCommand();
+			if (search != null) {
+				CommandRouter.CommandRouteResult result = router.matchCommand(search, false);
+				if (result != null) {
+					BaseCommand scope = result.cmd.scope;
+					getPlugin().getServer().getScheduler().runTask(getPlugin(),
+							() -> scope.execute(manager.getCommandIssuer(sender), result));
+					return;
+				}
+
+				RegisteredCommand firstElement = ACFUtil.getFirstElement(search.commands);
+				if (firstElement != null) {
+					defCommand = firstElement.scope;
+				}
+			}
+
+			defCommand.help(sender, args);
+		});
 		return true;
 	}
 
 	@Override
-	public boolean testPermissionSilent(CommandSender target) {
+	public boolean testPermissionSilent(@NotNull CommandSender target) {
 		return hasAnyPermission(manager.getCommandIssuer(target));
 	}
 
@@ -111,6 +138,12 @@ public class BukkitRootCommand extends Command implements RootCommand {
 	@Override
 	public BaseCommand getDefCommand() {
 		return defCommand;
+	}
+
+	@NotNull
+	@Override
+	public Plugin getPlugin() {
+		return manager.getPlugin();
 	}
 
 }

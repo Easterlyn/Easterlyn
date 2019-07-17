@@ -266,6 +266,7 @@ public class PlayerUtil {
 				return getPlayer(plugin, player.getUniqueId());
 			}
 		}
+		// TODO faster inexact offline from usercache
 
 		// Inexact online match
 		player = Bukkit.getPlayer(id);

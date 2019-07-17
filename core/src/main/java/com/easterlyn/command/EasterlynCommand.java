@@ -12,6 +12,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
@@ -88,13 +89,9 @@ public class EasterlynCommand extends BaseCommand {
 	}
 
 	@CommandAlias("ping")
-	@Description("Check your connection to the server!")
+	@Description("Check connection to the server!")
 	@CommandPermission("easterlyn.command.ping")
-	public void ping(BukkitCommandIssuer issuer, Player player) {
-		if (issuer.isPlayer() && !issuer.hasPermission("easterlyn.command.ping.other")) {
-			player = issuer.getPlayer();
-		}
-
+	public void ping(BukkitCommandIssuer issuer, @Flags(CommandFlags.OTHER_WITH_PERM + "," + CommandFlags.ONLINE) Player player) {
 		if (player.getLastLogin() > System.currentTimeMillis() - 15000) {
 			issuer.sendError(MessageKeys.ERROR_PREFIX, "{message}", "Ping is wildly inaccurate just after login!");
 			return;
