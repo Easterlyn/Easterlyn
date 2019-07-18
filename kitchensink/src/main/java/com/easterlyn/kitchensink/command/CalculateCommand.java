@@ -6,7 +6,6 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import com.sk89q.worldedit.internal.expression.Expression;
-import com.sk89q.worldedit.internal.expression.ExpressionException;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -34,7 +33,7 @@ public class CalculateCommand extends BaseCommand {
 				answer = String.format("%s", ans);
 			}
 			issuer.sendMessage(input + " = " + answer);
-		} catch (ExpressionException e) {
+		} catch (Exception e) {
 			issuer.sendMessage("Error parsing equation!");
 		}
 	}

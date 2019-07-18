@@ -12,13 +12,43 @@ import com.easterlyn.user.User;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.PlayerUtil;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class CoreCommandContexts {
+public class CoreContexts {
+
+	public static final String SELF = "self";
+	public static final String OFFLINE = "offline";
+	public static final String ONLINE = "online";
+	public static final String ONLINE_WITH_PERM = "otherWithPerm";
+
+	private static final Pattern INTEGER_PATTERN = Pattern.compile("$(-?\\d+)[dl]?^", Pattern.CASE_INSENSITIVE);
 
 	public static void register(EasterlynCore plugin) {
+		plugin.getCommandManager().getCommandContexts().registerContext(int.class, context -> {
+			String firstArg = context.popFirstArg();
+			Matcher matcher = INTEGER_PATTERN.matcher(firstArg);
+			if (matcher.find()) {
+				try {
+					return Integer.valueOf(matcher.group(1));
+				} catch (NumberFormatException e) {
+					throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER);
+				}
+			}
+
+			firstArg = firstArg.toUpperCase();
+			if (firstArg.matches("[IVXLCDM]+")) {
+				return NumberUtil.intFromRoman(firstArg);
+			}
+
+			throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER);
+
+		});
+
+
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(BukkitCommandIssuer.class,
 				CommandExecutionContext::getIssuer);
 
@@ -28,26 +58,22 @@ public class CoreCommandContexts {
 			@Override
 			public Player getContext(BukkitCommandExecutionContext context) throws InvalidCommandArgument {
 				//noinspection unchecked // Type erasure is caused by command context providing raw RegisteredCommand
-				if (context.hasFlag(CommandFlags.SELF) || context.hasFlag(CommandFlags.OTHER_WITH_PERM) && context.getIssuer().isPlayer()
+				if (context.hasFlag(SELF) || context.hasFlag(ONLINE_WITH_PERM) && context.getIssuer().isPlayer()
 						&& context.getCmd().getRequiredPermissions().stream().anyMatch(perm -> context.getIssuer().hasPermission(perm + ".other"))) {
 					return getSelf(context.getIssuer());
 				}
 
-				if (context.hasFlag(CommandFlags.ONLINE)) {
+				if (context.hasFlag(ONLINE)) {
 					return getOnline(context.getIssuer(), context.popFirstArg());
 				}
 
-				if (context.hasFlag(CommandFlags.OFFLINE)) {
+				if (context.hasFlag(OFFLINE)) {
 					return getOffline(context.getIssuer(), context.popFirstArg());
-				}
-
-				if (context.hasFlag(CommandFlags.OTHER)) {
-					return getOther(context.getIssuer(), context.popFirstArg());
 				}
 
 				try {
 					String firstArg = context.getFirstArg();
-					Player other = getOther(context.getIssuer(), firstArg);
+					Player other = getOnline(context.getIssuer(), firstArg);
 					context.popFirstArg();
 					return other;
 				} catch (InvalidCommandArgument ignored) {}
@@ -60,22 +86,6 @@ public class CoreCommandContexts {
 					return issuer.getPlayer();
 				}
 				throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
-			}
-
-			@NotNull
-			Player getOther(@NotNull BukkitCommandIssuer issuer, @NotNull String argument) throws InvalidCommandArgument {
-				Player player;
-				try {
-					player = PlayerUtil.matchPlayer(issuer.getIssuer(), argument, false, plugin);
-				} catch (IllegalAccessException e) {
-					plugin.getServer().getPluginManager().callEvent(new ReportableEvent(
-							"Called PlayerUtil#matchPlayer on the main thread while executing!", e, 5));
-					player = PlayerUtil.matchOnlinePlayer(issuer.getIssuer(), argument);
-				}
-				if (player == null) {
-					throw new InvalidCommandArgument("Invalid player " + argument + "!");
-				}
-				return player;
 			}
 
 			@NotNull
@@ -124,6 +134,6 @@ public class CoreCommandContexts {
 		});
 	}
 
-	private CoreCommandContexts() {}
+	private CoreContexts() {}
 
 }

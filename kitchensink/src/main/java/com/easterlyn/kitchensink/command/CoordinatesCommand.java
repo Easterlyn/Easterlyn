@@ -6,7 +6,9 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.PermissionUtil;
@@ -29,11 +31,7 @@ public class CoordinatesCommand extends BaseCommand {
 	@CommandAlias("coordinates|coords")
 	@Description("Get your coordinates!")
 	@CommandPermission("easterlyn.command.coordinates")
-	public void getCoordinates(BukkitCommandIssuer issuer, User target) {
-		if (issuer.isPlayer() && !issuer.hasPermission("easterlyn.command.coordinates.other")) {
-			target = core.getUserManager().getUser(issuer.getUniqueId());
-		}
-
+	public void getCoordinates(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User target) {
 		Player player = target.getPlayer();
 
 		if (player == null) {

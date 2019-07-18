@@ -1,19 +1,20 @@
 package com.easterlyn.captcha.command;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.BukkitCommandIssuer;
-import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.MessageKeys;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.command.CommandRank;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.UserRank;
+import com.easterlyn.util.PermissionUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -26,56 +27,52 @@ public class CaptchaCommand extends BaseCommand {
 	@Dependency
 	private EasterlynCaptchas captcha;
 
+	public CaptchaCommand() {
+		PermissionUtil.addParent("easterlyn.command.baptcha.free", UserRank.MODERATOR.getPermission());
+	}
+
 	@Subcommand("add")
-	@Description("Add a custom captcha hash.")
-	@Syntax("<hash>")
+	@Description("Add a custom alphanumeric captcha hash.")
+	@Syntax("/captcha add <alphanumeric 8+ character hash>")
 	@CommandRank(UserRank.ADMIN)
-	public void add(BukkitCommandIssuer issuer, @Single String hash) {
-		if (!issuer.isPlayer()) {
-			throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
-		}
+	public void add(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
 		if (!hash.matches("[0-9A-Za-z]{8,}")) {
-			issuer.sendMessage("command.hash.requirements");
+			player.sendMessage("command.hash.requirements");
 			return;
 		}
 
-		ItemStack item = issuer.getPlayer().getInventory().getItemInMainHand();
+		ItemStack item = player.getInventory().getItemInMainHand();
 		if (item.getType() == Material.AIR) {
-			issuer.sendMessage("command.hash.requirements");
+			player.sendMessage("command.hash.requirements");
 			return;
 		}
 		if (captcha.addCustomHash(hash, item)) {
-			issuer.sendMessage("command.hash.success_save".replace("{TARGET}", hash));
+			player.sendMessage("command.hash.success_save".replace("{TARGET}", hash));
 		} else {
-			issuer.sendMessage("command.hash.used".replace("{TARGET}", hash));
+			player.sendMessage("command.hash.used".replace("{TARGET}", hash));
 		}
 	}
 
 	@Subcommand("get")
 	@Description("Get a captcha by hash.")
-	@Syntax("<hash>")
+	@Syntax("/captcha get <valid hash>")
 	@CommandRank(UserRank.ADMIN)
-	public void get(BukkitCommandIssuer issuer, @Single String hash) {
-		if (!issuer.isPlayer()) {
-			throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
-		}
+	@CommandCompletion("@captcha")
+	public void get(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
 		ItemStack item = captcha.getCaptchaForHash(hash);
 		if (item == null) {
-			issuer.sendMessage("command.hash.unused");
+			player.sendMessage("command.hash.unused");
 			return;
 		}
-		issuer.getPlayer().getWorld().dropItem(issuer.getPlayer().getLocation(), item).setPickupDelay(0);
-		issuer.sendMessage("command.hash.success_load".replace("{TARGET}", hash));
+		player.getWorld().dropItem(player.getLocation(), item).setPickupDelay(0);
+		player.sendMessage("command.hash.success_load".replace("{TARGET}", hash));
 	}
 
 	@CommandAlias("baptcha|batchcap|batchcaptcha")
 	@Description("Captcha in bulk!")
 	@Syntax("Run with an item to batch captcha in hand.")
-	public void baptcha(BukkitCommandIssuer issuer, @Optional String free) {
-		if (!issuer.isPlayer()) {
-			throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
-		}
-		Player player = issuer.getPlayer();
+	@CommandCompletion("@permission:value=easterlyn.command.baptcha.free,complete=free")
+	public void baptcha(@Flags(CoreContexts.SELF) Player player, @Optional String free) {
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if (item.getType() == Material.AIR || captcha.canNotCaptcha(item)) {
 			player.sendMessage("captcha.uncaptchable");
@@ -135,7 +132,9 @@ public class CaptchaCommand extends BaseCommand {
 			inventory.removeItem(blankCaptcha);
 		}
 		item = captcha.getCaptchaForItem(item);
-		item.setAmount(count);
+		if (item != null) {
+			item.setAmount(count);
+		}
 		player.getInventory().addItem(item);
 		player.sendMessage("command.baptcha.success".replace("{COUNT}", String.valueOf(count)));
 	}
@@ -143,11 +142,7 @@ public class CaptchaCommand extends BaseCommand {
 	@CommandAlias("convert")
 	@Description("Convert captchas whose hashes have changed.")
 	@Syntax("Run with an item to batch captcha in hand.")
-	public void convert(BukkitCommandIssuer issuer) {
-		if (!issuer.isPlayer()) {
-			throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
-		}
-		Player player = issuer.getPlayer();
+	public void convert(@Flags(CoreContexts.SELF) Player player) {
 		int convert = captcha.convert(player);
 		player.sendMessage("Converted " + convert + " captchas!");
 	}

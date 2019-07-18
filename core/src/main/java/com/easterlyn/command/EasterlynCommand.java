@@ -91,7 +91,7 @@ public class EasterlynCommand extends BaseCommand {
 	@CommandAlias("ping")
 	@Description("Check connection to the server!")
 	@CommandPermission("easterlyn.command.ping")
-	public void ping(BukkitCommandIssuer issuer, @Flags(CommandFlags.OTHER_WITH_PERM + "," + CommandFlags.ONLINE) Player player) {
+	public void ping(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM + "," + CoreContexts.ONLINE) Player player) {
 		if (player.getLastLogin() > System.currentTimeMillis() - 15000) {
 			issuer.sendError(MessageKeys.ERROR_PREFIX, "{message}", "Ping is wildly inaccurate just after login!");
 			return;

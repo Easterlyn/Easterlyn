@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.event.UserChatEvent;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -17,7 +18,7 @@ public class ShowItemCommand extends BaseCommand {
 	@CommandAlias("show|showitem")
 	@Description("Show off for your friends!")
 	@CommandPermission("easterlyn.command.show")
-	public void showItem(@Flags("self") User sender, @Flags("listening") Channel channel) {
+	public void showItem(@Flags(CoreContexts.SELF) User sender, @Flags(CoreContexts.ONLINE) Channel channel) {
 		Player player = sender.getPlayer();
 		if (player == null) {
 			sender.sendMessage("Player data not loaded!");

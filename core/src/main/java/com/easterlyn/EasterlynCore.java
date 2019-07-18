@@ -3,7 +3,8 @@ package com.easterlyn;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.RegisteredCommand;
-import com.easterlyn.command.CoreCommandContexts;
+import com.easterlyn.command.CoreCompletions;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.command.CommandRank;
 import com.easterlyn.listener.UniqueListener;
 import com.easterlyn.user.UserManager;
@@ -39,7 +40,6 @@ public class EasterlynCore extends JavaPlugin {
 	 * TODO
 	 *  - System for rich(er) messages
 	 *  - Extract command feedback out of commands to lang files
-	 *  - Command completion contexts
 	 *  - Generic useful command conditions
 	 */
 	private UserManager userManager = new UserManager(this);
@@ -58,7 +58,8 @@ public class EasterlynCore extends JavaPlugin {
 			commandManager = new PaperCommandManager(this);
 			//noinspection deprecation
 			commandManager.enableUnstableAPI("help");
-			CoreCommandContexts.register(this);
+			CoreContexts.register(this);
+			CoreCompletions.register(this);
 			// TODO system for Group resolvers
 		}
 
@@ -78,7 +79,9 @@ public class EasterlynCore extends JavaPlugin {
 	}
 
 	public void registerCommands(Plugin plugin, ClassLoader loader, String packageName) {
-		commandManager.registerDependency(plugin.getClass(), plugin);
+		if (!plugin.equals(this)) {
+			commandManager.registerDependency(plugin.getClass(), plugin);
+		}
 		new Reflections(packageName, loader).getSubTypesOf(BaseCommand.class).stream()
 				.filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
 				.forEach(clazz -> {

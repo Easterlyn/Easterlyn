@@ -41,7 +41,7 @@
         <module>captchas</module> <!-- depends: core -->
         <module>discord</module> <!-- depends: core, chat -->
         <module>effects</module> <!-- depends: core -->
-        <module>kitchensink</module> <!-- depends: core -->
+        <module>kitchensink</module> <!-- depends: core, captcha -->
         <module>machines</module> <!-- depends: core, captcha -->
         <module>sleepvote</module> <!-- depends: core -->
         <module>spectators</module> <!-- depends: core -->
@@ -133,13 +133,6 @@
                                             <to>${project.build.finaldir}</to>
                                         </path>
                                     </paths>
-                                    <replaces>
-                                        <replace>
-                                            <from>${project.build.directory}</from>
-                                            <!--suppress UnresolvedMavenProperty -->
-                                            <to>${project.build.finaldir}</to>
-                                        </replace>
-                                    </replaces>
                                 </resource>
                             </resources>
                         </configuration>

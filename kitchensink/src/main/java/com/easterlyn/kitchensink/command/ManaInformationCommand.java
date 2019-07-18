@@ -1,8 +1,6 @@
 package com.easterlyn.kitchensink.command;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.BukkitCommandIssuer;
-import co.aikar.commands.MessageKeys;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
@@ -16,6 +14,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import org.bukkit.Material;
+import org.bukkit.command.ConsoleCommandSender;
 
 public class ManaInformationCommand extends BaseCommand {
 
@@ -27,11 +26,7 @@ public class ManaInformationCommand extends BaseCommand {
 	@Description("Dump all mana costs to a file.")
 	@CommandPermission("easterlyn.command.manainformation")
 	@CommandRank(UserRank.DANGER_DANGER_HIGH_VOLTAGE)
-	public void manaInformation(BukkitCommandIssuer issuer) {
-		if (issuer.isPlayer()) {
-			issuer.sendError(MessageKeys.ERROR_PREFIX, "{message}", "Command only executable by console.");
-		}
-
+	public void manaInformation(ConsoleCommandSender issuer) {
 		StringBuilder sb = new StringBuilder();
 		for (Material material : Material.values()) {
 			if (!material.isItem()) {

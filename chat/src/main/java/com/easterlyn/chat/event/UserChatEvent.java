@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 public class UserChatEvent extends UserEvent implements Cancellable {
 
 	private static final HandlerList HANDLER_LIST = new HandlerList();
-	private static final Pattern PLAYER_ITEMS = Pattern.compile("${ITEM:(\\d+)}^");
+	private static final Pattern PLAYER_ITEMS = Pattern.compile("$\\{ITEM:(\\d+)}^");
 
 	private final Channel channel;
 	private final String message;
@@ -180,7 +180,8 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 
 			TextComponent finalMessage = new TextComponent();
 			// Set text a nice relaxing grey if not focused or explicitly set
-			finalMessage.setColor(channel.getName().equals(user.getStorage().getString(EasterlynChat.USER_CURRENT)) ? ChatColor.WHITE : ChatColor.GRAY);
+			finalMessage.setColor(channel.getName().equals("pm") || channel.getName().equals(user.getStorage().getString(EasterlynChat.USER_CURRENT))
+					? ChatColor.WHITE : ChatColor.GRAY);
 
 			TextComponent channelBrace;
 			if (highlight) {

@@ -19,7 +19,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-public class SleepVote extends JavaPlugin {
+public class EasterlynSleepVote extends JavaPlugin {
 
 	private static final int NIGHT_START = 12541;
 	private static final int NIGHT_END = 23458;

@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Private;
 import com.easterlyn.EasterlynSpectators;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.User;
 import org.bukkit.Bukkit;
@@ -20,7 +21,7 @@ public class SpectateCommand extends BaseCommand {
 
 	@Default
 	@Private
-	public void spectate(@Flags("self") User user) {
+	public void spectate(@Flags(CoreContexts.SELF) User user) {
 		Player player = user.getPlayer();
 		if (player == null) {
 			user.sendMessage("Gotta be online, buckaroo!");
@@ -53,7 +54,7 @@ public class SpectateCommand extends BaseCommand {
 	}
 
 	@CommandAlias("spectate|spec|spectpa")
-	public void spectateTPA(@Flags("self") User user, @Flags("other") User target) {
+	public void spectateTPA(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) User target) {
 		user.sendMessage("Sorry, Adam is a lazy bum and hasn't gotten to this bit yet.");
 		// TODO /spectpa
 	}

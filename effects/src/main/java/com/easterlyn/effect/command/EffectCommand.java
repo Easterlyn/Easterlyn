@@ -1,18 +1,16 @@
 package com.easterlyn.effect.command;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.BukkitCommandIssuer;
-import co.aikar.commands.MessageKeys;
-import co.aikar.commands.MessageType;
-import co.aikar.commands.MinecraftMessageKeys;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Private;
 import com.easterlyn.EasterlynEffects;
 import com.easterlyn.command.CommandRank;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.NumberUtil;
 import java.util.ArrayList;
@@ -34,30 +32,24 @@ public class EffectCommand extends BaseCommand {
 
 	@Default
 	@Private
-	public void applyEffect(BukkitCommandIssuer issuer, int level, String effectName) {
-		if (!issuer.isPlayer()) {
-			issuer.sendMessage(MessageType.ERROR, MessageKeys.NOT_ALLOWED_ON_CONSOLE);
-			return;
-		}
-
-		Player player = issuer.getPlayer();
+	public void applyEffect(@Flags(CoreContexts.SELF) Player player, int level, String effectName) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand.getType() == Material.AIR) {
-			issuer.sendError(MinecraftMessageKeys.YOU_MUST_BE_HOLDING_ITEM);
+			player.sendMessage("You must be holding an item.");
 			return;
 		}
 
 		ItemMeta meta = hand.getItemMeta();
 
 		if (meta == null) {
-			issuer.sendError(MinecraftMessageKeys.YOU_MUST_BE_HOLDING_ITEM);
+			player.sendMessage("You must be holding an item.");
 			return;
 		}
 
 		String loreString = ChatColor.GRAY + effectName + ' ' + NumberUtil.romanFromInt(level);
 
 		if (effects.getEffectFromLore(loreString, true) == null) {
-			issuer.sendMessage("Invalid effect " + effectName);
+			player.sendMessage("Invalid effect " + effectName);
 			return;
 		}
 
@@ -68,7 +60,7 @@ public class EffectCommand extends BaseCommand {
 
 		meta.setLore(effects.organizeEffectLore(lore, true, true, false, loreString));
 		hand.setItemMeta(meta);
-		issuer.sendMessage("Added " + loreString);
+		player.sendMessage("Added " + loreString);
 	}
 
 }

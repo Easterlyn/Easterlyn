@@ -1,6 +1,7 @@
 package com.easterlyn;
 
 import co.aikar.commands.BukkitCommandExecutionContext;
+import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
@@ -9,6 +10,7 @@ import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
 import com.easterlyn.chat.listener.ChannelManagementListener;
 import com.easterlyn.chat.listener.MuteListener;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
@@ -217,47 +219,62 @@ public class EasterlynChat extends JavaPlugin {
 			}
 		});
 
-		IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext> channelContext = context -> {
-			// TODO
-			//  - no selecting banned/not whitelisted
-			//  - flag "listening" select from listening only
-			if (context.hasFlag("current")) {
-				if (!context.getIssuer().isPlayer()) {
+		IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext>
+				channelContext = new IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext>() {
+			@Override
+			public Channel getContext(BukkitCommandExecutionContext context) throws InvalidCommandArgument {
+				//noinspection unchecked // Type erasure is caused by command context providing raw RegisteredCommand
+				if (context.hasFlag(CoreContexts.SELF) || context.hasFlag(CoreContexts.ONLINE_WITH_PERM) && context.getIssuer().isPlayer()
+						&& context.getCmd().getRequiredPermissions().stream().anyMatch(perm -> context.getIssuer().hasPermission(perm + ".other"))) {
+					return getSelf(context.getIssuer());
+				}
+
+				if (context.hasFlag("TODO listening")) {
+					return getOther(context.popFirstArg());
+				}
+
+				try {
+					String firstArg = context.getFirstArg();
+					Channel other = getOther(firstArg);
+					context.popFirstArg();
+					return other;
+				} catch (InvalidCommandArgument ignored) {}
+
+				return getSelf(context.getIssuer());
+			}
+
+			@NotNull
+			Channel getSelf(@NotNull BukkitCommandIssuer issuer) throws InvalidCommandArgument {
+				if (!issuer.isPlayer()) {
 					throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
 				}
-				String channelName = plugin.getUserManager().getUser(context.getIssuer().getUniqueId()).getStorage().getString(USER_CURRENT);
+				String channelName = plugin.getUserManager().getUser(issuer.getUniqueId()).getStorage().getString(USER_CURRENT);
 				if (channelName == null || !channels.containsKey(channelName)) {
 					throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "No current channel set!");
 				}
 				return channels.get(channelName);
 			}
-			String channelName = context.getFirstArg();
-			if (channelName.length() == 0 || channelName.charAt(0) != '#') {
-				if (context.hasFlag("other")) {
-					throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "No channel specified!");
+
+			@NotNull
+			Channel getOther(@NotNull String argument) throws InvalidCommandArgument {
+				if (argument.length() > 0 && argument.charAt(0) == '#') {
+					argument = argument.substring(1).toLowerCase();
+				} else {
+					throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "Invalid channel format " + argument);
 				}
-			}
-			channelName = channelName.substring(1);
-			Channel channel = channels.get(channelName);
-			if (channel != null) {
-				context.popFirstArg();
+				Channel channel = channels.get(argument);
+				if (channel == null) {
+					throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "Invalid channel #" + argument + "!");
+				}
 				return channel;
 			}
-			if (context.hasFlag("other")) {
-				throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "No channel specified!");
-			}
-			channelName = plugin.getUserManager().getUser(context.getIssuer().getUniqueId()).getStorage().getString(USER_CURRENT);
-			if (channelName == null || !channels.containsKey(channelName)) {
-				throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "No current channel set!");
-			}
-			return channels.get(channelName);
 		};
 
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(Channel.class, channelContext);
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(NormalChannel.class, context -> {
 			Channel channel = channelContext.getContext(context);
 			if (!(channel instanceof NormalChannel)) {
-				throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "Channel is not a normal channel!");
+				throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, false, "{message}", "Channel is not modifiable!");
 			}
 			return (NormalChannel) channel;
 		});

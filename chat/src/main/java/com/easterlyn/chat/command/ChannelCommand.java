@@ -14,6 +14,7 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.command.AddRemove;
@@ -35,11 +36,10 @@ public class ChannelCommand extends BaseCommand {
 	@Dependency
 	private EasterlynChat chat;
 
-	@CommandAlias("join|focus")
-	@Description("Join or focus on a channel.")
-	@Syntax("<channel> [password]")
+	@CommandAlias("join")
+	@Description("Join a channel.")
 	@CommandPermission("easterlyn.command.join")
-	public void join(@Flags("self") User user, Channel channel, @Optional String password) {
+	public void join(@Flags(CoreContexts.SELF) User user, Channel channel, @Optional String password) {
 		channel.updateLastAccess();
 		List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 
@@ -70,11 +70,17 @@ public class ChannelCommand extends BaseCommand {
 		user.getStorage().set(EasterlynChat.USER_CURRENT, channel.getName());
 	}
 
+	@CommandAlias("focus")
+	@Description("Focus on a channel.")
+	@CommandPermission("easterlyn.command.join")
+	public void focus(@Flags(CoreContexts.SELF) User user, Channel channel, @Optional String password) {
+		join(user, channel, password);
+	}
+
 	@CommandAlias("leave")
 	@Description("Leave a channel.")
-	@Syntax("[channel]")
 	@CommandPermission("easterlyn.command.leave")
-	public void leave(@Flags("self") User user, @Flags("listening") Channel channel) {
+	public void leave(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) Channel channel) {
 		channel.updateLastAccess();
 		List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 		String currentChannelName = user.getStorage().getString(EasterlynChat.USER_CURRENT);
@@ -108,8 +114,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("whitelist")
 	@Description("Add or remove a user from the whitelist.")
-	@Syntax("[channel] add|remove <user>")
-	public void setWhitelisted(@Flags("self") User user, NormalChannel channel, AddRemove addRemove, @Flags("other") User target) {
+	public void setWhitelisted(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
+			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isModerator(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask a channel mod to make changes.");
@@ -140,8 +146,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("moderator")
 	@Description("Add or remove a channel moderator.")
-	@Syntax("[channel] add|remove <user>")
-	public void setModerator(@Flags("self") User user, NormalChannel channel, AddRemove addRemove, @Flags("other") User target) {
+	public void setModerator(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
+			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
@@ -168,8 +174,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("ban")
 	@Description("Ban a user from a channel.")
-	@Syntax("[channel] add|remove <user>")
-	public void setBanned(@Flags("self") User user, NormalChannel channel, AddRemove addRemove, @Flags("other") User target) {
+	public void setBanned(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
+			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isModerator(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask a channel mod to make changes.");
@@ -211,8 +217,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("modify access")
 	@Description("Set a channel's access level.")
-	@Syntax("[channel] <access>")
-	public void setAccessLevel(@Flags("self") User user, NormalChannel channel, boolean isPrivate) {
+	public void setAccessLevel(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
+			boolean isPrivate) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
@@ -238,8 +244,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("modify password")
 	@Description("Set or remove a channel's password.")
-	@Syntax("[channel] <cool password>")
-	public void setPassword(@Flags("self") User user, NormalChannel channel, @Optional String password) {
+	public void setPassword(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
+			@Optional String password) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
@@ -275,9 +281,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("create")
 	@Description("Create a new channel!")
-	@Syntax("#<channelname>")
 	@CommandPermission("easterlyn.command.channel.create")
-	public void create(@Flags("self") User user, @Single String name) {
+	public void create(@Flags(CoreContexts.SELF) User user, @Single String name) {
 		if (!user.hasPermission("easterlyn.command.channel.create.anyname") && (name.length() < 2 || name.length() > 17
 				|| name.charAt(0) != '#' || !StringUtil.stripNonAlphanumerics(name).equals(name.substring(1)))) {
 			user.sendMessage("Invalid channel name. Valid channel names start with \"#\" and contain 1-16 alphabetical characters.");
@@ -304,7 +309,7 @@ public class ChannelCommand extends BaseCommand {
 	@Subcommand("delete")
 	@Description("DELET CHANEL")
 	@Syntax("<channel>")
-	public void delete(@Flags("self") User user, @Flags("other") NormalChannel channel, @Optional String name) {
+	public void delete(@Flags(CoreContexts.SELF) User user, @Flags("TODO listening") NormalChannel channel, @Optional String name) {
 		if (!channel.isOwner(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
 			return;
