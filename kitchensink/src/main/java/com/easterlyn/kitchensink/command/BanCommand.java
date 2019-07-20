@@ -13,7 +13,7 @@ import java.util.Date;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-public class CommandBan extends BaseCommand {
+public class BanCommand extends BaseCommand {
 
 	@CommandAlias("ban")
 	@Description("Ban a player.")

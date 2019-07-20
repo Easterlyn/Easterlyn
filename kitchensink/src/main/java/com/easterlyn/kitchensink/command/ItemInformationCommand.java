@@ -20,7 +20,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-public class CommandItemInformation extends BaseCommand {
+public class ItemInformationCommand extends BaseCommand {
 
 	@Dependency
 	EasterlynCaptchas captchas;

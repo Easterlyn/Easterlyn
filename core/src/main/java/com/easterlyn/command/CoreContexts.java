@@ -5,6 +5,7 @@ import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.CommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
+import co.aikar.commands.contexts.ContextResolver;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.ReportableEvent;
@@ -28,7 +29,7 @@ public class CoreContexts {
 	private static final Pattern INTEGER_PATTERN = Pattern.compile("$(-?\\d+)[dl]?^", Pattern.CASE_INSENSITIVE);
 
 	public static void register(EasterlynCore plugin) {
-		plugin.getCommandManager().getCommandContexts().registerContext(int.class, context -> {
+		ContextResolver<Integer, BukkitCommandExecutionContext> integerResolver = context -> {
 			String firstArg = context.popFirstArg();
 			Matcher matcher = INTEGER_PATTERN.matcher(firstArg);
 			if (matcher.find()) {
@@ -45,8 +46,10 @@ public class CoreContexts {
 			}
 
 			throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER);
+		};
 
-		});
+		plugin.getCommandManager().getCommandContexts().registerContext(int.class, integerResolver);
+		plugin.getCommandManager().getCommandContexts().registerContext(Integer.class, integerResolver);
 
 
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(BukkitCommandIssuer.class,

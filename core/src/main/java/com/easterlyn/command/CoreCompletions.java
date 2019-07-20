@@ -16,8 +16,10 @@ public class CoreCompletions {
 				return Collections.emptyList();
 			}
 			ArrayList<String> completions = new ArrayList<>();
-			completions.add(input);
-			for (int i = 0; i < 10; ++i) {
+			if (!input.isEmpty()) {
+				completions.add(input);
+			}
+			for (int i = input.isEmpty() ? 1 : 0; i < 10; ++i) {
 				completions.add(input + i);
 			}
 			return completions;
@@ -25,12 +27,14 @@ public class CoreCompletions {
 
 		plugin.getCommandManager().getCommandCompletions().registerAsyncCompletion("decimal", context -> {
 			String input = context.getInput();
-			if (!input.matches("-?\\d+?\\.\\d+?")) {
+			if (!input.matches("-?\\d+?\\.?\\d+?")) {
 				return Collections.emptyList();
 			}
 			ArrayList<String> completions = new ArrayList<>();
-			completions.add(input);
-			for (int i = 0; i < 10; ++i) {
+			if (!input.isEmpty()) {
+				completions.add(input);
+			}
+			for (int i = input.isEmpty() ? 1 : 0; i < 10; ++i) {
 				completions.add(input + i);
 			}
 			if (input.indexOf('.') == -1) {
@@ -46,10 +50,13 @@ public class CoreCompletions {
 			if (!context.hasConfig("complete")) {
 				return Collections.emptyList();
 			}
-			return Arrays.stream(context.getConfig("complete").split("\\|")).distinct()
+			return Arrays.stream(context.getConfig("complete").split("/")).distinct()
 					.filter(completion -> StringUtil.startsWithIgnoreCase(completion, context.getInput()))
 					.collect(Collectors.toList());
 		});
+		// TODO player, playerOnline, playerOffline, playerOnlineIfPerm
+
+		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("password", Collections.singletonList("Hunter2"));
 	}
 
 	private CoreCompletions() {}

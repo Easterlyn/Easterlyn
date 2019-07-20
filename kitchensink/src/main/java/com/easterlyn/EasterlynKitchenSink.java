@@ -8,6 +8,7 @@ import co.aikar.commands.contexts.ContextResolver;
 import com.easterlyn.kitchensink.combo.BackCommand;
 import com.easterlyn.kitchensink.combo.DeathPointCommand;
 import com.easterlyn.kitchensink.combo.FreeCarts;
+import com.easterlyn.kitchensink.combo.LoginCommands;
 import com.easterlyn.kitchensink.combo.Meteors;
 import com.easterlyn.kitchensink.listener.BottleExperience;
 import com.easterlyn.kitchensink.listener.CartContainerCrasher;
@@ -66,6 +67,11 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		FreeCarts freeCarts = new FreeCarts(this);
 		getServer().getPluginManager().registerEvents(freeCarts, this);
 		extraCommands.add(freeCarts);
+
+		// Feature: Configurable commands run on login.
+		LoginCommands loginCommands = new LoginCommands();
+		getServer().getPluginManager().registerEvents(loginCommands, this);
+		extraCommands.add(loginCommands);
 
 		// Feature: Meteorites. Who doesn't love 'em? Most people, that's who.
 		Meteors meteors = new Meteors(this);

@@ -2,6 +2,7 @@ package com.easterlyn.chat.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
@@ -39,6 +40,8 @@ public class ChannelCommand extends BaseCommand {
 	@CommandAlias("join")
 	@Description("Join a channel.")
 	@CommandPermission("easterlyn.command.join")
+	@Syntax("/join <#channel> [password]")
+	@CommandCompletion("@channelsJoinable @password")
 	public void join(@Flags(CoreContexts.SELF) User user, Channel channel, @Optional String password) {
 		channel.updateLastAccess();
 		List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
@@ -73,6 +76,8 @@ public class ChannelCommand extends BaseCommand {
 	@CommandAlias("focus")
 	@Description("Focus on a channel.")
 	@CommandPermission("easterlyn.command.join")
+	@Syntax("/focus <#channel>")
+	@CommandCompletion("@channelsListening")
 	public void focus(@Flags(CoreContexts.SELF) User user, Channel channel, @Optional String password) {
 		join(user, channel, password);
 	}
@@ -80,6 +85,8 @@ public class ChannelCommand extends BaseCommand {
 	@CommandAlias("leave")
 	@Description("Leave a channel.")
 	@CommandPermission("easterlyn.command.leave")
+	@Syntax("/join <#channel> [password]")
+	@CommandCompletion("@channelsListening")
 	public void leave(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) Channel channel) {
 		channel.updateLastAccess();
 		List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
@@ -114,6 +121,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("whitelist")
 	@Description("Add or remove a user from the whitelist.")
+	@Syntax("/channel whitelist [#channel] <add|remove> <target>")
+	@CommandCompletion("@boolean @player")
 	public void setWhitelisted(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
@@ -146,6 +155,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("moderator")
 	@Description("Add or remove a channel moderator.")
+	@Syntax("/channel moderator [#channel] <add|remove> <target>")
+	@CommandCompletion("@boolean @player")
 	public void setModerator(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
@@ -174,6 +185,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("ban")
 	@Description("Ban a user from a channel.")
+	@Syntax("/channel ban [#channel] <add|remove> <target>")
+	@CommandCompletion("@boolean @player")
 	public void setBanned(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
@@ -215,8 +228,10 @@ public class ChannelCommand extends BaseCommand {
 		}
 	}
 
-	@Subcommand("modify access")
-	@Description("Set a channel's access level.")
+	@Subcommand("modify private")
+	@Description("Set a channel's privacy.")
+	@Syntax("/channel modify private [#channel] <private>")
+	@CommandCompletion("@boolean")
 	public void setAccessLevel(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			boolean isPrivate) {
 		channel.updateLastAccess();
@@ -244,6 +259,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("modify password")
 	@Description("Set or remove a channel's password.")
+	@Syntax("/channel modify password [#channel] <private>")
+	@CommandCompletion("@password")
 	public void setPassword(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			@Optional String password) {
 		channel.updateLastAccess();
@@ -281,6 +298,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("create")
 	@Description("Create a new channel!")
+	@Syntax("/channel create <#channelname> <private>")
+	@CommandCompletion("channelname")
 	@CommandPermission("easterlyn.command.channel.create")
 	public void create(@Flags(CoreContexts.SELF) User user, @Single String name) {
 		if (!user.hasPermission("easterlyn.command.channel.create.anyname") && (name.length() < 2 || name.length() > 17
@@ -298,7 +317,7 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		chat.getChannels().put(name, new NormalChannel(name, user.getUniqueId()));
+		chat.getChannels().put(name.toLowerCase(), new NormalChannel(name, user.getUniqueId()));
 		Player player = user.getPlayer();
 		user.sendMessage("Channel created! Manipulate it with `/channel modify");
 		if (player != null) {
@@ -308,7 +327,8 @@ public class ChannelCommand extends BaseCommand {
 
 	@Subcommand("delete")
 	@Description("DELET CHANEL")
-	@Syntax("<channel>")
+	@Syntax("/channel delete <#channel>")
+	@CommandCompletion("@channelsOwned")
 	public void delete(@Flags(CoreContexts.SELF) User user, @Flags("TODO listening") NormalChannel channel, @Optional String name) {
 		if (!channel.isOwner(user)) {
 			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");

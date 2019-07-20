@@ -45,6 +45,7 @@ import org.jetbrains.annotations.Nullable;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class StringUtil {
 
+	// TODO move item-related methods to ItemUtil
 	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
 	public static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
@@ -95,7 +96,6 @@ public class StringUtil {
 				return new TextComponent[] {textComponent};
 			}
 		});
-		// TODO item display matcher
 	}
 
 	private static BiMap<String, String> items;
@@ -536,6 +536,40 @@ public class StringUtil {
 			return material;
 		}
 		return null;
+	}
+
+	/**
+	 * Interprets a String as a Boolean value. Returns <pre>null</pre> if no interpretation matches.
+	 *
+	 * @param string the String to interpret
+	 * @return the interpreted value
+	 */
+	@Nullable
+	public static Boolean asBoolean(String string) {
+		string = string.toLowerCase();
+		switch (string) {
+			case "y":
+			case "yes":
+			case "on":
+			case "ok":
+			case "t":
+			case "true":
+			case "add":
+			case "1":
+				return true;
+			case "n":
+			case "no":
+			case "off":
+			case "f":
+			case "false":
+			case "remove":
+			case "del":
+			case "delete":
+			case "0":
+				return false;
+			default:
+				return null;
+		}
 	}
 
 	/**

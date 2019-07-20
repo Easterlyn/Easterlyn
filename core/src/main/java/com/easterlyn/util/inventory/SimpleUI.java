@@ -25,26 +25,22 @@ import org.jetbrains.annotations.NotNull;
 
 public class SimpleUI implements InventoryHolder {
 
+	private final Plugin plugin;
 	private String name;
 	private final TreeMap<Integer, Button> buttons = new TreeMap<>();
 	private final Map<Integer, Button> navigation = new HashMap<>();
 	private int startIndex = 0;
 
 	public SimpleUI(Plugin plugin, String name) {
+		this.plugin = plugin;
 		this.name = name;
 		registerEvents(plugin);
 	}
 
 	private void registerEvents(Plugin plugin) {
-		/*
-		 * Potential edge case bug can be caused by bad admins - plugin disabling will not close UIs.
-		 *
-		 * Easiest workaround is to just iterate all players and close UIs on plugin disable.
-		 * Instead, will be handling this on a per-plugin basis as used.
-		 */
 		for (RegisteredListener registeredListener : InventoryClickEvent.getHandlerList().getRegisteredListeners()) {
 			if (registeredListener instanceof KeyedListener) {
-				if (((KeyedListener) registeredListener).getKey().equals("SimpleUI")) {
+				if (((KeyedListener) registeredListener).getKey().equals("SimpleUI-" + plugin.getName())) {
 					return;
 				}
 			}
@@ -62,6 +58,9 @@ public class SimpleUI implements InventoryHolder {
 			}
 
 			SimpleUI holder = (SimpleUI) event.getView().getTopInventory().getHolder();
+			if (!holder.plugin.equals(plugin)) {
+				return;
+			}
 			Button button;
 			if (slot > 44) {
 				button = holder.navigation.get(slot);
@@ -71,7 +70,7 @@ public class SimpleUI implements InventoryHolder {
 			if (button != null) {
 				button.getConsumer().accept(event);
 			}
-		}, plugin, "SimpleUI", EventPriority.LOW));
+		}, plugin, "SimpleUI-" + plugin.getName(), EventPriority.LOW));
 	}
 
 	public void addButton(Button button) {
@@ -82,8 +81,16 @@ public class SimpleUI implements InventoryHolder {
 		buttons.put(slot, button);
 	}
 
+	public void setButton(int row, int column, Button button) {
+		buttons.put(row * 9 + column, button);
+	}
+
 	public void removeButton(int slot) {
 		buttons.remove(slot);
+	}
+
+	public void removeButton(int row, int column, Button button) {
+		buttons.remove(row * 9 + column, button);
 	}
 
 	public Button getButton(int slot) {
