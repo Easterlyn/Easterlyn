@@ -1,0 +1,4 @@
+command:
+  teleportrequest:
+    accept: 300000
+    ignore: 480000

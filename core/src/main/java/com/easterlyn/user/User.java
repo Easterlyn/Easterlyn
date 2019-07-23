@@ -7,6 +7,7 @@ import com.easterlyn.util.Colors;
 import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
+import com.easterlyn.util.Request;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.command.Group;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
@@ -203,6 +204,36 @@ public class User implements Group {
 	@NotNull
 	public Map<String, Object> getTemporaryStorage() {
 		return tempStore;
+	}
+
+	/**
+	 * Gets and clears the pending request, if any.
+	 *
+	 * @return the Request or null if not present
+	 */
+	@Nullable
+	public Request pollPendingRequest() {
+		Object stored = tempStore.remove("core.request");
+		if (!(stored instanceof Request)) {
+			return null;
+		}
+		Request request = (Request) stored;
+		return request.getExpiry() > System.currentTimeMillis() ? request : null;
+	}
+
+	/**
+	 * Sets a user's pending request if nothing is currently pending.
+	 *
+	 * @param request the Request
+	 * @return true if the Request was successfully added
+	 */
+	public boolean setPendingRequest(@NotNull Request request) {
+		Object stored = tempStore.get("core.request");
+		if (stored instanceof Request && ((Request) stored).getExpiry() > System.currentTimeMillis()) {
+			return false;
+		}
+		tempStore.put("core.request", request);
+		return true;
 	}
 
 	/**

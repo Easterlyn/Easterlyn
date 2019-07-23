@@ -1,10 +1,13 @@
 package com.easterlyn.machine;
 
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynMachines;
+import com.easterlyn.user.User;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.HologramUtil;
 import com.easterlyn.util.ProtectionUtil;
+import com.easterlyn.util.Request;
 import com.easterlyn.util.Shape;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,6 +42,7 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -309,7 +313,7 @@ public class Transportalizer extends Machine {
 			return true;
 		}
 		if (!ProtectionUtil.canMobsSpawn(to) && !ProtectionUtil.canBuildAt(player, to)) {
-			player.sendMessage(ChatColor.RED + "You don't have access to the location specified!");
+			player.sendMessage(ChatColor.RED + "You do not have access to the location specified!");
 			return false;
 		}
 		return true;
@@ -323,10 +327,40 @@ public class Transportalizer extends Machine {
 			return false;
 		}
 		if (entity instanceof Player) {
-			if (!player.getUniqueId().equals(entity.getUniqueId())) {
-				player.sendMessage("Pulling other players is temporarily disabled, sorry!");
+			RegisteredServiceProvider<EasterlynCore> registration = getMachines().getServer().getServicesManager().getRegistration(EasterlynCore.class);
+			if (registration == null) {
+				player.sendMessage("Easterlyn core plugin not loaded! Cannot pull players.");
+				return false;
 			}
-			return true;
+			if (player.getUniqueId().equals(entity.getUniqueId())) {
+				return true;
+			}
+
+			User target = registration.getProvider().getUserManager().getUser(entity.getUniqueId());
+			User issuer = registration.getProvider().getUserManager().getUser(player.getUniqueId());
+			if (target.setPendingRequest(new Request() {
+				@Override
+				public void accept() {
+					if (getFuel(storage) < cost) {
+						target.sendMessage("Transportalizer is too low on fuel! Ask " + issuer.getDisplayName() + " to add more!");
+					}
+					Player localTarget = target.getPlayer();
+					if (localTarget == null) {
+						return;
+					}
+					teleport(entity, from, to);
+					setFuel(storage, getFuel(storage) - cost);
+				}
+
+				@Override
+				public void decline() {
+					target.sendMessage("Request declined!");
+				}
+			})) {
+				target.sendMessage(issuer.getDisplayName() + " is requesting to transportalize you!\nUse /accept or /decline to manage the request.");
+				return true;
+			}
+			return false;
 		}
 		if (entity instanceof ArmorStand) {
 			// Pulling armor stands from an area requires build trust

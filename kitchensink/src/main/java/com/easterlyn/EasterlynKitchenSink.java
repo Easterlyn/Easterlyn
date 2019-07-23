@@ -43,6 +43,8 @@ public class EasterlynKitchenSink extends JavaPlugin {
 	@Override
 	public void onEnable() {
 
+		saveDefaultConfig();
+
 		/* TODO
 		 *  - CommandRedirect? probably unnecessary, replacing essentials
 		 *    - PlayerCommandPreprocessEvent
