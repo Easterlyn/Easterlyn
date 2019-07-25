@@ -53,6 +53,10 @@ public class RestrictCreativeItems implements Listener {
 	 *  - CraftItemEvent
 	 *  - ItemPickupEvent
 	 *  - ItemDropEvent
+	 * creativeBlacklist = EnumSet.of(BARRIER, BEACON, BEDROCK,
+				COMMAND_BLOCK, CHAIN_COMMAND_BLOCK, COMMAND_BLOCK_MINECART, REPEATING_COMMAND_BLOCK,
+				END_CRYSTAL, END_GATEWAY, END_PORTAL, END_PORTAL_FRAME, TNT_MINECART, FIRE, SPAWNER,
+				NETHER_PORTAL, STRUCTURE_BLOCK, STRUCTURE_VOID, TNT)
 	 */
 
 }

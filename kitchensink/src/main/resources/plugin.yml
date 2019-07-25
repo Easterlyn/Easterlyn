@@ -6,3 +6,4 @@ author: Jikoo
 description: ${project.description}
 api-version: "1.14"
 depend: [EasterlynCore]
+softdepend: [ProtocolLib, WorldEdit]

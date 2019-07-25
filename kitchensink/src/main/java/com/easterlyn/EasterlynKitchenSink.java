@@ -5,6 +5,7 @@ import co.aikar.commands.BukkitCommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.ContextResolver;
+import com.comphenix.protocol.ProtocolLibrary;
 import com.easterlyn.kitchensink.combo.BackCommand;
 import com.easterlyn.kitchensink.combo.DeathPointCommand;
 import com.easterlyn.kitchensink.combo.FreeCarts;
@@ -23,6 +24,7 @@ import com.easterlyn.kitchensink.listener.NoIllegalName;
 import com.easterlyn.kitchensink.listener.OnlyWitherKillsItems;
 import com.easterlyn.kitchensink.listener.PVPKeepInventory;
 import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
+import com.easterlyn.kitchensink.listener.RestrictTabCompletion;
 import com.easterlyn.kitchensink.listener.WitherFacts;
 import com.easterlyn.util.event.SimpleListener;
 import java.util.ArrayList;
@@ -176,6 +178,11 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.kitchensink.command");
 
 		extraCommands.forEach(command -> plugin.getCommandManager().registerCommand(command));
+
+		try {
+			Class.forName("com.comphenix.protocol.ProtocolLibrary");
+			ProtocolLibrary.getProtocolManager().addPacketListener(new RestrictTabCompletion(plugin));
+		} catch (ClassNotFoundException ignored) {}
 
 	}
 
