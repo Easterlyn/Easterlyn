@@ -48,6 +48,7 @@
         <module>sleepvote</module> <!-- depends: core -->
         <module>spectators</module> <!-- depends: core -->
         <module>villagers</module> <!-- depends: core -->
+        <module>netherportals</module> <!-- depends: core -->
     </modules>
 
     <build>
