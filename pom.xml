@@ -21,6 +21,8 @@
     </repositories>
 
     <dependencies>
+        <!-- Module core uses server jar, also needs to specify API for dependency resolution order. -->
+        <!--suppress MavenDuplicateDependenciesInspection -->
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>

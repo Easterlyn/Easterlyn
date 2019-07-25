@@ -21,7 +21,7 @@
     </repositories>
 
     <dependencies>
-        <!-- API should override server when resolving -->
+        <!-- API needs to override server when resolving dependencies -->
         <!--suppress MavenDuplicateDependenciesInspection -->
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>

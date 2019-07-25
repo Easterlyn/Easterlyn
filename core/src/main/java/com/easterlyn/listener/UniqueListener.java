@@ -67,20 +67,17 @@ public class UniqueListener implements Listener {
 				break;
 			case LEFT:
 			case RIGHT:
-				if (top) {
-					if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
-							&& ItemUtil.isUniqueItem(event.getCursor())) {
-						event.setCancelled(true);
-					}
+				if (top && event.getView().getTopInventory().getType() == InventoryType.ANVIL
+						&& ItemUtil.isUniqueItem(event.getCursor())) {
+					event.setCancelled(true);
 				}
 				break;
 			case SHIFT_LEFT:
 			case SHIFT_RIGHT:
-				if (!top && event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
-					if (event.getView().getTopInventory().getType() == InventoryType.ANVIL
-							&& ItemUtil.isUniqueItem(event.getCurrentItem())) {
-						event.setCancelled(true);
-					}
+				if (!top && event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR
+						&& event.getView().getTopInventory().getType() == InventoryType.ANVIL
+						&& ItemUtil.isUniqueItem(event.getCurrentItem())) {
+					event.setCancelled(true);
 				}
 				break;
 			default:

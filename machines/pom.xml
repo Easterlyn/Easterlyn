@@ -22,12 +22,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.nitnelave</groupId>
-            <artifactId>CreeperHeal</artifactId>
-            <version>f0388aa524</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
             <groupId>com.easterlyn</groupId>
             <artifactId>core</artifactId>
             <version>${project.version}</version>
@@ -37,6 +31,12 @@
             <groupId>com.easterlyn</groupId>
             <artifactId>captchas</artifactId>
             <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.github.nitnelave</groupId>
+            <artifactId>CreeperHeal</artifactId>
+            <version>f0388aa524</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
