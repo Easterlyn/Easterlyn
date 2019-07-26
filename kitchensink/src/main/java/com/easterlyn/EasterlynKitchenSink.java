@@ -33,6 +33,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -174,6 +175,26 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		plugin.getCommandManager().getCommandContexts().registerContext(ChatColor.class, colourResolver);
 
 		plugin.getCommandManager().getCommandContexts().registerContext(net.md_5.bungee.api.ChatColor.class, context -> colourResolver.getContext(context).asBungee());
+
+		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(World.class, context -> {
+			String worldName = context.getFirstArg();
+			if (worldName == null) {
+				if (context.isOptional() && context.getIssuer().isPlayer()) {
+					return context.getIssuer().getPlayer().getWorld();
+				}
+				throw new InvalidCommandArgument("No world specified!");
+			}
+
+			World world = plugin.getServer().getWorld(worldName.toLowerCase());
+			if (world == null) {
+				if (context.isOptional() && context.getIssuer().isPlayer()) {
+					return context.getIssuer().getPlayer().getWorld();
+				}
+				throw new InvalidCommandArgument("No world specified!");
+			}
+			context.popFirstArg();
+			return world;
+		});
 
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.kitchensink.command");
 
