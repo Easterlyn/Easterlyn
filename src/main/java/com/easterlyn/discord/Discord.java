@@ -610,61 +610,10 @@ public class Discord extends Module {
 		UUID uuid = this.getUUIDOf(user);
 
 		if (uuid == null) {
-			this.updateUnlinkedUser(user);
 			return;
 		}
 
 		this.updateLinkedUser(user, uuid);
-	}
-
-	private void updateUnlinkedUser(IUser user) {
-		if (this.isLinked(user) || this.getClient().getOurUser().equals(user) || user.isBot()) {
-			return;
-		}
-
-		long now = System.currentTimeMillis();
-
-		this.getClient().getGuilds().forEach(guild -> {
-			if (!guild.getUsers().contains(user)) {
-				return;
-			}
-
-			// Check if a user has roles - if they have roles, they're recognized.
-			// N.B.: Discord4J explicitly declares users to have the @everyone role
-			for (IRole role : guild.getRolesForUser(user)) {
-				if (!role.equals(guild.getEveryoneRole())) {
-					return;
-				}
-			}
-
-			String path = "unlinked." + guild.getLongID() + '.'  + user.getLongID();
-
-			if (!discordData.isSet(path)) {
-				// 1 day grace period
-				discordData.set(path, now + 86400000);
-				this.postMessage(null,
-						lang.getValue("discord.link.mandate").replace("{USER}", user.mention()),
-						this.getGeneralChannelID(guild));
-				return;
-			}
-
-			long kickTime = discordData.getLong(path);
-
-			if (kickTime <= now) {
-				discordData.set(path, null);
-				queue(new DiscordCallable(user.getOrCreatePMChannel().getLongID(), CallType.MESSAGE_SEND) {
-					@Override
-					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-						user.getOrCreatePMChannel().sendMessage(lang.getValue("discord.link.graceless"));
-					}
-				}.withChainedCall(new DiscordCallable(guild.getLongID(), CallType.GUILD_USER_KICK) {
-					@Override
-					public void call() throws DiscordException, RateLimitException, MissingPermissionsException {
-						guild.kickUser(user);
-					}
-				}));
-			}
-		});
 	}
 
 	/**

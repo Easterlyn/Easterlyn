@@ -20,8 +20,6 @@ public class DiscordUserJoinListener implements IListener<UserJoinEvent> {
 
 	@Override
 	public void handle(UserJoinEvent event) {
-		// Reset unlinked time for new joins
-		discord.getDatastore().set("unlinked." + event.getGuild().getLongID() + '.'  + event.getUser().getLongID(), null);
 		discord.updateUser(event.getUser());
 	}
 
