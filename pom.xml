@@ -13,13 +13,13 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.14.2-R0.1-SNAPSHOT</version>
+      <version>1.14.4-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot</artifactId>
-      <version>1.14.2-R0.1-SNAPSHOT</version>
+      <version>1.14.4-R0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -202,8 +202,10 @@
         <configuration>
           <tasks>
             <zip basedir="datapack/" destfile="target/${project.name}-datapack.zip"/>
-            <copy file="target/${project.name}-datapack.zip" tofile="${jar.dir}/${project.name}-datapack.zip" />
-            <copy file="target/${project.name}.jar" tofile="${jar.dir}/${project.name}.jar" />
+            <!--suppress UnresolvedMavenProperty -->
+              <copy file="target/${project.name}-datapack.zip" tofile="${jar.dir}/${project.name}-datapack.zip" />
+            <!--suppress UnresolvedMavenProperty -->
+              <copy file="target/${project.name}.jar" tofile="${jar.dir}/${project.name}.jar" />
           </tasks>
         </configuration>
         <executions>

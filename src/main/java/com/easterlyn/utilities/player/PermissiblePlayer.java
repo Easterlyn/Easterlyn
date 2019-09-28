@@ -2,6 +2,7 @@ package com.easterlyn.utilities.player;
 
 import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
 import org.bukkit.FluidCollisionMode;
@@ -792,6 +793,16 @@ public class PermissiblePlayer implements Player {
 		player.setHealth(arg0);
 	}
 
+	@Override
+	public double getAbsorptionAmount() {
+		return player.getAbsorptionAmount();
+	}
+
+	@Override
+	public void setAbsorptionAmount(double v) {
+		player.setAbsorptionAmount(v);
+	}
+
 	@Deprecated
 	@Override
 	public void setMaxHealth(double arg0) {
@@ -1257,6 +1268,12 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void sendSignChange(@NotNull Location arg0, String[] arg1) throws IllegalArgumentException {
 		player.sendSignChange(arg0, arg1);
+	}
+
+	@Override
+	public void sendSignChange(@NotNull Location location, @Nullable String[] strings,
+			@NotNull DyeColor dyeColor) throws IllegalArgumentException {
+		player.sendSignChange(location, strings, dyeColor);
 	}
 
 	@Override

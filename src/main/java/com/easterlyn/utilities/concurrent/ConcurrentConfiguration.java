@@ -1,6 +1,7 @@
 package com.easterlyn.utilities.concurrent;
 
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationOptions;
@@ -18,6 +19,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A thread-safe Configuration implementation.
@@ -473,6 +475,29 @@ public class ConcurrentConfiguration implements Configuration {
 	public boolean isColor(@NotNull String path) {
 		synchronized (internal) {
 			return internal.isColor(path);
+		}
+	}
+
+	@Nullable
+	@Override
+	public Location getLocation(@NotNull String path) {
+		synchronized (internal) {
+			return internal.getLocation(path);
+		}
+	}
+
+	@Nullable
+	@Override
+	public Location getLocation(@NotNull String path, @Nullable Location location) {
+		synchronized (internal) {
+			return internal.getLocation(path, location);
+		}
+	}
+
+	@Override
+	public boolean isLocation(@NotNull String path) {
+		synchronized (internal) {
+			return internal.isLocation(path);
 		}
 	}
 

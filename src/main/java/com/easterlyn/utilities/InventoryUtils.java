@@ -549,7 +549,7 @@ public class InventoryUtils {
 					CraftItemStack.asNMSCopy(recipe.getRight()), 0, Integer.MAX_VALUE, 0, 0));
 		}
 
-		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindowMerchant(nmsPlayer.activeContainer.windowId, list, 5, 0, false));
+		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindowMerchant(nmsPlayer.activeContainer.windowId, list, 5, 0, false, false));
 		player.updateInventory();
 	}
 
