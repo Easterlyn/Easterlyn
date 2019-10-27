@@ -98,6 +98,7 @@ public class DeathListener extends EasterlynListener {
 			Experience.changeExp(player, -dropped);
 			event.setKeepLevel(true);
 			event.setKeepInventory(true);
+			event.getDrops().clear();
 			this.events.getPVPTasks().remove(player.getUniqueId()).cancel();
 			Player killer = player.getKiller();
 			if (killer == null) {
