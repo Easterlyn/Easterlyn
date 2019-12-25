@@ -1,16 +1,14 @@
 package com.easterlyn.utilities.player;
 
 import com.easterlyn.utilities.TextUtils;
-import java.util.Optional;
 import java.util.UUID;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.Contexts;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.api.caching.PermissionData;
-import me.lucko.luckperms.api.caching.UserData;
-import me.lucko.luckperms.api.context.ContextSet;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedDataManager;
+import net.luckperms.api.cacheddata.CachedPermissionData;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
+import org.bukkit.plugin.RegisteredServiceProvider;
 
 /**
  * Bridge for permissions via LuckPerms. Used for cases where a player is not online.
@@ -26,37 +24,36 @@ public class PermissionBridge {
 			TextUtils.getTrace(new Throwable("Loading permission data on main thread"), 5);
 		}
 
-		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
-		if (!apiOptional.isPresent()) {
+		RegisteredServiceProvider<LuckPerms> registration = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+		if (registration == null) {
 			return;
 		}
 
-		LuckPermsApi luckPermsApi = apiOptional.get();
-		User user = luckPermsApi.getUser(uuid);
+		LuckPerms luckPerms = registration.getProvider();
+		User user = luckPerms.getUserManager().getUser(uuid);
 
 		if (user != null) {
 			return;
 		}
 
-		luckPermsApi.getStorage().loadUser(uuid).join();
+		luckPerms.getUserManager().loadUser(uuid).join();
 	}
 
 	public static boolean hasPermission(UUID uuid, String permission) {
 
-		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
-		if (!apiOptional.isPresent()) {
+		RegisteredServiceProvider<LuckPerms> registration = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+		if (registration == null) {
 			return false;
 		}
 
-		LuckPermsApi luckPermsApi = apiOptional.get();
+		LuckPerms luckPerms = registration.getProvider();
 		boolean loadedUser = false;
-		User user = luckPermsApi.getUser(uuid);
+		User user = luckPerms.getUserManager().getUser(uuid);
 
 		if (user == null && !Bukkit.isPrimaryThread()) {
 			// Load offline user if necessary.
 			loadedUser = true;
-			luckPermsApi.getStorage().loadUser(uuid).join();
-			user = luckPermsApi.getUser(uuid);
+			user = luckPerms.getUserManager().loadUser(uuid).join();
 		}
 
 		if (user == null) {
@@ -64,29 +61,29 @@ public class PermissionBridge {
 			return false;
 		}
 
-		UserData userData = user.getCachedData();
-		PermissionData permissionData = userData.getPermissionData(Contexts.of(ContextSet.empty(), true, true, true, true, true, false));
-		boolean hasPermission = permissionData.getPermissionValue(permission).asBoolean();
+		CachedDataManager userData = user.getCachedData();
+		CachedPermissionData permissionData = userData.getPermissionData(QueryOptions.defaultContextualOptions());
+		boolean hasPermission = permissionData.checkPermission(permission).asBoolean();
 
 		if (loadedUser) {
 			// Clean up loaded user.
-			luckPermsApi.cleanupUser(user);
+			luckPerms.getUserManager().cleanupUser(user);
 		}
 
 		return hasPermission;
 	}
 
 	public static void releasePermissionData(UUID uuid) {
-		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
-		if (!apiOptional.isPresent()) {
+		RegisteredServiceProvider<LuckPerms> registration = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+		if (registration == null) {
 			return;
 		}
 
-		LuckPermsApi luckPermsApi = apiOptional.get();
-		User user = luckPermsApi.getUser(uuid);
+		LuckPerms luckPerms = registration.getProvider();
+		User user = luckPerms.getUserManager().getUser(uuid);
 
 		if (user != null) {
-			luckPermsApi.cleanupUser(user);
+			luckPerms.getUserManager().cleanupUser(user);
 		}
 	}
 
