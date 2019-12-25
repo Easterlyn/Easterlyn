@@ -9,10 +9,10 @@ import org.bukkit.Particle;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 
-import net.minecraft.server.v1_14_R1.Explosion;
+import net.minecraft.server.v1_15_R1.Explosion;
 
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftEntity;
 
 /**
  * A Module for creating falling explosive spheres.
@@ -43,7 +43,7 @@ public class Meteors extends Module {
 	 * @param event the EntityChangeBlockEvent
 	 */
 	public void handlePotentialMeteorite(EntityChangeBlockEvent event) {
-		net.minecraft.server.v1_14_R1.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
+		net.minecraft.server.v1_15_R1.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
 		if (nmsEntity instanceof MeteoriteComponent) {
 			event.setCancelled(true);
 			explode(event.getBlock().getLocation(), event.getEntity(),

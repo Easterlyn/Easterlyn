@@ -1,15 +1,15 @@
 package com.easterlyn.utilities.recipe;
 
 import com.google.common.base.Preconditions;
-import net.minecraft.server.v1_14_R1.IRecipe;
-import net.minecraft.server.v1_14_R1.ItemStack;
-import net.minecraft.server.v1_14_R1.MinecraftKey;
-import net.minecraft.server.v1_14_R1.RecipeItemStack;
+import net.minecraft.server.v1_15_R1.IRecipe;
+import net.minecraft.server.v1_15_R1.ItemStack;
+import net.minecraft.server.v1_15_R1.MinecraftKey;
+import net.minecraft.server.v1_15_R1.RecipeItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_14_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_15_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers;
 import org.bukkit.inventory.Recipe;
 
 import java.util.EnumSet;

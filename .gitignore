@@ -35,12 +35,10 @@ dependency-reduced-pom.xml
 bin/
 tmp/
 *.pydevproject
-*.tmp
 *.bak
 *.swp
 *~.nib
 local.properties
-.classpath
 .settings/
 .loadpath
 
@@ -61,7 +59,7 @@ local.properties
 #################
 
 .idea/
-Easterlyn.iml
+*.iml
 
 #################
 ## Visual Studio

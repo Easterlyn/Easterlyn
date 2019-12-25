@@ -1,11 +1,11 @@
 package com.easterlyn.utilities;
 
-import net.minecraft.server.v1_14_R1.BlockPosition;
+import net.minecraft.server.v1_15_R1.BlockPosition;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
 
 /**
  * http://forums.bukkit.org/threads/resource-server-side-lighting-no-it-isnt-just-client-side.154503/

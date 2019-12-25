@@ -3,25 +3,25 @@ package com.easterlyn.machines;
 import com.easterlyn.machines.type.Dublexor;
 import com.easterlyn.machines.type.Machine;
 import com.easterlyn.utilities.tuple.Pair;
-import net.minecraft.server.v1_14_R1.BlockPosition;
-import net.minecraft.server.v1_14_R1.ChatComponentText;
-import net.minecraft.server.v1_14_R1.Container;
-import net.minecraft.server.v1_14_R1.ContainerMerchant;
-import net.minecraft.server.v1_14_R1.Containers;
-import net.minecraft.server.v1_14_R1.EntityHuman;
-import net.minecraft.server.v1_14_R1.EntityPlayer;
-import net.minecraft.server.v1_14_R1.EntityTypes;
-import net.minecraft.server.v1_14_R1.EntityVillager;
-import net.minecraft.server.v1_14_R1.EnumHand;
-import net.minecraft.server.v1_14_R1.IChatBaseComponent;
-import net.minecraft.server.v1_14_R1.MerchantRecipe;
-import net.minecraft.server.v1_14_R1.MerchantRecipeList;
-import net.minecraft.server.v1_14_R1.PacketPlayOutOpenWindow;
-import net.minecraft.server.v1_14_R1.SoundEffect;
-import net.minecraft.server.v1_14_R1.World;
+import net.minecraft.server.v1_15_R1.BlockPosition;
+import net.minecraft.server.v1_15_R1.ChatComponentText;
+import net.minecraft.server.v1_15_R1.Container;
+import net.minecraft.server.v1_15_R1.ContainerMerchant;
+import net.minecraft.server.v1_15_R1.Containers;
+import net.minecraft.server.v1_15_R1.EntityHuman;
+import net.minecraft.server.v1_15_R1.EntityPlayer;
+import net.minecraft.server.v1_15_R1.EntityTypes;
+import net.minecraft.server.v1_15_R1.EntityVillager;
+import net.minecraft.server.v1_15_R1.EnumHand;
+import net.minecraft.server.v1_15_R1.IChatBaseComponent;
+import net.minecraft.server.v1_15_R1.MerchantRecipe;
+import net.minecraft.server.v1_15_R1.MerchantRecipeList;
+import net.minecraft.server.v1_15_R1.PacketPlayOutOpenWindow;
+import net.minecraft.server.v1_15_R1.SoundEffect;
+import net.minecraft.server.v1_15_R1.World;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
@@ -81,14 +81,14 @@ public class MachineInventoryTracker {
 		this.openMachines.put(player.getUniqueId(), new Pair<>(m, key));
 	}
 
-	class MerchantContainer extends ContainerMerchant {
+	static class MerchantContainer extends ContainerMerchant {
 		MerchantContainer(int containerCounter, EntityPlayer player, Location location) {
 			super(containerCounter, player.inventory, new FakeNMSVillager(player, player.world, location));
 			this.checkReachable = false;
 		}
 	}
 
-	class FakeNMSVillager extends EntityVillager {
+	static class FakeNMSVillager extends EntityVillager {
 		FakeNMSVillager(EntityPlayer player, World world, Location location) {
 			super(EntityTypes.VILLAGER, world);
 			setTradingPlayer(player);
@@ -113,8 +113,8 @@ public class MachineInventoryTracker {
 		}
 
 		@Override
-		public void ej() {
-			// Random sound
+		public void eG() {
+			// Ambient sound
 		}
 
 		@Override

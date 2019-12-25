@@ -7,11 +7,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 import javax.annotation.Nullable;
-import net.minecraft.server.v1_14_R1.IBlockData;
+import net.minecraft.server.v1_15_R1.IBlockData;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -91,7 +91,7 @@ public class BlockDrops {
 	}
 
 	private static boolean isUsableTool(ItemStack tool, Material broken) {
-		net.minecraft.server.v1_14_R1.Block block = CraftMagicNumbers.getBlock(broken);
+		net.minecraft.server.v1_15_R1.Block block = CraftMagicNumbers.getBlock(broken);
 		if (block == null) {
 			return false;
 		}

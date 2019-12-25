@@ -1,6 +1,11 @@
 package com.easterlyn.utilities.player;
 
-import org.bukkit.Achievement;
+import java.net.InetSocketAddress;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
@@ -60,13 +65,6 @@ import org.bukkit.util.BoundingBox;
 import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-
-import java.net.InetSocketAddress;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -904,12 +902,6 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	@Deprecated
-	public void awardAchievement(@NotNull Achievement arg0) {
-		player.awardAchievement(arg0);
-	}
-
-	@Override
 	public boolean canSee(@NotNull Player arg0) {
 		return player.canSee(arg0);
 	}
@@ -1079,12 +1071,6 @@ public class PermissiblePlayer implements Player {
 		player.giveExpLevels(arg0);
 	}
 
-	@Override
-	@Deprecated
-	public boolean hasAchievement(@NotNull Achievement arg0) {
-		return player.hasAchievement(arg0);
-	}
-
 	@Deprecated
 	@Override
 	public void hidePlayer(@NotNull Player arg0) {
@@ -1209,12 +1195,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void playSound(@NotNull Location arg0, @NotNull Sound arg1, float arg2, float arg3) {
 		player.playSound(arg0, arg1, arg2, arg3);
-	}
-
-	@Override
-	@Deprecated
-	public void removeAchievement(@NotNull Achievement arg0) {
-		player.removeAchievement(arg0);
 	}
 
 	@Override
