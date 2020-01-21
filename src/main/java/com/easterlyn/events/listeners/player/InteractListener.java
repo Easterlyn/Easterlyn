@@ -121,7 +121,9 @@ public class InteractListener extends EasterlynListener {
 		if (held.getType() == Material.GLASS_BOTTLE
 				&& cooldowns.getRemainder(event.getPlayer(), "ExpBottleCreate") == 0) {
 			for (Block block : event.getPlayer().getLineOfSight(bypassable, 4)) {
-				if (block.getType() == Material.WATER) {
+				if (block.getType() == Material.WATER
+						|| block.getType() == Material.BEE_NEST
+						|| block.getType() == Material.BEEHIVE) {
 					return;
 				}
 				BlockData data = block.getBlockData();
