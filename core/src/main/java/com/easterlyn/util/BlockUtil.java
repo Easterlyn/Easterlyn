@@ -7,11 +7,11 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
-import net.minecraft.server.v1_14_R1.BlockPosition;
-import net.minecraft.server.v1_14_R1.IBlockData;
-import net.minecraft.server.v1_14_R1.TileEntity;
-import net.minecraft.server.v1_14_R1.TileEntityFurnace;
-import net.minecraft.server.v1_14_R1.WorldServer;
+import net.minecraft.server.v1_15_R1.BlockPosition;
+import net.minecraft.server.v1_15_R1.IBlockData;
+import net.minecraft.server.v1_15_R1.TileEntity;
+import net.minecraft.server.v1_15_R1.TileEntityFurnace;
+import net.minecraft.server.v1_15_R1.WorldServer;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -24,10 +24,10 @@ import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.block.data.type.Observer;
 import org.bukkit.block.data.type.RedstoneRail;
-import org.bukkit.craftbukkit.v1_14_R1.CraftWorld;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_14_R1.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_14_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_15_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_15_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -112,7 +112,7 @@ public class BlockUtil {
 	}
 
 	private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material broken) {
-		net.minecraft.server.v1_14_R1.Block block = CraftMagicNumbers.getBlock(broken);
+		net.minecraft.server.v1_15_R1.Block block = CraftMagicNumbers.getBlock(broken);
 		if (block == null) {
 			return false;
 		}

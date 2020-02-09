@@ -64,7 +64,7 @@ public class ChannelManagementListener implements Listener {
 				user.sendMessage("Invalid channel. Create it with `/channel create #" + channelName + "`!");
 				return;
 			}
-			event.setMessage(event.getMessage().substring(space));
+			event.setMessage(event.getMessage().substring(space + 1));
 		}
 
 		// User's channel

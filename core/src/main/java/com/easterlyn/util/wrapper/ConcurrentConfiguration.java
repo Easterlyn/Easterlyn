@@ -5,8 +5,10 @@ import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationOptions;
@@ -17,6 +19,7 @@ import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A thread-safe Configuration implementation.
@@ -475,6 +478,29 @@ public class ConcurrentConfiguration implements Configuration {
 		}
 	}
 
+	@Nullable
+	@Override
+	public Location getLocation(@NotNull String path) {
+		synchronized (internal) {
+			return internal.getLocation(path);
+		}
+	}
+
+	@Nullable
+	@Override
+	public Location getLocation(@NotNull String path, @Nullable Location location) {
+		synchronized (internal) {
+			return internal.getLocation(path, location);
+		}
+	}
+
+	@Override
+	public boolean isLocation(@NotNull String path) {
+		synchronized (internal) {
+			return internal.isLocation(path);
+		}
+	}
+
 	@Override
 	public ConfigurationSection getConfigurationSection(@NotNull String path) {
 		synchronized (internal) {
@@ -532,7 +558,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@Override
 	public Configuration getDefaults() {
 		synchronized (internal) {
-			return internal.getRoot().getDefaults();
+			return Objects.requireNonNull(internal.getRoot()).getDefaults();
 		}
 	}
 
@@ -540,7 +566,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@Override
 	public ConfigurationOptions options() {
 		synchronized (internal) {
-			return internal.getRoot().options();
+			return Objects.requireNonNull(internal.getRoot()).options();
 		}
 	}
 

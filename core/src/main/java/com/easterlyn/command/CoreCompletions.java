@@ -54,7 +54,11 @@ public class CoreCompletions {
 					.filter(completion -> StringUtil.startsWithIgnoreCase(completion, context.getInput()))
 					.collect(Collectors.toList());
 		});
-		// TODO player, playerOnline, playerOffline, playerOnlineIfPerm
+
+//		plugin.getCommandManager().getCommandCompletions().registerCompletion(CoreContexts.ONLINE_WITH_PERM, context -> {
+//			context.
+//		});
+		// TODO player, playerOnline, playerOffline, playerOnlineIfPerm, commands
 
 		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("password", Collections.singletonList("Hunter2"));
 	}

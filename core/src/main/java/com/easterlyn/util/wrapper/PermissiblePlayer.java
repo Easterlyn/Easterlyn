@@ -12,7 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.BaseComponent;
-import org.bukkit.Achievement;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
@@ -860,6 +859,16 @@ public class PermissiblePlayer implements Player {
 		player.setHealth(arg0);
 	}
 
+	@Override
+	public double getAbsorptionAmount() {
+		return player.getAbsorptionAmount();
+	}
+
+	@Override
+	public void setAbsorptionAmount(double v) {
+		player.setAbsorptionAmount(v);
+	}
+
 	@Deprecated
 	@Override
 	public void setMaxHealth(double arg0) {
@@ -959,12 +968,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void sendPluginMessage(@NotNull Plugin arg0, @NotNull String arg1, @NotNull byte[] arg2) {
 		player.sendPluginMessage(arg0, arg1, arg2);
-	}
-
-	@Override
-	@Deprecated
-	public void awardAchievement(@NotNull Achievement arg0) {
-		player.awardAchievement(arg0);
 	}
 
 	@Override
@@ -1168,12 +1171,6 @@ public class PermissiblePlayer implements Player {
 		player.giveExpLevels(arg0);
 	}
 
-	@Override
-	@Deprecated
-	public boolean hasAchievement(@NotNull Achievement arg0) {
-		return player.hasAchievement(arg0);
-	}
-
 	@Deprecated
 	@Override
 	public void hidePlayer(@NotNull Player arg0) {
@@ -1298,12 +1295,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void playSound(@NotNull Location arg0, @NotNull Sound arg1, float arg2, float arg3) {
 		player.playSound(arg0, arg1, arg2, arg3);
-	}
-
-	@Override
-	@Deprecated
-	public void removeAchievement(@NotNull Achievement arg0) {
-		player.removeAchievement(arg0);
 	}
 
 	@Override
@@ -1443,7 +1434,7 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void sendSignChange(@NotNull Location location, @Nullable String[] strings,
 			@NotNull DyeColor dyeColor) throws IllegalArgumentException {
-		sendSignChange(location, strings, dyeColor);
+		player.sendSignChange(location, strings, dyeColor);
 	}
 
 	@Override
@@ -1645,6 +1636,16 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void setTotalExperience(int arg0) {
 		player.setTotalExperience(arg0);
+	}
+
+	@Override
+	public void sendExperienceChange(float v) {
+		player.sendExperienceChange(v);
+	}
+
+	@Override
+	public void sendExperienceChange(float v, int i) {
+		player.sendExperienceChange(v, i);
 	}
 
 	@Override

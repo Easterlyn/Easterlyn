@@ -23,6 +23,7 @@ public class TeleportListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerPortal(PlayerPortalEvent event) {
+		// TODO update for new API
 		if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
 			return;
 		}

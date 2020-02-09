@@ -1,5 +1,7 @@
 package com.easterlyn.util;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Optional;
 import java.util.UUID;
 import me.lucko.luckperms.LuckPerms;
@@ -10,6 +12,7 @@ import me.lucko.luckperms.api.caching.PermissionData;
 import me.lucko.luckperms.api.caching.UserData;
 import me.lucko.luckperms.api.context.ContextSet;
 import org.bukkit.Bukkit;
+import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
@@ -46,6 +49,7 @@ public class PermissionUtil {
 
 	public static void loadPermissionData(UUID uuid) {
 		if (Bukkit.isPrimaryThread()) {
+			// TODO error is not thrown anywhere
 			StringUtil.getTrace(new Throwable("Loading permission data on main thread"), 5);
 		}
 
@@ -65,6 +69,10 @@ public class PermissionUtil {
 	}
 
 	public static boolean hasPermission(UUID uuid, String permission) {
+		return hasAnyPermission(uuid, Collections.singleton(permission));
+	}
+
+	public static boolean hasAnyPermission(UUID uuid, Collection<String> permissions) {
 
 		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
 		if (!apiOptional.isPresent()) {
@@ -89,7 +97,14 @@ public class PermissionUtil {
 
 		UserData userData = user.getCachedData();
 		PermissionData permissionData = userData.getPermissionData(Contexts.of(ContextSet.empty(), true, true, true, true, true, false));
-		boolean hasPermission = permissionData.getPermissionValue(permission).asBoolean();
+		boolean hasPermission = false;
+		for (String permission : permissions) {
+			hasPermission = permissionData.getPermissionValue(permission).asBoolean();
+
+			if (hasPermission) {
+				break;
+			}
+		}
 
 		if (loadedUser) {
 			// Clean up loaded user.
@@ -97,6 +112,40 @@ public class PermissionUtil {
 		}
 
 		return hasPermission;
+	}
+
+	public static boolean hasAnyPermission(Permissible permissible, Collection<String> permissions) {
+		for (String permissionName : permissions) {
+			if (permissible.hasPermission(permissionName)) {
+				return true;
+			}
+
+			if (permissible.isPermissionSet(permissionName)) {
+				continue;
+			}
+
+			Permission permission = Bukkit.getPluginManager().getPermission(permissionName);
+
+			switch (permission != null ? permission.getDefault() : PermissionDefault.OP) {
+				case TRUE:
+					return true;
+				case OP:
+					if (permissible.isOp()) {
+						return true;
+					}
+					break;
+				case NOT_OP:
+					if (!permissible.isOp()) {
+						return true;
+					}
+					break;
+				case FALSE:
+				default:
+					break;
+			}
+		}
+
+		return false;
 	}
 
 	public static void releasePermissionData(UUID uuid) {

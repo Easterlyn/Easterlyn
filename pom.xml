@@ -9,7 +9,17 @@
     <packaging>pom</packaging>
     <version>2.0</version>
 
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.build.testSourceDirectory>${project.basedir}/test/java</project.build.testSourceDirectory>
+        <project.build.testResourceDirectory>${project.basedir}/test/resources</project.build.testResourceDirectory>
+    </properties>
+
     <repositories>
+        <repository>
+            <id>md_5</id>
+            <url>http://repo.md-5.net/content/groups/public/</url>
+        </repository>
         <repository>
             <id>aikar</id>
             <url>https://repo.aikar.co/content/groups/aikar/</url>
@@ -21,19 +31,39 @@
     </repositories>
 
     <dependencies>
+        <dependency>
+            <groupId>net.md-5</groupId>
+            <artifactId>bungeecord-chat</artifactId>
+            <version>1.15-SNAPSHOT</version>
+            <scope>provided</scope>
+        </dependency>
         <!-- Module core uses server jar, also needs to specify API for dependency resolution order. -->
         <!--suppress MavenDuplicateDependenciesInspection -->
         <dependency>
             <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.14.3-R0.1-SNAPSHOT</version>
+            <version>1.15.2-R0.1-SNAPSHOT</version>
             <scope>provided</scope>
+            <exclusions>
+                <exclusion>
+                    <!-- Paper uses md_5's release repository, which does not contain snapshots. -->
+                    <groupId>net.md-5</groupId>
+                    <artifactId>bungeecord-chat</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>co.aikar</groupId>
             <artifactId>acf-paper</artifactId>
             <version>0.5.0-SNAPSHOT</version>
             <scope>provided</scope>
+        </dependency>
+        <!-- Tests -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.13</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -106,6 +136,12 @@
                     <source>1.8</source>
                     <target>1.8</target>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M4</version>
             </plugin>
 
             <plugin>

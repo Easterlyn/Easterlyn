@@ -11,8 +11,8 @@ testenv/
 ## Maven
 #################
 
-dependency-reduced-pom.xml
-/target/
+*dependency-reduced-pom.xml
+**/target/
 
 #################
 ## Eclipse
@@ -29,7 +29,6 @@ tmp/
 *.swp
 *~.nib
 local.properties
-.classpath
 .settings/
 .loadpath
 

@@ -8,6 +8,7 @@ import co.aikar.commands.CommandIssuer;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
@@ -23,7 +24,7 @@ import com.easterlyn.util.PermissionUtil;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_14_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_15_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -56,6 +57,7 @@ public class EasterlynCommand extends BaseCommand {
 	@Syntax("<commandName>")
 	@CommandPermission("easterlyn.command.commandinfo")
 	@CommandRank(UserRank.STAFF)
+	@CommandCompletion("@commands")
 	public void commandInfo(CommandIssuer issuer, @Default("commandinfo") @Single String commandName) {
 
 		SimpleCommandMap simpleCommandMap = plugin.getSimpleCommandMap();
@@ -91,6 +93,7 @@ public class EasterlynCommand extends BaseCommand {
 	@CommandAlias("ping")
 	@Description("Check connection to the server!")
 	@CommandPermission("easterlyn.command.ping")
+	@CommandCompletion("@playerOnlineIfPerm")
 	public void ping(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM + "," + CoreContexts.ONLINE) Player player) {
 		if (player.getLastLogin() > System.currentTimeMillis() - 15000) {
 			issuer.sendError(MessageKeys.ERROR_PREFIX, "{message}", "Ping is wildly inaccurate just after login!");
