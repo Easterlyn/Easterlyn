@@ -37,10 +37,13 @@ BAT_SPAWN_EGG,Bat Spawn Egg
 BEACON,Beacon
 BEDROCK,Bedrock
 BEEF,Raw Beef
+BEEHIVE,Beehive
 BEETROOT,Beetroot
 BEETROOTS,Beetroots
 BEETROOT_SEEDS,Beetroot Seeds
 BEETROOT_SOUP,Beetroot Soup
+BEE_NEST,Bee Nest
+BEE_SPAWN_EGG,Bee Spawn Egg
 BELL,Bell
 BIRCH_BOAT,Birch Boat
 BIRCH_BUTTON,Birch Button
@@ -404,6 +407,10 @@ GUNPOWDER,Gunpowder
 HAY_BLOCK,Hay Bale
 HEART_OF_THE_SEA,Heart of the Sea
 HEAVY_WEIGHTED_PRESSURE_PLATE,Heavy Weighted Pressure Plate
+HONEYCOMB,Honeycomb
+HONEYCOMB_BLOCK,Honeycomb Block
+HONEY_BLOCK,Honey Block
+HONEY_BOTTLE,Honey Bottle
 HOPPER,Hopper
 HOPPER_MINECART,Minecart with Hopper
 HORN_CORAL,Horn Coral

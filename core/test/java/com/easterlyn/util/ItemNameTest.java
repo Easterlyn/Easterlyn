@@ -6,7 +6,6 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -52,7 +51,7 @@ public class ItemNameTest {
 
 		JsonObject element;
 		try {
-			element = new JsonParser().parse(new BufferedReader(new FileReader(new File("src/test/resources/en_us.json")))).getAsJsonObject();
+			element = new JsonParser().parse(new BufferedReader(new FileReader("src/test/resources/en_us.json"))).getAsJsonObject();
 		} catch (FileNotFoundException e) {
 			element = null;
 			e.printStackTrace();

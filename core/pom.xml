@@ -51,14 +51,14 @@
         <dependency>
             <groupId>org.reflections</groupId>
             <artifactId>reflections</artifactId>
-            <version>0.9.11</version>
+            <version>0.9.12</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <!-- Required by Reflections -->
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.22.0-GA</version>
+            <version>3.26.0-GA</version>
             <scope>compile</scope>
         </dependency>
         <!-- Plugin dependencies -->
