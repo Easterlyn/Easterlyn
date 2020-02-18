@@ -1457,6 +1457,16 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public void sendExperienceChange(float v) {
+		player.sendExperienceChange(v);
+	}
+
+	@Override
+	public void sendExperienceChange(float v, int i) {
+		player.sendExperienceChange(v, i);
+	}
+
+	@Override
 	public void setWalkSpeed(float arg0) throws IllegalArgumentException {
 		player.setWalkSpeed(arg0);
 	}

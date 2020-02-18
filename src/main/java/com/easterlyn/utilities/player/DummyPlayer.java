@@ -1173,6 +1173,12 @@ public class DummyPlayer implements Player {
 	public void setTotalExperience(int arg0) {}
 
 	@Override
+	public void sendExperienceChange(float v) {}
+
+	@Override
+	public void sendExperienceChange(float v, int i) {}
+
+	@Override
 	public void setWalkSpeed(float arg0) throws IllegalArgumentException {}
 
 	@Override
