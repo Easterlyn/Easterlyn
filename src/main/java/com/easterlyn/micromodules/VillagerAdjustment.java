@@ -198,8 +198,9 @@ public class VillagerAdjustment extends Module {
 			return null;
 		}
 
-		if (adjusted == null && input1.getType() != Material.WRITTEN_BOOK && !(CurrencyType.isCurrency(input1)
-				&& CurrencyType.isCurrency(recipe.getResult())) && recipe.getResult().getType() != Material.EXPERIENCE_BOTTLE) {
+		if (adjusted == null && input1.getType() != Material.WRITTEN_BOOK && input1.getType() != Material.WRITABLE_BOOK
+				&& !(CurrencyType.isCurrency(input1) && CurrencyType.isCurrency(recipe.getResult()))
+				&& recipe.getResult().getType() != Material.EXPERIENCE_BOTTLE) {
 			// DEBUG: post report on un-adjustable trades
 			this.getPlugin().getModule(Discord.class).postReport(String.format("Unable to adjust trade: %s + %s -> %s",
 					input1, input2, recipe.getResult()));

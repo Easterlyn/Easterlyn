@@ -27,10 +27,13 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.MapMeta;
 import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SuspiciousStewMeta;
 import org.bukkit.potion.PotionData;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 /**
- * A class for handling all functions of cruxite dowels.
+ * Utility for calculating mana costs.
  *
  * @author Jikoo
  */
@@ -232,6 +235,30 @@ public class ManaMappings {
 			}
 		}
 
+		if (meta instanceof SuspiciousStewMeta) {
+			for (PotionEffect potionEffect : ((SuspiciousStewMeta) meta).getCustomEffects()) {
+				if (potionEffect.getType().equals(PotionEffectType.FIRE_RESISTANCE)) {
+					cost += getMana().get(Material.ALLIUM);
+				} else if (potionEffect.getType().equals(PotionEffectType.BLINDNESS)) {
+					cost += getMana().get(Material.AZURE_BLUET);
+				} else if (potionEffect.getType().equals(PotionEffectType.SATURATION)) {
+					cost += getMana().get(Material.BLUE_ORCHID);
+				} else if (potionEffect.getType().equals(PotionEffectType.JUMP)) {
+					cost += getMana().get(Material.CORNFLOWER);
+				} else if (potionEffect.getType().equals(PotionEffectType.POISON)) {
+					cost += getMana().get(Material.LILY_OF_THE_VALLEY);
+				} else if (potionEffect.getType().equals(PotionEffectType.REGENERATION)) {
+					cost += getMana().get(Material.OXEYE_DAISY);
+				} else if (potionEffect.getType().equals(PotionEffectType.NIGHT_VISION)) {
+					cost += getMana().get(Material.POPPY);
+				} else if (potionEffect.getType().equals(PotionEffectType.WEAKNESS)) {
+					cost += getMana().get(Material.WHITE_TULIP);
+				} else if (potionEffect.getType().equals(PotionEffectType.FIRE_RESISTANCE)) {
+					cost += getMana().get(Material.WITHER_ROSE);
+				}
+			}
+		}
+
 		if (meta.hasEnchants()) {
 			for (Entry<Enchantment, Integer> entry : meta.getEnchants().entrySet()) {
 				double enchantCost = getEnchantCost(entry.getKey(), entry.getValue(), false);
@@ -360,6 +387,8 @@ public class ManaMappings {
 		manaMappings.put(Material.PUFFERFISH_BUCKET, manaMappings.get(Material.PUFFERFISH) + manaMappings.get(Material.BUCKET));
 		manaMappings.put(Material.SALMON_BUCKET, manaMappings.get(Material.SALMON) + manaMappings.get(Material.BUCKET));
 		manaMappings.put(Material.TROPICAL_FISH_BUCKET, manaMappings.get(Material.TROPICAL_FISH) + manaMappings.get(Material.BUCKET));
+		manaMappings.put(Material.SUSPICIOUS_STEW, manaMappings.get(Material.BOWL) + manaMappings.get(Material.RED_MUSHROOM)
+				+ manaMappings.get(Material.BROWN_MUSHROOM));
 		// TODO why are these not detecting properly
 		manaMappings.put(Material.BONE_BLOCK, manaMappings.get(Material.BONE_MEAL) * 9);
 		manaMappings.put(Material.DRIED_KELP_BLOCK, manaMappings.get(Material.DRIED_KELP_BLOCK) * 9);
