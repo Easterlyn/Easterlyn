@@ -63,9 +63,9 @@
         </dependency>
         <!-- Plugin dependencies -->
         <dependency>
-            <groupId>com.github.lucko.LuckPerms</groupId>
-            <artifactId>luckperms-bukkit</artifactId>
-            <version>v4.0</version>
+            <groupId>net.luckperms</groupId>
+            <artifactId>api</artifactId>
+            <version>5.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
