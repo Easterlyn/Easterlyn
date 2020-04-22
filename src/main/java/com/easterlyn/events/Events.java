@@ -148,9 +148,11 @@ public class Events extends Module {
 
 			// Clear oldest cached IPs
 			int surplus = ipcache.size() - 1500;
-			for (Iterator<Entry<String, String>> entryIterator = ipcache.entrySet().iterator();
-					entryIterator.hasNext() && surplus > 0; --surplus) {
+			Iterator<Entry<String, String>> entryIterator = ipcache.entrySet().iterator();
+			while (entryIterator.hasNext() && surplus > 0) {
+				entryIterator.next();
 				entryIterator.remove();
+				--surplus;
 			}
 		}
 	}
