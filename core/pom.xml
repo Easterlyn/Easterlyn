@@ -58,7 +58,7 @@
             <!-- Required by Reflections -->
             <groupId>org.javassist</groupId>
             <artifactId>javassist</artifactId>
-            <version>3.26.0-GA</version>
+            <version>3.27.0-GA</version>
             <scope>compile</scope>
         </dependency>
         <!-- Plugin dependencies -->
@@ -87,7 +87,7 @@
         <dependency>
             <groupId>com.github.TechFortress</groupId>
             <artifactId>GriefPrevention</artifactId>
-            <version>16.9.alpha</version>
+            <version>16.13.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

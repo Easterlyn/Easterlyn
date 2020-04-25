@@ -1,20 +1,16 @@
 package com.easterlyn.util;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Optional;
+import com.easterlyn.event.ReportableEvent;
 import java.util.UUID;
-import me.lucko.luckperms.LuckPerms;
-import me.lucko.luckperms.api.Contexts;
-import me.lucko.luckperms.api.LuckPermsApi;
-import me.lucko.luckperms.api.User;
-import me.lucko.luckperms.api.caching.PermissionData;
-import me.lucko.luckperms.api.caching.UserData;
-import me.lucko.luckperms.api.context.ContextSet;
+import net.luckperms.api.LuckPerms;
+import net.luckperms.api.cacheddata.CachedDataManager;
+import net.luckperms.api.cacheddata.CachedPermissionData;
+import net.luckperms.api.model.user.User;
+import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
-import org.bukkit.permissions.Permissible;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -47,47 +43,20 @@ public class PermissionUtil {
 		permission.addParent(parentName, true).recalculatePermissibles();
 	}
 
-	public static void loadPermissionData(UUID uuid) {
-		if (Bukkit.isPrimaryThread()) {
-			// TODO error is not thrown anywhere
-			StringUtil.getTrace(new Throwable("Loading permission data on main thread"), 5);
-		}
-
-		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
-		if (!apiOptional.isPresent()) {
-			return;
-		}
-
-		LuckPermsApi luckPermsApi = apiOptional.get();
-		User user = luckPermsApi.getUser(uuid);
-
-		if (user != null) {
-			return;
-		}
-
-		luckPermsApi.getStorage().loadUser(uuid).join();
-	}
-
 	public static boolean hasPermission(UUID uuid, String permission) {
-		return hasAnyPermission(uuid, Collections.singleton(permission));
-	}
-
-	public static boolean hasAnyPermission(UUID uuid, Collection<String> permissions) {
-
-		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
-		if (!apiOptional.isPresent()) {
+		RegisteredServiceProvider<LuckPerms> registration = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+		if (registration == null) {
 			return false;
 		}
 
-		LuckPermsApi luckPermsApi = apiOptional.get();
+		LuckPerms luckPerms = registration.getProvider();
 		boolean loadedUser = false;
-		User user = luckPermsApi.getUser(uuid);
+		User user = luckPerms.getUserManager().getUser(uuid);
 
 		if (user == null && !Bukkit.isPrimaryThread()) {
 			// Load offline user if necessary.
 			loadedUser = true;
-			luckPermsApi.getStorage().loadUser(uuid).join();
-			user = luckPermsApi.getUser(uuid);
+			user = loadPermissionData(uuid);
 		}
 
 		if (user == null) {
@@ -95,70 +64,49 @@ public class PermissionUtil {
 			return false;
 		}
 
-		UserData userData = user.getCachedData();
-		PermissionData permissionData = userData.getPermissionData(Contexts.of(ContextSet.empty(), true, true, true, true, true, false));
-		boolean hasPermission = false;
-		for (String permission : permissions) {
-			hasPermission = permissionData.getPermissionValue(permission).asBoolean();
-
-			if (hasPermission) {
-				break;
-			}
-		}
+		CachedDataManager userData = user.getCachedData();
+		CachedPermissionData permissionData = userData.getPermissionData(QueryOptions.defaultContextualOptions());
+		boolean hasPermission = permissionData.checkPermission(permission).asBoolean();
 
 		if (loadedUser) {
 			// Clean up loaded user.
-			luckPermsApi.cleanupUser(user);
+			releasePermissionData(uuid);
 		}
 
 		return hasPermission;
 	}
 
-	public static boolean hasAnyPermission(Permissible permissible, Collection<String> permissions) {
-		for (String permissionName : permissions) {
-			if (permissible.hasPermission(permissionName)) {
-				return true;
-			}
-
-			if (permissible.isPermissionSet(permissionName)) {
-				continue;
-			}
-
-			Permission permission = Bukkit.getPluginManager().getPermission(permissionName);
-
-			switch (permission != null ? permission.getDefault() : PermissionDefault.OP) {
-				case TRUE:
-					return true;
-				case OP:
-					if (permissible.isOp()) {
-						return true;
-					}
-					break;
-				case NOT_OP:
-					if (!permissible.isOp()) {
-						return true;
-					}
-					break;
-				case FALSE:
-				default:
-					break;
-			}
+	public static User loadPermissionData(UUID uuid) {
+		if (Bukkit.isPrimaryThread()) {
+			Bukkit.getPluginManager().callEvent(new ReportableEvent("Loading permission data on main thread", new Throwable(), 5));
 		}
 
-		return false;
+		RegisteredServiceProvider<LuckPerms> registration = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+		if (registration == null) {
+			return null;
+		}
+
+		LuckPerms luckPerms = registration.getProvider();
+		User user = luckPerms.getUserManager().getUser(uuid);
+
+		if (user != null) {
+			return null;
+		}
+
+		return luckPerms.getUserManager().loadUser(uuid).join();
 	}
 
 	public static void releasePermissionData(UUID uuid) {
-		Optional<LuckPermsApi> apiOptional = LuckPerms.getApiSafe();
-		if (!apiOptional.isPresent()) {
+		RegisteredServiceProvider<LuckPerms> registration = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
+		if (registration == null) {
 			return;
 		}
 
-		LuckPermsApi luckPermsApi = apiOptional.get();
-		User user = luckPermsApi.getUser(uuid);
+		LuckPerms luckPerms = registration.getProvider();
+		User user = luckPerms.getUserManager().getUser(uuid);
 
 		if (user != null) {
-			luckPermsApi.cleanupUser(user);
+			luckPerms.getUserManager().cleanupUser(user);
 		}
 	}
 

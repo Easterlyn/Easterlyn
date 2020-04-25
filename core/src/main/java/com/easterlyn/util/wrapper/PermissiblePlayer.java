@@ -1,5 +1,6 @@
 package com.easterlyn.util.wrapper;
 
+import com.destroystokyo.paper.ClientOption;
 import com.destroystokyo.paper.Title;
 import com.destroystokyo.paper.block.TargetBlockInfo;
 import com.destroystokyo.paper.entity.TargetEntityInfo;
@@ -255,6 +256,16 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public boolean isJumping() {
+		return player.isJumping();
+	}
+
+	@Override
+	public void setJumping(boolean b) {
+		player.setJumping(b);
+	}
+
+	@Override
 	public boolean isSleeping() {
 		return player.isSleeping();
 	}
@@ -311,6 +322,7 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	@Deprecated
 	public boolean addPotionEffect(@NotNull PotionEffect effect, boolean force) {
 		return player.addPotionEffect(effect, force);
 	}
@@ -1879,6 +1891,12 @@ public class PermissiblePlayer implements Player {
 
 	@NotNull
 	@Override
+	public <T> T getClientOption(@NotNull ClientOption<T> clientOption) {
+		return player.getClientOption(clientOption);
+	}
+
+	@NotNull
+	@Override
 	public MainHand getMainHand() {
 		return player.getMainHand();
 	}
@@ -1912,6 +1930,21 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public boolean hasAI() {
 		return player.hasAI();
+	}
+
+	@Override
+	public void attack(@NotNull Entity entity) {
+		player.attack(entity);
+	}
+
+	@Override
+	public void swingMainHand() {
+		player.swingMainHand();
+	}
+
+	@Override
+	public void swingOffHand() {
+		player.swingOffHand();
 	}
 
 	@Override
