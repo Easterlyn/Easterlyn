@@ -113,7 +113,8 @@ public class EasterlynEffects extends JavaPlugin {
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.effect.command");
 
 		EconomyUtil.addWorthModifier(itemStack -> getEffects(true, itemStack).keySet().stream()
-				.mapToDouble(Effect::getCost).sum());
+				.mapToDouble(Effect::getCost).sum()); // TODO add to enchanting table and ignore
+		plugin.getLocaleManager().addLocaleSupplier(this);
 	}
 
 	/**

@@ -281,6 +281,7 @@ public class EasterlynChat extends JavaPlugin {
 
 		// TODO completions: Channel, NormalChannel
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.chat.command");
+		plugin.getLocaleManager().addLocaleSupplier(this);
 	}
 
 }

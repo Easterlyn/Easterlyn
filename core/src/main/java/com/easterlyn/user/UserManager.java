@@ -76,6 +76,8 @@ public class UserManager {
 		return userCache.getUnchecked(uuid);
 	}
 
+	// TODO getUser(CommandSender)
+
 	public void clearCache() {
 		userCache.invalidateAll();
 		userCache.cleanUp();

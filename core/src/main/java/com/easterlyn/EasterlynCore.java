@@ -1,8 +1,8 @@
 package com.easterlyn;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.PaperCommandManager;
 import co.aikar.commands.RegisteredCommand;
+import com.easterlyn.acf.EasterlynCommandManager;
 import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreCompletions;
 import com.easterlyn.command.CoreContexts;
@@ -11,6 +11,7 @@ import com.easterlyn.user.UserManager;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.BlockUpdateManager;
 import com.easterlyn.util.Colors;
+import com.easterlyn.util.LocaleManager;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
@@ -38,12 +39,12 @@ public class EasterlynCore extends JavaPlugin {
 
 	/*
 	 * TODO
-	 *  - System for rich(er) messages
-	 *  - Extract command feedback out of commands to lang files
+	 *  - Convert to using LanguageManager
 	 *  - Generic useful command conditions
 	 */
+	private LocaleManager localeManager = new LocaleManager(this, "en_us"); // TODO maybe allow configuring, probably not though
 	private UserManager userManager = new UserManager(this);
-	private PaperCommandManager commandManager;
+	private EasterlynCommandManager commandManager;
 	private SimpleCommandMap simpleCommandMap;
 	private BlockUpdateManager blockUpdateManager = new BlockUpdateManager(this);
 	private Multimap<Class<? extends Plugin>, BaseCommand> pluginCommands = HashMultimap.create();
@@ -55,7 +56,7 @@ public class EasterlynCore extends JavaPlugin {
 		getServer().getServicesManager().register(EasterlynCore.class, this, this, ServicePriority.Normal);
 
 		if (commandManager == null) {
-			commandManager = new PaperCommandManager(this);
+			commandManager = new EasterlynCommandManager(this);
 			//noinspection deprecation
 			commandManager.enableUnstableAPI("help");
 			CoreContexts.register(this);
@@ -128,12 +129,16 @@ public class EasterlynCore extends JavaPlugin {
 	}
 
 	@NotNull
-	public PaperCommandManager getCommandManager() throws IllegalStateException {
+	public EasterlynCommandManager getCommandManager() throws IllegalStateException {
 		if (commandManager == null || !this.isEnabled()) {
 			throw new IllegalStateException("Plugin not ready!");
 		}
 
 		return commandManager;
+	}
+
+	public LocaleManager getLocaleManager() {
+		return localeManager;
 	}
 
 	@NotNull

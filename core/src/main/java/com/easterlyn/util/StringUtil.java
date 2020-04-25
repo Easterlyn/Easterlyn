@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.Normalizer;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -104,11 +106,15 @@ public class StringUtil {
 		SECTION_MATCHERS.add(function);
 	}
 
-	public static List<TextComponent> fromLegacyText(String message, SectionMatcherFunction... additionalHandlers) {
+	public static List<TextComponent> fromLegacyText(String message) {
+		return fromLegacyText(message, Collections.emptyList());
+	}
+
+	public static List<TextComponent> fromLegacyText(String message, Collection<SectionMatcherFunction> additionalHandlers) {
 		List<TextComponent> components = new LinkedList<>();
 		StringBuilder builder = new StringBuilder();
 		TextComponent component = new TextComponent();
-		Stream<SectionMatcher> sectionMatcherStream = Stream.concat(Arrays.stream(additionalHandlers), SECTION_MATCHERS.stream())
+		Stream<SectionMatcher> sectionMatcherStream = Stream.concat(additionalHandlers.stream(), SECTION_MATCHERS.stream())
 				.map(function -> function.apply(message));
 
 		for (int i = 0; i < message.length(); i++) {

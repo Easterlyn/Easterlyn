@@ -200,6 +200,8 @@ public class EasterlynKitchenSink extends JavaPlugin {
 
 		extraCommands.forEach(command -> plugin.getCommandManager().registerCommand(command));
 
+		plugin.getLocaleManager().addLocaleSupplier(this);
+
 		try {
 			Class.forName("com.comphenix.protocol.ProtocolLibrary");
 			ProtocolLibrary.getProtocolManager().addPacketListener(new RestrictTabCompletion(plugin));

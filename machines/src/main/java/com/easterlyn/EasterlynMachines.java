@@ -249,6 +249,7 @@ public class EasterlynMachines extends JavaPlugin {
 		BlockUtil.addRightClickFunction(((block, itemStack) -> isMachine(block)));
 
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.machine.command");
+		plugin.getLocaleManager().addLocaleSupplier(this);
 	}
 
 	@Override

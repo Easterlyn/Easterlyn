@@ -71,6 +71,7 @@ public class EasterlynDiscord extends JavaPlugin {
 
 	private void register(EasterlynCore plugin) {
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.discord.command");
+		plugin.getLocaleManager().addLocaleSupplier(this);
 	}
 
 	public Collection<TextChannel> getChannelIDs(ChannelType type) {
