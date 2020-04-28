@@ -11,9 +11,11 @@ import com.easterlyn.machines.utilities.Shape;
 import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.protectionhooks.ProtectionHook;
 import com.easterlyn.utilities.InventoryUtils;
+import java.util.Arrays;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -24,13 +26,13 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
-
-import java.util.Arrays;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -55,6 +57,14 @@ public class Elevator extends Machine implements InventoryHolder {
 			itemMeta.setDisplayName(ChatColor.WHITE + "Elevator");
 			drop.setItemMeta(itemMeta);
 		});
+
+		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "elevator"), drop);
+		recipe.shape("BDB", "ACA", "BAB");
+		recipe.setIngredient('A', Material.ENDER_EYE);
+		recipe.setIngredient('B', Material.PHANTOM_MEMBRANE);
+		recipe.setIngredient('C', new RecipeChoice.MaterialChoice(Material.PURPUR_BLOCK, Material.PURPUR_PILLAR));
+		recipe.setIngredient('D', Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+		plugin.getServer().addRecipe(recipe);
 	}
 
 	private int getCurrentBoost(ConfigurationSection storage) {

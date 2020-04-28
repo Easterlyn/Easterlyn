@@ -31,6 +31,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockFace;
@@ -126,6 +127,14 @@ public class Densificator extends Machine implements InventoryHolder {
 			itemMeta.setDisplayName(ChatColor.WHITE + "Densificator");
 			this.drop.setItemMeta(itemMeta);
 		});
+
+		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "densificator"), drop);
+		recipe.shape(" A ", "XYX", " Z ");
+		recipe.setIngredient('A', Material.HOPPER);
+		recipe.setIngredient('X', Material.PISTON);
+		recipe.setIngredient('Y', Material.COMPARATOR);
+		recipe.setIngredient('Z', Material.DROPPER);
+		plugin.getServer().addRecipe(recipe);
 	}
 
 	private int getDensificationMode(ConfigurationSection storage) {

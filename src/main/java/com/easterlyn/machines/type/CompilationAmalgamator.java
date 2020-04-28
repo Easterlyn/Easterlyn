@@ -13,6 +13,7 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockFace;
@@ -29,6 +30,7 @@ import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -57,6 +59,14 @@ public class CompilationAmalgamator extends Machine {
 			itemMeta.setDisplayName(ChatColor.WHITE + "Compilation Amalgamator");
 			drop.setItemMeta(itemMeta);
 		});
+
+		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(plugin, "compilation_amalgamator"), drop);
+		recipe.shape(" A ", "XYX", " Z ");
+		recipe.setIngredient('A', Material.HOPPER);
+		recipe.setIngredient('X', Material.ENDER_EYE);
+		recipe.setIngredient('Y', Material.COMPARATOR);
+		recipe.setIngredient('Z', Material.DROPPER);
+		plugin.getServer().addRecipe(recipe);
 	}
 
 	@Override
