@@ -49,7 +49,7 @@ public class EasterlynDiscord extends JavaPlugin {
 		}
 
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
-			client = new DiscordClientBuilder(token).setInitialPresence(Presence.online(Activity.playing("play.easterlyn.com"))).build();
+			client = DiscordClientBuilder.create(token).setInitialPresence(Presence.online(Activity.playing("play.easterlyn.com"))).build();
 			new MinecraftBridge(this, client).setup();
 			client.login();
 		});
