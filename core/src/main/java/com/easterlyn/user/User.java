@@ -186,7 +186,7 @@ public class User implements Group {
 	}
 
 	public void sendMessage(@NotNull String message) {
-		sendMessage(StringUtil.fromLegacyText(message).toArray(new TextComponent[0]));
+		sendMessage(StringUtil.toJSON(message).toArray(new TextComponent[0]));
 	}
 
 	public void sendMessage(@NotNull BaseComponent... components) {

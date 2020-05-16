@@ -33,12 +33,13 @@ import org.jetbrains.annotations.NotNull;
 public class EconomyUtil {
 
 	public static final double OVERPRICED_RATE = 2.18265;
+	@SuppressWarnings("unused")
 	public static final double NORMAL_RATE = 0.72755;
 	public static final double UNDERPRICED_RATE = 0.24252;
 
 	private EconomyUtil() {}
 
-	private static Set<Function<ItemStack, Double>> modifiers = new HashSet<>();
+	private static final Set<Function<ItemStack, Double>> modifiers = new HashSet<>();
 	private static Map<Material, Double> mappings;
 
 	public static void addWorthModifier(Function<ItemStack, Double> function) {
@@ -83,6 +84,7 @@ public class EconomyUtil {
 			BlockState state = ((BlockStateMeta) itemMeta).getBlockState();
 			if (state instanceof InventoryHolder) {
 				for (ItemStack item : ((InventoryHolder) state).getInventory().getContents()) {
+					//noinspection ConstantConditions - Array is not null, but individual elements may be.
 					if (item != null && item.getType() != Material.AIR) {
 						throw new ArithmeticException("item too spicy " + itemStack.toString());
 					}
@@ -828,7 +830,7 @@ public class EconomyUtil {
 			// Campfires do not consume fuel.
 			if (bukkitRecipe instanceof CookingRecipe && !(bukkitRecipe instanceof CampfireRecipe)) {
 				try {
-					newMinimum = NumberUtil.addSafe(newMinimum, 300D / ((CookingRecipe) bukkitRecipe).getCookingTime());
+					newMinimum = NumberUtil.addSafe(newMinimum, 300D / ((CookingRecipe<?>) bukkitRecipe).getCookingTime());
 				} catch (ArithmeticException e) {
 					continue;
 				}

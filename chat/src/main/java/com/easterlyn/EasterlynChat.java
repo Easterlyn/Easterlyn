@@ -16,12 +16,16 @@ import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.text.StaticQuoteConsumer;
+import com.easterlyn.util.text.ParsedText;
 import java.lang.reflect.Constructor;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Supplier;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -193,29 +197,26 @@ public class EasterlynChat extends JavaPlugin {
 	}
 
 	private void register(EasterlynCore plugin) {
-		StringUtil.addSectionHandler(string -> new StringUtil.SingleMatcher(CHANNEL_PATTERN.matcher(string)) {
+		StringUtil.addQuoteConsumer(new StaticQuoteConsumer(CHANNEL_PATTERN) {
 			@Override
-			protected TextComponent[] handleMatch(TextComponent previousComponent) {
-				String word = getMatcher().group();
+			public void addComponents(@NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
+				Matcher matcher = matcherSupplier.get();
+				String word = matcher.group();
 				TextComponent component = new TextComponent();
-				String channelString = getMatcher().group(1);
-				int end = getMatcher().end(1);
+				String channelName = matcher.group(1);
+				int end = matcher.end(1);
 				component.setText(word.substring(0, end));
 				component.setColor(Colors.CHANNEL.asBungee());
 				component.setUnderlined(true);
 				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-						TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelString)));
-				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelString));
+						TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelName)));
+				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelName));
+				components.addComponent(component);
 
-				String group = getMatcher().group(2);
-				if (group == null || group.isEmpty()) {
-					return new TextComponent[] {component};
+				String trailingPunctuation = matcher.group(2);
+				if (trailingPunctuation != null && !trailingPunctuation.isEmpty()) {
+					components.addText(trailingPunctuation, component.getHoverEvent(), component.getClickEvent());
 				}
-
-				TextComponent suffix = new TextComponent(previousComponent);
-				suffix.setText(group);
-
-				return new TextComponent[] {component, suffix};
 			}
 		});
 

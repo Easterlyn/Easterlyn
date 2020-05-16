@@ -61,6 +61,7 @@ public class BlockQuoteTest {
 
 	@Test
 	public void testQuoteQuoting() {
+		// TODO: multiple backslashes are not handled properly, i.e. 'test \\\\'
 		BlockQuoteMatcher backtickMatcher = new QuoteMatcher();
 		String message;
 		BlockQuote quote;

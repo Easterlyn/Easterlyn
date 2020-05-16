@@ -1,5 +1,6 @@
 package com.easterlyn.util;
 
+import com.easterlyn.util.text.QuoteConsumer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -145,7 +146,7 @@ public class LocaleManager {
 		sendMessage(sender, ChatMessageType.CHAT, key, Collections.emptyList(), replacements);
 	}
 
-	public void sendMessage(CommandSender sender, String key, Collection<StringUtil.SectionMatcherFunction> additionalHandlers) {
+	public void sendMessage(CommandSender sender, String key, Collection<QuoteConsumer> additionalHandlers) {
 		sendMessage(sender, ChatMessageType.CHAT, key, additionalHandlers);
 	}
 
@@ -153,13 +154,13 @@ public class LocaleManager {
 		sendMessage(sender, type, key, Collections.emptyList(), replacements);
 	}
 
-	public void sendMessage(CommandSender sender, ChatMessageType type, String key, Collection<StringUtil.SectionMatcherFunction> additionalHandlers, String... replacements) {
+	public void sendMessage(CommandSender sender, ChatMessageType type, String key, Collection<QuoteConsumer> additionalHandlers, String... replacements) {
 		String message = getValue(key, sender instanceof Player ? ((Player) sender).getLocale() : defaultLocale, replacements);
 		if (message == null || message.isEmpty()) {
 			return;
 		}
 
-		List<TextComponent> textComponents = StringUtil.fromLegacyText(message, additionalHandlers);
+		Collection<TextComponent> textComponents = StringUtil.toJSON(message, additionalHandlers);
 		if (sender instanceof Player) {
 			if (type == ChatMessageType.ACTION_BAR) {
 				((Player) sender).sendActionBar(TextComponent.toLegacyText(textComponents.toArray(new BaseComponent[0])));

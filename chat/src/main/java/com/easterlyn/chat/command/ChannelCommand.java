@@ -60,7 +60,7 @@ public class ChannelCommand extends BaseCommand {
 
 		if (!channel.getMembers().contains(user.getUniqueId())) {
 			channel.getMembers().add(user.getUniqueId());
-			TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + " joined " + channel.getDisplayName()
+			TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + " joined " + channel.getDisplayName()
 					+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 			channel.getMembers().forEach(uuid -> {
 				Player player = Bukkit.getPlayer(uuid);
@@ -107,7 +107,7 @@ public class ChannelCommand extends BaseCommand {
 			channel.setWhitelisted(user, false);
 		}
 
-		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + " quit " + channel.getDisplayName()
+		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + " quit " + channel.getDisplayName()
 				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
@@ -141,7 +141,7 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + (add ? " added " : " removed ")
+		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + (add ? " added " : " removed ")
 				+ target.getDisplayName() + (add ? " to" : " from") + " the whitelist in " + channel.getDisplayName()
 				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.setWhitelisted(target, add);
@@ -171,7 +171,7 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + (add ? " added " : " removed ")
+		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + (add ? " added " : " removed ")
 				+ target.getDisplayName() + (add ? " to" : " from") + " the mod list in " + channel.getDisplayName()
 				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.setModerator(target, add);
@@ -205,7 +205,7 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + (add ? " banned " : " unbanned ")
+		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + (add ? " banned " : " unbanned ")
 				+ target.getDisplayName() + " from " + channel.getDisplayName() + " at " + timestamp.format(new Date())
 		).toArray(new TextComponent[0]);
 		channel.getMembers().forEach(uuid -> {
@@ -247,7 +247,7 @@ public class ChannelCommand extends BaseCommand {
 
 
 		channel.setPrivate(isPrivate);
-		TextComponent[] message = StringUtil.fromLegacyText(user.getDisplayName() + " set private: " + isPrivate
+		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + " set private: " + isPrivate
 				+ " in " + channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
@@ -281,10 +281,10 @@ public class ChannelCommand extends BaseCommand {
 
 		TextComponent[] message;
 		if (password == null) {
-			message = StringUtil.fromLegacyText(user.getDisplayName() + " removed the password from "
+			message = StringUtil.toJSON(user.getDisplayName() + " removed the password from "
 					+ channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		} else {
-			message = StringUtil.fromLegacyText(user.getDisplayName() + " set the password to " + password
+			message = StringUtil.toJSON(user.getDisplayName() + " set the password to " + password
 					+ " in " + channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		}
 		channel.setPassword(password);
@@ -342,7 +342,7 @@ public class ChannelCommand extends BaseCommand {
 
 		chat.getChannels().remove(channel.getName());
 
-		TextComponent[] message = StringUtil.fromLegacyText(channel.getDisplayName()
+		TextComponent[] message = StringUtil.toJSON(channel.getDisplayName()
 				+ " has been disbanded. That's all, folks!").toArray(new TextComponent[0]);
 		channel.getMembers().stream().map(uuid -> easterlynCore.getUserManager().getUser(uuid)).forEach(member -> {
 			member.sendMessage(message);

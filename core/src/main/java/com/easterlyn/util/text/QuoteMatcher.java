@@ -21,6 +21,7 @@ public class QuoteMatcher implements BlockQuoteMatcher {
 
 		while ((endIndex = message.indexOf('"', endIndex + 1)) != -1) {
 			if (message.charAt(endIndex - 1) != '\\') {
+				// TODO does not support escaping backslash, i.e. "\\" -> "\"
 				break;
 			}
 		}

@@ -70,7 +70,7 @@ public class AutoUser extends User {
 		String hover = userData.get("hover");
 		if (hover != null && !hover.isEmpty()) {
 			hover = ChatColor.translateAlternateColorCodes('&', hover);
-			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, StringUtil.fromLegacyText(hover).toArray(new TextComponent[0])));
+			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, StringUtil.toJSON(hover).toArray(new TextComponent[0])));
 		}
 
 		return component;

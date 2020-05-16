@@ -7,11 +7,14 @@ import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.inventory.ItemUtil;
+import com.easterlyn.util.text.ParsedText;
+import com.easterlyn.util.text.StaticQuoteConsumer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -113,31 +116,34 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 		nameElement.addExtra(nameText);
 		nameElement.addExtra(new TextComponent(thirdPerson ? " " : "> "));
 
-		List<TextComponent> messageComponents;
+		Collection<TextComponent> messageComponents;
 		Player player = getUser().getPlayer();
 		if (player == null) {
-			messageComponents = StringUtil.fromLegacyText(message);
+			messageComponents = StringUtil.toJSON(message);
 		} else {
-			messageComponents = StringUtil.fromLegacyText(message, string -> new StringUtil.SingleMatcher(PLAYER_ITEMS.matcher(string)) {
+			messageComponents = StringUtil.toJSON(message, Collections.singleton(new StaticQuoteConsumer(PLAYER_ITEMS) {
 				@Override
-				protected TextComponent[] handleMatch(TextComponent previousComponent) {
+				public void addComponents(@NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
+					Matcher matcher = matcherSupplier.get();
 					int slot;
 					try {
-						slot = Integer.valueOf(getMatcher().group(1));
+						slot = Integer.parseInt(matcher.group(1));
 					} catch (NumberFormatException e) {
-						return null;
+						components.addText(matcher.group());
+						return;
 					}
 					if (slot < 0 || slot >= player.getInventory().getSize()) {
-						return null;
+						components.addText(matcher.group());
+						return;
 					}
 					ItemStack item = player.getInventory().getItem(slot);
 					if (item == null) {
 						item = ItemUtil.AIR;
 					}
 
-					return new TextComponent[] { StringUtil.getItemComponent(item) };
+					components.addComponent(StringUtil.getItemComponent(item));
 				}
-			});
+			}));
 		}
 
 		Stream.concat(additionalRecipients.stream(), channel.getMembers().stream()).distinct()

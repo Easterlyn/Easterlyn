@@ -151,6 +151,11 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public float getAttackCooldown() {
+		return player.getAttackCooldown();
+	}
+
+	@Override
 	public boolean discoverRecipe(@NotNull NamespacedKey namespacedKey) {
 		return player.discoverRecipe(namespacedKey);
 	}
@@ -1042,6 +1047,11 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public boolean getAllowFlight() {
 		return player.getAllowFlight();
+	}
+
+	@Override
+	public Location getPotentialBedLocation() {
+		return player.getPotentialBedLocation();
 	}
 
 	@Override

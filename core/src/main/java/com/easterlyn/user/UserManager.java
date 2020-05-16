@@ -6,19 +6,20 @@ import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
-import com.easterlyn.util.tuple.Pair;
+import com.easterlyn.util.text.ParsedText;
+import com.easterlyn.util.text.QuoteConsumer;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
-import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Manager for loading users.
@@ -59,17 +60,58 @@ public class UserManager {
 						}
 				), plugin));
 
-		StringUtil.addSectionHandler(string -> new StringUtil.MultiMatcher<User>(Bukkit.getOnlinePlayers().stream()
-				.map(Player::getUniqueId).map(UserManager.this::getUser)
-				.map(user -> new Pair<>(user, user.getMentionPattern().matcher(string))).collect(Collectors.toSet())) {
+		StringUtil.addQuoteConsumer(new QuoteConsumer() {
 			@Override
-			protected TextComponent[] handleMatch(Matcher matcher, User user, int start, int end, TextComponent previousComponent) {
-				if (matcher.group(2) == null || matcher.group(2).isEmpty()) {
-					return new TextComponent[] {user.getMention()};
+			public Iterable<Pattern> getPatterns() {
+				return userCache.asMap().keySet().stream().map(UserManager.this::getUser)
+						.map(User::getMentionPattern).collect(Collectors.toSet());
+			}
+
+			@Override
+			public @Nullable Supplier<Matcher> handleQuote(String quote) {
+				for (User loaded : userCache.asMap().values()) {
+					Pattern mentionPattern = loaded.getMentionPattern();
+					Matcher matcher = mentionPattern.matcher(quote);
+					if (!matcher.find()) {
+						continue;
+					}
+					return new UserMatcher() {
+						@Override
+						public User getUser() {
+							return loaded;
+						}
+
+						@Override
+						public Matcher get() {
+							return matcher;
+						}
+					};
 				}
-				return new TextComponent[] {user.getMention(), new TextComponent(matcher.group(2))};
+				return null;
+			}
+
+			@Override
+			public void addComponents(@NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
+				if (!(matcherSupplier instanceof UserMatcher)) {
+					components.addText(matcherSupplier.get().group());
+					return;
+				}
+
+				Matcher matcher = matcherSupplier.get();
+				User user = ((UserMatcher) matcherSupplier).getUser();
+
+				components.addComponent(user.getMention());
+				if (matcher.group(2) != null && !matcher.group(2).isEmpty()) {
+					components.addText(matcher.group(2));
+				}
 			}
 		});
+	}
+
+	private interface UserMatcher extends Supplier<Matcher> {
+
+		User getUser();
+
 	}
 
 	public User getUser(UUID uuid) {

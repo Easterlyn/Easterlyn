@@ -38,7 +38,7 @@ public class PlayerUtil {
 				}
 				Player player = (Player) notification.getValue();
 				// Save if over 45 days since last login, removes achievements that should not be present.
-				if (!player.isOnline() && player.getLastPlayed() < System.currentTimeMillis() - 3888000000L) {
+				if (!player.isOnline() && player.getLastSeen() < System.currentTimeMillis() - 3888000000L) {
 					player.saveData();
 				}
 			}).build();
@@ -137,6 +137,7 @@ public class PlayerUtil {
 		EntityPlayer nmsPlayer = new EntityPlayer(server, server.getWorldServer(DimensionManager.OVERWORLD),
 				new GameProfile(uuid, offlinePlayer.getName()),
 				new PlayerInteractManager(server.getWorldServer(DimensionManager.OVERWORLD)));
+		// TODO: swap to OpenInv to prevent overwriting mounts?
 
 		Player player = nmsPlayer.getBukkitEntity();
 		if (player == null) {
