@@ -71,8 +71,9 @@ public class Densificator extends Machine implements InventoryHolder {
 
 	static {
 		whitelistedCraftingRecipes = new HashSet<>(Arrays.asList(
-					Material.GOLD_INGOT,
-					Material.IRON_INGOT));
+					Material.GOLD_INGOT,  // Crafted 3x3 gold nuggets
+					Material.IRON_INGOT,  // Crafted 3x3 iron nuggets
+                    Material.LEATHER));   // Crafted 2x2 rabbit hide
 
 		recipeCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(
 				new CacheLoader<Material, List<RecipeWrapper>>() {
