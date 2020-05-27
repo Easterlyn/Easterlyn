@@ -20,10 +20,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import net.md_5.bungee.api.ChatColor;
@@ -65,8 +67,14 @@ import org.jetbrains.annotations.NotNull;
 public class Densificator extends Machine implements InventoryHolder {
 
 	private static final LoadingCache<Material, List<RecipeWrapper>> recipeCache;
+	private static final Set<Material> whitelistedCraftingRecipes;
 
 	static {
+		whitelistedCraftingRecipes = new HashSet<>(Arrays.asList(
+					Material.GOLD_INGOT,  // Crafted 3x3 gold nuggets
+					Material.IRON_INGOT,  // Crafted 3x3 iron nuggets
+					Material.LEATHER));   // Crafted 2x2 rabbit hide
+
 		recipeCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(
 				new CacheLoader<Material, List<RecipeWrapper>>() {
 					@Override
@@ -78,8 +86,11 @@ public class Densificator extends Machine implements InventoryHolder {
 								return;
 							}
 
-							if (!recipe.getResult().getType().isOccluding()) {
-								return;
+							Material craftingResult = recipe.getResult().getType();
+							// Ensure result is a placeable block, with exceptions
+							if (!craftingResult.isOccluding()) {
+								if (!whitelistedCraftingRecipes.contains(craftingResult))
+									return;
 							}
 
 							RecipeWrapper wrapper = new RecipeWrapper(recipe);
