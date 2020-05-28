@@ -1,5 +1,9 @@
 package com.easterlyn.events.listeners.player;
 
+import com.easterlyn.micromodules.Protections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 import java.util.UUID;
 
 import com.easterlyn.Easterlyn;
@@ -8,6 +12,7 @@ import com.easterlyn.events.listeners.EasterlynListener;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.Users;
 
+import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -25,12 +30,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 public class TeleportListener extends EasterlynListener {
 
 	private final Language lang;
+	private final Protections protections;
 	private final Spectators spectators;
 	private final Users users;
 
 	public TeleportListener(Easterlyn plugin) {
 		super(plugin);
 		this.lang = plugin.getModule(Language.class);
+		this.protections = plugin.getModule(Protections.class);
 		this.spectators = plugin.getModule(Spectators.class);
 		this.users = plugin.getModule(Users.class);
 	}
@@ -42,10 +49,16 @@ public class TeleportListener extends EasterlynListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if (event.getCause() != TeleportCause.SPECTATE) {
+		if (event.getCause() != TeleportCause.SPECTATE || event.getTo() == null || event.getTo().getWorld() == null) {
 			return;
 		}
-		for (Player player : event.getTo().getWorld().getPlayers()) {
+
+		if (protections.getHooks().stream().anyMatch(protectionHook -> !protectionHook.canUseButtonsAt(event.getPlayer(), event.getTo()))) {
+			event.getPlayer().sendMessage(lang.getValue("spectators.disallowedArea"));
+		}
+
+		List<Player> worldPlayers = event.getTo().getWorld().getPlayers();
+		for (Player player : worldPlayers) {
 			if (!player.getLocation().equals(event.getTo())) {
 				continue;
 			}
@@ -57,19 +70,32 @@ public class TeleportListener extends EasterlynListener {
 					continue;
 				}
 			}
-			if (users.getUser(player.getUniqueId()).getSpectatable()) {
-				return;
-			}
-			if (event.getPlayer().hasPermission("easterlyn.spectators.unrestricted")) {
-				event.getPlayer().sendMessage(lang.getValue("spectators.ignoreDisallowed")
-						.replace("{PLAYER}", player.getDisplayName()));
-				return;
-			}
-			event.setCancelled(true);
-			event.getPlayer().sendMessage(lang.getValue("spectators.disallowed")
-					.replace("{PLAYER}", player.getDisplayName()));
+
+			checkSpectate(event, player);
 			return;
 		}
+
+		TreeMap<Double, Player> distanceToPlayers = worldPlayers.stream().collect(Collectors.toMap(player -> player.getLocation().distanceSquared(event.getTo()), player -> player, (o, o2) -> o, TreeMap::new));
+		Map.Entry<Double, Player> closestPlayer = distanceToPlayers.firstEntry();
+		if (closestPlayer != null) {
+			checkSpectate(event, closestPlayer.getValue());
+		}
+	}
+
+	private void checkSpectate(PlayerTeleportEvent event, Player teleportTarget) {
+		if (users.getUser(teleportTarget.getUniqueId()).getSpectatable()) {
+			return;
+		}
+
+		if (event.getPlayer().hasPermission("easterlyn.spectators.unrestricted")) {
+			event.getPlayer().sendMessage(lang.getValue("spectators.ignoreDisallowed")
+					.replace("{PLAYER}", teleportTarget.getDisplayName()));
+			return;
+		}
+
+		event.setCancelled(true);
+		event.getPlayer().sendMessage(lang.getValue("spectators.disallowed")
+				.replace("{PLAYER}", teleportTarget.getDisplayName()));
 	}
 
 	/**

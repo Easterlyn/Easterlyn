@@ -88,9 +88,8 @@ public class Densificator extends Machine implements InventoryHolder {
 
 							Material craftingResult = recipe.getResult().getType();
 							// Ensure result is a placeable block, with exceptions
-							if (!craftingResult.isOccluding()) {
-								if (!whitelistedCraftingRecipes.contains(craftingResult))
-									return;
+							if (!craftingResult.isOccluding() && !whitelistedCraftingRecipes.contains(craftingResult)) {
+								return;
 							}
 
 							RecipeWrapper wrapper = new RecipeWrapper(recipe);
