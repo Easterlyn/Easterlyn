@@ -1,18 +1,12 @@
 package com.easterlyn.events.listeners.player;
 
-import com.easterlyn.micromodules.Protections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-import java.util.UUID;
-
 import com.easterlyn.Easterlyn;
 import com.easterlyn.chat.Language;
 import com.easterlyn.events.listeners.EasterlynListener;
+import com.easterlyn.micromodules.Protections;
 import com.easterlyn.micromodules.Spectators;
 import com.easterlyn.users.Users;
-
-import java.util.stream.Collectors;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -57,45 +51,51 @@ public class TeleportListener extends EasterlynListener {
 			event.getPlayer().sendMessage(lang.getValue("spectators.disallowedArea"));
 		}
 
-		List<Player> worldPlayers = event.getTo().getWorld().getPlayers();
-		for (Player player : worldPlayers) {
-			if (!player.getLocation().equals(event.getTo())) {
-				continue;
-			}
-			if (player.getGameMode() == GameMode.SPECTATOR) {
-				if (player.getSpectatorTarget() != null
-						&& player.getSpectatorTarget() instanceof Player) {
-					player = (Player) player.getSpectatorTarget();
+		double closestDistance = Double.MAX_VALUE;
+		Player closestPlayer = null;
+		for (Player player : event.getTo().getWorld().getPlayers()) {
+			double distance = player.getLocation().distanceSquared(event.getTo());
+			if (distance < closestDistance) {
+				closestDistance = distance;
+				if (player.getGameMode() == GameMode.SPECTATOR) {
+					if (player.getSpectatorTarget() != null
+							&& player.getSpectatorTarget() instanceof Player) {
+						closestPlayer = (Player) player.getSpectatorTarget();
+					} else {
+						continue;
+					}
 				} else {
-					continue;
+					closestPlayer = player;
 				}
 			}
+			if (distance == 0) {
+				break;
+			}
+		}
 
-			checkSpectate(event, player);
+		if (closestPlayer == null) {
+			if (!event.getPlayer().hasPermission("easterlyn.spectators.unrestricted")) {
+				// Target is in spectate, no spectating.
+				event.setCancelled(true);
+			}
 			return;
 		}
 
-		TreeMap<Double, Player> distanceToPlayers = worldPlayers.stream().collect(Collectors.toMap(player -> player.getLocation().distanceSquared(event.getTo()), player -> player, (o, o2) -> o, TreeMap::new));
-		Map.Entry<Double, Player> closestPlayer = distanceToPlayers.firstEntry();
-		if (closestPlayer != null) {
-			checkSpectate(event, closestPlayer.getValue());
-		}
-	}
-
-	private void checkSpectate(PlayerTeleportEvent event, Player teleportTarget) {
-		if (users.getUser(teleportTarget.getUniqueId()).getSpectatable()) {
+		if (users.getUser(closestPlayer.getUniqueId()).getSpectatable()) {
+			// Force location to player's actual location in case we ignored a spectator.
+			event.setTo(closestPlayer.getLocation());
 			return;
 		}
 
 		if (event.getPlayer().hasPermission("easterlyn.spectators.unrestricted")) {
 			event.getPlayer().sendMessage(lang.getValue("spectators.ignoreDisallowed")
-					.replace("{PLAYER}", teleportTarget.getDisplayName()));
+					.replace("{PLAYER}", closestPlayer.getDisplayName()));
 			return;
 		}
 
 		event.setCancelled(true);
 		event.getPlayer().sendMessage(lang.getValue("spectators.disallowed")
-				.replace("{PLAYER}", teleportTarget.getDisplayName()));
+				.replace("{PLAYER}", closestPlayer.getDisplayName()));
 	}
 
 	/**
