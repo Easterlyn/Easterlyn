@@ -38,7 +38,9 @@ public class BlockDrops {
 
 	private static Collection<ItemStack> getDrops(@Nullable ItemStack tool, @NotNull Block block, int fortuneBonus) {
 		if (tool == null) {
-			return block.getDrops();
+			Collection<ItemStack> drops = block.getDrops();
+			drops.removeIf(itemStack -> itemStack.getType().isAir());
+			return drops;
 		}
 
 		// Block#getDrops does not properly support silk touch for coral
@@ -60,7 +62,9 @@ public class BlockDrops {
 			tool.addUnsafeEnchantment(Enchantment.LOOT_BONUS_BLOCKS, tool.getEnchantmentLevel(Enchantment.LOOT_BONUS_BLOCKS) + fortuneBonus);
 		}
 
-		return block.getDrops(tool);
+		Collection<ItemStack> drops = block.getDrops(tool);
+		drops.removeIf(itemStack -> itemStack.getType().isAir());
+		return drops;
 	}
 
 	public static int getExp(ItemStack tool, Block block) {

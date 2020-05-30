@@ -8,6 +8,7 @@ import com.easterlyn.events.Events;
 import com.easterlyn.events.event.EasterlynBreakEvent;
 import com.easterlyn.utilities.BlockDrops;
 import com.easterlyn.utilities.Experience;
+import com.easterlyn.utilities.InventoryUtils;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ThreadLocalRandom;
@@ -86,7 +87,7 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 				}
 			}
 		}
-		player.updateInventory();
+		InventoryUtils.updateWindowSlot(player, player.getInventory().getHeldItemSlot());
 		player.removeAttachment(attachment);
 	}
 
@@ -112,8 +113,10 @@ public class EffectTunnelBore extends Effect implements BehaviorActive {
 		int exp = BlockDrops.getExp(hand, block);
 		block.setType(Material.AIR, false);
 		budManager.queueBlock(block);
-		for (ItemStack is : drops) {
-			player.getWorld().dropItem(player.getLocation(), is).setPickupDelay(0);
+		for (ItemStack itemStack : drops) {
+			if (!itemStack.getType().isAir()) {
+				player.getWorld().dropItem(player.getLocation(), itemStack).setPickupDelay(0);
+			}
 		}
 		if (exp > 0) {
 			Experience.changeExp(player, exp);
