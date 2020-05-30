@@ -43,7 +43,8 @@ public class TeleportListener extends EasterlynListener {
 	 */
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if (event.getCause() != TeleportCause.SPECTATE || event.getTo() == null || event.getTo().getWorld() == null) {
+		if (event.getCause() != TeleportCause.SPECTATE || event.getTo() == null || event.getTo().getWorld() == null
+				|| !spectators.isSpectator(event.getPlayer().getUniqueId())) {
 			return;
 		}
 
