@@ -24,6 +24,7 @@ public class CoreCompletions {
 			}
 			return completions;
 		});
+		plugin.getCommandManager().getCommandCompletions().setDefaultCompletion("integer", int.class, Integer.class, long.class, Long.class);
 
 		plugin.getCommandManager().getCommandCompletions().registerAsyncCompletion("decimal", context -> {
 			String input = context.getInput();
@@ -42,6 +43,7 @@ public class CoreCompletions {
 			}
 			return completions;
 		});
+		plugin.getCommandManager().getCommandCompletions().setDefaultCompletion("decimal", double.class, Double.class, float.class, Float.class);
 
 		plugin.getCommandManager().getCommandCompletions().registerAsyncCompletion("permission", context -> {
 			if (context.hasConfig("value") && !context.getIssuer().hasPermission(context.getConfig("value"))) {

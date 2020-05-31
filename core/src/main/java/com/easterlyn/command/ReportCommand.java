@@ -2,13 +2,13 @@ package com.easterlyn.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
-import co.aikar.commands.MessageKeys;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Private;
+import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.ReportableEvent;
 import org.bukkit.Location;
@@ -32,8 +32,9 @@ public class ReportCommand extends BaseCommand {
 		}
 		message += '\n' + args;
 
-		if (ReportableEvent.getHandlerList().getRegisteredListeners().length == 0) {
-			issuer.sendError(MessageKeys.ERROR_PREFIX, "{message}", "No report handlers are enabled! Please use an alternate contact method.");
+		if (ReportableEvent.getHandlerList().getRegisteredListeners().length <= 1) {
+			// Default report logging listener doesn't count
+			issuer.sendInfo(MessageKey.of("report.no_handlers"));
 		}
 
 		easterlynCore.getServer().getPluginManager().callEvent(new ReportableEvent(message));

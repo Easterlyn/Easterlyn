@@ -1,0 +1,37 @@
+core:
+  no_console: 'Not available to console!'
+  only_console: '{color:bad.a}Only allowed on console.'
+  no_permission: '{color:bad.a}By order of the Jarl, stop right there!'
+  error_logged: '{color:bad.a}An error occurred! A report has been generated.'
+  values: '{color:bad.a}Possible values: {value}'
+  number: '{color:bad.a}Please enter a number.'
+  number_within: '{color:bad.a}Please enter a number between {min} and {max}.'
+  whole_number: '{color:bad.a}Please enter a whole number.'
+  whole_number_within: '{color:bad.a}Please enter a whole number between {min} and {max}.'
+  invalid_player: '{color:bad.a}Invalid player: {color:bad.b}{value}'
+  success: '{color:normal.a}Congratulations, you''re our 1000th visitor!'
+report:
+  no_handlers: '{color:bad.a}No report handlers are enabled! Please use an alternate contact method.'
+commands:
+  reload:
+    description: '{color:normal.a}Reload core configuration.'
+  commandinfo:
+    description: '{color:normal.a}Get details about a command.'
+    error:
+      null_map: '{color:bad.a}SimpleCommandMap is null! Please check console.'
+    info:
+      primary: '{color:normal.a}Primary: {color:normal.b}/{value}'
+      aliases: '{color:normal.a}Aliases: {color:normal.b}{value}'
+      description: '{color:normal.a}Description: {color:normal.b}{value}'
+      usage: '{color:normal.a}Usage: {color:normal.b}{value}'
+      permission: '{color:normal.a}Permission: {color:normal.b}{value}'
+      plugin_known: '{color:normal.a}Owning plugin: {color:normal.b}{value}'
+      plugin_unknown: -|
+        {color:normal.a}Class: {color:normal.b}{value}
+        {color:normal.a}Command is likely vanilla.
+  ping:
+    description: '{color:normal.a}Check connection to the server!'
+    error:
+      small_sample: '{color:bad.a}Ping is wildly inaccurate just after login!'
+      implementation: '{color:bad.a}Unknown player implementation!'
+    message: '{color:normal.b}{player}{color:normal.a}''s ping is {color:normal.b}{value}{color:normal.a}ms!'

@@ -9,7 +9,6 @@ import co.aikar.locales.MessageKeyProvider;
 import com.easterlyn.EasterlynCore;
 import java.lang.reflect.Field;
 import java.util.Arrays;
-import java.util.Objects;
 import org.bukkit.command.CommandSender;
 import org.bukkit.event.HandlerList;
 import org.bukkit.scheduler.BukkitTask;
@@ -21,6 +20,8 @@ public class EasterlynCommandManager extends PaperCommandManager {
 	public EasterlynCommandManager(EasterlynCore plugin) {
 		super(plugin);
 		this.plugin = plugin;
+
+		// TODO need to replace BukkitLocales with own Locales implementation
 
 		// Unregister unnecessary locale stuff
 		try {
@@ -35,7 +36,6 @@ public class EasterlynCommandManager extends PaperCommandManager {
 		}
 
 		HandlerList.getHandlerLists().stream().flatMap(handlerList -> Arrays.stream(handlerList.getRegisteredListeners()))
-				.filter(Objects::nonNull)
 				.filter(registeredListener -> registeredListener.getListener().getClass().getSimpleName().equals("ACFBukkitListener"))
 				.findAny().ifPresent(registeredListener -> HandlerList.unregisterAll(registeredListener.getListener()));
 	}

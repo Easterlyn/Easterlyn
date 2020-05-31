@@ -31,7 +31,7 @@ public class LocaleManager {
 	private final Plugin plugin;
 	private final Set<Plugin> resourceLoaders;
 	private final String defaultLocale;
-	private Map<String, YamlConfiguration> locales;
+	private final Map<String, YamlConfiguration> locales;
 
 	public LocaleManager(@NotNull Plugin plugin, @NotNull String defaultLocale) {
 		this.plugin = plugin;
@@ -110,6 +110,17 @@ public class LocaleManager {
 				if (!localeConfig.isConfigurationSection(key)) {
 					aggregated.set(key, localeConfig.get(key));
 				}
+			}
+		}
+
+		// Colorize messages after saving - don't write color codes to config
+		for (String key : aggregated.getKeys(true)) {
+			if (!aggregated.isString(key)) {
+				continue;
+			}
+			String value = aggregated.getString(key);
+			if (value != null) {
+				aggregated.set(key, Colors.addColor(value));
 			}
 		}
 

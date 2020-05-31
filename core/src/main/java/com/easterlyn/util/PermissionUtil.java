@@ -1,6 +1,7 @@
 package com.easterlyn.util;
 
 import com.easterlyn.event.ReportableEvent;
+import com.easterlyn.user.UserRank;
 import java.util.UUID;
 import net.luckperms.api.LuckPerms;
 import net.luckperms.api.cacheddata.CachedDataManager;
@@ -32,6 +33,10 @@ public class PermissionUtil {
 		permission.setDefault(permissionDefault);
 		permission.recalculatePermissibles();
 		return permission;
+	}
+
+	public static void addParent(@NotNull String permissionName, @NotNull UserRank rank) {
+		addParent(permissionName, rank.getPermission());
 	}
 
 	public static void addParent(@NotNull String permissionName, @NotNull String parentName) {

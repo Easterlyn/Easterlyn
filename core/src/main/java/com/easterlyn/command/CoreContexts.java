@@ -4,7 +4,6 @@ import co.aikar.commands.BukkitCommandExecutionContext;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.CommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.ContextResolver;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import com.easterlyn.EasterlynCore;
@@ -36,7 +35,7 @@ public class CoreContexts {
 				try {
 					return Integer.valueOf(matcher.group(1));
 				} catch (NumberFormatException e) {
-					throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER);
+					throw new InvalidCommandArgument(CoreLang.WHOLE_NUMBER);
 				}
 			}
 
@@ -45,7 +44,7 @@ public class CoreContexts {
 				return NumberUtil.intFromRoman(firstArg);
 			}
 
-			throw new InvalidCommandArgument(MessageKeys.MUST_BE_A_NUMBER);
+			throw new InvalidCommandArgument(CoreLang.WHOLE_NUMBER);
 		};
 
 		plugin.getCommandManager().getCommandContexts().registerContext(int.class, integerResolver);
@@ -62,7 +61,8 @@ public class CoreContexts {
 			public Player getContext(BukkitCommandExecutionContext context) throws InvalidCommandArgument {
 				//noinspection unchecked // Type erasure is caused by command context providing raw RegisteredCommand
 				if (context.hasFlag(SELF) || context.hasFlag(ONLINE_WITH_PERM) && context.getIssuer().isPlayer()
-						&& context.getCmd().getRequiredPermissions().stream().anyMatch(perm -> context.getIssuer().hasPermission(perm + ".other"))) {
+						&& context.getCmd().getRequiredPermissions().stream().noneMatch(perm -> context.getIssuer().hasPermission(perm + ".other"))) {
+					// TODO: new formula = cmd.node.self, cmd.node.other
 					return getSelf(context.getIssuer());
 				}
 
@@ -88,14 +88,14 @@ public class CoreContexts {
 				if (issuer.isPlayer()) {
 					return issuer.getPlayer();
 				}
-				throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
+				throw new InvalidCommandArgument(CoreLang.NO_CONSOLE);
 			}
 
 			@NotNull
 			Player getOnline(@NotNull BukkitCommandIssuer issuer, @NotNull String argument) throws InvalidCommandArgument {
 				Player player = PlayerUtil.matchOnlinePlayer(issuer.getIssuer(), argument);
 				if (player == null) {
-					throw new InvalidCommandArgument("Invalid player " + argument + "!");
+					throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", argument);
 				}
 				return player;
 			}
@@ -112,7 +112,7 @@ public class CoreContexts {
 					player = PlayerUtil.matchOnlinePlayer(issuer.getIssuer(), argument);
 				}
 				if (player == null) {
-					throw new InvalidCommandArgument("Invalid player " + argument + "!");
+					throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", argument);
 				}
 				return player;
 			}
@@ -120,7 +120,7 @@ public class CoreContexts {
 
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(ConsoleCommandSender.class, context -> {
 			if (!(context.getIssuer().getIssuer() instanceof ConsoleCommandSender)) {
-				throw new InvalidCommandArgument("Only allowed on console.");
+				throw new InvalidCommandArgument(CoreLang.ONLY_CONSOLE);
 			}
 			return (ConsoleCommandSender) context.getIssuer().getIssuer();
 		});

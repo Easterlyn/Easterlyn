@@ -13,9 +13,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class Colors {
 
-	private static Pattern COLOR_PATTERN = Pattern.compile("\\{color:([\\w.])+}");
+	private static final Pattern COLOR_PATTERN = Pattern.compile("\\{color:([\\w\\.])+}");
 
-	private static Map<String, ChatColor> mappings = new HashMap<>();
+	private static final Map<String, ChatColor> mappings = new HashMap<>();
 	public static ChatColor WEB_LINK = ChatColor.BLUE;
 	public static ChatColor COMMAND = ChatColor.AQUA;
 	public static ChatColor HIGHLIGHT = ChatColor.AQUA;

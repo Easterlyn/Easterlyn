@@ -13,3 +13,13 @@ colors:
   channel_owner: RED
   channel_moderator: AQUA
   channel_member: GOLD
+  normal:
+    a: YELLOW
+    b: DARK_AQUA
+    c: GREEN
+  bad:
+    a: RED
+    b: GOLD
+    c: DARK_AQUA
+  on: GREEN
+  off: RED
