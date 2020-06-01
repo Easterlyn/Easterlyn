@@ -166,7 +166,7 @@ public class LocaleManager {
 	}
 
 	public void sendMessage(CommandSender sender, ChatMessageType type, String key, Collection<QuoteConsumer> additionalHandlers, String... replacements) {
-		String message = getValue(key, sender instanceof Player ? ((Player) sender).getLocale() : defaultLocale, replacements);
+		String message = getValue(key, getLocale(sender), replacements);
 		if (message == null || message.isEmpty()) {
 			return;
 		}
@@ -245,6 +245,14 @@ public class LocaleManager {
 		}
 
 		return value;
+	}
+
+	public String getLocale(@NotNull CommandSender sender) {
+		return sender instanceof Player ? ((Player) sender).getLocale() : defaultLocale;
+	}
+
+	public String getDefaultLocale() {
+		return defaultLocale;
 	}
 
 }

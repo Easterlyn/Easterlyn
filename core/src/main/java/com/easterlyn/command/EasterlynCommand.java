@@ -48,7 +48,7 @@ public class EasterlynCommand extends BaseCommand {
 	}
 
 	@Subcommand("reload")
-	@Description("{commands.reload.description}")
+	@Description("{@@commands.reload.description}")
 	@CommandPermission("easterlyn.command.reload")
 	public void reload() {
 		plugin.reloadConfig();
@@ -58,7 +58,7 @@ public class EasterlynCommand extends BaseCommand {
 
 	@Subcommand("cmdinfo")
 	@CommandAlias("commandinfo")
-	@Description("{commands.commandinfo.description}")
+	@Description("{@@commands.commandinfo.description}")
 	@Syntax("<commandName>")
 	@CommandPermission("easterlyn.command.commandinfo")
 	@CommandCompletion("@commands")
@@ -94,7 +94,7 @@ public class EasterlynCommand extends BaseCommand {
 	}
 
 	@CommandAlias("ping")
-	@Description("{commands.ping.description}")
+	@Description("{@@commands.ping.description}")
 	@CommandPermission("easterlyn.command.ping.self")
 	@CommandCompletion("@playerOnlineIfPerm")
 	public void ping(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM + "," + CoreContexts.ONLINE) Player player) {

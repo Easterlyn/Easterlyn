@@ -1,18 +1,14 @@
 package com.easterlyn;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.RegisteredCommand;
 import com.easterlyn.acf.EasterlynCommandManager;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreCompletions;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.listener.UniqueListener;
 import com.easterlyn.user.UserManager;
-import com.easterlyn.user.UserRank;
 import com.easterlyn.util.BlockUpdateManager;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.LocaleManager;
-import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.google.common.collect.HashMultimap;
@@ -39,15 +35,14 @@ public class EasterlynCore extends JavaPlugin {
 
 	/*
 	 * TODO
-	 *  - Convert to using LanguageManager
 	 *  - Generic useful command conditions
 	 */
-	private LocaleManager localeManager = new LocaleManager(this, "en_us"); // TODO maybe allow configuring, probably not though
-	private UserManager userManager = new UserManager(this);
+	private final LocaleManager localeManager = new LocaleManager(this, "en_us");
+	private final UserManager userManager = new UserManager(this);
+	private final BlockUpdateManager blockUpdateManager = new BlockUpdateManager(this);
+	private final Multimap<Class<? extends Plugin>, BaseCommand> pluginCommands = HashMultimap.create();
 	private EasterlynCommandManager commandManager;
 	private SimpleCommandMap simpleCommandMap;
-	private BlockUpdateManager blockUpdateManager = new BlockUpdateManager(this);
-	private Multimap<Class<? extends Plugin>, BaseCommand> pluginCommands = HashMultimap.create();
 
 	@Override
 	public void onEnable() {
@@ -97,27 +92,10 @@ public class EasterlynCore extends JavaPlugin {
 						return;
 					}
 					commandManager.registerCommand(command, true);
-					CommandRank commandRank = clazz.getAnnotation(CommandRank.class);
-					UserRank defaultRank = commandRank != null ? commandRank.value() : UserRank.MEMBER;
-					command.getRegisteredCommands().forEach(registeredCommand -> addPermissions(defaultRank, registeredCommand));
 					if (!this.equals(plugin)) {
 						pluginCommands.put(plugin.getClass(), command);
 					}
 				});
-	}
-
-	private void addPermissions(UserRank defaultRank, RegisteredCommand<?> registeredCommand) {
-		CommandRank commandRank = registeredCommand.getAnnotation(CommandRank.class);
-		UserRank rank = commandRank != null ? commandRank.value() : defaultRank;
-		registeredCommand.getRequiredPermissions().forEach(permission -> {
-			if (permission == null || permission.isEmpty()) {
-				return;
-			}
-			PermissionUtil.addParent(permission, rank.getPermission());
-			if (rank != UserRank.DANGER_DANGER_HIGH_VOLTAGE) {
-				PermissionUtil.addParent(permission, "easterlyn.command.*");
-			}
-		});
 	}
 
 	@Override

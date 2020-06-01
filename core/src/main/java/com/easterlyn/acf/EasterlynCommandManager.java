@@ -21,8 +21,6 @@ public class EasterlynCommandManager extends PaperCommandManager {
 		super(plugin);
 		this.plugin = plugin;
 
-		// TODO need to replace BukkitLocales with own Locales implementation
-
 		// Unregister unnecessary locale stuff
 		try {
 			Field bukkitLocale = BukkitCommandManager.class.getDeclaredField("localeTask");
@@ -38,6 +36,8 @@ public class EasterlynCommandManager extends PaperCommandManager {
 		HandlerList.getHandlerLists().stream().flatMap(handlerList -> Arrays.stream(handlerList.getRegisteredListeners()))
 				.filter(registeredListener -> registeredListener.getListener().getClass().getSimpleName().equals("ACFBukkitListener"))
 				.findAny().ifPresent(registeredListener -> HandlerList.unregisterAll(registeredListener.getListener()));
+
+		this.locales = new EasterlynLocales(plugin);
 	}
 
 	@Override
