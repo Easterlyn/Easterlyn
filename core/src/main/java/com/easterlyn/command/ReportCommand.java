@@ -37,7 +37,7 @@ public class ReportCommand extends BaseCommand {
 			issuer.sendInfo(MessageKey.of("report.no_handlers"));
 		}
 
-		easterlynCore.getServer().getPluginManager().callEvent(new ReportableEvent(message));
+		ReportableEvent.call(message);
 	}
 
 }

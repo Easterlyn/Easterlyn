@@ -113,9 +113,9 @@ public class EasterlynMachines extends JavaPlugin {
 				// fire a reportable event and repair.
 				if (exploded.get(event.getBlock()) == null) {
 					pair.getLeft().reassemble(pair.getRight());
-					getServer().getPluginManager().callEvent(new ReportableEvent(String.format(
-							"Repairing broken %s at %s %s %s after internal placement by %s", pair.getLeft().getName(),
-							event.getBlock().getX(), event.getBlock().getY(), event.getBlock().getZ(), event.getPlayer().getName())));
+					ReportableEvent.call(String.format("Repairing broken %s at %s %s %s after internal placement by %s",
+							pair.getLeft().getName(), event.getBlock().getX(), event.getBlock().getY(),
+							event.getBlock().getZ(), event.getPlayer().getName()));
 				}
 				return;
 			}
@@ -287,7 +287,7 @@ public class EasterlynMachines extends JavaPlugin {
 			}
 			String[] split = xyz.split("_");
 			try {
-				Block key = chunk.getWorld().getBlockAt(Integer.valueOf(split[0]), Integer.valueOf(split[1]), Integer.valueOf(split[2]));
+				Block key = chunk.getWorld().getBlockAt(Integer.parseInt(split[0]), Integer.parseInt(split[1]), Integer.parseInt(split[2]));
 				Pair<Machine, ConfigurationSection> machine = loadMachine(key, machineSection);
 				machine.getLeft().enable(machine.getRight());
 			} catch (NumberFormatException e) {
@@ -522,7 +522,7 @@ public class EasterlynMachines extends JavaPlugin {
 			try {
 				consumer.apply(machine.getLeft()).accept(event, machine.getRight());
 			} catch (Exception exception) {
-				getServer().getPluginManager().callEvent(new ReportableEvent("Caught exception handling Machine event", exception, 5));
+				ReportableEvent.call("Caught exception handling Machine event", exception, 5);
 			}
 		}, this, EventPriority.LOW, true));
 	}
@@ -553,7 +553,7 @@ public class EasterlynMachines extends JavaPlugin {
 			try {
 				consumer.apply(machine).accept(event, section);
 			} catch (Exception exception) {
-				getServer().getPluginManager().callEvent(new ReportableEvent("Caught exception handling Machine event", exception, 5));
+				ReportableEvent.call("Caught exception handling Machine event", exception, 5);
 			}
 		}, this, EventPriority.LOW, true));
 	}

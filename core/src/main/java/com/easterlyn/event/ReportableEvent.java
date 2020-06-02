@@ -1,6 +1,7 @@
 package com.easterlyn.event;
 
 import com.easterlyn.util.StringUtil;
+import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
@@ -17,17 +18,9 @@ public class ReportableEvent extends Event {
 	private final String message;
 	private final String trace;
 
-	public ReportableEvent(String message) {
-		this(message, 0);
-	}
-
-	public ReportableEvent(String message, int traceDepth) {
-		this(message, traceDepth > 0 ? new Throwable().fillInStackTrace() : null, traceDepth);
-	}
-
-	public ReportableEvent(String message, Throwable throwable, int traceDepth) {
+	private ReportableEvent(String message, String trace) {
 		this.message = message;
-		this.trace = traceDepth > 0 && throwable != null ? StringUtil.getTrace(throwable, traceDepth) : null;
+		this.trace = trace;
 	}
 
 	public String getMessage() {
@@ -51,6 +44,19 @@ public class ReportableEvent extends Event {
 	@NotNull
 	public static HandlerList getHandlerList() {
 		return HANDLER_LIST;
+	}
+
+	public static void call(String message) {
+		call(message, 0);
+	}
+
+	public static void call(String message, int traceDepth) {
+		call(message, traceDepth > 0 ? new Throwable().fillInStackTrace() : null, traceDepth);
+	}
+
+	public static void call(String message, Throwable throwable, int traceDepth) {
+		Bukkit.getPluginManager().callEvent(new ReportableEvent(message,
+				traceDepth > 0 && throwable != null ? StringUtil.getTrace(throwable, traceDepth) : null));
 	}
 
 }

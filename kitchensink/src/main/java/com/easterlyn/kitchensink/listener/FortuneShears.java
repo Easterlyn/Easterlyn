@@ -3,7 +3,6 @@ package com.easterlyn.kitchensink.listener;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.GenericUtil;
 import java.util.concurrent.ThreadLocalRandom;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
@@ -51,7 +50,7 @@ public class FortuneShears implements Listener {
 				return new ItemStack(material);
 			}
 
-			Bukkit.getPluginManager().callEvent(new ReportableEvent("Unable to match wool for DyeColor: " + color.name()));
+			ReportableEvent.call("Unable to match wool for DyeColor: " + color.name());
 			return new ItemStack(Material.WHITE_WOOL);
 		}
 
@@ -62,10 +61,12 @@ public class FortuneShears implements Listener {
 				case BROWN:
 					return new ItemStack(Material.BROWN_MUSHROOM);
 				default:
-					Bukkit.getPluginManager().callEvent(new ReportableEvent("Unhandled MushroomCow variant: " + ((MushroomCow) entity).getVariant().name()));
+					ReportableEvent.call("Unhandled MushroomCow variant: " + ((MushroomCow) entity).getVariant().name());
 					break;
 			}
 		}
+
+		ReportableEvent.call("Unhandled shearable entity: " + entity.getType().name());
 		return null;
 	}
 

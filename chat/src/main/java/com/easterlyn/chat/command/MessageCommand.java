@@ -20,7 +20,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import org.bukkit.Bukkit;
 
 public class MessageCommand extends BaseCommand {
 
@@ -51,7 +50,7 @@ public class MessageCommand extends BaseCommand {
 		Channel channel = chat.getChannels().get("pm");
 
 		if (channel == null) {
-			Bukkit.getServer().getPluginManager().callEvent(new ReportableEvent("Channel #pm not set up when executing /message!"));
+			ReportableEvent.call("Channel #pm not set up when executing /message!");
 			sender.sendMessage("Could not retrieve PM channel!");
 			return;
 		}

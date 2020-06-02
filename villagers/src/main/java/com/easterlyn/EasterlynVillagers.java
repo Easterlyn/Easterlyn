@@ -135,8 +135,7 @@ public class EasterlynVillagers extends JavaPlugin {
 			adjusted = this.adjustRecipe(input1, input2, recipe.getResult(),
 					recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward(), recipe.getVillagerExperience());
 		} catch (Exception e) {
-			getServer().getPluginManager().callEvent(new ReportableEvent(
-					String.format("Error adjusting trade: %s + %s -> %s", input1, input2, recipe.getResult()), e, 5));
+			ReportableEvent.call(String.format("Error adjusting trade: %s + %s -> %s", input1, input2, recipe.getResult()), e, 5);
 			e.printStackTrace();
 			return null;
 		}
@@ -145,8 +144,7 @@ public class EasterlynVillagers extends JavaPlugin {
 				&& CurrencyType.isCurrency(recipe.getResult())) && recipe.getResult().getType() != Material.EXPERIENCE_BOTTLE) {
 			// DEBUG: post report on un-adjustable trades
 
-			getServer().getPluginManager().callEvent(new ReportableEvent(
-					String.format("Unable to adjust trade: %s + %s -> %s", input1, input2, recipe.getResult())));
+			ReportableEvent.call(String.format("Unable to adjust trade: %s + %s -> %s", input1, input2, recipe.getResult()));
 		}
 
 		return adjusted;

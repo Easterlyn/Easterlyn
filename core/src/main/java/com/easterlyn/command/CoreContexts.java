@@ -66,7 +66,7 @@ public class CoreContexts {
 					return getSelf(context.getIssuer());
 				}
 
-				if (context.hasFlag(ONLINE)) {
+				if (context.hasFlag(ONLINE) || context.hasFlag(ONLINE_WITH_PERM)) {
 					return getOnline(context.getIssuer(), context.popFirstArg());
 				}
 
@@ -107,8 +107,7 @@ public class CoreContexts {
 				try {
 					player = PlayerUtil.matchPlayer(issuer.getIssuer(), argument, true, plugin);
 				} catch (IllegalAccessException e) {
-					plugin.getServer().getPluginManager().callEvent(new ReportableEvent(
-							"Called PlayerUtil#matchPlayer on the main thread while executing!", e, 5));
+					ReportableEvent.call("Called PlayerUtil#matchPlayer on the main thread while executing!", e, 5);
 					player = PlayerUtil.matchOnlinePlayer(issuer.getIssuer(), argument);
 				}
 				if (player == null) {

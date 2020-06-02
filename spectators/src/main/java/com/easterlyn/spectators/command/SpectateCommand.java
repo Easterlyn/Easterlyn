@@ -14,7 +14,6 @@ import com.easterlyn.command.CoreContexts;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.User;
 import com.easterlyn.util.Request;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -49,7 +48,7 @@ public class SpectateCommand extends BaseCommand {
 		if (player.getGameMode() != GameMode.SPECTATOR) {
 			user.sendMessage("Excuse me, are you trying to exit spectator mode from not spectator mode?" +
 					"\nThat's ILLEGAL. I'm calling the cops. Generating a report for you!");
-			Bukkit.getServer().getPluginManager().callEvent(new ReportableEvent(user.getDisplayName() + " attempted to exit spectator mode while in " + player.getGameMode().name()));
+			ReportableEvent.call(user.getDisplayName() + " attempted to exit spectator mode while in " + player.getGameMode().name());
 		}
 
 		user.getStorage().set(EasterlynSpectators.USER_SPECTATE_RETURN, null);

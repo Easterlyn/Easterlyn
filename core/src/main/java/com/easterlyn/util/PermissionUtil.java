@@ -83,7 +83,7 @@ public class PermissionUtil {
 
 	public static User loadPermissionData(UUID uuid) {
 		if (Bukkit.isPrimaryThread()) {
-			Bukkit.getPluginManager().callEvent(new ReportableEvent("Loading permission data on main thread", new Throwable(), 5));
+			ReportableEvent.call("Loading permission data on main thread", new Throwable(), 5);
 		}
 
 		RegisteredServiceProvider<LuckPerms> registration = Bukkit.getServicesManager().getRegistration(LuckPerms.class);

@@ -19,7 +19,6 @@ import java.util.Map;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.Bukkit;
 
 public class AetherCommand {
 
@@ -38,7 +37,7 @@ public class AetherCommand {
 		userData.put("color", issuer.isPlayer() ? core.getUserManager().getUser(issuer.getUniqueId()).getColor().name() : Colors.RANK_HEAD_ADMIN.name());
 		Channel channel = chat.getChannels().get("aether");
 		if (channel == null) {
-			Bukkit.getServer().getPluginManager().callEvent(new ReportableEvent("Channel #aether not set up when executing /aether!"));
+			ReportableEvent.call("Channel #aether not set up when executing /aether!");
 			return;
 		}
 		new UserChatEvent(new AetherUser(userData), channel, text).send(EasterlynChat.DEFAULT.getMembers());
