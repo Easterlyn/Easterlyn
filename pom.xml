@@ -10,6 +10,7 @@
     <version>2.0</version>
 
     <properties>
+        <bukkit-api-version>1.15</bukkit-api-version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.testSourceDirectory>${project.basedir}/test/java</project.build.testSourceDirectory>
         <project.build.testResourceDirectory>${project.basedir}/test/resources</project.build.testResourceDirectory>

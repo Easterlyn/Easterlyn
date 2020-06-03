@@ -4,6 +4,6 @@ main: com.easterlyn.${project.name}
 version: ${project.version}-${timestamp}
 author: Jikoo
 description: ${project.description}
-api-version: "1.14"
+api-version: ${bukkit-api-version}
 depend: [EasterlynCore, EasterlynCaptchas]
 softdepend: [CreeperHeal]
