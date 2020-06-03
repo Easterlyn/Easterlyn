@@ -14,18 +14,11 @@ import org.jetbrains.annotations.Nullable;
 public class ParsedText {
 
 	private Boolean bold, italic, underline, strike, magic;
-	private ChatColor defaultColor;
 	private ChatColor color;
 	private final List<TextComponent> components;
 
 	public ParsedText() {
-		this(ChatColor.WHITE);
-	}
-
-	public ParsedText(ChatColor defaultColor) {
 		this.components = new LinkedList<>();
-		this.defaultColor = defaultColor;
-		this.color = defaultColor;
 	}
 
 	public Collection<TextComponent> getComponents() {
@@ -91,15 +84,13 @@ public class ParsedText {
 					case MAGIC:
 						magic = true;
 						break;
-					case RESET:
-						format = defaultColor;
 					default:
 						bold = null;
 						italic = null;
 						underline = null;
 						strike = null;
 						magic = null;
-						color = format;
+						color = format == ChatColor.RESET ? null : format;
 				}
 			}
 		}
