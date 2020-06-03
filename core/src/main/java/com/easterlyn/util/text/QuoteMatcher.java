@@ -31,7 +31,7 @@ public class QuoteMatcher implements BlockQuoteMatcher {
 		}
 
 		String quote = message.substring(start + 1, endIndex).replace("\\\"", "\"");
-		int length = endIndex + 1 - start;
+		int length = endIndex + 2 - start;
 
 		return new BlockQuote() {
 			@Override

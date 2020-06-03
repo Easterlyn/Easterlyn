@@ -97,22 +97,23 @@ public class BacktickMatcher implements BlockQuoteMatcher {
 	 * @param text the String to convert
 	 * @return the new String created
 	 */
-	@SuppressWarnings("NonAsciiCharacters") // ＨＩＧＨＬＹ　ＤＥＳＣＲＩＰＴＩＶＥ　ＭＥＴＨＯＤ　ＮＡＭＥ
+	@SuppressWarnings("NonAsciiCharacters") // ＨＩＧＨＬＹ  ＤＥＳＣＲＩＰＴＩＶＥ  ＭＥＴＨＯＤ  ＮＡＭＥ
 	static @NotNull String ｖａｐｏｒｗａｖｅ(@NotNull String text) {
-		char[] newText = new char[text.length()];
+		StringBuilder newText = new StringBuilder(text.length());
 
 		for (int i = 0; i < text.length(); ++i) {
 			char character = text.charAt(i);
 			if (character == ' ') {
-				newText[i] = '\u3000';
+				// Full width space is \u3000, but MC does not support it. 2 spaces.
+				newText.append("  ");
 			} else if (character >= '!' && character <= '~') {
-				newText[i] = (char) (text.charAt(i) - 0x20 + 0xff00);
+				newText.append((char) (text.charAt(i) - 0x20 + 0xff00));
 			} else {
-				newText[i] = text.charAt(i);
+				newText.append(text.charAt(i));
 			}
 		}
 
-		return String.valueOf(newText);
+		return newText.toString();
 	}
 
 }

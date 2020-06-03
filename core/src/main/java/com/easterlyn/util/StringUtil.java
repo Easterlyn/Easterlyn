@@ -154,6 +154,7 @@ public class StringUtil {
 			BlockQuoteMatcher matcher = BLOCK_QUOTES.get(c);
 
 			// Cheeky while to prevent excessive nesting
+			//noinspection ConstantConditions
 			do {
 				if (matcher == null) {
 					break;
@@ -205,6 +206,8 @@ public class StringUtil {
 
 		}
 
+		// Parse remaining text in builder
+		consumeQuote(parsedText, consumers, builder, null);
 
 		// The client will crash if the array is empty
 		if (parsedText.getComponents().isEmpty()) {
@@ -443,7 +446,7 @@ public class StringUtil {
 	}
 
 	@NotNull
-	public static String join(@NotNull Object[] array, String separator, int startIndex, int endIndex) {
+	public static String join(Object @NotNull [] array, String separator, int startIndex, int endIndex) {
 		int totalCount = endIndex - startIndex;
 		if (totalCount <= 0) {
 			return "";

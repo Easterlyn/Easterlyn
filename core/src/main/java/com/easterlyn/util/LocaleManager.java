@@ -224,7 +224,7 @@ public class LocaleManager {
 	}
 
 	@Nullable
-	public String getValue(@NotNull String key, @NotNull String locale, @NotNull String... replacements) {
+	public String getValue(@NotNull String key, @NotNull String locale, String @NotNull ... replacements) {
 		if (replacements.length % 2 != 0) {
 			plugin.getLogger().log(Level.WARNING, "[LocaleManager] Replacement data is uneven", new Exception());
 		}
@@ -236,7 +236,11 @@ public class LocaleManager {
 		}
 
 		for (int i = 0; i < replacements.length; i += 2) {
-			value = value.replace(replacements[i], replacements[i + 1]);
+			String replacement = replacements[i + 1];
+			if (replacement == null) {
+				replacement = "null";
+			}
+			value = value.replace(replacements[i], replacement);
 		}
 
 		return value;
