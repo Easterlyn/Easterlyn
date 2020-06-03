@@ -60,7 +60,6 @@ public class StringUtil {
 
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 	private static final Pattern COMMAND_PATTERN = Pattern.compile("/.{1,}");
-	private static final Pattern BACKTICK_END_PATTERN = Pattern.compile("(?:``)+?(`)(\\s|$)");
 
 	public static final Simplifier TO_LOWER_CASE = s -> s.toLowerCase(Locale.ENGLISH);
 	public static final Simplifier STRIP_URLS = s -> trimExtraWhitespace(URL_PATTERN.matcher(s).replaceAll(" "));
@@ -147,7 +146,7 @@ public class StringUtil {
 		Collection<QuoteConsumer> consumers = Stream.concat(QUOTE_CONSUMERS.stream(), additionalHandlers.stream()).collect(Collectors.toSet());
 
 		int maxIndex = message.length() - 1;
-		for (int i = 0; i < message.length(); ++i) {
+		nextChar: for (int i = 0; i < message.length(); ++i) {
 
 			char c = message.charAt(i);
 
@@ -165,7 +164,7 @@ public class StringUtil {
 					break;
 				}
 
-				i += quote.getQuoteLength();
+				i += quote.getQuoteLength() - 1;
 
 				if (!matcher.allowAdditionalParsing()) {
 					if (quote.getQuoteMarks() != null) {
@@ -173,7 +172,7 @@ public class StringUtil {
 					} else {
 						builder.append(quote.getQuoteText());
 					}
-					break;
+					continue nextChar;
 				}
 
 				if (quote.getQuoteMarks() != null) {
@@ -188,6 +187,7 @@ public class StringUtil {
 					builder.append(quote.getQuoteMarks());
 				}
 
+				continue nextChar;
 			}
 			while (false);
 
@@ -225,6 +225,9 @@ public class StringUtil {
 				return;
 			}
 			parsedText.addText(builder.toString());
+			if (builder.length() > 0) {
+				builder.delete(0, builder.length());
+			}
 			return;
 		}
 
@@ -235,6 +238,7 @@ public class StringUtil {
 			}
 			if (builder.length() > 0) {
 				parsedText.addText(builder.toString());
+				builder.delete(0, builder.length());
 			}
 			consumer.addComponents(parsedText, matcher);
 			return;
