@@ -3,46 +3,52 @@ package com.easterlyn.chat.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
-import co.aikar.commands.annotation.Private;
 import com.easterlyn.EasterlynChat;
-import com.easterlyn.command.CommandRank;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
-import com.easterlyn.user.UserRank;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import org.bukkit.entity.Player;
 
-@CommandAlias("channel")
 public class MuteCommand extends BaseCommand {
 
+	@Dependency
+	EasterlynCore core;
+
 	@CommandAlias("mute")
-	@Private
-	@Description("Mute a player.")
+	@Description("{@@chat.commands.mute.description}")
 	@CommandPermission("easterlyn.command.mute")
-	@CommandRank(UserRank.MODERATOR)
+	@CommandCompletion("@player")
 	public void mute(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) User target) {
 		mute(issuer, target, new Date(Long.MAX_VALUE));
 	}
 
 	@CommandAlias("mute")
-	@Private
+	@Description("{@@chat.commands.mute.description}")
 	@CommandPermission("easterlyn.command.mute")
-	@Description("Mute a player for a time period.")
-	@CommandRank(UserRank.MODERATOR)
+	@CommandCompletion("@player @date")
 	public void mute(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) User target, Date date) {
 		target.getStorage().set(EasterlynChat.USER_MUTE, date.getTime());
-		String message;
-		if (date.getTime() == Long.MAX_VALUE) {
-			message = " been muted.";
-		} else {
-			SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm 'on' dd/MM/YY");
-			message = " been muted until " + dateFormat.format(date) + ".";
+
+		boolean isInfinite = date.getTime() == Long.MAX_VALUE;
+		String dateString = new SimpleDateFormat("HH:mm 'on' dd/MM/yy").format(date);
+
+		core.getLocaleManager().sendMessage(issuer.getIssuer(),
+				isInfinite ? "chat.commands.mute.issuer.indefinite" : "chat.commands.mute.issuer.duration",
+				"{time}", dateString);
+
+		Player player = target.getPlayer();
+		if (player != null) {
+			core.getLocaleManager().sendMessage(player,
+					isInfinite ? "chat.commands.mute.target.indefinite" : "chat.commands.mute.target.duration",
+					"{time}", dateString);
 		}
-		target.sendMessage("You have" + message);
-		issuer.sendMessage(target.getDisplayName() + " has" + message);
 	}
 
 }

@@ -13,7 +13,7 @@ import com.easterlyn.user.User;
 public class MeCommand extends BaseCommand {
 
 	@CommandAlias("me")
-	@Description("Do an action!")
+	@Description("{@@chat.commands.me.description}")
 	@CommandPermission("easterlyn.command.me")
 	public void me(@Flags(CoreContexts.SELF) User sender, @Flags(CoreContexts.ONLINE) Channel channel, String args) {
 		new UserChatEvent(sender, channel, args, true).send();

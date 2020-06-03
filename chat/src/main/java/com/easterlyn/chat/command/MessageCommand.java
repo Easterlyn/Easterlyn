@@ -31,8 +31,8 @@ public class MessageCommand extends BaseCommand {
 	@Dependency
 	EasterlynChat chat;
 
-	@CommandAlias("message|msg|m|whisper|w|pm|tell|t|reply|r")
-	@Description("Send a message!")
+	@CommandAlias("message|msg|m|whisper|w|pm|tell|t")
+	@Description("{@@chat.commands.message.description}")
 	@CommandPermission("easterlyn.command.message")
 	public void sendMessage(BukkitCommandIssuer sender, @Flags(CoreContexts.ONLINE) User target, String message) {
 		User issuer;
@@ -51,7 +51,7 @@ public class MessageCommand extends BaseCommand {
 
 		if (channel == null) {
 			ReportableEvent.call("Channel #pm not set up when executing /message!");
-			sender.sendMessage("Could not retrieve PM channel!");
+			core.getLocaleManager().sendMessage(sender.getIssuer(), "chat.commands.message.error.pm_channel");
 			return;
 		}
 
@@ -67,12 +67,12 @@ public class MessageCommand extends BaseCommand {
 	}
 
 	@CommandAlias("reply|r")
-	@Description("Send a reply!")
+	@Description("{@@chat.commands.reply.description}")
 	@CommandPermission("easterlyn.command.message")
 	public void sendMessage(BukkitCommandIssuer sender, String message) {
 		User target = replies.get(sender.getUniqueId());
 		if (target == null) {
-			sender.sendMessage("You do not have anyone to reply to!");
+			core.getLocaleManager().sendMessage(sender.getIssuer(), "chat.commands.reply.error.no_target");
 			return;
 		}
 

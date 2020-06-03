@@ -1,11 +1,15 @@
 package com.easterlyn.chat.channel;
 
 import com.easterlyn.user.User;
+import com.easterlyn.util.Colors;
 import com.easterlyn.util.command.Group;
 import java.util.Collections;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -16,6 +20,7 @@ public class Channel implements Group {
 	private final String name;
 	private final UUID owner;
 	private final Set<UUID> members;
+	private TextComponent mention;
 
 	public Channel(@NotNull String name, @NotNull UUID owner) {
 		this.name = name;
@@ -40,6 +45,27 @@ public class Channel implements Group {
 	 */
 	public final String getDisplayName() {
 		return "#" + name;
+	}
+
+	/**
+	 * Gets a TextComponent representing the channel in a user-friendly way.
+	 *
+	 * @return a TextComponent used to represent the channel
+	 */
+	@Override
+	public TextComponent getMention() {
+		if (mention != null) {
+			return mention;
+		}
+		TextComponent component = new TextComponent(getDisplayName());
+		component.setColor(Colors.CHANNEL.asBungee());
+		component.setUnderlined(true);
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+				TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + getName())));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + getName()));
+		// Don't set mention until fully set up
+		mention = component;
+		return component;
 	}
 
 	/**

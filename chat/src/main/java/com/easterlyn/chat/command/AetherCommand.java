@@ -4,15 +4,15 @@ import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
+import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Single;
+import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.event.UserChatEvent;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.AutoUser;
-import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,8 +29,9 @@ public class AetherCommand {
 	EasterlynChat chat;
 
 	@CommandAlias("aether")
+	@Description("{@@chat.commands.aether.description}")
 	@CommandPermission("easterlyn.command.aether")
-	@CommandRank(UserRank.ADMIN)
+	@Syntax("<name> <message content>")
 	public void aether(BukkitCommandIssuer issuer, @Single String name, String text) {
 		Map<String, String> userData = new HashMap<>();
 		userData.put("name", name);
@@ -40,6 +41,7 @@ public class AetherCommand {
 			ReportableEvent.call("Channel #aether not set up when executing /aether!");
 			return;
 		}
+		// TODO async
 		new UserChatEvent(new AetherUser(userData), channel, text).send(EasterlynChat.DEFAULT.getMembers());
 	}
 
@@ -52,7 +54,7 @@ public class AetherCommand {
 		public TextComponent getMention() {
 			TextComponent component = new TextComponent("@" + getDisplayName());
 			component.setColor(getColor().asBungee());
-			component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://easterlyn.com/discord.html"));
+			component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
 
 			TextComponent line = new TextComponent("#main");
 			line.setColor(Colors.CHANNEL.asBungee());

@@ -8,11 +8,12 @@ import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Optional;
+import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
-import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynChat;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.command.CoreContexts;
@@ -22,25 +23,27 @@ import com.easterlyn.util.command.AddRemove;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 @CommandAlias("channel")
+@Description("{@@chat.commands.channel.description}")
 @CommandPermission("easterlyn.command.channel")
 public class ChannelCommand extends BaseCommand {
 
 	private final SimpleDateFormat timestamp = new SimpleDateFormat("HH:mm");
 
 	@Dependency
-	private EasterlynCore easterlynCore;
+	private EasterlynCore core;
 	@Dependency
 	private EasterlynChat chat;
 
 	@CommandAlias("join")
-	@Description("Join a channel.")
+	@Description("{@@chat.commands.channel.join.description}")
 	@CommandPermission("easterlyn.command.join")
-	@Syntax("/join <#channel> [password]")
+	@Syntax("<#channel> [password]")
 	@CommandCompletion("@channelsJoinable @password")
 	public void join(@Flags(CoreContexts.SELF) User user, Channel channel, @Optional String password) {
 		channel.updateLastAccess();
@@ -49,7 +52,7 @@ public class ChannelCommand extends BaseCommand {
 		if (!channels.contains(channel.getName())) {
 			if (!channel.isWhitelisted(user)) {
 				if (channel.getPassword() == null || !channel.getPassword().equals(password)) {
-					user.sendMessage("No can do, buckaroo! Invalid password. Alternately, get someone to manually approve you.");
+					core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.channel.join.error.password");
 					return;
 				}
 				channel.setWhitelisted(user, true);
@@ -58,34 +61,50 @@ public class ChannelCommand extends BaseCommand {
 			user.getStorage().set(EasterlynChat.USER_CHANNELS, channels);
 		}
 
-		if (!channel.getMembers().contains(user.getUniqueId())) {
-			channel.getMembers().add(user.getUniqueId());
-			TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + " joined " + channel.getDisplayName()
-					+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
-			channel.getMembers().forEach(uuid -> {
-				Player player = Bukkit.getPlayer(uuid);
-				if (player != null) {
-					player.sendMessage(message);
-				}
-			});
+		user.getStorage().set(EasterlynChat.USER_CURRENT, channel.getName());
+
+		if (channel.getMembers().contains(user.getUniqueId())) {
+			return;
 		}
 
-		user.getStorage().set(EasterlynChat.USER_CURRENT, channel.getName());
+		channel.getMembers().add(user.getUniqueId());
+		String time = timestamp.format(new Date());
+		channel.getMembers().forEach(uuid -> {
+			Player player = Bukkit.getPlayer(uuid);
+			if (player == null) {
+				return;
+			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(user.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue("chat.common.join", locale))) {
+				component.addExtra(textComponent);
+			}
+			component.addExtra(channel.getMention());
+			component.addExtra(user.getMention());
+			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+				component.addExtra(textComponent);
+			}
+
+			player.sendMessage(component);
+		});
 	}
 
+	@Private
 	@CommandAlias("focus")
-	@Description("Focus on a channel.")
+	@Description("{@@chat.commands.channel.focus.description}")
 	@CommandPermission("easterlyn.command.join")
-	@Syntax("/focus <#channel>")
+	@Syntax("<#channel> [password]")
 	@CommandCompletion("@channelsListening")
 	public void focus(@Flags(CoreContexts.SELF) User user, Channel channel, @Optional String password) {
 		join(user, channel, password);
 	}
 
 	@CommandAlias("leave")
-	@Description("Leave a channel.")
+	@Description("{@@chat.commands.channel.leave.description}")
 	@CommandPermission("easterlyn.command.leave")
-	@Syntax("/join <#channel> [password]")
+	@Syntax("<#channel>")
 	@CommandCompletion("@channelsListening")
 	public void leave(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) Channel channel) {
 		channel.updateLastAccess();
@@ -107,119 +126,179 @@ public class ChannelCommand extends BaseCommand {
 			channel.setWhitelisted(user, false);
 		}
 
-		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + " quit " + channel.getDisplayName()
-				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
+		String time = timestamp.format(new Date());
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				player.sendMessage(message);
+			if (player == null) {
+				return;
 			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(user.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue("chat.common.quit", locale))) {
+				component.addExtra(textComponent);
+			}
+			component.addExtra(channel.getMention());
+			component.addExtra(user.getMention());
+			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+				component.addExtra(textComponent);
+			}
+
+			player.sendMessage(component);
 		});
 
 		channel.getMembers().remove(user.getUniqueId());
 	}
 
 	@Subcommand("whitelist")
-	@Description("Add or remove a user from the whitelist.")
-	@Syntax("/channel whitelist [#channel] <add|remove> <target>")
+	@Description("{@@chat.commands.channel.whitelist.description}")
+	@Syntax("[#channel] <add|remove> <target>")
 	@CommandCompletion("@boolean @player")
 	public void setWhitelisted(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isModerator(user)) {
-			user.sendMessage("Buddy, that's not your channel. Ask a channel mod to make changes.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_mod");
 			return;
 		}
 		boolean currentlyWhitelisted = channel.isWhitelisted(target);
 		boolean add = addRemove == AddRemove.ADD;
 		if (add == currentlyWhitelisted) {
-			user.sendMessage("Buddy, that's not a change.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.no_change");
 			return;
 		}
 		if (!add && channel.isModerator(target)) {
-			user.sendMessage("Channel moderators cannot be removed from the whitelist.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.channel.whitelist.error.moderator");
 			return;
 		}
 
-		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + (add ? " added " : " removed ")
-				+ target.getDisplayName() + (add ? " to" : " from") + " the whitelist in " + channel.getDisplayName()
-				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.setWhitelisted(target, add);
+		if (!add && channel.getMembers().contains(target.getUniqueId())) {
+			leave(user, channel);
+		}
+
+		String time = timestamp.format(new Date());
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				player.sendMessage(message);
+			if (player == null) {
+				return;
 			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(target.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue(
+					"chat.commands.channel.whitelist." + (add ? "add" : "remove"), locale))) {
+				component.addExtra(textComponent);
+			}
+			component.addExtra(channel.getMention());
+			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+				component.addExtra(textComponent);
+			}
+
+			player.sendMessage(component);
 		});
 	}
 
 	@Subcommand("moderator")
-	@Description("Add or remove a channel moderator.")
-	@Syntax("/channel moderator [#channel] <add|remove> <target>")
+	@Description("{@@chat.commands.channel.moderator.description}")
+	@Syntax("[#channel] <add|remove> <target>")
 	@CommandCompletion("@boolean @player")
 	public void setModerator(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
-			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
 			return;
 		}
 		boolean currentlyMod = channel.isModerator(target);
 		boolean add = addRemove == AddRemove.ADD;
 		if (add == currentlyMod) {
-			user.sendMessage("Buddy, that's not a change.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.no_change");
 			return;
 		}
 
-		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + (add ? " added " : " removed ")
-				+ target.getDisplayName() + (add ? " to" : " from") + " the mod list in " + channel.getDisplayName()
-				+ " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
 		channel.setModerator(target, add);
+
+		String time = timestamp.format(new Date());
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				player.sendMessage(message);
+			if (player == null) {
+				return;
 			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(target.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue(
+					"chat.commands.channel.moderator." + (add ? "add" : "remove"), locale))) {
+				component.addExtra(textComponent);
+			}
+			component.addExtra(channel.getMention());
+			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+				component.addExtra(textComponent);
+			}
+
+			player.sendMessage(component);
 		});
 	}
 
 	@Subcommand("ban")
-	@Description("Ban a user from a channel.")
-	@Syntax("/channel ban [#channel] <add|remove> <target>")
+	@Description("{@@chat.commands.ban.description}")
+	@Syntax("[#channel] <add|remove> <target>")
 	@CommandCompletion("@boolean @player")
 	public void setBanned(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isModerator(user)) {
-			user.sendMessage("Buddy, that's not your channel. Ask a channel mod to make changes.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_mod");
 			return;
 		}
 		boolean currentlyBanned = channel.isBanned(target);
 		boolean add = addRemove == AddRemove.ADD;
 		if (add == currentlyBanned) {
-			user.sendMessage("Buddy, that's not a change.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.no_change");
 			return;
 		}
 		if (!add && channel.isModerator(target)) {
-			user.sendMessage("Channel moderators cannot be banned.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.error.moderator");
 			return;
 		}
 
-		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + (add ? " banned " : " unbanned ")
-				+ target.getDisplayName() + " from " + channel.getDisplayName() + " at " + timestamp.format(new Date())
-		).toArray(new TextComponent[0]);
+		String time = timestamp.format(new Date());
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				player.sendMessage(message);
+			if (player == null) {
+				return;
 			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(target.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue(
+					"chat.commands.channel.ban." + (add ? "add" : "remove"), locale))) {
+				component.addExtra(textComponent);
+			}
+			component.addExtra(channel.getMention());
+			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+				component.addExtra(textComponent);
+			}
+
+			player.sendMessage(component);
 		});
 
 		channel.setBanned(target, add);
 		List<String> channels = target.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
-		channels.remove(channel.getName());
-		// TODO if user was not in the channel, should they be notified?
-		target.getStorage().set(EasterlynChat.USER_CHANNELS, channels);
+
+		if (channel.getMembers().contains(target.getUniqueId())) {
+			leave(target, channel);
+		} else {
+			if (channels.remove(channel.getName())) {
+				target.getStorage().set(EasterlynChat.USER_CHANNELS, channels);
+			}
+		}
+
 		String currentChannelName = target.getStorage().getString(EasterlynChat.USER_CURRENT);
 		if (channel.getName().equals(currentChannelName) || currentChannelName == null) {
 			if (channels.contains(EasterlynChat.DEFAULT.getName())) {
@@ -229,48 +308,60 @@ public class ChannelCommand extends BaseCommand {
 	}
 
 	@Subcommand("modify private")
-	@Description("Set a channel's privacy.")
-	@Syntax("/channel modify private [#channel] <private>")
+	@Description("{@@chat.commands.channel.modify.private.description}")
+	@Syntax("[#channel] <private>")
 	@CommandCompletion("@boolean")
 	public void setAccessLevel(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			boolean isPrivate) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
-			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
 			return;
 		}
 
 		if (channel.isPrivate() == isPrivate) {
-			user.sendMessage("Buddy, that's not a change.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.no_change");
 			return;
 		}
 
-
 		channel.setPrivate(isPrivate);
-		TextComponent[] message = StringUtil.toJSON(user.getDisplayName() + " set private: " + isPrivate
-				+ " in " + channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
+
+		String time = timestamp.format(new Date());
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				player.sendMessage(message);
+			if (player == null) {
+				return;
 			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(channel.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue(
+					"chat.commands.channel.modify.private." + (isPrivate ? "set" : "unset"), locale))) {
+				component.addExtra(textComponent);
+			}
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+				component.addExtra(textComponent);
+			}
+
+			player.sendMessage(component);
 		});
 	}
 
 	@Subcommand("modify password")
-	@Description("Set or remove a channel's password.")
-	@Syntax("/channel modify password [#channel] <private>")
+	@Description("{@@chat.commands.channel.modify.password.description}")
+	@Syntax("[#channel] <private>")
 	@CommandCompletion("@password")
 	public void setPassword(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
 			@Optional String password) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
-			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
 			return;
 		}
 
 		if (!channel.isPrivate()) {
-			user.sendMessage("Buddy, that's a public channel. You gotta make it private to set a password.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.channel.modify.password.error.public");
 			return;
 		}
 
@@ -279,32 +370,39 @@ public class ChannelCommand extends BaseCommand {
 			password = null;
 		}
 
-		TextComponent[] message;
-		if (password == null) {
-			message = StringUtil.toJSON(user.getDisplayName() + " removed the password from "
-					+ channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
-		} else {
-			message = StringUtil.toJSON(user.getDisplayName() + " set the password to " + password
-					+ " in " + channel.getDisplayName() + " at " + timestamp.format(new Date())).toArray(new TextComponent[0]);
-		}
-		channel.setPassword(password);
+		String time = timestamp.format(new Date());
+		boolean hasPassword = password == null;
 		channel.getMembers().forEach(uuid -> {
 			Player player = Bukkit.getPlayer(uuid);
-			if (player != null) {
-				player.sendMessage(message);
+			if (player == null) {
+				return;
 			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(user.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue(
+					"chat.commands.channel.modify.password." + (hasPassword ? "set" : "unset"), locale))) {
+				component.addExtra(textComponent);
+			}
+			component.addExtra(channel.getMention());
+			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+				component.addExtra(textComponent);
+			}
+
+			player.sendMessage(component);
 		});
 	}
 
 	@Subcommand("create")
-	@Description("Create a new channel!")
-	@Syntax("/channel create <#channelname> <private>")
+	@Description("{@@chat.commands.channel.create.description}")
+	@Syntax("<#channelname> <private>")
 	@CommandCompletion("channelname")
 	@CommandPermission("easterlyn.command.channel.create")
 	public void create(@Flags(CoreContexts.SELF) User user, @Single String name) {
-		if (!user.hasPermission("easterlyn.command.channel.create.anyname") && (name.length() < 2 || name.length() > 17
+		if (!user.hasPermission("easterlyn.command.channel.createany") && (name.length() < 2 || name.length() > 17
 				|| name.charAt(0) != '#' || !StringUtil.stripNonAlphanumerics(name).equals(name.substring(1)))) {
-			user.sendMessage("Invalid channel name. Valid channel names start with \"#\" and contain 1-16 alphabetical characters.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.channel.create.error.naming_conventions");
 			return;
 		}
 
@@ -313,39 +411,37 @@ public class ChannelCommand extends BaseCommand {
 		}
 
 		if (chat.getChannels().containsKey(name)) {
-			user.sendMessage("Channel already exists, sorry chum.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.channel.create.error.duplicate");
 			return;
 		}
 
-		chat.getChannels().put(name.toLowerCase(), new NormalChannel(name, user.getUniqueId()));
+		NormalChannel channel = new NormalChannel(name, user.getUniqueId());
+		chat.getChannels().put(name.toLowerCase(), channel);
 		Player player = user.getPlayer();
-		user.sendMessage("Channel created! Manipulate it with `/channel modify");
+		core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.channel.create.success");
 		if (player != null) {
-			player.chat("/channel join #" + name);
+			join(user, channel, channel.getPassword());
 		}
 	}
 
 	@Subcommand("delete")
-	@Description("DELET CHANEL")
-	@Syntax("/channel delete <#channel>")
+	@Description("{@@chat.commands.channel.delete.description}")
+	@Syntax("<#channel>")
 	@CommandCompletion("@channelsOwned")
 	public void delete(@Flags(CoreContexts.SELF) User user, @Flags("TODO listening") NormalChannel channel, @Optional String name) {
 		if (!channel.isOwner(user)) {
-			user.sendMessage("Buddy, that's not your channel. Ask the channel owner to make changes.");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
 			return;
 		}
 
 		if (!channel.getDisplayName().equals(name)) {
-			user.sendMessage("Please include the channel name again to confirm.\nExample: `/channel delete #main #main`");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.channel.delete.error.confirm");
 			return;
 		}
 
 		chat.getChannels().remove(channel.getName());
 
-		TextComponent[] message = StringUtil.toJSON(channel.getDisplayName()
-				+ " has been disbanded. That's all, folks!").toArray(new TextComponent[0]);
-		channel.getMembers().stream().map(uuid -> easterlynCore.getUserManager().getUser(uuid)).forEach(member -> {
-			member.sendMessage(message);
+		channel.getMembers().stream().map(uuid -> core.getUserManager().getUser(uuid)).forEach(member -> {
 			List<String> channels = member.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 			channels.remove(channel.getName());
 			member.getStorage().set(EasterlynChat.USER_CHANNELS, channels);
@@ -355,6 +451,21 @@ public class ChannelCommand extends BaseCommand {
 					member.getStorage().set(EasterlynChat.USER_CURRENT, EasterlynChat.DEFAULT.getName());
 				}
 			}
+
+			Player player = member.getPlayer();
+			if (player == null) {
+				return;
+			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(channel.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue(
+					"chat.commands.channel.delete.success", locale))) {
+				component.addExtra(textComponent);
+			}
+
+			player.sendMessage(component);
 		});
 	}
 

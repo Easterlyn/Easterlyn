@@ -212,11 +212,6 @@ public class LocaleManager {
 	}
 
 	@Nullable
-	public String getValue(@NotNull String key, @NotNull String... replacements) {
-		return getValue(key, defaultLocale, replacements);
-	}
-
-	@Nullable
 	public String getValue(@NotNull String key, @NotNull String locale) {
 		String value = getOrLoadLocale(locale).getString(key);
 		if (value == null || value.isEmpty()) {

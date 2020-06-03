@@ -20,7 +20,7 @@ public enum CoreLang implements MessageKeyProvider {
 	private final MessageKey key;
 
 	CoreLang() {
-		this.key = MessageKey.of("core." + this.name().toLowerCase(Locale.ENGLISH));
+		this.key = MessageKey.of("core.common." + this.name().toLowerCase(Locale.ENGLISH));
 	}
 
 	@Override

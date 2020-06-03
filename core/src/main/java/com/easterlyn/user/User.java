@@ -151,6 +151,7 @@ public class User implements Group {
 		return pattern;
 	}
 
+	@Override
 	public TextComponent getMention() {
 		TextComponent component = new TextComponent("@" + getDisplayName());
 		component.setColor(getColor().asBungee());

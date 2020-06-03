@@ -201,16 +201,20 @@ public class EasterlynChat extends JavaPlugin {
 			@Override
 			public void addComponents(@NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
 				Matcher matcher = matcherSupplier.get();
-				String word = matcher.group();
-				TextComponent component = new TextComponent();
 				String channelName = matcher.group(1);
-				int end = matcher.end(1);
-				component.setText(word.substring(0, end));
-				component.setColor(Colors.CHANNEL.asBungee());
-				component.setUnderlined(true);
-				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-						TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelName)));
-				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelName));
+				Channel channel = getChannels().get(channelName.toLowerCase().substring(1));
+				TextComponent component;
+				if (channel != null) {
+					component = channel.getMention();
+				} else {
+					int end = matcher.end(1);
+					component = new TextComponent(matcher.group().substring(0, end));
+					component.setColor(Colors.CHANNEL.asBungee());
+					component.setUnderlined(true);
+					component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+							TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelName)));
+					component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelName));
+				}
 				components.addComponent(component);
 
 				String trailingPunctuation = matcher.group(2);

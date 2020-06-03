@@ -5,25 +5,27 @@ import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
-import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Private;
+import co.aikar.commands.annotation.Syntax;
 import co.aikar.locales.MessageKey;
-import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.ReportableEvent;
 import org.bukkit.Location;
 
 @CommandAlias("report|mail @staff")
-@Description("Create a report for staff.")
+@Description("{@@core.commands.report.description}")
 @CommandPermission("easterlyn.command.report")
 public class ReportCommand extends BaseCommand {
 
-	@Dependency
-	private EasterlynCore easterlynCore;
-
 	@Default
 	@Private
+	@Syntax("<Descriptive report details>")
 	public void report(BukkitCommandIssuer issuer, String args) {
+		if (args.indexOf(' ') == -1) {
+			issuer.sendInfo(MessageKey.of("core.commands.report.error.length"));
+			return;
+		}
+
 		String message = "Report by " + issuer.getIssuer().getName();
 		if (issuer.isPlayer()) {
 			Location location = issuer.getPlayer().getLocation();
@@ -34,7 +36,9 @@ public class ReportCommand extends BaseCommand {
 
 		if (ReportableEvent.getHandlerList().getRegisteredListeners().length <= 1) {
 			// Default report logging listener doesn't count
-			issuer.sendInfo(MessageKey.of("report.no_handlers"));
+			issuer.sendInfo(MessageKey.of("core.commands.report.error.no_handlers"));
+		} else {
+			issuer.sendInfo(MessageKey.of("core.commands.report.success"));
 		}
 
 		ReportableEvent.call(message);

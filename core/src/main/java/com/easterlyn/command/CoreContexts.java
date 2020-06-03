@@ -61,8 +61,8 @@ public class CoreContexts {
 			public Player getContext(BukkitCommandExecutionContext context) throws InvalidCommandArgument {
 				//noinspection unchecked // Type erasure is caused by command context providing raw RegisteredCommand
 				if (context.hasFlag(SELF) || context.hasFlag(ONLINE_WITH_PERM) && context.getIssuer().isPlayer()
-						&& context.getCmd().getRequiredPermissions().stream().noneMatch(perm -> context.getIssuer().hasPermission(perm + ".other"))) {
-					// TODO: new formula = cmd.node.self, cmd.node.other
+						&& context.getCmd().getRequiredPermissions().stream().noneMatch(perm ->
+						context.getIssuer().hasPermission(perm.toString().replace(".self", ".other")))) {
 					return getSelf(context.getIssuer());
 				}
 
@@ -83,16 +83,14 @@ public class CoreContexts {
 				return getSelf(context.getIssuer());
 			}
 
-			@NotNull
-			Player getSelf(@NotNull BukkitCommandIssuer issuer) throws InvalidCommandArgument {
+			private @NotNull Player getSelf(@NotNull BukkitCommandIssuer issuer) throws InvalidCommandArgument {
 				if (issuer.isPlayer()) {
 					return issuer.getPlayer();
 				}
 				throw new InvalidCommandArgument(CoreLang.NO_CONSOLE);
 			}
 
-			@NotNull
-			Player getOnline(@NotNull BukkitCommandIssuer issuer, @NotNull String argument) throws InvalidCommandArgument {
+			private @NotNull Player getOnline(@NotNull BukkitCommandIssuer issuer, @NotNull String argument) throws InvalidCommandArgument {
 				Player player = PlayerUtil.matchOnlinePlayer(issuer.getIssuer(), argument);
 				if (player == null) {
 					throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", argument);
@@ -100,8 +98,7 @@ public class CoreContexts {
 				return player;
 			}
 
-			@NotNull
-			Player getOffline(@NotNull BukkitCommandIssuer issuer,
+			private @NotNull Player getOffline(@NotNull BukkitCommandIssuer issuer,
 					@NotNull String argument) throws InvalidCommandArgument {
 				Player player;
 				try {

@@ -1,0 +1,79 @@
+chat:
+  common:
+    quit: '{color:normal.a} quit '
+    join: '{color:normal.a} joined '
+    at: '{color:normal.a}at {color:normal.b}{time}'
+    requires_mod: '{color:bad.a}Look pal, you need to be a channel mod to do that.'
+    requires_owner: '{color:bad.a}Buddy, you can''t do that unless you own the place.'
+    no_change: '{color:bad.a}What, you take me for a chump? That''s not a change.'
+  commands:
+    aether.description: '{color:normal.a}Send messages from the aether.'
+    channel:
+      description: '{color:normal.a}Chat channel management.'
+      focus.description: '{color:normal.a}Focus on a channel.'
+      join:
+        description: '{color:normal.a}Join a channel.'
+        error.password: '{color:normal.a}No can do, buckaroo! Invalid password. Alternately, get someone to manually approve you.'
+      leave.description: '{color:normal.a}Join a channel.'
+      whitelist:
+        description: '{color:normal.a}Add or remove a user from the whitelist.'
+        error.moderator: '{color:bad.a}Hey chum, you can''t remove a channel mod from the whitelist.'
+        add: '{color:normal.a} added to the whitelist in '
+        remove: '{color:normal.a} removed from the whitelist in '
+      moderator:
+        description: '{color:normal.a}Add or remove a channel moderator.'
+        add: '{color:normal.a} added to the mod list in '
+        remove: '{color:normal.a} removed from the mod list in '
+      ban:
+        description: '{color:normal.a}Add or remove a ban.'
+        error.moderator: '{color:bad.a}Channel moderators cannot be banned.'
+        add: '{color:normal.a} was banned from '
+        remove: '{color:normal.a} was unbanned from '
+      modify:
+        private:
+          description: '{color:normal.a}Set a channel''s privacy.'
+          set: '{color:normal.a} was set private '
+          unset: '{color:normal.a} was set public '
+        password:
+          description: '{color:normal.a}Set a channel''s password.'
+          error.public: '{color:bad.a}Bruh, gotta make a channel private to password it.'
+          set: '{color:normal.a} changed the password in '
+          unset: '{color:normal.a} removed the password from '
+      create:
+        description: '{color:normal.a}Create a new channel!'
+        error:
+          duplicate: '{color:bad.a}A channel by that name already exists. Sorry pal.'
+          naming_conventions: '{color:bad.a}Invalid channel name. Valid channel names start with "#" and contain 1-16 alphabetical characters.'
+        success: '{color:normal.a}Channel created! Manipulate it with "/channel modify"'
+      delete:
+        description: '{color:normal.a}DELET CHANEL'
+        error.confirm: '{color:bad.a}Please include the channel name again to confirm, i.e. "/channel delete #main #main"'
+        success: '{color:normal.a} has been disbanded. That''s all, folks!'
+    me:
+      description: '{color:normal.a}Do an action!'
+      show:
+        description: '{color:normal.a}Show off for your friends!'
+        error:
+          no_player: '{color:bad.a}Player data not loaded!'
+          not_special: '{color:bad.a}Item to show off must be named or enchanted. Your main hand is neither.'
+    message:
+      description: '{color:normal.a}Send a message!'
+      error.pm_channel: '{color:bad.a}Could not retrieve PM channel!'
+    reply:
+      description: '{color:normal.a}Send a reply!'
+      error.no_target: '{color:bad.a}You do not have anyone to reply to!'
+    mute:
+      description: '{color:normal.a}Mute a player.'
+      target:
+        indefinite: '{color:bad.a}You have been muted.'
+        duration: '{color:bad.a}You have been muted until {color:bad.b}{time}'
+      issuer:
+        indefinite: '{color:normal.a} has been muted.'
+        duration: '{color:normal.a} has been muted until {color:normal.b}{time}'
+    nickname:
+      description: '{color:normal.a}'
+      success:
+        self: '{color:normal.a}Nickname set to {color:normal.b}{value}'
+        other: '{color:normal.a}Set {target}''s nickname to {color:normal.b}{value}'
+      warning:
+        spaces: '{color:bad.a}Please note that nicknames with spaces will make it hard to target users by nickname.'
