@@ -1,6 +1,7 @@
 package com.easterlyn;
 
 import com.easterlyn.captcha.CaptchaListener;
+import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
@@ -428,8 +429,17 @@ public class EasterlynCaptchas extends JavaPlugin {
 
 	private void save(@NotNull String hash, @NotNull ItemStack item) {
 		try {
-			File file = new File(getDataFolder().getPath() + File.separator + "captcha", hash);
+			File captchaFolder = new File(getDataFolder(), "captcha");
+			if (!captchaFolder.exists() && !captchaFolder.mkdirs()) {
+				ReportableEvent.call("Unable to create captcha directory!");
+				return;
+			}
+			File file = new File(captchaFolder, hash);
 			if (file.exists()) {
+				return;
+			}
+			if (!file.createNewFile()) {
+				ReportableEvent.call("Unable to write captcha file!");
 				return;
 			}
 			try (BukkitObjectOutputStream stream = new BukkitObjectOutputStream(new FileOutputStream(file))) {
