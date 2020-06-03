@@ -8,7 +8,6 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.PermissionUtil;
@@ -26,7 +25,6 @@ public class HealCommand extends BaseCommand {
 	@CommandAlias("heal")
 	@Description("Heal a player to full health.")
 	@CommandPermission("easterlyn.command.heal")
-	@CommandRank(UserRank.MODERATOR)
 	@CommandCompletion("@player")
 	@Syntax("/heal [player]")
 	public void heal(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
@@ -46,7 +44,6 @@ public class HealCommand extends BaseCommand {
 	@CommandAlias("feed")
 	@Description("Fill a player's food.")
 	@CommandPermission("easterlyn.command.feed")
-	@CommandRank(UserRank.MODERATOR)
 	@CommandCompletion("@player")
 	@Syntax("/feed [player]")
 	public void feed(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {

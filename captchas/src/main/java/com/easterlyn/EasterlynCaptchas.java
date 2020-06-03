@@ -102,6 +102,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 			if (event.getRecipe() instanceof Keyed
 					&& ((Keyed) event.getRecipe()).getKey().getKey().equals(RECIPE_KEY)) {
 				for (ItemStack itemStack : event.getInventory().getMatrix()) {
+					//noinspection ConstantConditions
 					if (itemStack == null || itemStack.getType() == Material.AIR) {
 						continue;
 					}
@@ -119,6 +120,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 			if (event.getRecipe() instanceof Keyed
 					&& ((Keyed) event.getRecipe()).getKey().getKey().equals(RECIPE_KEY)) {
 				for (ItemStack itemStack : event.getInventory().getMatrix()) {
+					//noinspection ConstantConditions
 					if (itemStack == null || itemStack.getType() == Material.AIR) {
 						continue;
 					}
@@ -148,6 +150,8 @@ public class EasterlynCaptchas extends JavaPlugin {
 				register((EasterlynCore) event.getPlugin());
 			}
 		}, this));
+
+		// TODO quote matcher for {captcha:code}
 
 		getServer().getPluginManager().registerEvents(new CaptchaListener(this), this);
 	}

@@ -18,8 +18,8 @@ public class EasterlynLocales extends BukkitLocales {
 
 	private final EasterlynCore plugin;
 
-	public EasterlynLocales(EasterlynCore plugin) {
-		super(plugin.getCommandManager());
+	public EasterlynLocales(EasterlynCore plugin, EasterlynCommandManager manager) {
+		super(manager);
 		this.plugin = plugin;
 	}
 
@@ -56,6 +56,9 @@ public class EasterlynLocales extends BukkitLocales {
 	}
 
 	private String getLocale(CommandIssuer issuer) {
+		if (issuer == null) {
+			return plugin.getLocaleManager().getDefaultLocale();
+		}
 		if (!(issuer.getIssuer() instanceof CommandSender)) {
 			return plugin.getLocaleManager().getDefaultLocale();
 		}

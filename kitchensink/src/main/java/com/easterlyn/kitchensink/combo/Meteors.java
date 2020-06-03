@@ -6,8 +6,6 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
-import com.easterlyn.command.CommandRank;
-import com.easterlyn.user.UserRank;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -43,7 +41,6 @@ public class Meteors extends BaseCommand implements Listener {
 	@CommandAlias("meteor")
 	@Description("Summon a meteor.")
 	@CommandPermission("easterlyn.command.meteor")
-	@CommandRank(UserRank.MODERATOR)
 	private void meteorite(BukkitCommandIssuer issuer) {
 		if (!issuer.isPlayer()) {
 			issuer.sendMessage("Please specify a location.");
@@ -63,7 +60,6 @@ public class Meteors extends BaseCommand implements Listener {
 	@CommandAlias("meteor")
 	@Description("Summon a meteor.")
 	@CommandPermission("easterlyn.command.meteor")
-	@CommandRank(UserRank.MODERATOR)
 	private void meteorite(BukkitCommandIssuer issuer, Player target, @Default("3") int radius,
 			@Default("false") boolean ignite, @Default("false") boolean damageTerrain
 			, @Default("NETHERRACK") Material material) {
@@ -78,7 +74,6 @@ public class Meteors extends BaseCommand implements Listener {
 	@CommandAlias("meteor")
 	@Description("Summon a meteor.")
 	@CommandPermission("easterlyn.command.meteor")
-	@CommandRank(UserRank.MODERATOR)
 	private void meteorite(BukkitCommandIssuer issuer, Location target, @Default("3") int radius,
 			@Default("false") boolean ignite, @Default("false") boolean damageTerrain
 			, @Default("NETHERRACK") Material material) {
@@ -91,10 +86,10 @@ public class Meteors extends BaseCommand implements Listener {
 
 	private void createMeteorite(@NotNull Location target, @Nullable Material type, int radius, boolean ignite, boolean damageTerrain) {
 		final BlockData finalType = (type == null || !type.isBlock() ? Material.NETHERRACK : type).createBlockData();
-		final int finalRadius = radius < 0 ? 3 : radius > 50 ? 50 : radius;
+		final int finalRadius = radius < 0 ? 3 : Math.min(radius, 50);
 		int desired = target.getWorld().getHighestBlockYAt(target.getBlockX(), target.getBlockZ()) + 40 + finalRadius;
 		int highestPossible = 255 - finalRadius;
-		desired = desired > highestPossible ? highestPossible : desired;
+		desired = Math.min(desired, highestPossible);
 		target.add(0, desired - target.getY(), 0);
 
 		new BukkitRunnable() {

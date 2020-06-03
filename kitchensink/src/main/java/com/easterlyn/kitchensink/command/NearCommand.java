@@ -9,8 +9,6 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.UserRank;
-import com.easterlyn.util.PermissionUtil;
 import java.util.List;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -19,14 +17,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class NearCommand extends BaseCommand {
 
-	private final int maxRadius;
-
-	public NearCommand() {
-		PermissionUtil.addParent("easterlyn.command.near.spectators", UserRank.MODERATOR.getPermission());
-		PermissionUtil.addParent("easterlyn.command.near.invisible", UserRank.MODERATOR.getPermission());
-		PermissionUtil.addParent("easterlyn.command.near.far", UserRank.MODERATOR.getPermission());
-		maxRadius = 200;
-	}
+	private static final int MAX_RADIUS = 200;
 
 	@CommandAlias("near")
 	@Description("List nearby players.")
@@ -36,7 +27,7 @@ public class NearCommand extends BaseCommand {
 	public void near(@Flags(CoreContexts.SELF) Player issuer, @Default("200") int range) {
 		range = Math.max(1, range);
 		if (!issuer.hasPermission("easterlyn.command.near.far")) {
-			range = Math.min(maxRadius, range);
+			range = Math.min(MAX_RADIUS, range);
 		}
 
 		Location location = issuer.getLocation();

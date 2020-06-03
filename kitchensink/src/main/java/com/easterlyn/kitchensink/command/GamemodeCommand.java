@@ -4,8 +4,6 @@ import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
-import com.easterlyn.command.CommandRank;
-import com.easterlyn.user.UserRank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -14,7 +12,6 @@ import org.bukkit.entity.Player;
 @CommandAlias("gamemode|gm")
 @Description("Change game modes!")
 @CommandPermission("easterlyn.command.gamemode")
-@CommandRank(UserRank.MODERATOR)
 public class GamemodeCommand {
 
 	@CommandAlias("0|surv|survival")

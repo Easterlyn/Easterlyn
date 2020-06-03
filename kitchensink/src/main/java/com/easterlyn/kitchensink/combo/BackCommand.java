@@ -7,12 +7,10 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
-import com.easterlyn.command.CoreContexts;
-import com.easterlyn.util.BossBarTimer;
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
-import com.easterlyn.user.UserRank;
-import com.easterlyn.util.PermissionUtil;
+import com.easterlyn.util.BossBarTimer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.bukkit.Location;
@@ -29,10 +27,6 @@ public class BackCommand extends BaseCommand implements Listener {
 
 	@Dependency
 	EasterlynCore core;
-
-	public BackCommand() {
-		PermissionUtil.addParent("easterlyn.command.back.other", UserRank.MODERATOR.getPermission());
-	}
 
 	@CommandAlias("back|b")
 	@Description("Teleport to your previous location!")

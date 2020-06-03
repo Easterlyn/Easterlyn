@@ -37,7 +37,7 @@ public class EasterlynCommandManager extends PaperCommandManager {
 				.filter(registeredListener -> registeredListener.getListener().getClass().getSimpleName().equals("ACFBukkitListener"))
 				.findAny().ifPresent(registeredListener -> HandlerList.unregisterAll(registeredListener.getListener()));
 
-		this.locales = new EasterlynLocales(plugin);
+		this.locales = new EasterlynLocales(plugin, this);
 	}
 
 	@Override

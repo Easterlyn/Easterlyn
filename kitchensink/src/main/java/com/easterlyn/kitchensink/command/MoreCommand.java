@@ -8,9 +8,7 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.UserRank;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 @CommandAlias("more")
 @Description("Add to your stack in hand.")
 @CommandPermission("easterlyn.command.more")
-@CommandRank(UserRank.MODERATOR)
 public class MoreCommand extends BaseCommand {
 
 	@CommandAlias("more")

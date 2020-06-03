@@ -4,14 +4,10 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
-import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
-import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
-import com.easterlyn.user.UserRank;
-import com.easterlyn.util.PermissionUtil;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -20,13 +16,6 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class CoordinatesCommand extends BaseCommand {
-
-	@Dependency
-	EasterlynCore core;
-
-	public CoordinatesCommand() {
-		PermissionUtil.addParent("easterlyn.command.coordinates.other", UserRank.MODERATOR.getPermission());
-	}
 
 	@CommandAlias("coordinates|coords")
 	@Description("Get your coordinates!")

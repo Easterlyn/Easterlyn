@@ -4,8 +4,6 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
-import com.easterlyn.command.CommandRank;
-import com.easterlyn.user.UserRank;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -33,7 +31,6 @@ public class FreeCarts extends BaseCommand implements Listener {
 	@CommandAlias("freecart|tempcart")
 	@Description("Force a player into a free cart that will despawn when exited or crashed.")
 	@CommandPermission("easterlyn.command.freecart")
-	@CommandRank(UserRank.MODERATOR)
 	public void spawnFreeCart(Player target, double x, double y, double z, double vectorX, double vectorY, double vectorZ) {
 		target.getWorld().spawn(new Location(target.getWorld(), x, y, z), RideableMinecart.class, minecart -> {
 			minecart.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);

@@ -3,6 +3,7 @@ package com.easterlyn.captcha.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
+import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
@@ -11,7 +12,6 @@ import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCaptchas;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.PermissionUtil;
@@ -34,7 +34,7 @@ public class CaptchaCommand extends BaseCommand {
 	@Subcommand("add")
 	@Description("Add a custom alphanumeric captcha hash.")
 	@Syntax("/captcha add <alphanumeric 8+ character hash>")
-	@CommandRank(UserRank.ADMIN)
+	@CommandPermission("easterlyn.command.captcha.add")
 	public void add(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
 		if (!hash.matches("[0-9A-Za-z]{8,}")) {
 			player.sendMessage("command.hash.requirements");
@@ -56,8 +56,8 @@ public class CaptchaCommand extends BaseCommand {
 	@Subcommand("get")
 	@Description("Get a captcha by hash.")
 	@Syntax("/captcha get <valid hash>")
-	@CommandRank(UserRank.ADMIN)
 	@CommandCompletion("@captcha")
+	@CommandPermission("easterlyn.command.captcha.get")
 	public void get(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
 		ItemStack item = captcha.getCaptchaForHash(hash);
 		if (item == null) {
@@ -68,11 +68,13 @@ public class CaptchaCommand extends BaseCommand {
 		player.sendMessage("command.hash.success_load".replace("{TARGET}", hash));
 	}
 
-	@CommandAlias("baptcha|batchcap|batchcaptcha")
+	@Subcommand("batch")
+	@CommandAlias("baptcha")
 	@Description("Captcha in bulk!")
 	@Syntax("Run with an item to batch captcha in hand.")
+	@CommandPermission("easterlyn.command.captcha.batch")
 	@CommandCompletion("@permission:value=easterlyn.command.baptcha.free,complete=free")
-	public void baptcha(@Flags(CoreContexts.SELF) Player player, @Optional String free) {
+	public void baptcha(@Flags(CoreContexts.SELF) Player player, @Optional @CommandPermission("easterlyn.command.baptcha.free") String free) {
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if (item.getType() == Material.AIR || captcha.canNotCaptcha(item)) {
 			player.sendMessage("captcha.uncaptchable");
@@ -142,6 +144,7 @@ public class CaptchaCommand extends BaseCommand {
 	@CommandAlias("convert")
 	@Description("Convert captchas whose hashes have changed.")
 	@Syntax("Run with an item to batch captcha in hand.")
+	@CommandPermission("easterlyn.command.captcha.convert")
 	public void convert(@Flags(CoreContexts.SELF) Player player) {
 		int convert = captcha.convert(player);
 		player.sendMessage("Converted " + convert + " captchas!");

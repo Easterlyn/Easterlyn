@@ -8,9 +8,7 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.UserRank;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -20,7 +18,6 @@ public class KickCommand extends BaseCommand {
 	@Description("Kick a player.")
 	@Syntax("/kick <player> <reason>")
 	@CommandPermission("easterlyn.command.kick")
-	@CommandRank(UserRank.MODERATOR)
 	@CommandCompletion("@player")
 	public void kick(@Flags(CoreContexts.ONLINE) Player target, @Default("Big brother is watching.") String reason) {
 		target.kickPlayer(reason);
@@ -31,7 +28,6 @@ public class KickCommand extends BaseCommand {
 	@Description("Kick a player without a broadcast.")
 	@Syntax("/silentkick <player> <reason>")
 	@CommandPermission("easterlyn.command.silentkick")
-	@CommandRank(UserRank.ADMIN)
 	@CommandCompletion("@player")
 	public void silentKick(@Flags(CoreContexts.ONLINE) Player target, @Default("Connection lost.") String reason) {
 		target.kickPlayer(reason);
@@ -41,7 +37,6 @@ public class KickCommand extends BaseCommand {
 	@Description("Kick all players.")
 	@Syntax("/kickall <reason>")
 	@CommandPermission("easterlyn.command.kickall")
-	@CommandRank(UserRank.DANGER_DANGER_HIGH_VOLTAGE)
 	@CommandCompletion("@player")
 	public void kickAll(@Default("Come back in a minute!") String reason) {
 		Bukkit.getOnlinePlayers().forEach(player -> player.kickPlayer(reason));

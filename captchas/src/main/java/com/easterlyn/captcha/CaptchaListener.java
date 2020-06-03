@@ -56,7 +56,8 @@ public class CaptchaListener implements Listener {
 			toCaptcha = event.getCursor();
 		}
 
-		if (!EasterlynCaptchas.isBlankCaptcha(blankCaptcha) || captcha.canNotCaptcha(toCaptcha) || EasterlynCaptchas.isBlankCaptcha(toCaptcha)) {
+		if (blankCaptcha == null || toCaptcha == null || !EasterlynCaptchas.isBlankCaptcha(blankCaptcha)
+				|| captcha.canNotCaptcha(toCaptcha) || EasterlynCaptchas.isBlankCaptcha(toCaptcha)) {
 			return;
 		}
 
@@ -71,6 +72,10 @@ public class CaptchaListener implements Listener {
 			event.setCurrentItem(ItemUtil.decrement(blankCaptcha, 1));
 			//noinspection deprecation // No alternative. Functions fine due to inventory update.
 			event.setCursor(null);
+		}
+
+		if (captchaItem == null) {
+			return;
 		}
 
 		// Add to bottom inventory first

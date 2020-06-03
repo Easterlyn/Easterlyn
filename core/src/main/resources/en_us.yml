@@ -1,3 +1,29 @@
+acf-core:
+  permission_denied: '{@@core.common.no_permission}'
+  permission_denied_parameter: '{@@core.common.no_permission}'
+  error_generic_logged: '{color:bad.a}An error occurred. This problem has been logged. Sorry for the inconvenience.'
+  unknown_command: '{color:bad.a}Unknown Command, please type {color:command}/help'
+  invalid_syntax: '{color:bad.a}Usage: {color:command}{command} {color:bad.b}{syntax}'
+  error_prefix: '{color:bad.c}Error: {color:bad.a}{message}'
+  error_performing_command: '{color:bad.a}I''m sorry, but there was an error performing this command.'
+  info_message: '{color:normal.a}{message}'
+  please_specify_one_of: '{color:bad.a}Error: Please specify one of ({color:bad.b}{valid}{color:bad.a}).'
+  must_be_a_number: '{color:bad.a}Error: {color:bad.b}{num}{color:bad.a} must be a number.'
+  must_be_min_length: '{color:bad.a}Error: Must be at least {color:bad.b}{min}{color:bad.a} characters long.'
+  must_be_max_length: '{color:bad.a}Error: Must be at most {color:bad.b}{max}{color:bad.a} characters long.'
+  please_specify_at_most: '{color:bad.a}Error: Please specify a value at most {color:bad.b}{max}{color:bad.a}.'
+  please_specify_at_least: '{color:bad.a}Error: Please specify a value at least {color:bad.b}{min}{color:bad.a}.'
+  not_allowed_on_console: '{@@core.common.no_console}'
+  could_not_find_player: '{color:bad.a}Error: Could not find a player by the name: {color:bad.b}{search}'
+  no_command_matched_search: '{color:bad.a}No command matched {color:bad.b}{search}'
+  help_page_information: '{color:normal.a}- Showing page {color:normal.b}{page}{color:normal.a} of {color:normal.a}{totalpages}{color:normal.a} ({color:normal.b}{results}{color:normal.a} results).'
+  help_no_results: '{color:bad.a}Error: No more results.'
+  help_header: '{color:normal.c}=== {color:normal.a}Showing help for {color:command}{commandprefix}{command}{color:normal.c} ==='
+  help_format: '{color:command}{command} {color:normal.b}{parameters} {color:normal.c}{separator} {color:normal.a}{description}'
+  help_detailed_header: '{color:normal.c}=== {color:normal.a}Showing detailed help for {color:command}{commandprefix}{command}{color:normal.c} ==='
+  help_detailed_command_format: '{color:command}{command} {color:normal.b}{parameters} {color:normal.c}{separator} {color:normal.a}{description}'
+  help_detailed_parameter_format: '{color:normal.b}{syntaxorname}{color:normal.c}: {color:normal.a}{description}'
+  help_search_header: '{color:normal.c}=== {color:normal.a}Search results for {color:command}{commandprefix}{command}{color:normal.b} {search}{color:normal.c} ==='
 core:
   common:
     no_console: 'Not available to console!'
@@ -31,7 +57,7 @@ core:
         usage: '{color:normal.a}Usage: {color:normal.b}{value}'
         permission: '{color:normal.a}Permission: {color:normal.b}{value}'
         plugin_known: '{color:normal.a}Owning plugin: {color:normal.b}{value}'
-        plugin_unknown: -|
+        plugin_unknown: |-
           {color:normal.a}Class: {color:normal.b}{value}
           {color:normal.a}Command is likely vanilla.
     report:

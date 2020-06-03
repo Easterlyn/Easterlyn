@@ -11,7 +11,6 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
@@ -26,7 +25,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 @CommandAlias("onlogin")
 @Description("Manage commands run on login.")
 @CommandPermission("easterlyn.command.onlogin")
-@CommandRank(UserRank.MODERATOR)
 public class LoginCommands extends BaseCommand implements Listener {
 
 	private static final String ONLOGIN = "kitchensink.onlogin";

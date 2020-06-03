@@ -9,9 +9,7 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.UserRank;
 import com.easterlyn.util.GenericUtil;
 import java.util.ArrayList;
 import java.util.Objects;
@@ -27,7 +25,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 @CommandAlias("lore")
 @Description("Manipulate lore and other item metadata.")
 @CommandPermission("easterlyn.command.lore")
-@CommandRank(UserRank.MODERATOR)
 public class LoreCommand extends BaseCommand {
 
 	@Subcommand("clearmeta")

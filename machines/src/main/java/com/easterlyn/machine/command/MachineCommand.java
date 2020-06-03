@@ -9,16 +9,13 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Private;
 import com.easterlyn.EasterlynMachines;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.machine.Machine;
-import com.easterlyn.user.UserRank;
 import org.bukkit.entity.Player;
 
 @CommandAlias("machine")
 @Description("Machinations.")
 @CommandPermission("easterlyn.command.machine")
-@CommandRank(UserRank.ADMIN)
 public class MachineCommand extends BaseCommand {
 
 	@Dependency

@@ -9,9 +9,7 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Private;
 import com.easterlyn.EasterlynEffects;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.UserRank;
 import com.easterlyn.util.NumberUtil;
 import java.util.ArrayList;
 import java.util.List;
@@ -24,7 +22,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 @CommandAlias("effects|fx")
 @Description("Manage effects!")
 @CommandPermission("easterlyn.command.effects")
-@CommandRank(UserRank.ADMIN)
 public class EffectCommand extends BaseCommand {
 
 	@Dependency

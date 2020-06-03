@@ -15,9 +15,7 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.user.User;
-import com.easterlyn.user.UserRank;
 import java.util.EnumSet;
 import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
@@ -70,7 +68,6 @@ public class ColourCommand extends BaseCommand {
 	@CommandAlias("colour|color")
 	@Description("Set someone's colour. Bypasses selection limitations.")
 	@CommandPermission("easterlyn.command.colour.select.other")
-	@CommandRank(UserRank.MODERATOR)
 	public void colour(CommandIssuer issuer, User target, @Flags("colour") ChatColor colour) {
 		target.setColor(colour);
 		target.sendMessage("Your colour was set to " + colour + colour.name());
@@ -81,7 +78,6 @@ public class ColourCommand extends BaseCommand {
 	@Description("【ＴＡＳＴＥ　ＴＨＥ　ＰＡＩＮＢＯＷ】")
 	@Syntax("[painful to view sentence]")
 	@CommandPermission("easterlyn.command.lel")
-	@CommandRank(UserRank.ADMIN)
 	public void requestLordEnglishEyeFuck(String message) {
 		ChatColor[] rainbow = { ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD,
 				ChatColor.YELLOW, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.AQUA,
@@ -99,7 +95,7 @@ public class ColourCommand extends BaseCommand {
 				lelOut.append(rainbow[j]).append(ChatColor.MAGIC).append(charAt);
 			}
 		}
-		Bukkit.broadcastMessage(lelOut.substring(0, lelOut.length() - 1 > 0 ? lelOut.length() - 1 : 0));
+		Bukkit.broadcastMessage(lelOut.substring(0, Math.max(lelOut.length() - 1, 0)));
 	}
 
 }

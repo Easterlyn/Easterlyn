@@ -7,12 +7,11 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
-import com.easterlyn.command.CoreContexts;
-import com.easterlyn.util.BossBarTimer;
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.command.CommandRank;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
+import com.easterlyn.util.BossBarTimer;
 import com.easterlyn.util.PermissionUtil;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -38,7 +37,6 @@ public class DeathPointCommand extends BaseCommand implements Listener {
 	@CommandAlias("death")
 	@Description("Teleport to your last death!")
 	@CommandPermission("easterlyn.command.death")
-	@CommandRank(UserRank.MODERATOR)
 	public void back(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		boolean other = !issuer.getUniqueId().equals(user.getUniqueId());
 

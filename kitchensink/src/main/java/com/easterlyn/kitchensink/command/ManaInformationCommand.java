@@ -7,8 +7,6 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.command.CommandRank;
-import com.easterlyn.user.UserRank;
 import com.easterlyn.util.EconomyUtil;
 import java.io.File;
 import java.io.FileWriter;
@@ -25,7 +23,6 @@ public class ManaInformationCommand extends BaseCommand {
 	@Default
 	@Description("Dump all mana costs to a file.")
 	@CommandPermission("easterlyn.command.manainformation")
-	@CommandRank(UserRank.DANGER_DANGER_HIGH_VOLTAGE)
 	public void manaInformation(ConsoleCommandSender issuer) {
 		StringBuilder sb = new StringBuilder();
 		for (Material material : Material.values()) {

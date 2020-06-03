@@ -24,7 +24,6 @@ import com.easterlyn.kitchensink.listener.NoIllegalName;
 import com.easterlyn.kitchensink.listener.OnlyWitherKillsItems;
 import com.easterlyn.kitchensink.listener.PVPKeepInventory;
 import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
-import com.easterlyn.kitchensink.listener.RestrictTabCompletion;
 import com.easterlyn.kitchensink.listener.WitherFacts;
 import com.easterlyn.util.event.SimpleListener;
 import java.util.ArrayList;
@@ -41,7 +40,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class EasterlynKitchenSink extends JavaPlugin {
 
-	private List<BaseCommand> extraCommands = new ArrayList<>();
+	private final List<BaseCommand> extraCommands = new ArrayList<>();
 
 	@Override
 	public void onEnable() {
@@ -204,7 +203,7 @@ public class EasterlynKitchenSink extends JavaPlugin {
 
 		try {
 			Class.forName("com.comphenix.protocol.ProtocolLibrary");
-			ProtocolLibrary.getProtocolManager().addPacketListener(new RestrictTabCompletion(plugin));
+			ProtocolLibrary.getProtocolManager().addPacketListener(new com.easterlyn.kitchensink.listener.RestrictTabCompletion(plugin));
 		} catch (ClassNotFoundException ignored) {}
 
 	}

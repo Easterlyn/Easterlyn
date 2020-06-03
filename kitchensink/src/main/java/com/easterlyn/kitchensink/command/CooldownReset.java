@@ -6,16 +6,13 @@ import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Subcommand;
-import com.easterlyn.command.CommandRank;
 import com.easterlyn.kitchensink.combo.BackCommand;
 import com.easterlyn.kitchensink.combo.DeathPointCommand;
 import com.easterlyn.user.User;
-import com.easterlyn.user.UserRank;
 
 @CommandAlias("cooldownreset|cdr|resetcooldown|rcd")
 @Description("Reset cooldowns!")
 @CommandPermission("easterlyn.command.cooldownreset")
-@CommandRank(UserRank.MODERATOR)
 public class CooldownReset {
 
 	@Default

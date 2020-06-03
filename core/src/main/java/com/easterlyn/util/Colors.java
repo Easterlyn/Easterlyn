@@ -47,6 +47,28 @@ public class Colors {
 		RANK_MODERATOR = register(colorSection, "rank.moderator", ChatColor.DARK_AQUA);
 		RANK_ADMIN = register(colorSection, "rank.admin", ChatColor.GOLD);
 		RANK_HEAD_ADMIN = register(colorSection, "rank.head_admin", ChatColor.GOLD);
+
+		// Standard colors used in language files
+		register(colorSection, "normal.a", ChatColor.YELLOW);
+		register(colorSection, "normal.b", ChatColor.DARK_AQUA);
+		register(colorSection, "normal.c", ChatColor.GREEN);
+		register(colorSection, "bad.a", ChatColor.RED);
+		register(colorSection, "bad.b", ChatColor.GOLD);
+		register(colorSection, "bad.c", ChatColor.DARK_AQUA);
+		register(colorSection, "on", ChatColor.GREEN);
+		register(colorSection, "off", ChatColor.RED);
+
+		if (colorSection == null) {
+			return;
+		}
+
+		// Custom defined colors
+		for (String key : colorSection.getKeys(true)) {
+			if (mappings.containsKey(key) || !colorSection.isString(key)) {
+				continue;
+			}
+			register(colorSection, key, ChatColor.WHITE);
+		}
 	}
 
 	public static ChatColor register(@Nullable ConfigurationSection colorSection, @NotNull String name, @NotNull ChatColor defaultColor) {
