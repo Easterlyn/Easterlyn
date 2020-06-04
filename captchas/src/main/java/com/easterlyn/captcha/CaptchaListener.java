@@ -1,14 +1,22 @@
 package com.easterlyn.captcha;
 
 import com.easterlyn.EasterlynCaptchas;
+import com.easterlyn.event.ReportableEvent;
+import com.easterlyn.util.BlockUtil;
+import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.inventory.ItemUtil;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.enchantment.PrepareItemEnchantEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class CaptchaListener implements Listener {
@@ -97,26 +105,75 @@ public class CaptchaListener implements Listener {
 		((Player) event.getWhoClicked()).updateInventory();
 	}
 
-	// TODO uncaptcha
-	/*
-		// PlayerInteractEvent - Uncaptcha on right click
-		// Ensure correct hand
-		// Ensure block does not have right click function - CORE: Listener to set event.useItem DENY earlier
-		if (Captcha.isUsedCaptcha(held)) {
-			ItemStack captchaStack = captcha.getItemForCaptcha(held);
-			if (held.getAmount() > 1) {
-				held.setAmount(held.getAmount() - 1);
-				if (event.getPlayer().getInventory().firstEmpty() != -1) {
-					event.getPlayer().getInventory().addItem(captchaStack);
-				} else {
-					event.getPlayer().getWorld().dropItem(event.getPlayer().getEyeLocation(), captchaStack)
-							.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
-				}
-			} else {
-				InventoryUtils.setHeldItem(inv, mainHand, captchaStack);
-			}
-			event.getPlayer().updateInventory();
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onPlayerInteract(PlayerInteractEvent event) {
+
+		ItemStack hand = ItemUtil.getHeldItem(event);
+		if (!EasterlynCaptchas.isUsedCaptcha(hand) || BlockUtil.hasRightClickFunction(event)) {
+			return;
 		}
-	 */
+
+		ItemStack captchaStack = captcha.getItemByCaptcha(hand);
+		if (captchaStack == null || captchaStack.isSimilar(hand)) {
+			String hash = EasterlynCaptchas.getHashFromCaptcha(hand);
+			ReportableEvent.call("Invalid captcha belonging to " + event.getPlayer().getName() + ": " + (hash == null ? StringUtil.getItemText(hand) : hash));
+			return;
+		}
+
+		ItemUtil.decrementHeldItem(event, 1);
+		if (ItemUtil.hasSpaceFor(captchaStack, event.getPlayer().getInventory())) {
+			event.getPlayer().getInventory().addItem(captchaStack);
+		} else {
+			event.getPlayer().getWorld().dropItem(event.getPlayer().getEyeLocation(), captchaStack)
+					.setVelocity(event.getPlayer().getLocation().getDirection().multiply(0.4));
+		}
+
+		event.getPlayer().updateInventory();
+	}
+
+	@EventHandler
+	public void onPrepareItemCraft(PrepareItemCraftEvent event) {
+		if (event.getRecipe() instanceof Keyed
+				&& ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.RECIPE_KEY)) {
+			for (ItemStack itemStack : event.getInventory().getMatrix()) {
+				//noinspection ConstantConditions
+				if (itemStack == null || itemStack.getType() == Material.AIR) {
+					continue;
+				}
+				if (!EasterlynCaptchas.isUsedCaptcha(itemStack)) {
+					event.getInventory().setResult(ItemUtil.AIR);
+				} else {
+					event.getInventory().setResult(captcha.getItemByCaptcha(itemStack));
+				}
+				return;
+			}
+		}
+	}
+
+	@EventHandler
+	public void onItemCraft(CraftItemEvent event) {
+		if (event.getRecipe() instanceof Keyed
+				&& ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.RECIPE_KEY)) {
+			for (ItemStack itemStack : event.getInventory().getMatrix()) {
+				//noinspection ConstantConditions
+				if (itemStack == null || itemStack.getType() == Material.AIR) {
+					continue;
+				}
+				if (!EasterlynCaptchas.isUsedCaptcha(itemStack)) {
+					event.setCurrentItem(ItemUtil.AIR);
+				} else {
+					event.setCurrentItem(captcha.getItemByCaptcha(itemStack));
+				}
+				return;
+			}
+		}
+	}
+
+	@EventHandler
+	public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
+		if (EasterlynCaptchas.isCaptcha(event.getItem())) {
+			event.setCancelled(true);
+		}
+	}
 
 }

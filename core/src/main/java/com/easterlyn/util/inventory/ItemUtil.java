@@ -396,6 +396,7 @@ public class ItemUtil {
 		}
 		ItemStack toAdd = is.clone();
 		for (ItemStack invStack : inv.getContents()) {
+			//noinspection ConstantConditions
 			if (invStack == null) {
 				return true;
 			}

@@ -17,6 +17,8 @@ import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.TileState;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Levelled;
 import org.bukkit.block.data.Powerable;
@@ -139,20 +141,19 @@ public class BlockUtil {
 				// Special case: player is probably attempting to bottle dragon's breath
 				return block.getWorld().getEnvironment() == World.Environment.THE_END
 						&& hand.getType() == Material.GLASS_BOTTLE;
-			case ANVIL:
-			case BEACON:
 			case CARTOGRAPHY_TABLE:
-			case CHAIN_COMMAND_BLOCK:
-			case COMMAND_BLOCK:
 			case CRAFTING_TABLE:
 			case DRAGON_EGG:
-			case ENCHANTING_TABLE:
-			case ENDER_CHEST:
-			case JUKEBOX:
-			case REPEATING_COMMAND_BLOCK:
+			case LOOM:
+			case STONECUTTER:
 				return true;
 			default:
 				break;
+		}
+
+		BlockState state = block.getState();
+		if (state instanceof InventoryHolder || state instanceof TileState) {
+			return true;
 		}
 
 		BlockData blockData = block.getBlockData();
@@ -168,6 +169,12 @@ public class BlockUtil {
 			return true;
 		}
 
+		for (BiFunction<Block, ItemStack, Boolean> function : BLOCK_FUNCTIONS) {
+			if (function.apply(block, hand)) {
+				return true;
+			}
+		}
+
 		if (hand.getType() == Material.GLASS_BOTTLE) {
 			RayTraceResult rayTraceResult = event.getPlayer().rayTraceBlocks(4, FluidCollisionMode.ALWAYS);
 			if (rayTraceResult == null) {
@@ -177,13 +184,7 @@ public class BlockUtil {
 			return hitBlock != null && (hitBlock.getType() == Material.WATER || hitBlock.getType() == Material.CAULDRON);
 		}
 
-		for (BiFunction<Block, ItemStack, Boolean> function : BLOCK_FUNCTIONS) {
-			if (function.apply(block, hand)) {
-				return true;
-			}
-		}
-
-		return block.getState() instanceof InventoryHolder;
+		return false;
 
 	}
 
