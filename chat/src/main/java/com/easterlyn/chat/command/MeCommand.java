@@ -2,6 +2,7 @@ package com.easterlyn.chat.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
@@ -15,7 +16,8 @@ public class MeCommand extends BaseCommand {
 	@CommandAlias("me")
 	@Description("{@@chat.commands.me.description}")
 	@CommandPermission("easterlyn.command.me")
-	public void me(@Flags(CoreContexts.SELF) User sender, @Flags(CoreContexts.ONLINE) Channel channel, String args) {
+	@CommandCompletion("")
+	public void me(@Flags(CoreContexts.SELF) User sender, @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel, String args) {
 		new UserChatEvent(sender, channel, args, true).send();
 	}
 

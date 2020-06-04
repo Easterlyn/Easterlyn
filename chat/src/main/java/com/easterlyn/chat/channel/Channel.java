@@ -61,8 +61,8 @@ public class Channel implements Group {
 		component.setColor(Colors.CHANNEL.asBungee());
 		component.setUnderlined(true);
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-				TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + getName())));
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + getName()));
+				TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + getDisplayName())));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + getDisplayName()));
 		// Don't set mention until fully set up
 		mention = component;
 		return component;

@@ -45,7 +45,8 @@ public class ChannelCommand extends BaseCommand {
 	@CommandPermission("easterlyn.command.join")
 	@Syntax("<#channel> [password]")
 	@CommandCompletion("@channelsJoinable @password")
-	public void join(@Flags(CoreContexts.SELF) User user, Channel channel, @Optional String password) {
+	public void join(@Flags(CoreContexts.SELF) User user, @Flags(ChannelFlag.VISIBLE) Channel channel,
+			@Optional String password) {
 		channel.updateLastAccess();
 		List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 
@@ -97,7 +98,8 @@ public class ChannelCommand extends BaseCommand {
 	@CommandPermission("easterlyn.command.join")
 	@Syntax("<#channel> [password]")
 	@CommandCompletion("@channelsListening")
-	public void focus(@Flags(CoreContexts.SELF) User user, Channel channel, @Optional String password) {
+	public void focus(@Flags(CoreContexts.SELF) User user, @Flags(ChannelFlag.VISIBLE) Channel channel,
+			@Optional String password) {
 		join(user, channel, password);
 	}
 
@@ -106,7 +108,7 @@ public class ChannelCommand extends BaseCommand {
 	@CommandPermission("easterlyn.command.leave")
 	@Syntax("<#channel>")
 	@CommandCompletion("@channelsListening")
-	public void leave(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) Channel channel) {
+	public void leave(@Flags(CoreContexts.SELF) User user, @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel) {
 		channel.updateLastAccess();
 		List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 		String currentChannelName = user.getStorage().getString(EasterlynChat.USER_CURRENT);
@@ -155,7 +157,8 @@ public class ChannelCommand extends BaseCommand {
 	@Description("{@@chat.commands.channel.whitelist.description}")
 	@Syntax("[#channel] <add|remove> <target>")
 	@CommandCompletion("@boolean @player")
-	public void setWhitelisted(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
+	public void setWhitelisted(@Flags(CoreContexts.SELF) User user,
+			@Flags(ChannelFlag.VISIBLE_OR_CURRENT) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isModerator(user)) {
@@ -205,7 +208,8 @@ public class ChannelCommand extends BaseCommand {
 	@Description("{@@chat.commands.channel.moderator.description}")
 	@Syntax("[#channel] <add|remove> <target>")
 	@CommandCompletion("@boolean @player")
-	public void setModerator(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
+	public void setModerator(@Flags(CoreContexts.SELF) User user,
+			@Flags(ChannelFlag.VISIBLE_OR_CURRENT) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
@@ -248,7 +252,8 @@ public class ChannelCommand extends BaseCommand {
 	@Description("{@@chat.commands.ban.description}")
 	@Syntax("[#channel] <add|remove> <target>")
 	@CommandCompletion("@boolean @player")
-	public void setBanned(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
+	public void setBanned(@Flags(CoreContexts.SELF) User user,
+			@Flags(ChannelFlag.VISIBLE_OR_CURRENT) NormalChannel channel,
 			AddRemove addRemove, @Flags(CoreContexts.OFFLINE) User target) {
 		channel.updateLastAccess();
 		if (!channel.isModerator(user)) {
@@ -311,8 +316,8 @@ public class ChannelCommand extends BaseCommand {
 	@Description("{@@chat.commands.channel.modify.private.description}")
 	@Syntax("[#channel] <private>")
 	@CommandCompletion("@boolean")
-	public void setAccessLevel(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
-			boolean isPrivate) {
+	public void setAccessLevel(@Flags(CoreContexts.SELF) User user,
+			@Flags(ChannelFlag.VISIBLE_OR_CURRENT) NormalChannel channel, boolean isPrivate) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
 			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
@@ -352,8 +357,8 @@ public class ChannelCommand extends BaseCommand {
 	@Description("{@@chat.commands.channel.modify.password.description}")
 	@Syntax("[#channel] <private>")
 	@CommandCompletion("@password")
-	public void setPassword(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) NormalChannel channel,
-			@Optional String password) {
+	public void setPassword(@Flags(CoreContexts.SELF) User user,
+			@Flags(ChannelFlag.VISIBLE_OR_CURRENT) NormalChannel channel, @Optional String password) {
 		channel.updateLastAccess();
 		if (!channel.isOwner(user)) {
 			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
@@ -365,8 +370,8 @@ public class ChannelCommand extends BaseCommand {
 			return;
 		}
 
-		if (password == null || password.equalsIgnoreCase("off") || password.equalsIgnoreCase("null")
-				|| password.equalsIgnoreCase("remove")) {
+		if (password == null || password.isEmpty() || password.equalsIgnoreCase("off")
+				|| password.equalsIgnoreCase("null") || password.equalsIgnoreCase("remove")) {
 			password = null;
 		}
 
@@ -428,7 +433,8 @@ public class ChannelCommand extends BaseCommand {
 	@Description("{@@chat.commands.channel.delete.description}")
 	@Syntax("<#channel>")
 	@CommandCompletion("@channelsOwned")
-	public void delete(@Flags(CoreContexts.SELF) User user, @Flags("TODO listening") NormalChannel channel, @Optional String name) {
+	public void delete(@Flags(CoreContexts.SELF) User user, @Flags(ChannelFlag.VISIBLE_OR_CURRENT) NormalChannel channel,
+			@Optional String name) {
 		if (!channel.isOwner(user)) {
 			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
 			return;

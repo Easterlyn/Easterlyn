@@ -23,7 +23,7 @@ public class ShowItemCommand extends BaseCommand {
 	@CommandAlias("show|showitem")
 	@Description("{@@chat.commands.me.show.description}")
 	@CommandPermission("easterlyn.command.show")
-	public void showItem(@Flags(CoreContexts.SELF) User sender, @Flags(CoreContexts.ONLINE) Channel channel) {
+	public void showItem(@Flags(CoreContexts.SELF) User sender, @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel) {
 		Player player = sender.getPlayer();
 		if (player == null) {
 			core.getLocaleManager().sendMessage(getCurrentCommandIssuer().getIssuer(), "chat.commands.me.show.error.no_player");

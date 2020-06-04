@@ -1,32 +1,41 @@
 package com.easterlyn;
 
+import co.aikar.commands.BukkitCommandCompletionContext;
 import co.aikar.commands.BukkitCommandExecutionContext;
-import co.aikar.commands.BukkitCommandIssuer;
+import co.aikar.commands.CommandCompletions;
 import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
+import co.aikar.locales.MessageKey;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.NormalChannel;
 import com.easterlyn.chat.channel.SecretChannel;
+import com.easterlyn.chat.command.ChannelFlag;
 import com.easterlyn.chat.listener.ChannelManagementListener;
 import com.easterlyn.chat.listener.MuteListener;
-import com.easterlyn.command.CoreContexts;
+import com.easterlyn.command.CoreLang;
+import com.easterlyn.event.ReportableEvent;
+import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
-import com.easterlyn.util.text.StaticQuoteConsumer;
 import com.easterlyn.util.text.ParsedText;
+import com.easterlyn.util.text.StaticQuoteConsumer;
 import java.lang.reflect.Constructor;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -224,69 +233,141 @@ public class EasterlynChat extends JavaPlugin {
 			}
 		});
 
-		IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext>
-				channelContext = new IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext>() {
-			@Override
-			public Channel getContext(BukkitCommandExecutionContext context) throws InvalidCommandArgument {
-				//noinspection unchecked // Type erasure is caused by command context providing raw RegisteredCommand
-				if (context.hasFlag(CoreContexts.SELF) || context.hasFlag(CoreContexts.ONLINE_WITH_PERM) && context.getIssuer().isPlayer()
-						&& context.getCmd().getRequiredPermissions().stream().anyMatch(perm -> context.getIssuer().hasPermission(perm + ".other"))) {
-					return getSelf(context.getIssuer());
-				}
+		IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext> channelContext = context -> {
+			String firstArg = context.getFirstArg();
 
-				if (context.hasFlag("TODO listening")) {
-					return getOther(context.popFirstArg());
+			// Current channel or unspecified, defaulting to current
+			if (context.hasFlag(ChannelFlag.CURRENT)
+					|| (context.hasFlag(ChannelFlag.LISTENING_OR_CURRENT) || context.hasFlag(ChannelFlag.VISIBLE_OR_CURRENT))
+					&& (firstArg == null || firstArg.indexOf('#') != 0)) {
+				if (!context.getIssuer().isPlayer()) {
+					// Console never has a current channel
+					throw new InvalidCommandArgument(CoreLang.NO_CONSOLE);
 				}
-
-				try {
-					String firstArg = context.getFirstArg();
-					Channel other = getOther(firstArg);
-					context.popFirstArg();
-					return other;
-				} catch (InvalidCommandArgument ignored) {}
-
-				return getSelf(context.getIssuer());
-			}
-
-			@NotNull
-			Channel getSelf(@NotNull BukkitCommandIssuer issuer) throws InvalidCommandArgument {
-				if (!issuer.isPlayer()) {
-					throw new InvalidCommandArgument(MessageKeys.NOT_ALLOWED_ON_CONSOLE);
-				}
-				String channelName = plugin.getUserManager().getUser(issuer.getUniqueId()).getStorage().getString(USER_CURRENT);
-				if (channelName == null || !channels.containsKey(channelName)) {
-					throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "No current channel set!");
-				}
-				return channels.get(channelName);
-			}
-
-			@NotNull
-			Channel getOther(@NotNull String argument) throws InvalidCommandArgument {
-				if (argument.length() > 0 && argument.charAt(0) == '#') {
-					argument = argument.substring(1).toLowerCase();
-				} else {
-					throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "Invalid channel format " + argument);
-				}
-				Channel channel = channels.get(argument);
+				String channelName = plugin.getUserManager().getUser(context.getPlayer().getUniqueId()).getStorage().getString(USER_CURRENT);
+				Channel channel = channels.get(channelName);
 				if (channel == null) {
-					throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, "{message}", "Invalid channel #" + argument + "!");
+					throw new InvalidCommandArgument(MessageKey.of("chat.common.no_current_channel"));
 				}
 				return channel;
 			}
+
+			// Channel name must be specified for anything beyond this point, pop argument
+			context.popFirstArg();
+
+			if (firstArg == null) {
+				throw new InvalidCommandArgument(MessageKey.of("chat.common.no_specified_channel"));
+			}
+
+			if (firstArg.length() == 0 || firstArg.charAt(0) != '#') {
+				throw new InvalidCommandArgument(MessageKey.of("chat.commands.channel.create.error.naming_conventions"));
+			}
+
+			Channel channel = channels.get(firstArg.substring(1).toLowerCase());
+
+			if (channel == null) {
+				throw new InvalidCommandArgument(MessageKey.of("chat.common.no_matching_channel"),
+						"{value}", firstArg);
+			}
+
+			User user;
+			if (context.getIssuer().isPlayer()) {
+				RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
+				user = registration != null ? registration.getProvider().getUserManager().getUser(context.getIssuer().getUniqueId()) : null;
+			} else {
+				user = null;
+			}
+
+			if (context.hasFlag(ChannelFlag.VISIBLE) || context.hasFlag(ChannelFlag.VISIBLE_OR_CURRENT)) {
+				if (user == null || !channel.isPrivate() || channel.isWhitelisted(user)) {
+					return channel;
+				}
+				throw new InvalidCommandArgument(MessageKey.of("chat.common.no_channel_access"),
+						"{value}", channel.getDisplayName());
+			}
+
+			if (context.hasFlag(ChannelFlag.LISTENING) || context.hasFlag(ChannelFlag.LISTENING_OR_CURRENT)) {
+				if (user == null) {
+					return channel;
+				}
+				List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
+				if (!channels.contains(channel.getName())) {
+					throw new InvalidCommandArgument(MessageKey.of("chat.common.not_listening_to_channel"),
+							"{value}", channel.getDisplayName());
+				}
+				return channel;
+			}
+
+			if (user == null) {
+				throw new InvalidCommandArgument(CoreLang.NO_CONSOLE);
+			}
+
+			if (context.hasFlag(ChannelFlag.NOT_LISTENING)) {
+				List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
+				if (channels.contains(channel.getName())) {
+					throw new InvalidCommandArgument(MessageKey.of("chat.common.listening_to_channel"),
+							"{value}", channel.getDisplayName());
+				}
+				return channel;
+			}
+
+			ReportableEvent.call("Missing Channel context flag!", 10);
+			throw new InvalidCommandArgument(CoreLang.ERROR_LOGGED);
+
 		};
 
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(Channel.class, channelContext);
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(NormalChannel.class, context -> {
 			Channel channel = channelContext.getContext(context);
 			if (!(channel instanceof NormalChannel)) {
-				throw new InvalidCommandArgument(MessageKeys.ERROR_PREFIX, false, "{message}", "Channel is not modifiable!");
+				throw new InvalidCommandArgument(MessageKey.of("chat.common.channel_not_modifiable"));
 			}
 			return (NormalChannel) channel;
 		});
 
-		// TODO completions: Channel, NormalChannel
-		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.chat.command");
+		plugin.getCommandManager().getCommandCompletions().registerCompletion("channels",
+				getUserHandler(user -> channels.values().stream().distinct().filter(channel -> channel.isWhitelisted(user))
+					.map(Channel::getDisplayName).collect(Collectors.toSet())));
+		plugin.getCommandManager().getCommandCompletions().setDefaultCompletion("channels", Channel.class, NormalChannel.class);
+
+		plugin.getCommandManager().getCommandCompletions().registerCompletion("channelsJoinable",
+				getUserHandler(user -> {
+					List<String> channelsJoined = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
+					return channels.values().stream().distinct().filter(channel ->
+							!channelsJoined.contains(channel.getName()) && channel.isWhitelisted(user))
+							.map(Channel::getDisplayName).collect(Collectors.toSet());
+				}));
+
+		plugin.getCommandManager().getCommandCompletions().registerCompletion("channelsListening",
+				getUserHandler(user ->  user.getStorage().getStringList(EasterlynChat.USER_CHANNELS)));
+
+		plugin.getCommandManager().getCommandCompletions().registerCompletion("channelsModerated",
+				getUserHandler(user -> channels.values().stream().distinct().filter(channel -> channel.isModerator(user))
+					.map(Channel::getDisplayName).collect(Collectors.toSet())));
+
+		plugin.getCommandManager().getCommandCompletions().registerCompletion("channelsOwned",
+				getUserHandler(user -> channels.values().stream().distinct().filter(channel -> channel.isOwner(user))
+						.map(Channel::getDisplayName).collect(Collectors.toSet())));
+
 		plugin.getLocaleManager().addLocaleSupplier(this);
+		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.chat.command");
+	}
+
+	private CommandCompletions.CommandCompletionHandler<BukkitCommandCompletionContext> getUserHandler(
+			Function<User, Collection<String>> userHandler) {
+		return context -> {
+			if (!context.getIssuer().isPlayer()) {
+				return channels.keySet();
+			}
+
+			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
+			if (registration == null) {
+				return Collections.emptyList();
+			}
+
+			User user = registration.getProvider().getUserManager().getUser(context.getIssuer().getUniqueId());
+			return userHandler.apply(user);
+		};
 	}
 
 }

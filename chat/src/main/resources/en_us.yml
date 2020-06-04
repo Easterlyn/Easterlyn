@@ -6,6 +6,14 @@ chat:
     requires_mod: '{color:bad.a}Look pal, you need to be a channel mod to do that.'
     requires_owner: '{color:bad.a}Buddy, you can''t do that unless you own the place.'
     no_change: '{color:bad.a}What, you take me for a chump? That''s not a change.'
+    no_current_channel: '{color:bad.a}You are not focused on a channel. Try "/focus #main"'
+    no_specified_channel: '{color:bad.a}Please specify a channel.'
+    no_matching_channel: '{color:bad.a}No such channel: {color:bad.b}{value}'
+    no_channel_access: '{color:bad.a}You do not have access to {color:bad.b}{value}{color:bad.a}. Try joining it!'
+    listening_to_channel: '{color:bad.a}You are listening to {color:bad.b}{value}{color:bad.a}.'
+    not_listening_to_channel: '{color:bad.a}You are not listening to {color:bad.b}{value}{color:bad.a}.'
+    channel_not_modifiable: '{color:bad.a}Channel is not modifiable!'
+    no_content: '{color:bad.a}What are you trying to say in {color:bad.b}{value}{color:bad.a}?'
   commands:
     aether.description: '{color:normal.a}Send messages from the aether.'
     channel:

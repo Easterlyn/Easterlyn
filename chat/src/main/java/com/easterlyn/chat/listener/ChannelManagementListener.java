@@ -43,7 +43,8 @@ public class ChannelManagementListener implements Listener {
 
 		event.setCancelled(true);
 
-		User user = easterlynRSP.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+		EasterlynCore core = easterlynRSP.getProvider();
+		User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
 		event.getPlayer().setDisplayName(user.getDisplayName());
 
 		Channel channel = null;
@@ -56,12 +57,12 @@ public class ChannelManagementListener implements Listener {
 			}
 			String channelName = event.getMessage().substring(1, space);
 			if (space == event.getMessage().length()) {
-				user.sendMessage("What are you trying to say in #" + channelName + "?");
+				core.getLocaleManager().sendMessage(event.getPlayer(), "chat.common.no_content", "{value}", '#' + channelName);
 				return;
 			}
 			channel = chat.getChannels().get(channelName);
 			if (channel == null) {
-				user.sendMessage("Invalid channel. Create it with `/channel create #" + channelName + "`!");
+				core.getLocaleManager().sendMessage(event.getPlayer(), "chat.common.no_matching_channel", "{value}", '#' + channelName);
 				return;
 			}
 			event.setMessage(event.getMessage().substring(space + 1));
@@ -71,7 +72,7 @@ public class ChannelManagementListener implements Listener {
 		if (channel == null) {
 			channel = chat.getChannels().get(user.getStorage().getString(EasterlynChat.USER_CURRENT));
 			if (channel == null) {
-				user.sendMessage("No current channel set! Focus on the main channel with `/join #`!");
+				core.getLocaleManager().sendMessage(event.getPlayer(), "chat.common.not_listening_to_channel");
 				return;
 			}
 		}
@@ -98,6 +99,7 @@ public class ChannelManagementListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerJoin(PlayerJoinEvent event) {
+		// TODO convert to language system
 		RegisteredServiceProvider<EasterlynCore> easterlynProvider = chat.getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (easterlynProvider == null) {
 			return;
@@ -155,7 +157,6 @@ public class ChannelManagementListener implements Listener {
 				commonBuilder.append(' ');
 			}
 
-			// TODO construct rich instead? Not hard, just annoying.
 			otherUser.sendMessage(joinMessage.replace("{channels}", commonBuilder.toString()));
 		});
 	}
