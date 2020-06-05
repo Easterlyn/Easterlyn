@@ -11,6 +11,7 @@ import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
+import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.UserRank;
@@ -32,57 +33,58 @@ public class CaptchaCommand extends BaseCommand {
 	}
 
 	@Subcommand("add")
-	@Description("Add a custom alphanumeric captcha hash.")
-	@Syntax("/captcha add <alphanumeric 8+ character hash>")
+	@Description("{@@captcha.commands.captcha.add.description}")
+	@Syntax("<hash>")
 	@CommandPermission("easterlyn.command.captcha.add")
 	public void add(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
 		if (!hash.matches("[0-9A-Za-z]{8,}")) {
-			player.sendMessage("command.hash.requirements");
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.add.requirements"));
 			return;
 		}
 
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if (item.getType() == Material.AIR) {
-			player.sendMessage("command.hash.requirements");
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("core.common.no_item"));
 			return;
 		}
 		if (captcha.addCustomHash(hash, item)) {
-			player.sendMessage("command.hash.success_save".replace("{TARGET}", hash));
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.add.success"));
 		} else {
-			player.sendMessage("command.hash.used".replace("{TARGET}", hash));
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.add.in_use"));
 		}
 	}
 
 	@Subcommand("get")
-	@Description("Get a captcha by hash.")
-	@Syntax("/captcha get <valid hash>")
+	@Description("{@@captcha.commands.captcha.get.description}")
+	@Syntax("<hash>")
 	@CommandCompletion("@captcha")
 	@CommandPermission("easterlyn.command.captcha.get")
 	public void get(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
 		ItemStack item = captcha.getCaptchaForHash(hash);
 		if (item == null) {
-			player.sendMessage("command.hash.unused");
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.get.invalid"));
 			return;
 		}
 		player.getWorld().dropItem(player.getLocation(), item).setPickupDelay(0);
-		player.sendMessage("command.hash.success_load".replace("{TARGET}", hash));
+		getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.get.success"));
 	}
 
 	@Subcommand("batch")
 	@CommandAlias("baptcha")
-	@Description("Captcha in bulk!")
-	@Syntax("Run with an item to batch captcha in hand.")
+	@Description("")
+	@Syntax("")
 	@CommandPermission("easterlyn.command.captcha.batch")
 	@CommandCompletion("@permission:value=easterlyn.command.baptcha.free,complete=free")
-	public void baptcha(@Flags(CoreContexts.SELF) Player player, @Optional @CommandPermission("easterlyn.command.baptcha.free") String free) {
+	public void baptcha(@Flags(CoreContexts.SELF) Player player,
+			@Optional @Single @CommandPermission("easterlyn.command.captcha.batch.free") String free) {
 		ItemStack item = player.getInventory().getItemInMainHand();
 		if (item.getType() == Material.AIR || captcha.canNotCaptcha(item)) {
-			player.sendMessage("captcha.uncaptchable");
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.batch.invalid"));
 			return;
 		}
 
 		if (item.getAmount() != item.getType().getMaxStackSize()) {
-			player.sendMessage("command.baptcha.stack");
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.batch.under_max"));
 			return;
 		}
 
@@ -90,7 +92,7 @@ public class CaptchaCommand extends BaseCommand {
 		ItemStack blankCaptcha = EasterlynCaptchas.getBlankCaptchacard();
 
 		int max;
-		if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("easterlyn.command.baptcha.free")
+		if (player.getGameMode() == GameMode.CREATIVE || player.hasPermission("easterlyn.command.captcha.batch.free")
 				&& "free".equalsIgnoreCase(free)) {
 			max = Integer.MAX_VALUE;
 		} else {
@@ -109,10 +111,11 @@ public class CaptchaCommand extends BaseCommand {
 		}
 
 		if (max == 0) {
-			player.sendMessage("command.baptcha.noCaptchas");
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.batch.no_captchas"));
 			return;
 		}
 
+		// TODO fix blank captchas
 		boolean blank = EasterlynCaptchas.isBlankCaptcha(item);
 
 		int count = 0;
@@ -136,18 +139,19 @@ public class CaptchaCommand extends BaseCommand {
 		item = captcha.getCaptchaForItem(item);
 		if (item != null) {
 			item.setAmount(count);
+			player.getInventory().addItem(item);
 		}
-		player.getInventory().addItem(item);
-		player.sendMessage("command.baptcha.success".replace("{COUNT}", String.valueOf(count)));
+		getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.batch.success"),
+				"{value}", String.valueOf(count));
 	}
 
 	@CommandAlias("convert")
-	@Description("Convert captchas whose hashes have changed.")
-	@Syntax("Run with an item to batch captcha in hand.")
+	@Description("{@@captcha.commands.captcha.convert}")
+	@Syntax("")
 	@CommandPermission("easterlyn.command.captcha.convert")
 	public void convert(@Flags(CoreContexts.SELF) Player player) {
-		int convert = captcha.convert(player);
-		player.sendMessage("Converted " + convert + " captchas!");
+		getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.batch.success"),
+				"{value}", String.valueOf(captcha.convert(player)));
 	}
 
 }

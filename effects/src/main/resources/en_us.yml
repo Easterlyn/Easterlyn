@@ -1,0 +1,6 @@
+effects:
+  commands:
+    effect:
+      description: '{color:normal.a}Manage effects!'
+      success: '{color:normal.a}Added {value}'
+      invalid: '{color:bad.a}Invalid effect: {color:bad.b}{value}'

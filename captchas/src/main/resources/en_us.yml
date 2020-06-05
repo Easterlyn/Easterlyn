@@ -1,0 +1,21 @@
+captcha:
+  commands:
+    captcha:
+      add:
+        description: '{color:normal.a}Add a custom captcha hash.'
+        requirements: '{color:bad.a}Hashes must be 8+ alphanumeric characters!'
+        success: '{color:normal.a}Added new hash!'
+        in_use: '{color:bad.a}Hash already exists! If you REALLY want it, manually move files.'
+      get:
+        description: '{color:normal.a}Get a captcha by hash.'
+        invalid: '{color:bad.a}Hash is not in use!'
+        success: '{color:normal.a}Captcha get!'
+      batch:
+        description: '{color:normal.a}Captcha in bulk!'
+        invalid: '{color:normal.a}Cannot captcha item in main hand!'
+        under_max: '{color:normal.a}Max stacks only for batch captcha creation!'
+        no_captchas: '{color:bad.a}No blank captchas left to use!'
+        success: '{color:normal.a}Filled {color:normal.b}{value}{color:normal.a} captchas!'
+      convert:
+        description: '{color:normal.a}Convert captchas whose hashes have changed.'
+        success: '{color:normal.a}Converted {color:normal.b}{value}{color:normal.a} captchas!'

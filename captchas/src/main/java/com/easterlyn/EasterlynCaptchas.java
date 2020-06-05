@@ -17,6 +17,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -53,7 +54,11 @@ public class EasterlynCaptchas extends JavaPlugin {
 
 				@Override
 				public ItemStack load(@NotNull String hash) throws Exception {
-					File file = new File(EasterlynCaptchas.this.getDataFolder().getPath() + File.separator + "captcha", hash);
+					File captchaFolder = new File(getDataFolder(), "captcha");
+					if (!captchaFolder.exists() && !captchaFolder.mkdirs()) {
+						throw new FileNotFoundException();
+					}
+					File file = new File(captchaFolder, hash);
 					if (!file.exists()) {
 						throw new FileNotFoundException();
 					}
@@ -421,6 +426,18 @@ public class EasterlynCaptchas extends JavaPlugin {
 	}
 
 	private void register(EasterlynCore plugin) {
+		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("captcha", () -> {
+			File captchaFolder = new File(getDataFolder(), "captcha");
+			if (!captchaFolder.exists() && !captchaFolder.mkdirs()) {
+				return Collections.emptyList();
+			}
+			String[] captchaHashes = captchaFolder.list();
+			if (captchaHashes == null) {
+				return Collections.emptyList();
+			}
+			return Arrays.asList(captchaHashes);
+		});
+
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.captcha.command");
 		ItemUtil.addUniqueCheck(EasterlynCaptchas::isCaptcha);
 		plugin.getLocaleManager().addLocaleSupplier(this);

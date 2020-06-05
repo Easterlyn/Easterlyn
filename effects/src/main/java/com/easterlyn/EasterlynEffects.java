@@ -17,6 +17,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
@@ -110,6 +111,10 @@ public class EasterlynEffects extends JavaPlugin {
 	}
 
 	private void register(@NotNull EasterlynCore plugin) {
+		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("effect",
+				() -> effects.values().stream().map(Effect::getName).collect(Collectors.toSet()));
+		plugin.getCommandManager().getCommandCompletions().setDefaultCompletion("effect", Effect.class);
+
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.effect.command");
 
 		EconomyUtil.addWorthModifier(itemStack -> getEffects(true, itemStack).keySet().stream()

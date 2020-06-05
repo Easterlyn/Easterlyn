@@ -37,6 +37,7 @@ core:
     whole_number_within: '{color:bad.a}Please enter a whole number between {min} and {max}.'
     invalid_player: '{color:bad.a}Invalid player: {color:bad.b}{value}'
     success: '{color:normal.a}Congratulations, you''re our 1000th visitor!'
+    no_item: '{color:bad.a}You must be holding an item.'
   commands:
     ping:
       description: '{color:normal.a}Check connection to the server!'
