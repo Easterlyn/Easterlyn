@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import com.easterlyn.EasterlynCaptchas;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.StringUtil;
@@ -21,20 +22,22 @@ import org.bukkit.inventory.ItemStack;
 public class ItemInformationCommand extends BaseCommand {
 
 	@Dependency
+	EasterlynCore core;
+	@Dependency
 	EasterlynCaptchas captchas;
 
 	@CommandAlias("iteminfo")
-	@Description("Get item serialization info.")
+	@Description("{@@sink.module.iteminfo.description}")
 	@CommandPermission("easterlyn.command.iteminfo")
 	public void itemInfo(@Flags(CoreContexts.SELF) Player player) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand.getType() == Material.AIR) {
-			player.sendMessage("You must be holding an item!");
+			core.getLocaleManager().sendMessage(player, "core.common.no_item");
 			return;
 		}
 
 		BaseComponent component = StringUtil.getItemComponent(hand);
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, StringUtil.getItemText(hand)));
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, StringUtil.getItemText(hand)));
 		component = new TextComponent(component, new TextComponent(": "), new TextComponent(ChatColor.stripColor(hand.toString())));
 		player.sendMessage(component);
 		player.sendMessage("Hash: " + captchas.calculateHashForItem(hand));

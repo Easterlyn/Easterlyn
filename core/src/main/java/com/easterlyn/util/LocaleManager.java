@@ -19,6 +19,7 @@ import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -153,19 +154,25 @@ public class LocaleManager {
 		return aggregated;
 	}
 
-	public void sendMessage(CommandSender sender, String key, String... replacements) {
+	public void sendMessage(@Nullable CommandSender sender, @NotNull String key, @NotNull String... replacements) {
 		sendMessage(sender, ChatMessageType.CHAT, key, Collections.emptyList(), replacements);
 	}
 
-	public void sendMessage(CommandSender sender, String key, Collection<QuoteConsumer> additionalHandlers) {
+	public void sendMessage(@Nullable CommandSender sender, @NotNull String key,
+			@NotNull Collection<QuoteConsumer> additionalHandlers) {
 		sendMessage(sender, ChatMessageType.CHAT, key, additionalHandlers);
 	}
 
-	public void sendMessage(CommandSender sender, ChatMessageType type, String key, String... replacements) {
+	public void sendMessage(@Nullable CommandSender sender, @NotNull ChatMessageType type, @NotNull String key,
+			@NotNull String... replacements) {
 		sendMessage(sender, type, key, Collections.emptyList(), replacements);
 	}
 
-	public void sendMessage(CommandSender sender, ChatMessageType type, String key, Collection<QuoteConsumer> additionalHandlers, String... replacements) {
+	public void sendMessage(@Nullable CommandSender sender, @NotNull ChatMessageType type, @NotNull String key,
+			@NotNull Collection<QuoteConsumer> additionalHandlers, @NotNull String... replacements) {
+		if (sender == null) {
+			return;
+		}
 		String message = getValue(key, getLocale(sender), replacements);
 		if (message == null || message.isEmpty()) {
 			return;
@@ -206,13 +213,31 @@ public class LocaleManager {
 		}
 	}
 
-	@Nullable
-	public String getValue(@NotNull String key) {
+	public void broadcast(@NotNull String key, @NotNull String... replacements) {
+		broadcast(ChatMessageType.CHAT, key, Collections.emptyList(), replacements);
+	}
+
+	public void broadcast(@NotNull String key, @NotNull Collection<QuoteConsumer> additionalHandlers) {
+		broadcast(ChatMessageType.CHAT, key, additionalHandlers);
+	}
+
+	public void broadcast(@NotNull ChatMessageType type, @NotNull String key, @NotNull String... replacements) {
+		broadcast(type, key, Collections.emptyList(), replacements);
+	}
+
+	public void broadcast(@NotNull ChatMessageType type, @NotNull String key,
+			@NotNull Collection<QuoteConsumer> additionalHandlers, @NotNull String... replacements) {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			sendMessage(player, type, key, additionalHandlers, replacements);
+		}
+		sendMessage(Bukkit.getConsoleSender(), type, key, additionalHandlers, replacements);
+	}
+
+	public @Nullable String getValue(@NotNull String key) {
 		return getValue(key, defaultLocale);
 	}
 
-	@Nullable
-	public String getValue(@NotNull String key, @NotNull String locale) {
+	public @Nullable String getValue(@NotNull String key, @NotNull String locale) {
 		String value = getOrLoadLocale(locale).getString(key);
 		if (value == null || value.isEmpty()) {
 			return null;
@@ -223,8 +248,7 @@ public class LocaleManager {
 		return value;
 	}
 
-	@Nullable
-	public String getValue(@NotNull String key, @NotNull String locale, String @NotNull ... replacements) {
+	public @Nullable String getValue(@NotNull String key, @NotNull String locale, String @NotNull ... replacements) {
 		if (replacements.length % 2 != 0) {
 			plugin.getLogger().log(Level.WARNING, "[LocaleManager] Replacement data is uneven", new Exception());
 		}
@@ -246,7 +270,7 @@ public class LocaleManager {
 		return value;
 	}
 
-	public String getLocale(@NotNull CommandSender sender) {
+	public String getLocale(@Nullable CommandSender sender) {
 		return sender instanceof Player ? ((Player) sender).getLocale() : defaultLocale;
 	}
 

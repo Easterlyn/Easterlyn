@@ -3,10 +3,12 @@ package com.easterlyn.chat.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.chat.channel.Channel;
@@ -34,6 +36,8 @@ public class MessageCommand extends BaseCommand {
 	@CommandAlias("message|msg|m|whisper|w|pm|tell|t")
 	@Description("{@@chat.commands.message.description}")
 	@CommandPermission("easterlyn.command.message")
+	@Syntax("<recipient> <message>")
+	@CommandCompletion("@playerOnline")
 	public void sendMessage(BukkitCommandIssuer sender, @Flags(CoreContexts.ONLINE) User target, String message) {
 		User issuer;
 		if (sender.isPlayer()) {
@@ -69,6 +73,8 @@ public class MessageCommand extends BaseCommand {
 	@CommandAlias("reply|r")
 	@Description("{@@chat.commands.reply.description}")
 	@CommandPermission("easterlyn.command.message")
+	@Syntax("<message>")
+	@CommandCompletion("")
 	public void sendMessage(BukkitCommandIssuer sender, String message) {
 		User target = replies.get(sender.getUniqueId());
 		if (target == null) {

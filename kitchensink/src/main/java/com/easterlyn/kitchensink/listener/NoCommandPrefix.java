@@ -1,15 +1,18 @@
 package com.easterlyn.kitchensink.listener;
 
-import com.easterlyn.user.UserRank;
-import com.easterlyn.util.PermissionUtil;
+import com.comphenix.protocol.ProtocolLibrary;
+import com.easterlyn.EasterlynCore;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 
 public class NoCommandPrefix implements Listener {
 
-	public NoCommandPrefix() {
-		PermissionUtil.addParent("easterlyn.commands.unfiltered", UserRank.MODERATOR.getPermission());
+	public NoCommandPrefix(EasterlynCore plugin) {
+		try {
+			Class.forName("com.comphenix.protocol.ProtocolLibrary");
+			ProtocolLibrary.getProtocolManager().addPacketListener(new com.easterlyn.kitchensink.listener.RestrictTabCompletion(plugin));
+		} catch (ClassNotFoundException ignored) {}
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -19,7 +22,6 @@ public class NoCommandPrefix implements Listener {
 		if (!event.getPlayer().hasPermission("easterlyn.commands.unfiltered") && 0 < colon && (colon < space || space < 0)) {
 			event.setMessage("/" + event.getMessage().substring(colon + 1));
 		}
-		// TODO: prevent tab completion with ProtocolLib
 	}
 
 }

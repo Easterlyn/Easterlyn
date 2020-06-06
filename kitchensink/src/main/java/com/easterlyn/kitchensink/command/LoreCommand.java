@@ -280,8 +280,8 @@ public class LoreCommand extends BaseCommand {
 
 	@Subcommand("insert")
 	@Description("Insert a line of lore.")
-	@Syntax("/lore insert <line number> <text>")
-	@CommandCompletion("@integer Sample Text")
+	@Syntax("<line> <text>")
+	@CommandCompletion("@integer")
 	private void insert(Player player, int line, String text) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 

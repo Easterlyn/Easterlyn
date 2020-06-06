@@ -45,6 +45,7 @@ public enum UserRank {
 	}
 
 	public String getFriendlyName() {
+		// TODO translatable?
 		return this.friendlyName;
 	}
 

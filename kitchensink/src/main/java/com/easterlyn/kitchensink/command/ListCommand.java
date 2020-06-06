@@ -3,9 +3,12 @@ package com.easterlyn.kitchensink.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Syntax;
+import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
@@ -26,8 +29,10 @@ public class ListCommand extends BaseCommand {
 	EasterlynCore core;
 
 	@CommandAlias("list|ls")
-	@Description("List players online!")
+	@Description("{@@sink.module.list.description}")
 	@CommandPermission("easterlyn.command.list")
+	@Syntax("")
+	@CommandCompletion("")
 	public void list(BukkitCommandIssuer issuer) {
 		Player sender = issuer.getPlayer();
 		UserRank[] ranks = UserRank.values();
@@ -50,8 +55,8 @@ public class ListCommand extends BaseCommand {
 			}
 		}
 
-		issuer.sendMessage(String.format("%1$s%2$s+---------- %3$s%4$s%1$s/%3$s%5$s %1$sonline %2$s----------+",
-				ChatColor.YELLOW, ChatColor.STRIKETHROUGH, ChatColor.DARK_AQUA, total, Bukkit.getMaxPlayers()));
+		issuer.sendInfo(MessageKey.of("sink.module.list.header"), "{value}", String.valueOf(total),
+				"{max}", String.valueOf(Bukkit.getMaxPlayers()));
 
 		for (int i = ranks.length - 1; i >= 0; --i) {
 			String groupName = ranks[i].getFriendlyName();

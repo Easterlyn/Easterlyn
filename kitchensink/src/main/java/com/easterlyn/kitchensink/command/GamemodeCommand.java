@@ -3,16 +3,22 @@ package com.easterlyn.kitchensink.command;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import com.easterlyn.EasterlynCore;
+import com.easterlyn.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 
 @CommandAlias("gamemode|gm")
-@Description("Change game modes!")
+@Description("{@@sink.module.gamemode.description}")
 @CommandPermission("easterlyn.command.gamemode")
 public class GamemodeCommand {
+
+	@Dependency
+	EasterlynCore core;
 
 	@CommandAlias("0|surv|survival")
 	@Description("Set game mode to survival!")
@@ -39,24 +45,23 @@ public class GamemodeCommand {
 	}
 
 	private void setGameMode(BukkitCommandIssuer issuer, GameMode gameMode, Player target) {
-		if (target.getGameMode() == gameMode) {
-			issuer.sendMessage("Game mode is already " + gameMode.name().toLowerCase());
-			return;
+		if (target.getGameMode() != gameMode) {
+			target.setGameMode(gameMode);
 		}
-
-		target.setGameMode(gameMode);
 
 		if (target.getGameMode() != gameMode) {
-			issuer.sendMessage("Game mode change prevented!");
+			core.getLocaleManager().sendMessage(issuer.getIssuer(), "sink.module.gamemode.prevented");
 			return;
 		}
 
+		String gameModeName = StringUtil.getFriendlyName(gameMode);
 		if (!target.hasPermission("easterlyn.command.gamemode")) {
-			target.sendMessage("Game mode set to " + gameMode.name().toLowerCase() + "!");
+			core.getLocaleManager().sendMessage(target, "sink.module.gamemode.success",
+					"{value}", gameModeName);
 		}
 
 		Bukkit.broadcast(ChatColor.GRAY + "[" + issuer.getIssuer().getName() + "] Set " + target.getName()
-						+ "'s game mode to " + gameMode.name().toLowerCase(),
+						+ "'s game mode to " + gameModeName,
 				"easterlyn.command.gamemode");
 
 	}

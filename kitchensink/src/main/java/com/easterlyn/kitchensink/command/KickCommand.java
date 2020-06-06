@@ -16,8 +16,8 @@ public class KickCommand extends BaseCommand {
 
 	@CommandAlias("kick")
 	@Description("Kick a player.")
-	@Syntax("/kick <player> <reason>")
 	@CommandPermission("easterlyn.command.kick")
+	@Syntax("<player> [reason]")
 	@CommandCompletion("@player")
 	public void kick(@Flags(CoreContexts.ONLINE) Player target, @Default("Big brother is watching.") String reason) {
 		target.kickPlayer(reason);
@@ -26,8 +26,8 @@ public class KickCommand extends BaseCommand {
 
 	@CommandAlias("silentkick")
 	@Description("Kick a player without a broadcast.")
-	@Syntax("/silentkick <player> <reason>")
 	@CommandPermission("easterlyn.command.silentkick")
+	@Syntax("<player> [reason]")
 	@CommandCompletion("@player")
 	public void silentKick(@Flags(CoreContexts.ONLINE) Player target, @Default("Connection lost.") String reason) {
 		target.kickPlayer(reason);
@@ -35,8 +35,8 @@ public class KickCommand extends BaseCommand {
 
 	@CommandAlias("kickall")
 	@Description("Kick all players.")
-	@Syntax("/kickall <reason>")
 	@CommandPermission("easterlyn.command.kickall")
+	@Syntax("[reason]")
 	@CommandCompletion("@player")
 	public void kickAll(@Default("Come back in a minute!") String reason) {
 		Bukkit.getOnlinePlayers().forEach(player -> player.kickPlayer(reason));

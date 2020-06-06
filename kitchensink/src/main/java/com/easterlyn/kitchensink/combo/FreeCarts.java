@@ -29,7 +29,7 @@ public class FreeCarts extends BaseCommand implements Listener {
 	}
 
 	@CommandAlias("freecart|tempcart")
-	@Description("Force a player into a free cart that will despawn when exited or crashed.")
+	@Description("{@@sink.module.freecart.description}")
 	@CommandPermission("easterlyn.command.freecart")
 	public void spawnFreeCart(Player target, double x, double y, double z, double vectorX, double vectorY, double vectorZ) {
 		target.getWorld().spawn(new Location(target.getWorld(), x, y, z), RideableMinecart.class, minecart -> {

@@ -3,9 +3,11 @@ package com.easterlyn.chat.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.user.User;
 import org.bukkit.ChatColor;
@@ -19,6 +21,8 @@ public class NicknameCommand extends BaseCommand {
 	@CommandAlias("nick|nickname|name")
 	@Description("{@@chat.commands.nickname.description}")
 	@CommandPermission("easterlyn.command.nick")
+	@Syntax("[target] <nickname|off>")
+	@CommandCompletion("@player")
 	public void setNick(BukkitCommandIssuer issuer, User user, String nickname) {
 		nickname = ChatColor.translateAlternateColorCodes('&', nickname);
 		String oldName = user.getDisplayName();

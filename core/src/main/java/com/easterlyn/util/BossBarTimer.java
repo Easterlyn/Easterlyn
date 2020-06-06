@@ -26,23 +26,16 @@ public class BossBarTimer {
 	// Minimum noticeable boss bar increment on vanilla client - bar is 180px.
 	private static final double MINIMUM_BOSS_BAR_INCREMENT = 1D / 180;
 
-	@NotNull
-	private final String title;
-	@NotNull
-	private final Runnable onComplete;
-	@NotNull
-	private final Collection<Player> players;
-	@Nullable
-	private Supplier<Boolean> shouldContinue = null;
-	@Nullable
-	private Runnable onFailure = null;
-	@NotNull
-	private BarColor barColor = BarColor.GREEN;
-	@NotNull
-	private BarStyle barStyle = BarStyle.SOLID;
-	private BarFlag[] barFlags = new BarFlag[0];
-	@NotNull
-	private DisplayType displayType = DisplayType.FILL;
+	private final @NotNull String title;
+	private final @NotNull Runnable onComplete;
+	private @NotNull final Collection<Player> players;
+	private @Nullable Supplier<Boolean> shouldContinue = null;
+	private @Nullable Runnable onFailure = null;
+	private @NotNull BarColor barColor = BarColor.GREEN;
+	private @NotNull BarStyle barStyle = BarStyle.SOLID;
+	private @NotNull BarFlag [] barFlags = new BarFlag[0];
+
+	private @NotNull DisplayType displayType = DisplayType.FILL;
 
 	public BossBarTimer(@NotNull String title, @NotNull Runnable onComplete, @NotNull Player player, @NotNull Player... players) {
 		this.title = title;
@@ -52,33 +45,28 @@ public class BossBarTimer {
 		this.players.addAll(Arrays.asList(players));
 	}
 
-	@NotNull
-	public BossBarTimer withFailureFunction(@NotNull Supplier<Boolean> continueCheck, @NotNull Runnable onFailure) {
+	public @NotNull BossBarTimer withFailureFunction(@NotNull Supplier<Boolean> continueCheck, @NotNull Runnable onFailure) {
 		this.shouldContinue = continueCheck;
 		this.onFailure = onFailure;
 		return this;
 	}
 
-	@NotNull
-	public BossBarTimer withBarColor(@NotNull BarColor barColor) {
+	public @NotNull BossBarTimer withBarColor(@NotNull BarColor barColor) {
 		this.barColor = barColor;
 		return this;
 	}
 
-	@NotNull
-	public BossBarTimer withBarStyle(@NotNull BarStyle barStyle) {
+	public @NotNull BossBarTimer withBarStyle(@NotNull BarStyle barStyle) {
 		this.barStyle = barStyle;
 		return this;
 	}
 
-	@NotNull
-	public BossBarTimer withDisplayType(@NotNull DisplayType displayType) {
+	public @NotNull BossBarTimer withDisplayType(@NotNull DisplayType displayType) {
 		this.displayType = displayType;
 		return this;
 	}
 
-	@NotNull
-	public BossBarTimer withBarFlags(@NotNull BarFlag flag, @NotNull BarFlag... flags) {
+	public @NotNull BossBarTimer withBarFlags(@NotNull BarFlag flag, @NotNull BarFlag... flags) {
 		barFlags = EnumSet.of(flag, flags).toArray(new BarFlag[0]);
 		return this;
 	}

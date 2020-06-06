@@ -2,27 +2,26 @@ package com.easterlyn.kitchensink.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
-import co.aikar.commands.CommandIssuer;
-import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.MessageKeys;
-import co.aikar.commands.MinecraftMessageKeys;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
+import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
-import java.util.EnumSet;
-import java.util.stream.Collectors;
+import com.easterlyn.util.StringUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
 @CommandAlias("colour|color")
-@Description("Taste the rainbow!")
+@Description("{@@sink.module.colour.description}")
 @CommandPermission("easterlyn.command.colour")
 public class ColourCommand extends BaseCommand {
 
@@ -30,6 +29,7 @@ public class ColourCommand extends BaseCommand {
 	EasterlynCore core;
 
 	@Default
+	@Private
 	public void colour(BukkitCommandIssuer issuer) {
 		StringBuilder builder = new StringBuilder();
 		for (ChatColor colour : ChatColor.values()) {
@@ -41,41 +41,33 @@ public class ColourCommand extends BaseCommand {
 	}
 
 	@Subcommand("select")
-	@Description("Select your colour.")
-	@CommandPermission("easterlyn.command.colour.select")
-	public void colour(CommandIssuer issuer, @Flags("colour") ChatColor colour) {
-		if (!issuer.isPlayer()) {
-			issuer.sendError(MinecraftMessageKeys.NO_PLAYER_FOUND, "{search}", "null");
-			return;
-		}
-
-		EnumSet<ChatColor> allowed = EnumSet.of(ChatColor.RED, ChatColor.GOLD,
-				ChatColor.YELLOW, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.AQUA,
-				ChatColor.DARK_AQUA, ChatColor.BLUE, ChatColor.DARK_BLUE, ChatColor.LIGHT_PURPLE,
-				ChatColor.DARK_PURPLE, ChatColor.GRAY, ChatColor.DARK_GRAY, ChatColor.WHITE);
-
-		if (!allowed.contains(colour)) {
-			throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF, "{valid}",
-					allowed.stream().map(ChatColor::name).collect(Collectors.joining(", ", "[", "]")));
-		}
-
-		User user = core.getUserManager().getUser(issuer.getUniqueId());
+	@Description("{@@sink.module.colour.select.description}")
+	@CommandPermission("easterlyn.command.colour.select.self")
+	@Syntax("<colour>")
+	@CommandCompletion("@colour @playerOnlineWithPerm")
+	public void select(@Flags("colour") ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		user.setColor(colour);
-
-		user.sendMessage("Set colour to " + colour + colour.name());
+		String colourName = colour + StringUtil.getFriendlyName(colour);
+		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.colour.set.self",
+				"{value}", colourName);
+		user.sendMessage("Set colour to " + colourName);
+		if (!getCurrentCommandIssuer().getUniqueId().equals(user.getUniqueId())) {
+			getCurrentCommandIssuer().sendInfo(MessageKey.of("sink.module.colour.set.other"),
+					"{target}", user.getDisplayName(), "{value}", colourName);
+		}
 	}
 
-	@CommandAlias("colour|color")
-	@Description("Set someone's colour. Bypasses selection limitations.")
+	@Subcommand("set")
+	@Description("{@@sink.module.colour.set.description}")
 	@CommandPermission("easterlyn.command.colour.select.other")
-	public void colour(CommandIssuer issuer, User target, @Flags("colour") ChatColor colour) {
-		target.setColor(colour);
-		target.sendMessage("Your colour was set to " + colour + colour.name());
-		issuer.sendMessage("Set " + target.getDisplayName() + "'s colour to " + colour + colour.name());
+	public void set(ChatColor colour, User target) {
+		select(colour, target);
 	}
 
+	// Intentionally not configurable, heck you.
+	@Private
 	@CommandAlias("lel")
-	@Description("【ＴＡＳＴＥ　ＴＨＥ　ＰＡＩＮＢＯＷ】")
+	@Description("【ＴＡＳＴＥ  ＴＨＥ  ＰＡＩＮＢＯＷ】")
 	@Syntax("[painful to view sentence]")
 	@CommandPermission("easterlyn.command.lel")
 	public void requestLordEnglishEyeFuck(String message) {

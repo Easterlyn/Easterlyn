@@ -5,18 +5,19 @@ import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
+import co.aikar.locales.MessageKey;
 import com.sk89q.worldedit.internal.expression.Expression;
 import java.util.HashMap;
 import java.util.UUID;
 
 public class CalculateCommand extends BaseCommand {
 
-	// TODO reintroduce chat-based option and fun responses?
+	// TODO reintroduce chat-based option and fun responses
 
 	private final HashMap<UUID, Double> lastValue = new HashMap<>();
 
 	@CommandAlias("calculate|calc|halc")
-	@Description("Perform a calculation!")
+	@Description("{@@sink.module.calculate}")
 	@CommandPermission("easterlyn.command.calculate")
 	public void calculate(BukkitCommandIssuer issuer, String input) {
 		input = input.toLowerCase().replace('x', '*');
@@ -28,13 +29,13 @@ public class CalculateCommand extends BaseCommand {
 			lastValue.put(issuer.getUniqueId(), ans);
 			String answer;
 			if (ans == (int) ans) {
-				answer = String.format("%d", (int) ans);
+				answer = String.valueOf((int) ans);
 			} else {
 				answer = String.format("%s", ans);
 			}
 			issuer.sendMessage(input + " = " + answer);
 		} catch (Exception e) {
-			issuer.sendMessage("Error parsing equation!");
+			issuer.sendInfo(MessageKey.of("sink.module.calculate.error"));
 		}
 	}
 

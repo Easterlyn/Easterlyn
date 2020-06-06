@@ -71,14 +71,15 @@ public class Colors {
 		}
 	}
 
-	public static ChatColor register(@Nullable ConfigurationSection colorSection, @NotNull String name, @NotNull ChatColor defaultColor) {
+	public static ChatColor register(@Nullable ConfigurationSection colorSection, @NotNull String name,
+			@NotNull ChatColor defaultColor) {
 		ChatColor color = defaultColor;
 
 		if (colorSection != null) {
 			color = getOrDefault(colorSection.getString(name), defaultColor);
 		}
 
-		mappings.put(name.toUpperCase(Locale.ENGLISH), color);
+		mappings.put(name.toLowerCase(Locale.ENGLISH), color);
 
 		return color;
 	}
@@ -88,7 +89,7 @@ public class Colors {
 			return defaultColor;
 		}
 
-		colorName = colorName.toUpperCase(Locale.ENGLISH);
+		colorName = colorName.toLowerCase(Locale.ENGLISH);
 		ChatColor color = mappings.get(colorName);
 
 		if (color != null) {

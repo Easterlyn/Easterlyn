@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 
 public class CoordinatesCommand extends BaseCommand {
 
+	// TODO lang
 	@CommandAlias("coordinates|coords")
 	@Description("Get your coordinates!")
 	@CommandPermission("easterlyn.command.coordinates")

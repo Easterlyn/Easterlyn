@@ -1,0 +1,85 @@
+sink:
+  common:
+    teleport:
+      bar_title: 'Preparing to Teleport...'
+      player_unloaded: '{color:bad.a}Cannot teleport at this time, player not loaded.'
+      blocked: '{color:bad.a}Teleportation blocked!'
+      movement: '{color:bad.a}Hold still to lock teleport location!'
+  module:
+    back:
+      description: '{color:normal.a}Teleport to your previous location!'
+      error:
+        cooldown: '{color:bad.a}You''re on cooldown for "/back" for another {color:bad.b}{value}{color:bad.a}.'
+        missing: '{color:bad.a}No previous location stored!'
+      success: '{color:normal.a}Teleported to your previous location!'
+      success_other: '{color:normal.a}Teleported @{target} to their previous location.'
+    death:
+      description: '{color:normal.a}Teleport to your last death!'
+      error:
+        cooldown: '{color:bad.a}You''re on cooldown for "/death" for another {color:bad.b}{value}{color:bad.a}.'
+        missing: '{color:bad.a}No death location stored!'
+      success: '{color:normal.a}Teleported to your latest death!'
+      success_other: '{color:normal.a}Teleported @{target} to their latest death.'
+    freecart:
+      description: '{color:normal.a}Force a player into a free cart is removed when exited or crashed.'
+    onlogin:
+      description: '{color:normal.a}Manage commands run on login.'
+      list.description: '{color:normal.a}List login commands.'
+      add:
+        description: '{color:normal.a}Add a login command.'
+        success: '{color:normal.a}Added {value}'
+      remove:
+        description: '{color:normal.a}Remove a login command.'
+        success: '{color:normal.a}Removed {value}'
+      error:
+        none: '{color:bad.a}No login commands set!'
+        capped: '{color:bad.a}Too many login commands!'
+        not_command: '{color:bad.a}Please specify a command to add.'
+    meteors:
+      description: '{color:normal.a}Summon a meteor.'
+    ban:
+      description: '{color:normal.a}Ban a player.'
+      tempban.description: '{color:normal.a}Ban a player for a time period.'
+      expiration: '{color:bad.a}Ban expires {color:bad.a}{value}.'
+      banned: '{color:bad.a}Banned: '
+      announcement: '{color:bad.c}{target}{color:bad.a} is banned:{color:bad.b} {reason}'
+    calculate:
+      description: '{color:normal.a}Perform a calculation!'
+      error: '{color:bad.a}Error parsing equation!'
+    colour:
+      description: '{color:normal.a}Taste the rainbow!'
+      select.description: '{color:normal.a}Select your colour.'
+      set:
+        description: '{color:normal.a}Set someone''s colour. Bypasses selection limitations.'
+        self: '{color:normal.a}Set color to {value}'
+        other: '{color:normal.a}Set color of @{target} to {value}'
+    cooldown:
+      reset:
+        description: 'Reset cooldowns!'
+        all: 'Cooldowns reset!'
+        single: 'Cooldown reset for "{target}"'
+    fly:
+      description: '{color:normal.a}Manage flight for a player.'
+      message: '{color:normal.a}Flight turned {value}'
+      other_suffix: '{color:normal.a} for @{target}'
+    gamemode:
+      description: '{color:normal.a}Change game modes!'
+      prevented: '{color:bad.a}Game mode change prevented!'
+      success: '{color:normal.a}Game mode set to {color:normal.b}{value}'
+    heal:
+      description: '{color:normal.a}Heal a player to full health.'
+      attribute_missing: '{color:bad.a}Cannot obtain max health from attribute!'
+      success:
+        target: '{color:normal.a}You have been healed!'
+        other: '{color:normal.a}Healed @{target}'
+    feed:
+      description: '{color:normal.a}Fill a player''s food.'
+      success:
+        target: '{color:normal.a}You have been fed!'
+        other: '{color:normal.a}Fed @{target}'
+    iteminfo.description: '{color:normal.a}Get item serialization info.'
+    list:
+      description: '{color:normal.a}List players online!'
+      header: '{color:normal.a}{color:strike}+----------{color:normal.b} {value}{color:normal.a}/{color:normal.b}{max}{color:normal.a} online {color:normal.a}{color:strike}----------+'
+
+

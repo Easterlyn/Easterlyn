@@ -3,9 +3,13 @@ package com.easterlyn.kitchensink.combo;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Syntax;
+import com.easterlyn.command.CoreContexts;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,11 +43,13 @@ public class Meteors extends BaseCommand implements Listener {
 	}
 
 	@CommandAlias("meteor")
-	@Description("Summon a meteor.")
+	@Description("{@@sink.module.meteors.description}")
 	@CommandPermission("easterlyn.command.meteor")
+	@Syntax("")
+	@CommandCompletion("")
 	private void meteorite(BukkitCommandIssuer issuer) {
 		if (!issuer.isPlayer()) {
-			issuer.sendMessage("Please specify a location.");
+			getCommandHelp().showHelp();
 			return;
 		}
 
@@ -58,29 +64,24 @@ public class Meteors extends BaseCommand implements Listener {
 	}
 
 	@CommandAlias("meteor")
-	@Description("Summon a meteor.")
+	@Description("{@@sink.module.meteors.description}")
 	@CommandPermission("easterlyn.command.meteor")
-	private void meteorite(BukkitCommandIssuer issuer, Player target, @Default("3") int radius,
-			@Default("false") boolean ignite, @Default("false") boolean damageTerrain
-			, @Default("NETHERRACK") Material material) {
-		if (target == null) {
-			issuer.sendMessage("Invalid target player!");
-			return;
-		}
-
+	@Syntax("<player> [radius] [ignite] [terrainDamage] [material]")
+	@CommandCompletion("@player @integer @boolean @boolean @material")
+	private void meteorite(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE) Player target,
+			@Default("3") int radius, @Default("false") boolean ignite,
+			@Default("false") boolean damageTerrain, @Default("NETHERRACK") Material material) {
 		createMeteorite(target.getLocation(), material, radius, ignite, damageTerrain);
 	}
 
 	@CommandAlias("meteor")
-	@Description("Summon a meteor.")
+	@Description("{@@sink.module.meteors.description}")
 	@CommandPermission("easterlyn.command.meteor")
+	@Syntax("<location> [radius] [ignite] [terrainDamage] [material]")
+	@CommandCompletion("@worldLocation @integer @boolean @boolean @material")
 	private void meteorite(BukkitCommandIssuer issuer, Location target, @Default("3") int radius,
 			@Default("false") boolean ignite, @Default("false") boolean damageTerrain
 			, @Default("NETHERRACK") Material material) {
-		if (target.getWorld() == null) {
-			issuer.sendMessage("Please specify a world.");
-			return;
-		}
 		createMeteorite(target, material, radius, ignite, damageTerrain);
 	}
 

@@ -61,6 +61,7 @@ public class CoreCompletions {
 //			context.
 //		});
 		// TODO player, playerOnline, playerOffline, playerOnlineIfPerm, commands
+		// location, worldLocation, material, world, chatcolor out of kitchen sink
 
 		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("password", Collections.singletonList("Hunter2"));
 	}

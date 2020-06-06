@@ -10,11 +10,11 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
+import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
+import com.easterlyn.command.CoreLang;
 import com.easterlyn.user.User;
-import com.easterlyn.user.UserRank;
-import com.easterlyn.util.PermissionUtil;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.event.EventHandler;
@@ -23,7 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 
 @CommandAlias("onlogin")
-@Description("Manage commands run on login.")
+@Description("{@@sink.module.onlogin.description}")
 @CommandPermission("easterlyn.command.onlogin")
 public class LoginCommands extends BaseCommand implements Listener {
 
@@ -32,11 +32,6 @@ public class LoginCommands extends BaseCommand implements Listener {
 	@Dependency
 	EasterlynCore core;
 
-	public LoginCommands() {
-		PermissionUtil.addParent("easterlyn.command.onlogin.other", UserRank.MODERATOR.getPermission());
-		PermissionUtil.addParent("easterlyn.command.onlogin.more", UserRank.MODERATOR.getPermission());
-	}
-
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
@@ -44,14 +39,15 @@ public class LoginCommands extends BaseCommand implements Listener {
 	}
 
 	@Subcommand("list")
-	@Description("List login commands.")
-	@Syntax("/onlogin list")
+	@Description("{@@sink.module.onlogin.list.description}")
+	@Syntax("[player]")
 	@CommandCompletion("@player")
 	public void list(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		CommandIssuer issuer = getCurrentCommandIssuer();
 		List<String> list = user.getStorage().getStringList(ONLOGIN);
 		if (list.isEmpty()) {
-			issuer.sendMessage("No login commands set!");
+			issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.none"));
+			return;
 		}
 		for (int i = 0; i < list.size(); ++i) {
 			issuer.sendMessage((i + 1) + ": " + list.get(i));
@@ -59,44 +55,44 @@ public class LoginCommands extends BaseCommand implements Listener {
 	}
 
 	@Subcommand("add")
-	@Description("Add a login command.")
-	@Syntax("/onlogin add /<command text>")
-	@CommandCompletion("@player")
+	@Description("{@@sink.module.onlogin.add.description}")
+	@Syntax("</command parameters>")
+	@CommandCompletion("@playerOnlineWithPerm")
 	public void add(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, String command) {
 		CommandIssuer issuer = getCurrentCommandIssuer();
 		List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
 		if (!issuer.hasPermission("easterlyn.command.onlogin.more") && list.size() >= 2 || list.size() >= 5) {
-			issuer.sendMessage("Too many login commands!");
+			issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.capped"));
 			return;
 		}
 		if (command == null || command.length() < 2 || command.charAt(0) != '/'
 				|| command.matches("/(\\w+:)?me .*")) {
-			issuer.sendMessage("Please specify a command to add.");
+			issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.not_command"));
 			return;
 		}
 		list.add(command);
 		user.getStorage().set(ONLOGIN, list);
-		issuer.sendMessage("Added " + command);
+		issuer.sendInfo(MessageKey.of("sink.module.onlogin.add.success"), "{value}", command);
 	}
 
 	@Subcommand("remove")
-	@Description("Remove a login command.")
-	@Syntax("/onlogin remove <index>")
-	@CommandCompletion("@player|@integer @integer")
+	@Description("{@@sink.module.onlogin.remove.description}")
+	@Syntax("<index>")
+	@CommandCompletion("@playerOnlineWithPerm @integer")
 	public void remove(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, int commandIndex) {
 		CommandIssuer issuer = getCurrentCommandIssuer();
 		List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
 		if (list.size() == 0) {
-			issuer.sendMessage("No login commands are set!");
+			issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.none"));
 			return;
 		}
 		if (commandIndex < 1 || commandIndex > list.size()) {
-			issuer.sendMessage("Please specify a number between 1 and " + list.size());
+			issuer.sendInfo(CoreLang.NUMBER_WITHIN, "{min}", "1", "max", String.valueOf(list.size()));
 			return;
 		}
 		String command = list.remove(commandIndex - 1);
 		user.getStorage().set(ONLOGIN, list);
-		issuer.sendMessage("Removed " + command);
+		issuer.sendInfo(MessageKey.of("sink.module.onlogin.remove.success"), "{value}", command);
 	}
 
 }

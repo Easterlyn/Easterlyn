@@ -5,8 +5,8 @@ import co.aikar.commands.BukkitCommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.ContextResolver;
-import com.comphenix.protocol.ProtocolLibrary;
 import com.easterlyn.kitchensink.combo.BackCommand;
+import com.easterlyn.kitchensink.combo.BanCommand;
 import com.easterlyn.kitchensink.combo.DeathPointCommand;
 import com.easterlyn.kitchensink.combo.FreeCarts;
 import com.easterlyn.kitchensink.combo.LoginCommands;
@@ -62,6 +62,11 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		getServer().getPluginManager().registerEvents(backCommand, this);
 		extraCommands.add(backCommand);
 
+		// Feature: Bans
+		BanCommand banCommand = new BanCommand();
+		getServer().getPluginManager().registerEvents(banCommand, this);
+		extraCommands.add(banCommand);
+
 		// Feature: Command for teleporting to last death location.
 		DeathPointCommand deathCommand = new DeathPointCommand();
 		getServer().getPluginManager().registerEvents(deathCommand, this);
@@ -102,9 +107,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 
 		// Feature: Killer rabbit has a 1/1000 chance to spawn
 		getServer().getPluginManager().registerEvents(new KillerRabbit(), this);
-
-		// Feature: Permission is required to use prefixes in commands.
-		getServer().getPluginManager().registerEvents(new NoCommandPrefix(), this);
 
 		// Feature: Entities killed by creative players or cramming do not drop loot or exp.
 		getServer().getPluginManager().registerEvents(new NoCreativeCrammingDrops(), this);
@@ -150,6 +152,10 @@ public class EasterlynKitchenSink extends JavaPlugin {
 	}
 
 	private void register(@NotNull EasterlynCore plugin) {
+
+		// Feature: Permission is required to use prefixes in commands.
+		getServer().getPluginManager().registerEvents(new NoCommandPrefix(plugin), this);
+
 		ContextResolver<ChatColor, BukkitCommandExecutionContext> colourResolver = supplier -> {
 			String firstArg = supplier.popFirstArg();
 			ChatColor matchedColor = null;
@@ -200,11 +206,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		extraCommands.forEach(command -> plugin.getCommandManager().registerCommand(command));
 
 		plugin.getLocaleManager().addLocaleSupplier(this);
-
-		try {
-			Class.forName("com.comphenix.protocol.ProtocolLibrary");
-			ProtocolLibrary.getProtocolManager().addPacketListener(new com.easterlyn.kitchensink.listener.RestrictTabCompletion(plugin));
-		} catch (ClassNotFoundException ignored) {}
 
 	}
 

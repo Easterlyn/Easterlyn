@@ -1,6 +1,7 @@
 package com.easterlyn.kitchensink.listener;
 
 import com.easterlyn.util.GenericUtil;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.EntityType;
@@ -22,7 +23,7 @@ public class WitherFacts implements Listener {
 		GenericUtil.consumeAs(BookMeta.class, facts.getItemMeta(), bookMeta -> {
 			bookMeta.setTitle("Wither Facts");
 			bookMeta.setAuthor(ChatColor.BLUE + "Pete");
-			bookMeta.addPage("Withers are awesome.");
+			bookMeta.spigot().addPage(new TextComponent[]{new TextComponent("Withers are awesome.")});
 			facts.setItemMeta(bookMeta);
 		});
 	}

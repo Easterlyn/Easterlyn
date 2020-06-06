@@ -1,5 +1,6 @@
 package com.easterlyn.kitchensink.listener;
 
+import com.easterlyn.event.ReportableEvent;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Rabbit;
@@ -23,7 +24,8 @@ public class KillerRabbit implements Listener {
 		rabbit.setCustomNameVisible(true);
 		rabbit.setRemoveWhenFarAway(false);
 
-		// TODO report for fun?
+		ReportableEvent.call(String.format("Spawned the Killer of Caerbannog at %s, %s, %s",
+				rabbit.getLocation().getBlockX(), rabbit.getLocation().getBlockY(), rabbit.getLocation().getBlockZ()));
 	}
 
 }
