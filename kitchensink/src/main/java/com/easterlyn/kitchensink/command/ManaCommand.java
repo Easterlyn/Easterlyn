@@ -11,54 +11,61 @@ import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCaptchas;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
+import com.easterlyn.util.Colors;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
-import com.easterlyn.util.inventory.ItemUtil;
+import com.easterlyn.util.StringUtil;
 import java.text.DecimalFormat;
-import org.bukkit.Material;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 @CommandAlias("mana")
-@Description("Check your mana or get mana information!")
+@Description("{@@sink.module.mana.description}")
 @CommandPermission("easterlyn.command.mana")
 public class ManaCommand extends BaseCommand {
 
 	@Dependency
+	EasterlynCore core;
+	@Dependency
 	EasterlynCaptchas captchas;
 
 	@Subcommand("current")
-	@CommandCompletion("@none")
-	@Syntax("/mana current")
+	@CommandCompletion("")
+	@Syntax("")
 	public void current(@Flags(CoreContexts.SELF) Player player) {
-		player.sendMessage("Current mana: " + ExperienceUtil.getExp(player));
+		core.getLocaleManager().sendMessage(player, "sink.module.mana.current",
+				"{exp}", String.valueOf(ExperienceUtil.getExp(player)));
 	}
 
 	@CommandAlias("mana")
 	@CommandCompletion("@integer")
-	@Syntax("/mana <exp>")
+	@Syntax("<exp>")
 	public void experience(long experience) {
-		DecimalFormat format = new DecimalFormat("#,###,###,###.###");
-		getCurrentCommandIssuer().sendMessage(experience + " mana is level " + format.format(ExperienceUtil.getLevelFromExp(experience)));
+		core.getLocaleManager().sendMessage(getCurrentCommandIssuer().getIssuer(), "sink.module.mana.exp_to_level",
+				"{exp}", String.valueOf(experience), "{level}", getFormat().format(ExperienceUtil.getLevelFromExp(experience)));
 	}
 
 	@CommandAlias("mana")
 	@CommandCompletion("@integer")
-	@Syntax("/mana <level>L")
+	@Syntax("<level>L")
 	public void level(@Single String argument) {
 		if (!argument.matches("\\d+[lL]")) {
 			showSyntax(getCurrentCommandIssuer(), getLastCommandOperationContext().getRegisteredCommand());
 			return;
 		}
 		int level = Integer.parseInt(argument.substring(0, argument.length() - 1));
-		DecimalFormat format = new DecimalFormat("#,###,###,###.###");
-		getCurrentCommandIssuer().sendMessage(level + " mana is level " + format.format(ExperienceUtil.getExpFromLevel(level)));
+		core.getLocaleManager().sendMessage(getCurrentCommandIssuer().getIssuer(), "sink.module.mana.exp_to_level",
+				"{exp}", getFormat().format(ExperienceUtil.getExpFromLevel(level)), "{level}", String.valueOf(level));
 	}
 
 	@Subcommand("cost")
-	@CommandCompletion("@none")
-	@Syntax("/mana cost")
+	@CommandCompletion("")
+	@Syntax("")
 	public void cost(@Flags(CoreContexts.SELF) Player player) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		while (EasterlynCaptchas.isUsedCaptcha(hand)) {
@@ -71,8 +78,8 @@ public class ManaCommand extends BaseCommand {
 				hand.setAmount(hand.getAmount() * oldHand.getAmount());
 			}
 		}
-		if (hand.getType() == Material.AIR) {
-			player.sendMessage("Nothing in life is free.");
+		if (hand.getType().isAir()) {
+			core.getLocaleManager().sendMessage(player, "sink.module.mana.air");
 			return;
 		}
 
@@ -84,10 +91,26 @@ public class ManaCommand extends BaseCommand {
 			return;
 		}
 
-		DecimalFormat format = new DecimalFormat("#,###,###,###.###");
-		player.sendMessage(ItemUtil.getItemName(hand) + (hand.getAmount() > 1 ? "x" + hand.getAmount() : "")
-				+ " costs " + format.format(worth) + " mana ("
-				+ format.format(ExperienceUtil.getLevelFromExp((long) worth)) + "L) to replicate.");
+		BaseComponent component = new TextComponent();
+
+		TextComponent itemComponent = StringUtil.getItemComponent(hand);
+		if (hand.getAmount() > 1) {
+			itemComponent.addExtra(Colors.getOrDefault("normal.b", ChatColor.DARK_AQUA) + "x" + hand.getAmount());
+		}
+		component.addExtra(itemComponent);
+
+		String value = core.getLocaleManager().getValue("sink.module.mana.exp_to_level",
+				core.getLocaleManager().getLocale(getCurrentCommandIssuer().getIssuer()),
+				"{exp}", getFormat().format(worth), "{level}", String.valueOf(ExperienceUtil.getLevelFromExp((long) worth)));
+		for (TextComponent text : StringUtil.toJSON(value)) {
+			component.addExtra(text);
+		}
+
+		player.sendMessage(component);
+	}
+
+	private DecimalFormat getFormat() {
+		return new DecimalFormat("#,###,###,###.###");
 	}
 
 }

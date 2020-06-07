@@ -4,15 +4,19 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
+import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.util.GenericUtil;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,74 +27,77 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 @CommandAlias("lore")
-@Description("Manipulate lore and other item metadata.")
+@Description("{@@sink.module.lore.description}")
 @CommandPermission("easterlyn.command.lore")
 public class LoreCommand extends BaseCommand {
 
+	@Dependency
+	EasterlynCore core;
+
 	@Subcommand("clearmeta")
-	@Description("Clear ALL item meta.")
-	@Syntax("/lore clearmeta")
-	@CommandCompletion("@none")
+	@Description("{@@sink.module.lore.clearmeta.description}")
+	@Syntax("")
+	@CommandCompletion("")
 	public void clearMeta(@Flags(CoreContexts.SELF) Player player) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (invalidState(player, hand)) {
+		if (handLacksMeta(player, hand)) {
 			return;
 		}
 
 		hand.setItemMeta(null);
 
-		player.sendMessage("Reset meta!");
+		core.getLocaleManager().sendMessage(player, "sink.module.lore.clearmeta.success");
 	}
 
-	@CommandAlias("skull")
+	@CommandAlias("head")
 	@Subcommand("owner")
-	@Description("Set a player head's owner.")
-	@Syntax("/lore owner <player>")
+	@Description("{@@sink.module.lore.owner.description}")
+	@Syntax("<player>")
 	@CommandCompletion("@player")
 	public void owner(@Flags(CoreContexts.SELF) Player player, @Single String owner) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if ("skull".equals(getExecCommandLabel())) {
+		if ("head".equals(getExecCommandLabel())) {
 			if (hand.getType() != Material.PLAYER_HEAD) {
 				hand.setType(Material.PLAYER_HEAD);
 			}
 		} else {
-			if (invalidState(player, hand)) {
+			if (handLacksMeta(player, hand)) {
 				return;
 			}
 
 			if (hand.getType() != Material.PLAYER_HEAD) {
-				player.sendMessage("You must be holding a player head to use this command.");
+				core.getLocaleManager().sendMessage(player, "sink.module.lore.error.not_head");
 				return;
 			}
 		}
 
 		GenericUtil.consumeAs(SkullMeta.class, hand.getItemMeta(), skullMeta -> {
-			//noinspection deprecation // No alternative API
-			skullMeta.setOwningPlayer(owner == null ? null : Bukkit.getOfflinePlayer(owner));
+			// TODO custom heads - null UUID, name, data
+			skullMeta.setPlayerProfile(Bukkit.createProfile(owner));
 			hand.setItemMeta(skullMeta);
 		});
 		if (owner != null) {
-			player.sendMessage("Owner set to " + owner);
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.owner.success", "{value}", owner);
 		} else {
-			player.sendMessage("Owner deleted!");
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.delete.owner.success");
 		}
 	}
 
 	@Subcommand("author")
-	@Description("Set a book's author.")
-	@Syntax("/lore author <author name>")
+	@Description("{@@sink.module.lore.author.description}")
+	@Syntax("<author>")
 	@CommandCompletion("@player")
 	public void author(@Flags(CoreContexts.SELF) Player player, String args) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (invalidState(player, hand)) {
+		if (handLacksMeta(player, hand)) {
 			return;
 		}
 
 		if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.WRITABLE_BOOK) {
-			player.sendMessage("You must be holding a writable book to set author.");
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.error.not_book");
 			return;
 		}
 		String author = args == null ? null : ChatColor.translateAlternateColorCodes('&', args);
@@ -99,25 +106,25 @@ public class LoreCommand extends BaseCommand {
 			hand.setItemMeta(bookMeta);
 		});
 		if (author != null) {
-			player.sendMessage( "Author set to " + author);
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.author.success", "{value}", author);
 		} else {
-			player.sendMessage("Author deleted!");
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.delete.author.success");
 		}
 	}
 
 	@Subcommand("title")
-	@Description("Set a book's title.")
-	@Syntax("/lore title <sample text>")
+	@Description("{@@sink.module.lore.title.description}")
+	@Syntax("<title>")
 	@CommandCompletion("Sample Text")
 	public void title(@Flags(CoreContexts.SELF) Player player, String args) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (invalidState(player, hand)) {
+		if (handLacksMeta(player, hand)) {
 			return;
 		}
 
 		if (hand.getType() != Material.WRITTEN_BOOK && hand.getType() != Material.WRITABLE_BOOK) {
-			player.sendMessage("You must be holding a writable book to set title.");
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.error.not_book");
 			return;
 		}
 		String title = args == null ? null : ChatColor.translateAlternateColorCodes('&', args);
@@ -126,20 +133,20 @@ public class LoreCommand extends BaseCommand {
 			hand.setItemMeta(bookMeta);
 		});
 		if (title != null) {
-			player.sendMessage("Title set to " + title);
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.title.success", "{value}", title);
 		} else {
-			player.sendMessage("Title deleted!");
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.delete.title.success");
 		}
 	}
 
 	@Subcommand("name")
-	@Description("Set an item's name.")
-	@Syntax("/lore name <sample text>")
+	@Description("{@@sink.module.lore.name.description}")
+	@Syntax("<name>")
 	@CommandCompletion("Sample Text")
 	public void name(@Flags(CoreContexts.SELF) Player player, String args) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (invalidState(player, hand)) {
+		if (handLacksMeta(player, hand)) {
 			return;
 		}
 
@@ -149,85 +156,70 @@ public class LoreCommand extends BaseCommand {
 			hand.setItemMeta(bookMeta);
 		});
 		if (name != null) {
-			player.sendMessage("Name set to " + name);
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.name.success", "{value}", name);
 		} else {
-			player.sendMessage("Name deleted!");
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.delete.name.success");
 		}
 	}
 
 	@Subcommand("delete owner")
-	@Description("Remove a skull's owner")
-	@Syntax("/lore delete owner")
-	@CommandCompletion("@none")
+	@Description("{@@sink.module.lore.delete.owner.description}")
+	@Syntax("")
+	@CommandCompletion("")
 	public void deleteOwner(@Flags(CoreContexts.SELF) Player player) {
 		owner(player, null);
 	}
 
 	@Subcommand("delete author")
-	@Description("Remove a book's author.")
-	@Syntax("/lore delete author")
-	@CommandCompletion("@none")
+	@Description("{@@sink.module.lore.delete.author.description}")
+	@Syntax("")
+	@CommandCompletion("")
 	public void deleteAuthor(@Flags(CoreContexts.SELF) Player player) {
 		author(player, null);
 	}
 
 	@Subcommand("delete title")
-	@Description("Remove a book's title.")
-	@Syntax("/lore delete title")
-	@CommandCompletion("@none")
+	@Description("{@@sink.module.lore.delete.title.description}")
+	@Syntax("")
+	@CommandCompletion("")
 	public void deleteTitle(@Flags(CoreContexts.SELF) Player player) {
 		title(player, null);
 	}
 
 	@Subcommand("delete name")
-	@Description("Remove an item's name.")
-	@Syntax("/lore delete name")
-	@CommandCompletion("@none")
+	@Description("{@@sink.module.lore.delete.name.description}")
+	@Syntax("")
+	@CommandCompletion("")
 	public void deleteName(@Flags(CoreContexts.SELF) Player player) {
 		name(player, null);
 	}
 
 	@Subcommand("delete")
-	@Description("Delete a line of lore.")
-	@Syntax("/lore delete <line number>")
+	@Description("{@@sink.module.lore.delete.description}")
+	@Syntax("<line>")
 	@CommandCompletion("@integer") // TODO range for lore
 	public void delete(@Flags(CoreContexts.SELF) Player player, int line) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (invalidState(player, hand)) {
+		if (handLacksMeta(player, hand)) {
 			return;
 		}
 
-		GenericUtil.consumeAs(ItemMeta.class, hand.getItemMeta(), meta -> {
-			if (!meta.hasLore()) {
-				player.sendMessage("Item has no lore!");
-				return;
-			}
-			ArrayList<String> lore = new ArrayList<>(Objects.requireNonNull(meta.getLore()));
-			if (lore.size() < line) {
-				player.sendMessage("Item only has " + lore.size() + " lines, cannot delete " + line + "!");
-				return;
-			}
-			if (line < 1) {
-				player.sendMessage("Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
-				return;
-			}
-
-			String removed = lore.remove(line - 1);
-			meta.setLore(lore);
-			hand.setItemMeta(meta);
-			player.sendMessage("Deleted \"" + removed + org.bukkit.ChatColor.WHITE + "\" from line " + line + "!");
-		});
+		GenericUtil.consumeAs(ItemMeta.class, hand.getItemMeta(), meta ->
+				handleLore(player, line, null, hand, meta, (lore, newLine) -> {
+			lore.remove(line - 1);
+			return "sink.module.lore.delete.success";
+		}));
 	}
 
 	@Subcommand("add")
-	@Description("Add a line of lore.")
-	@Syntax("/lore add <text>")
-	@CommandCompletion("Sample Text")
+	@Description("{@@sink.module.lore.add.description}")
+	@Syntax("<text>")
+	@CommandCompletion("")
 	public void add(@Flags(CoreContexts.SELF) Player player, String text) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (invalidState(player, hand)) {
+		if (handLacksMeta(player, hand)) {
 			return;
 		}
 
@@ -241,86 +233,76 @@ public class LoreCommand extends BaseCommand {
 			meta.setLore(lore);
 			hand.setItemMeta(meta);
 		});
-		player.sendMessage("Added \"" + loreLine + ChatColor.WHITE + "\"");
+		core.getLocaleManager().sendMessage(player, "sink.module.lore.add.success", "{value}", loreLine);
 	}
 
 	@Subcommand("set")
-	@Description("Set a line of lore.")
-	@Syntax("/lore set <line number> <text>")
-	@CommandCompletion("@integer Sample Text")
+	@Description("{@@sink.module.lore.set.description}")
+	@Syntax("<line> <text>")
+	@CommandCompletion("@integer")
 	public void set(@Flags(CoreContexts.SELF) Player player, int line, String text) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (invalidState(player, hand)) {
+		if (handLacksMeta(player, hand)) {
 			return;
 		}
 
-		GenericUtil.consumeAs(ItemMeta.class, hand.getItemMeta(), meta -> {
-			if (!meta.hasLore()) {
-				player.sendMessage("Item has no lore to set!");
-				return;
-			}
-			ArrayList<String> lore = new ArrayList<>(Objects.requireNonNull(meta.getLore()));
-			if (lore.size() < line) {
-				player.sendMessage("Item only has " + lore.size() + " lines, cannot set " + line + "!");
-				return;
-			}
-			if (line < 1) {
-				player.sendMessage("Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
-				return;
-			}
-			String added = ChatColor.translateAlternateColorCodes('&', text);
-			String removed = lore.set(line - 1, added);
-			meta.setLore(lore);
-			hand.setItemMeta(meta);
-			player.sendMessage("Replaced \"" + removed + ChatColor.WHITE + "\" with \"" + added + ChatColor.WHITE
-					+ "\" at " + line + "!");
-		});
+		GenericUtil.consumeAs(ItemMeta.class, hand.getItemMeta(), meta ->
+				handleLore(player, line, text, hand, meta, (lore, newLine) -> {
+			lore.set(line - 1, newLine);
+			return "sink.module.lore.set.success";
+		}));
 	}
 
 	@Subcommand("insert")
-	@Description("Insert a line of lore.")
+	@Description("{@@sink.module.lore.insert.description}")
 	@Syntax("<line> <text>")
 	@CommandCompletion("@integer")
-	private void insert(Player player, int line, String text) {
+	private void insert(@Flags(CoreContexts.SELF) Player player, int line, String text) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 
-		if (invalidState(player, hand)) {
+		if (handLacksMeta(player, hand)) {
 			return;
 		}
 
-		GenericUtil.consumeAs(ItemMeta.class, hand.getItemMeta(), meta -> {
-			if (!meta.hasLore()) {
-				player.sendMessage("Item has no lore to set!");
-				return;
-			}
-			ArrayList<String> lore = new ArrayList<>(Objects.requireNonNull(meta.getLore()));
-			if (lore.size() < line) {
-				player.sendMessage("Item only has " + lore.size() + " lines, cannot set " + line + "!");
-				return;
-			}
-			if (line < 1) {
-				player.sendMessage("Index must be between 1 and " + lore.size() + "! " + line + " is invalid.");
-				return;
-			}
-			String added = ChatColor.translateAlternateColorCodes('&', text);
-			lore.add(line - 1, added);
-			meta.setLore(lore);
-			hand.setItemMeta(meta);
-			player.sendMessage("Inserted \"" + added + ChatColor.WHITE + "\" at " + line + "!");
-		});
+		GenericUtil.consumeAs(ItemMeta.class, hand.getItemMeta(), meta ->
+				handleLore(player, line, text, hand, meta, (lore, newLine) -> {
+			lore.add(line - 1, newLine);
+			return "sink.module.lore.insert.success";
+		}));
 	}
 
-	private boolean invalidState(Player player, ItemStack itemStack) {
+	private boolean handLacksMeta(Player player, ItemStack itemStack) {
 		if (itemStack.getType() == Material.AIR) {
-			player.sendMessage("You need an item in hand to use this command!");
+			core.getLocaleManager().sendMessage(player, "core.common.no_item");
 			return true;
 		}
 		if (!itemStack.hasItemMeta() && itemStack.getItemMeta() == null) {
-			player.sendMessage("Item does not support meta.");
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.error.no_meta_support");
 			return true;
 		}
 		return false;
+	}
+
+	private void handleLore(Player player, int line, String text, ItemStack hand, ItemMeta meta,
+			BiFunction<List<String>, String, String> function) {
+		if (!meta.hasLore()) {
+			core.getLocaleManager().sendMessage(player, "sink.module.lore.error.no_lore");
+			return;
+		}
+		ArrayList<String> lore = new ArrayList<>(Objects.requireNonNull(meta.getLore()));
+		if (line < 1 || lore.size() < line) {
+			core.getLocaleManager().sendMessage(player, "core.common.number_within",
+					"{min}", "1", "{max}", String.valueOf(lore.size()));
+			return;
+		}
+		text = ChatColor.translateAlternateColorCodes('&', text);
+		String oldLine = lore.get(line - 1);
+		String messageKey = function.apply(lore, text);
+		meta.setLore(lore);
+		hand.setItemMeta(meta);
+		core.getLocaleManager().sendMessage(player, messageKey, "{value}", text,
+				"{line}", String.valueOf(line), "{old_value}", oldLine);
 	}
 
 }

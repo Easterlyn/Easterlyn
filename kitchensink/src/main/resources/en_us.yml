@@ -81,5 +81,92 @@ sink:
     list:
       description: '{color:normal.a}List players online!'
       header: '{color:normal.a}{color:strike}+----------{color:normal.b} {value}{color:normal.a}/{color:normal.b}{max}{color:normal.a} online {color:normal.a}{color:strike}----------+'
-
-
+    lore:
+      description: '{color:normal.a}Manipulate lore and other item metadata.'
+      clearmeta:
+        description: '{color:normal.a}Clear ALL item meta.'
+        success: '{color:normal.a}Reset meta!'
+      skull:
+        description: '{color:normal.a}Set a player head''s owner.'
+        success: '{color:normal.a}Owner set to "{color:reset}{value}'
+      author:
+        description: '{color:normal.a}Set a book''s author.'
+        success: '{color:normal.a}Author set to "{color:reset}{value}'
+      title:
+        description: '{color:normal.a}Set a book''s title.'
+        success: '{color:normal.a}Title set to "{color:reset}{value}'
+      name:
+        description: '{color:normal.a}Set an item''s name.'
+        success: '{color:normal.a}Name set to "{color:reset}{value}'
+      delete:
+        description: '{color:normal.a}Delete a line of lore.'
+        success: '{color:normal.a}Deleted "{color:reset}{old_value}{color:normal.a}" at {color:normal.b}{line}{color:normal.a}!'
+        owner:
+          description: '{color:normal.a}Remove a skull''s owner'
+          success: '{color:normal.a}Owner deleted!'
+        author:
+          description: '{color:normal.a}Remove a book''s author.'
+          success: '{color:normal.a}Author deleted!'
+        title:
+          description: '{color:normal.a}Remove a book''s title.'
+          success: '{color:normal.a}Title deleted!'
+        name:
+          description: '{color:normal.a}Remove an item''s name.'
+          success: '{color:normal.a}Name deleted!'
+      add:
+        description: '{color:normal.a}Add a line of lore.'
+        success: '{color:normal.a}Added "{color:reset}{value}{color:normal.a}"'
+      set:
+        description: '{color:normal.a}Set a line of lore.'
+        success: '{color:normal.a}Replaced "{color:reset}{old_value}{color:normal.a}" with "{color:reset}{value}{color:normal.a}" at {color:normal.b}{line}{color:normal.a}!'
+      insert:
+        description: '{color:normal.a}Insert a line of lore.'
+        success: '{color:normal.a}Inserted "{color:reset}{value}{color:normal.a}" at {color:normal.b}{line}{color:normal.a}!'
+      error:
+        no_lore: '{color:bad.a}Item has no lore to modify!'
+        no_meta_support: '{color:bad.a}Item does not support metadata.'
+        not_book: '{color:bad.a}You must be holding a writable book to use this command.'
+        not_head: '{color:bad.a}You must be holding a player head to use this command.'
+    mana:
+      description: '{color:normal.a}Check your mana or get mana information!'
+      current: '{color:normal.a}Current mana: {color:normal.b}{exp}'
+      exp_to_level: '{color:normal.b}{exp}{color:normal.a} is level {color:normal.b}{level}'
+      cost: '{color:normal.a} costs {color:normal.b}{exp}{color:normal.a} ({color:normal.b}{level}L{color:normal.a}) to replicate.'
+      air: '{color:normal.a}Nothing in life is free.'
+    request:
+      accept.description: '{color:normal.a}Accept a pending request.'
+      decline.description: '{color:normal.a}Decline a pending request.'
+      error.no_pending: '{color:bad.a}No pending requests!'
+    more:
+      description: '{color:normal.a}Add to your stack in hand.'
+      success: '{color:normal.a}Item in hand set to {color:normal.b}{value}'
+    near:
+      description: '{color:normal.a}List nearby players.'
+      message: '{color:normal.a}Nearby players: {value}'
+      none: '{color:normal.a}Nearby players: none'
+    tphere:
+      description: '{color:normal.a}Teleport a player to you.'
+      target: '{color:normal.a}Teleported you to @{value}'
+      other: '{color:normal.a}Teleported @{value} to you'
+    tprequest:
+      to:
+        description: '{color:normal.a}Request to teleport to a player.'
+        request: |-
+          @{value} {color:normal.a}is requesting to teleport to you!
+          {color:normal.a}Use /accept or /decline to manage the request.'
+      pull:
+        description: '{color:normal.a}Request to teleport a player to you.'
+        request: |-
+          @{value} {color:normal.a}is requesting to teleport you to them!
+          {color:normal.a}Use /accept or /decline to manage the request.'
+      common:
+        decline: '{color:normal.a}Request declined.'
+        declined: '@{value} {color:bad.a}declined your request.'
+        accept: '{color:normal.a}Request accepted.'
+        accepted: '@{value} {color:normal.a}accepted your request.'
+      error:
+        cooldown: '{color:bad.a}You can send another teleport request in {color:bad.b}'
+        offline: '{color:bad.a}Players must be online to teleport!'
+        popular: '@{value} {color:bad.a}already has a pending request!'
+    workbench.description: '{color:normal.a}Open a crafting table.'
+    wtp.description: '{color:normal.a}Teleport to a very specific location.'

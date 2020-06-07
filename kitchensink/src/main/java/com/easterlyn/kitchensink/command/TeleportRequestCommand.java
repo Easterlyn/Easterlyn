@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynKitchenSink;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
@@ -24,107 +25,80 @@ public class TeleportRequestCommand extends BaseCommand {
 	private static final String TPREQUEST = "kitchensink.tprequest";
 
 	@Dependency
-	EasterlynKitchenSink plugin;
+	EasterlynCore core;
+	@Dependency
+	EasterlynKitchenSink sink;
 
 	@CommandAlias("tpa|tpask|tprequest")
-	@Description("Request to teleport to a player.")
-	@CommandCompletion("@player")
-	@Syntax("/tpa <player>")
+	@Description("{@@sink.module.tprequest.to.description}")
 	@CommandPermission("easterlyn.command.tpa")
+	@Syntax("<player>")
+	@CommandCompletion("@player")
 	public void teleportRequest(@Flags(CoreContexts.SELF) User issuer, @Flags(CoreContexts.ONLINE) User target) {
-		long nextTPA = issuer.getStorage().getLong(TPREQUEST);
-		if (nextTPA > System.currentTimeMillis()) {
-			SimpleDateFormat format = new SimpleDateFormat("m:ss");
-			issuer.sendMessage("You can send another teleport request in " + format.format(new Date(nextTPA - System.currentTimeMillis())));
-			return;
-		}
-
-		issuer.getStorage().set(TPREQUEST, System.currentTimeMillis() + plugin.getConfig().getLong(CONFIG_IGNORE));
-
-		Player player = issuer.getPlayer();
-		Player targetPlayer = target.getPlayer();
-
-		if (player == null || targetPlayer == null) {
-			issuer.sendMessage("Players must be online to teleport!");
-			return;
-		}
-
-		if (target.setPendingRequest(new Request() {
-			@Override
-			public void accept() {
-				Player localPlayer = issuer.getPlayer();
-				Player localTarget = target.getPlayer();
-				if (localPlayer == null || localTarget == null) {
-					target.sendMessage("Players must be online to teleport!");
-					return;
-				}
-				if (localPlayer.teleport(localTarget.getLocation().add(0, 0.1, 0), PlayerTeleportEvent.TeleportCause.PLUGIN)) {
-					localTarget.sendMessage("Accepted " + issuer.getDisplayName() + "'s teleport request!");
-				}
-			}
-			@Override
-			public void decline() {
-				target.sendMessage("Request declined!");
-				issuer.sendMessage(target.getDisplayName() + " declined your request!");
-				issuer.getStorage().set(TPREQUEST,
-						System.currentTimeMillis() + plugin.getConfig().getLong(CONFIG_ACCEPT)
-								+ issuer.getStorage().getLong(TPREQUEST) - plugin.getConfig().getLong(CONFIG_IGNORE));
-			}
-		})) {
-			target.sendMessage(issuer.getDisplayName() + " is requesting to teleport to you!\nUse /accept or /decline to manage the request.");
-		} else {
-			issuer.sendMessage(target.getDisplayName() + " already has a pending request!");
-		}
+		tpRequest(issuer, target, true);
 	}
 
 	@CommandAlias("tpahere|tpaskhere|call|callhere")
-	@Description("Request to teleport a player to you.")
-	@CommandCompletion("@player")
-	@Syntax("/tpahere <player>")
+	@Description("{@@sink.module.tprequest.pull.description}")
 	@CommandPermission("easterlyn.command.tpa")
+	@Syntax("<player>")
+	@CommandCompletion("@player")
 	public void teleportHereRequest(@Flags(CoreContexts.SELF) User issuer, @Flags(CoreContexts.ONLINE) User target) {
+		tpRequest(issuer, target, false);
+	}
+
+	private void tpRequest(User issuer, User requested, boolean to) {
 		long nextTPA = issuer.getStorage().getLong(TPREQUEST);
 		if (nextTPA > System.currentTimeMillis()) {
 			SimpleDateFormat format = new SimpleDateFormat("m:ss");
-			issuer.sendMessage("You can send another teleport request in " + format.format(new Date(nextTPA - System.currentTimeMillis())));
+			core.getLocaleManager().sendMessage(issuer.getPlayer(), "sink.module.tprequest.error.cooldown",
+					"{value}", format.format(new Date(nextTPA - System.currentTimeMillis())));
 			return;
 		}
 
-		issuer.getStorage().set(TPREQUEST, System.currentTimeMillis() + plugin.getConfig().getLong(CONFIG_IGNORE));
+		issuer.getStorage().set(TPREQUEST, System.currentTimeMillis() + sink.getConfig().getLong(CONFIG_IGNORE));
 
-		Player player = issuer.getPlayer();
-		Player targetPlayer = target.getPlayer();
+		Player issuingPlayer = issuer.getPlayer();
+		Player requestedPlayer = requested.getPlayer();
 
-		if (player == null || targetPlayer == null) {
-			issuer.sendMessage("Players must be online to teleport!");
+		if (issuingPlayer == null || requestedPlayer == null) {
+			core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.error.offline");
 			return;
 		}
 
-		if (target.setPendingRequest(new Request() {
+		if (requested.setPendingRequest(new Request() {
 			@Override
 			public void accept() {
-				Player localPlayer = issuer.getPlayer();
-				Player localTarget = target.getPlayer();
-				if (localPlayer == null || localTarget == null) {
-					target.sendMessage("Players must be online to teleport!");
+				Player localIssuer = issuer.getPlayer();
+				Player localRequested = requested.getPlayer();
+				if (localIssuer == null || localRequested == null) {
+					core.getLocaleManager().sendMessage(localRequested, "sink.module.tprequest.error.offline");
 					return;
 				}
-				if (localTarget.teleport(localPlayer.getLocation().add(0, 0.1, 0), PlayerTeleportEvent.TeleportCause.PLUGIN)) {
-					localTarget.sendMessage("Accepted " + issuer.getDisplayName() + "'s teleport request!");
+				Player destination = to ? localRequested : localIssuer;
+				Player teleportee = to ? localIssuer : localRequested;
+				if (teleportee.teleport(destination.getLocation().add(0, 0.1, 0), PlayerTeleportEvent.TeleportCause.PLUGIN)) {
+					core.getLocaleManager().sendMessage(localRequested, "sink.module.tprequest.common.accept");
+					core.getLocaleManager().sendMessage(localIssuer, "sink.module.tprequest.common.accepted",
+							"{target}", localRequested.getName());
 				}
 			}
 			@Override
 			public void decline() {
-				target.sendMessage("Request declined!");
-				issuer.sendMessage(target.getDisplayName() + " declined your request!");
+				core.getLocaleManager().sendMessage(requestedPlayer, "sink.module.tprequest.common.decline");
+				core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.common.declined",
+						"{target}", requestedPlayer.getName());
 				issuer.getStorage().set(TPREQUEST,
-						System.currentTimeMillis() + plugin.getConfig().getLong(CONFIG_ACCEPT)
-								+ issuer.getStorage().getLong(TPREQUEST) - plugin.getConfig().getLong(CONFIG_IGNORE));
+						System.currentTimeMillis() + sink.getConfig().getLong(CONFIG_ACCEPT)
+								+ issuer.getStorage().getLong(TPREQUEST) - sink.getConfig().getLong(CONFIG_IGNORE));
 			}
 		})) {
-			target.sendMessage(issuer.getDisplayName() + " is requesting to teleport you to them!\nUse /accept or /decline to manage the request.");
+			core.getLocaleManager().sendMessage(requestedPlayer,
+					to ? "sink.module.tprequest.to.request" : "sink.module.tprequest.pull.request",
+					"{value}", issuingPlayer.getName());
 		} else {
-			issuer.sendMessage(target.getDisplayName() + " already has a pending request!");
+			core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.error.popular",
+					"{value}", requestedPlayer.getName());
 		}
 	}
 

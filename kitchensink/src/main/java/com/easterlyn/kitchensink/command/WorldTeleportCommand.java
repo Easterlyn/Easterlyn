@@ -14,8 +14,8 @@ import org.bukkit.entity.Player;
 public class WorldTeleportCommand extends BaseCommand {
 
 	@CommandAlias("wtp")
-	@Description("Teleport to a very specific location.")
-	@Syntax("/wtp <target> <world> <x> <y> <z> [pitch] [yaw]")
+	@Description("{@@sink.module.wtp.description}")
+	@Syntax("<target> <world> <x> <y> <z> [pitch] [yaw]")
 	@CommandCompletion("@player @world @decimal @decimal @decimal @decimal @decimal")
 	@CommandPermission("easterlyn.command.wtp")
 	public void teleport(Player player, World world, double x, double y, double z, @Optional Float pitch, @Optional Float yaw) {

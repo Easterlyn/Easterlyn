@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
 public class WorkbenchCommand extends BaseCommand {
 
 	@CommandAlias("workbench|craft")
-	@Description("Open a crafting table.")
+	@Description("{@@sink.module.workbench.description}")
 	@Syntax("/workbench")
 	@CommandCompletion("@none")
 	@CommandPermission("easterlyn.command.workbench")
