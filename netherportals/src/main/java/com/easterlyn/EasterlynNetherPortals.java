@@ -3,9 +3,10 @@ package com.easterlyn;
 import com.easterlyn.netherportals.listener.TeleportListener;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.Shape;
+import com.easterlyn.util.event.SimpleListener;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.bukkit.Axis;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -13,6 +14,10 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
+import org.bukkit.entity.Entity;
+import org.bukkit.event.server.PluginEnableEvent;
+import org.bukkit.event.world.PortalCreateEvent;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
@@ -24,11 +29,23 @@ public class EasterlynNetherPortals extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		getServer().getPluginManager().registerEvents(new TeleportListener(this), this);
+
+		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
+		if (registration != null) {
+			registration.getProvider().getLocaleManager().addLocaleSupplier(this);
+		}
+
+		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class,
+				pluginEnableEvent -> {
+					if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
+						((EasterlynCore) pluginEnableEvent.getPlugin()).getLocaleManager().addLocaleSupplier(this);
+					}
+				}, this));
 	}
 
 	@Nullable
-	public Location getPortalFrom(@NotNull Location from, @NotNull Function<Location, Boolean> buildCheck) {
-		Block portal = getAdjacentPortal(from.getBlock());
+	public Location getPortalDestination(@Nullable Entity entity, @NotNull Location from) {
+		Block portal = getAdjacentPortal(entity, from.getBlock());
 
 		if (portal == null) {
 			return null;
@@ -42,15 +59,40 @@ public class EasterlynNetherPortals extends JavaPlugin {
 		}
 
 		Location destination = findPortal(to);
-		if (destination == null && buildCheck.apply(to)) {
+		if (destination == null) {
 			destination = to.clone();
-			createPortal(from, to);
+			createPortal(entity, from, to);
 		}
+
 		return destination;
 	}
 
-	@Nullable
-	private Block getAdjacentPortal(@NotNull Block block) {
+	public @Nullable Block getAdjacentPortal(@Nullable Entity entity, @NotNull Block block) {
+		return entity != null ? getAdjacentPortal(entity) : getAdjacentPortal(block);
+	}
+
+	private @Nullable Block getAdjacentPortal(@NotNull Entity entity) {
+		Block exact = entity.getLocation().getBlock();
+		if (exact.getType() == Material.NETHER_PORTAL) {
+			return exact;
+		}
+		// Bounding box must be inside portal.
+		BoundingBox boundingBox = entity.getBoundingBox();
+		World world = entity.getWorld();
+		for (int y = (int) Math.floor(boundingBox.getMinY()); y <= Math.ceil(boundingBox.getMaxY()); ++y) {
+			for (int x = (int) Math.floor(boundingBox.getMinX()); x <= Math.ceil(boundingBox.getMaxX()); ++x) {
+				for (int z = (int) Math.floor(boundingBox.getMinZ()); z <= Math.ceil(boundingBox.getMaxZ()); ++z) {
+					Block maybePortal = world.getBlockAt(x, y, z);
+					if (maybePortal.getType() == Material.NETHER_PORTAL) {
+						return maybePortal;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	private @Nullable Block getAdjacentPortal(@NotNull Block block) {
 		if (block.getType() == Material.NETHER_PORTAL) {
 			return block;
 		}
@@ -166,7 +208,7 @@ public class EasterlynNetherPortals extends JavaPlugin {
 				new Vector(portal.getX() + minX, y, portal.getZ() + minZ)).getCenter().toLocation(portal.getWorld());
 	}
 
-	private void createPortal(@NotNull Location from, @NotNull Location to) {
+	private void createPortal(@Nullable Entity entity, @NotNull Location from, @NotNull Location to) {
 		Direction direction;
 		BlockData fromData = from.getBlock().getBlockData();
 		if (fromData instanceof Orientable) {
@@ -174,7 +216,13 @@ public class EasterlynNetherPortals extends JavaPlugin {
 		} else {
 			direction = Direction.getFacingDirection(to);
 		}
-		getNetherPortal().build(to.getBlock(), direction);
+		PortalCreateEvent createEvent = new PortalCreateEvent(
+				getNetherPortal().getBuildLocations(to.getBlock(), direction).keySet().stream().map(Block::getState).collect(Collectors.toList()),
+				to.getWorld(), entity, PortalCreateEvent.CreateReason.NETHER_PAIR);
+		getServer().getPluginManager().callEvent(createEvent);
+		if (!createEvent.isCancelled()) {
+			getNetherPortal().build(to.getBlock(), direction);
+		}
 	}
 
 	@NotNull
