@@ -83,7 +83,7 @@ public class Elevator extends Machine {
 					Sound.ENTITY_ENDER_DRAGON_FLAP, 0.2F, 0F);
 			int duration = storage.getInt("duration");
 			// Effect power is 0-indexed.
-			player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, duration, 19, true), true);
+			player.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, duration, 19, true));
 			PermissionAttachment attachment = player.addAttachment(getMachines(), (int) (duration * 1.2));
 			if (attachment != null) {
 				attachment.setPermission("nocheatplus.checks.moving.creativefly", true);

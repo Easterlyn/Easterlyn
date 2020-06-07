@@ -142,7 +142,7 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 			// Remove exp first in case of an unforeseen issue.
 			int expCost;
 			try {
-				expCost = Integer.valueOf(costString);
+				expCost = Integer.parseInt(costString);
 			} catch (NumberFormatException e) {
 				System.err.println("Unable to parse ");
 				e.printStackTrace();

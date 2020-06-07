@@ -141,7 +141,7 @@ public abstract class Machine {
 	 *
 	 * @return false if assembly failed due to space requirements
 	 */
-	public boolean assemble(@NotNull ConfigurationSection storage) {
+	public boolean failedAssembly(@NotNull ConfigurationSection storage) {
 		Location key = getKey(storage);
 		Direction direction = getDirection(storage);
 		for (Block block : shape.getBuildLocations(key.getBlock(), direction).keySet()) {
@@ -149,11 +149,11 @@ public abstract class Machine {
 					|| getMachines().isExplodedMachine(block))
 					|| block.getY() > 255) {
 				this.assemblyFailed(storage);
-				return false;
+				return true;
 			}
 		}
 		this.assemble(key.getBlock(), direction, storage);
-		return true;
+		return false;
 	}
 
 	/**

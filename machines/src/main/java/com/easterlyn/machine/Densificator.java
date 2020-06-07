@@ -178,7 +178,7 @@ public class Densificator extends Machine {
 	}
 
 	@Override
-	public void handleDrag(InventoryDragEvent event, ConfigurationSection storage) {
+	public void handleDrag(@NotNull InventoryDragEvent event, ConfigurationSection storage) {
 		this.updateLater(event.getView().getTopInventory(), storage);
 	}
 
@@ -203,6 +203,7 @@ public class Densificator extends Machine {
 		Map<Material, Integer> contents = new HashMap<>();
 		int densificationMode = this.getDensificationMode(storage);
 		for (ItemStack stack : inventory.getContents()) {
+			//noinspection ConstantConditions
 			if (stack == null || stack.getType() == Material.AIR) {
 				continue;
 			}

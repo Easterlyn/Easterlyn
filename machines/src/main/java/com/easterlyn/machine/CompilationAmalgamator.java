@@ -99,7 +99,7 @@ public class CompilationAmalgamator extends Machine {
 	}
 
 	@Override
-	public void handleDrag(InventoryDragEvent event, ConfigurationSection storage) {
+	public void handleDrag(@NotNull InventoryDragEvent event, ConfigurationSection storage) {
 		Inventory top = event.getView().getTopInventory();
 		if (top.getType() == InventoryType.HOPPER) {
 			this.cleanHopperLater(top, storage);
@@ -146,6 +146,7 @@ public class CompilationAmalgamator extends Machine {
 	private void update(Inventory inventory, Inventory captchaInv, ConfigurationSection storage) {
 		ItemStack captchaTarget = null;
 		for (ItemStack item : inventory.getContents()) {
+			//noinspection ConstantConditions
 			if (item == null || item.getType() == Material.AIR) {
 				continue;
 			}
@@ -225,6 +226,7 @@ public class CompilationAmalgamator extends Machine {
 	private void ejectAllInvalidItems(Function<ItemStack, Boolean> func, Inventory inventory, ConfigurationSection storage) {
 		Location key = getKey(storage);
 		for (ItemStack item : inventory.getContents()) {
+			//noinspection ConstantConditions
 			if (item == null || item.getType() == Material.AIR || func.apply(item)) {
 				continue;
 			}

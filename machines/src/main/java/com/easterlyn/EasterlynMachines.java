@@ -129,7 +129,7 @@ public class EasterlynMachines extends JavaPlugin {
 						event.setCancelled(true);
 						return;
 					}
-					if (!pair.getLeft().assemble(pair.getRight())) {
+					if (pair.getLeft().failedAssembly(pair.getRight())) {
 						event.setCancelled(true);
 					}
 					if (!event.isCancelled() && player.getGameMode() != GameMode.CREATIVE) {
@@ -250,6 +250,7 @@ public class EasterlynMachines extends JavaPlugin {
 
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.machine.command");
 		plugin.getLocaleManager().addLocaleSupplier(this);
+		// TODO commandcompletion @machines
 	}
 
 	@Override

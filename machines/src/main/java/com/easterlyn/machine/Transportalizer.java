@@ -9,9 +9,6 @@ import com.easterlyn.util.HologramUtil;
 import com.easterlyn.util.ProtectionUtil;
 import com.easterlyn.util.Request;
 import com.easterlyn.util.Shape;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
@@ -59,7 +56,6 @@ import org.jetbrains.annotations.NotNull;
 public class Transportalizer extends Machine {
 
 	private final ItemStack drop;
-	private final Map<UUID, TransportalizationRequest> requests;
 
 	public Transportalizer(EasterlynMachines machines) {
 		super(machines, new Shape(), "Transportalizer");
@@ -99,7 +95,6 @@ public class Transportalizer extends Machine {
 			itemMeta.setDisplayName(ChatColor.WHITE + "Transportalizer");
 			drop.setItemMeta(itemMeta);
 		});
-		this.requests = new HashMap<>();
 	}
 
 	@Override
@@ -124,9 +119,9 @@ public class Transportalizer extends Machine {
 	}
 
 	@Override
-	public boolean assemble(@NotNull ConfigurationSection storage) {
+	public boolean failedAssembly(@NotNull ConfigurationSection storage) {
 		setFuel(storage, getFuel(storage));
-		return super.assemble(storage);
+		return super.failedAssembly(storage);
 	}
 
 	@Override
@@ -434,43 +429,6 @@ public class Transportalizer extends Machine {
 		entity.teleport(target);
 		source.getWorld().playEffect(source, Effect.ENDER_SIGNAL, 4);
 		source.getWorld().playEffect(target, Effect.ENDER_SIGNAL, 4);
-	}
-
-	public boolean pendingTransportalizationFailed(Player player, boolean accept) {
-		if (requests.containsKey(player.getUniqueId())) {
-			if (accept) {
-				requests.remove(player.getUniqueId()).doTeleport(player);
-			} else {
-				requests.remove(player.getUniqueId());
-			}
-			return false;
-		}
-		return true;
-	}
-
-	private class TransportalizationRequest {
-
-		private final ConfigurationSection storage;
-		private final Location from, to;
-		private final long cost;
-
-		TransportalizationRequest(ConfigurationSection storage,
-				Location from, Location to, long cost) {
-			this.storage = storage;
-			this.from = from;
-			this.to = to;
-			this.cost = cost;
-		}
-
-		void doTeleport(Player player) {
-			long fuel = getFuel(storage);
-			if (fuel < cost) {
-				player.sendMessage("The transportalizer is too low on fuel to pull you to it!");
-				return;
-			}
-			setFuel(storage, fuel - cost);
-			teleport(player, from, to);
-		}
 	}
 
 }
