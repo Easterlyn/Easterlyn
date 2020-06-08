@@ -83,7 +83,6 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 			component.addExtra(channel.getMention());
-			component.addExtra(user.getMention());
 			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
 				component.addExtra(textComponent);
 			}
@@ -142,7 +141,6 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 			component.addExtra(channel.getMention());
-			component.addExtra(user.getMention());
 			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
 				component.addExtra(textComponent);
 			}

@@ -16,6 +16,7 @@ public class CommandTest {
 
 	// TODO require class/1 method annotated to be used as a command
 	// TODO check tab completion
+	// TODO require CommandSyntax and Description unless Default/HelpCommand
 
 	@Test
 	public void checkPermissions() {

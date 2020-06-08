@@ -55,9 +55,9 @@ sink:
         other: '{color:normal.a}Set color of @{target} to {value}'
     cooldown:
       reset:
-        description: 'Reset cooldowns!'
-        all: 'Cooldowns reset!'
-        single: 'Cooldown reset for "{target}"'
+        description: '{color:normal.a}Reset cooldowns!'
+        all: '{color:normal.a}Cooldowns reset!'
+        single: '{color:normal.a}Cooldown reset for "{target}"'
     fly:
       description: '{color:normal.a}Manage flight for a player.'
       message: '{color:normal.a}Flight turned {value}'
@@ -153,19 +153,19 @@ sink:
         description: '{color:normal.a}Request to teleport to a player.'
         request: |-
           @{value} {color:normal.a}is requesting to teleport to you!
-          {color:normal.a}Use /accept or /decline to manage the request.'
+          {color:normal.a}Use /accept or /decline to manage the request.
       pull:
         description: '{color:normal.a}Request to teleport a player to you.'
         request: |-
           @{value} {color:normal.a}is requesting to teleport you to them!
-          {color:normal.a}Use /accept or /decline to manage the request.'
+          {color:normal.a}Use /accept or /decline to manage the request.
       common:
         decline: '{color:normal.a}Request declined.'
         declined: '@{value} {color:bad.a}declined your request.'
         accept: '{color:normal.a}Request accepted.'
         accepted: '@{value} {color:normal.a}accepted your request.'
       error:
-        cooldown: '{color:bad.a}You can send another teleport request in {color:bad.b}'
+        cooldown: '{color:bad.a}You can send another teleport request in {color:bad.b}{value}'
         offline: '{color:bad.a}Players must be online to teleport!'
         popular: '@{value} {color:bad.a}already has a pending request!'
     workbench.description: '{color:normal.a}Open a crafting table.'

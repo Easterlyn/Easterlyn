@@ -12,7 +12,7 @@ public class NoCommandPrefix implements Listener {
 		try {
 			Class.forName("com.comphenix.protocol.ProtocolLibrary");
 			ProtocolLibrary.getProtocolManager().addPacketListener(new com.easterlyn.kitchensink.listener.RestrictTabCompletion(plugin));
-		} catch (ClassNotFoundException ignored) {}
+		} catch (NoClassDefFoundError | ClassNotFoundException ignored) {}
 	}
 
 	@EventHandler(ignoreCancelled = true)

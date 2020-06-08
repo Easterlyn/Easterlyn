@@ -80,14 +80,14 @@ public class TeleportRequestCommand extends BaseCommand {
 				if (teleportee.teleport(destination.getLocation().add(0, 0.1, 0), PlayerTeleportEvent.TeleportCause.PLUGIN)) {
 					core.getLocaleManager().sendMessage(localRequested, "sink.module.tprequest.common.accept");
 					core.getLocaleManager().sendMessage(localIssuer, "sink.module.tprequest.common.accepted",
-							"{target}", localRequested.getName());
+							"{value}", localRequested.getName());
 				}
 			}
 			@Override
 			public void decline() {
 				core.getLocaleManager().sendMessage(requestedPlayer, "sink.module.tprequest.common.decline");
 				core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.common.declined",
-						"{target}", requestedPlayer.getName());
+						"{value}", requestedPlayer.getName());
 				issuer.getStorage().set(TPREQUEST,
 						System.currentTimeMillis() + sink.getConfig().getLong(CONFIG_ACCEPT)
 								+ issuer.getStorage().getLong(TPREQUEST) - sink.getConfig().getLong(CONFIG_IGNORE));

@@ -24,20 +24,29 @@ public class NicknameCommand extends BaseCommand {
 	@Syntax("[target] <nickname|off>")
 	@CommandCompletion("@player")
 	public void setNick(BukkitCommandIssuer issuer, User user, String nickname) {
-		nickname = ChatColor.translateAlternateColorCodes('&', nickname);
 		String oldName = user.getDisplayName();
+
+		if (nickname == null || nickname.isEmpty() || nickname.equalsIgnoreCase("off")
+				|| nickname.equalsIgnoreCase("null") || nickname.equalsIgnoreCase("remove")) {
+			nickname = null;
+		} else {
+			nickname = ChatColor.translateAlternateColorCodes('&', nickname);
+		}
+
 		user.getStorage().set("displayName", nickname);
+
 		Player player = user.getPlayer();
 		if (player != null) {
 			player.setDisplayName(nickname);
-			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.nickname.success.self",
-					"{value}", nickname);
+			// TODO separate removal message
+			core.getLocaleManager().sendMessage(player, "chat.commands.nickname.success.self",
+					"{value}", nickname == null ? "null" : nickname);
 		}
 		if (!issuer.getUniqueId().equals(user.getUniqueId())) {
 			core.getLocaleManager().sendMessage(issuer.getIssuer(), "chat.commands.nickname.success.other",
-					"{target}", oldName, "{value}", nickname);
+					"{target}", oldName, "{value}", nickname == null ? "null" : nickname);
 		}
-		if (nickname.indexOf(' ') > -1) {
+		if (nickname != null && nickname.indexOf(' ') > -1) {
 			core.getLocaleManager().sendMessage(issuer.getIssuer(), "chat.commands.nickname.warning.spaces");
 		}
 	}

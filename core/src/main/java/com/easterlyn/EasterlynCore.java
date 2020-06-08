@@ -48,6 +48,8 @@ public class EasterlynCore extends JavaPlugin {
 	public void onEnable() {
 		saveDefaultConfig();
 
+		Colors.load(this);
+
 		getServer().getServicesManager().register(EasterlynCore.class, this, this, ServicePriority.Normal);
 
 		if (commandManager == null) {
@@ -58,8 +60,6 @@ public class EasterlynCore extends JavaPlugin {
 			CoreCompletions.register(this);
 			// TODO system for Group resolvers
 		}
-
-		Colors.load(this);
 
 		registerCommands(this, getClassLoader(), "com.easterlyn.command");
 

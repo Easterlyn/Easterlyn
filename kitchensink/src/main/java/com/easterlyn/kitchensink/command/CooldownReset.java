@@ -18,6 +18,7 @@ import com.easterlyn.user.User;
 @Description("{@@sink.module.cooldown.reset.description}")
 @CommandPermission("easterlyn.command.cooldownreset")
 public class CooldownReset {
+	// TODO no roll
 
 	@Dependency
 	EasterlynCore core;

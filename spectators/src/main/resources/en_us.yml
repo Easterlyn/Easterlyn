@@ -4,7 +4,7 @@ spectate:
     description: '{color:normal.a}Request to spectate to a player.'
     request: |-
       @{value} {color:normal.a}is requesting to spectate to you!
-      {color:normal.a}Use /accept or /decline to manage the request.'
+      {color:normal.a}Use /accept or /decline to manage the request.
     not_spectator: '@{target} {color:bad.a}is no longer spectating.'
   not_spectator: '{color:bad.a}Hey now, you''ve gotta be a spectator.'
   not_survival: '{color:bad.a}Woah nelly, you''ve gotta be in survival to spectate.'
@@ -31,6 +31,5 @@ sink.module.tprequest:
     accept: '{color:normal.a}Request accepted.'
     accepted: '@{value} {color:normal.a}accepted your request.'
   error:
-    cooldown: '{color:bad.a}You can send another teleport request in {color:bad.b}'
     offline: '{color:bad.a}Players must be online to teleport!'
     popular: '@{value} {color:bad.a}already has a pending request!'
