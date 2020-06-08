@@ -25,7 +25,7 @@ public class EasterlynSleepVote extends JavaPlugin {
 	private static final int NIGHT_END = 23458;
 	private static final int NIGHT_DURATION = NIGHT_END - NIGHT_START + 2;
 
-	private Map<String, BukkitTask> worldTasks = new HashMap<>();
+	private final Map<String, BukkitTask> worldTasks = new HashMap<>();
 
 	@Override
 	public void onEnable() {

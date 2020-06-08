@@ -5,15 +5,19 @@ import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
+import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Private;
+import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynSpectators;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.User;
 import com.easterlyn.util.Request;
+import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -21,14 +25,18 @@ import org.bukkit.event.player.PlayerTeleportEvent;
 
 @CommandAlias("spectate|spec")
 @CommandPermission("easterlyn.command.spectate")
+@Description("{@@spectate.description}")
 public class SpectateCommand extends BaseCommand {
+
+	@Dependency
+	EasterlynCore core;
 
 	@Default
 	@Private
 	public void spectate(@Flags(CoreContexts.SELF) User user) {
 		Player player = user.getPlayer();
 		if (player == null) {
-			user.sendMessage("Gotta be online, buckaroo!");
+			core.getLocaleManager().sendMessage(user.getPlayer(), "spectate.not_online");
 			return;
 		}
 
@@ -36,71 +44,93 @@ public class SpectateCommand extends BaseCommand {
 
 		if (spectateReturn == null) {
 			if (player.getGameMode() != GameMode.SURVIVAL) {
-				user.sendMessage("Woah nelly, you've gotta be in survival to enter spectate mode.");
+				core.getLocaleManager().sendMessage(user.getPlayer(), "spectate.not_survival");
 				return;
 			}
 			player.setGameMode(GameMode.SPECTATOR);
 			user.getStorage().set(EasterlynSpectators.USER_SPECTATE_RETURN, player.getLocation());
-			user.sendMessage("Insert snappy spectate message here.");
+			String rawOptions = core.getLocaleManager().getValue("spectate.exit_mortal_coil",
+					core.getLocaleManager().getLocale(user.getPlayer()));
+			String[] options = rawOptions != null ? rawOptions.split("\n") : new String[] {""};
+			String selected = options[ThreadLocalRandom.current().nextInt(options.length)];
+			user.sendMessage(selected);
 			return;
 		}
 
 		if (player.getGameMode() != GameMode.SPECTATOR) {
-			user.sendMessage("Excuse me, are you trying to exit spectator mode from not spectator mode?" +
-					"\nThat's ILLEGAL. I'm calling the cops. Generating a report for you!");
-			ReportableEvent.call(user.getDisplayName() + " attempted to exit spectator mode while in " + player.getGameMode().name());
+			core.getLocaleManager().sendMessage(player, "spectate.illegal_activity_woop_woop");
+			ReportableEvent.call(player.getName() + " attempted to exit spectator mode while in " + player.getGameMode().name());
 		}
 
 		user.getStorage().set(EasterlynSpectators.USER_SPECTATE_RETURN, null);
 		user.getStorage().set(EasterlynSpectators.USER_SPECTATE_COOLDOWN, System.currentTimeMillis() + 480000L);
 		player.teleport(spectateReturn);
 		player.setGameMode(GameMode.SURVIVAL);
+		user.getStorage().set(EasterlynSpectators.USER_SPECTATE_RETURN, player.getLocation());
+		String rawOptions = core.getLocaleManager().getValue("spectate.enter_body",
+				core.getLocaleManager().getLocale(user.getPlayer()));
+		String[] options = rawOptions != null ? rawOptions.split("\n") : new String[] {""};
+		String selected = options[ThreadLocalRandom.current().nextInt(options.length)];
+		user.sendMessage(selected);
 	}
 
 	@CommandAlias("spectate|spec|spectpa")
-	@Description("Request to spectate to a player.")
+	@Subcommand("request")
+	@Description("{@@spectate.request.description}")
 	@CommandCompletion("@player")
 	@Syntax("/spectpa <player>")
 	@CommandPermission("easterlyn.command.spectpa")
 	public void spectateTPA(@Flags(CoreContexts.SELF) User user, @Flags(CoreContexts.ONLINE) User target) {
 		Player player = user.getPlayer();
 		Player targetPlayer = target.getPlayer();
-		if (player == null || targetPlayer == null) {
-			user.sendMessage("Players must be online to teleport!");
-			return;
-		}
-		if (player.getGameMode() != GameMode.SPECTATOR) {
-			player.sendMessage("You must be in spectate mode to send a spectate request!");
-			return;
-		}
-		if (target.setPendingRequest(new Request() {
 
+		if (player == null || targetPlayer == null) {
+			core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.tprequest.error.offline");
+			return;
+		}
+
+		if (player.getGameMode() != GameMode.SPECTATOR) {
+			core.getLocaleManager().sendMessage(player, "spectate.not_spectator");
+			return;
+		}
+
+		if (target.setPendingRequest(new Request() {
 			@Override
 			public void accept() {
-				Player localPlayer = user.getPlayer();
-				Player localTarget = target.getPlayer();
-				if (localPlayer == null || localTarget == null) {
-					target.sendMessage("Players must be online to teleport!");
+				Player issuer = user.getPlayer();
+				Player recipient = target.getPlayer();
+				if (issuer == null || recipient == null) {
+					core.getLocaleManager().sendMessage(recipient, "sink.module.tprequest.error.offline");
 					return;
 				}
-				if (localPlayer.getGameMode() != GameMode.SPECTATOR) {
-					localTarget.sendMessage(user.getDisplayName() + " is no longer spectating!");
+				if (issuer.getGameMode() != GameMode.SPECTATOR) {
+					core.getLocaleManager().sendMessage(user.getPlayer(), "spectate.request.not_spectator",
+							"{value}", issuer.getName());
 					return;
 				}
-				if (localPlayer.teleport(localTarget.getLocation().add(0, 0.1, 0), PlayerTeleportEvent.TeleportCause.PLUGIN)) {
-					localTarget.sendMessage("Accepted " + user.getDisplayName() + "'s spectate request!");
+
+				user.getStorage().set(EasterlynSpectators.USER_SPECTPA, true);
+				if (issuer.teleport(recipient.getLocation().add(0, 0.1, 0), PlayerTeleportEvent.TeleportCause.SPECTATE)) {
+					core.getLocaleManager().sendMessage(recipient, "sink.module.tprequest.common.accept");
+					core.getLocaleManager().sendMessage(issuer, "sink.module.tprequest.common.accepted",
+							"{target}", recipient.getName());
 				}
+				user.getStorage().set(EasterlynSpectators.USER_SPECTPA, null);
 			}
 
 			@Override
 			public void decline() {
-				target.sendMessage("Request declined!");
-				user.sendMessage(target.getDisplayName() + " declined your request!");
+				core.getLocaleManager().sendMessage(targetPlayer, "sink.module.tprequest.common.decline");
+				core.getLocaleManager().sendMessage(player, "sink.module.tprequest.common.declined",
+						"{target}", targetPlayer.getName());
+				// TODO same anti-spam ignore?
 			}
 		})) {
-			target.sendMessage(user.getDisplayName() + " is requesting to spectate to you!\nUse /accept or /decline to manage the request.");
+			core.getLocaleManager().sendMessage(targetPlayer, "spectate.request.request",
+					"{value}", player.getName());
 		} else {
-			user.sendMessage(target.getDisplayName() + " already has a pending request!");
+			core.getLocaleManager().sendMessage(player, "sink.module.tprequest.error.popular",
+					"{value}", targetPlayer.getName());
 		}
 	}
 

@@ -16,4 +16,6 @@ public abstract class Request {
 		return expiry;
 	}
 
+	// TODO cancel option - need both command and events.
+
 }

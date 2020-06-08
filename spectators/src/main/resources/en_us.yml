@@ -1,0 +1,36 @@
+spectate:
+  description: '{color:normal.a}Become the aether.'
+  request:
+    description: '{color:normal.a}Request to spectate to a player.'
+    request: |-
+      @{value} {color:normal.a}is requesting to spectate to you!
+      {color:normal.a}Use /accept or /decline to manage the request.'
+    not_spectator: '@{target} {color:bad.a}is no longer spectating.'
+  not_spectator: '{color:bad.a}Hey now, you''ve gotta be a spectator.'
+  not_survival: '{color:bad.a}Woah nelly, you''ve gotta be in survival to spectate.'
+  not_online: '{color:bad.a}Hey now buster, you need to be online to do that.'
+  exit_mortal_coil: |-
+    {color:normal.a}You take a deep breath, and... wait, where did your legs go? Oh no.
+    {color:normal.a}You feel a tingling about your extremities as you hover up slightly.
+    {color:normal.a}ERROR: {color:normal.b}PHYSICAL_PRESENCE.EXE{color:normal.a} HAS STOPPED RESPONDING. PLEASE STAND BY.
+    {color:normal.a}Insert snappy spectate message here.
+  enter_body: |-
+    {color:normal.a}You regain control of your meat-bicycle.
+    {color:normal.a}You snap back to reality. It was just a dream... wasn't it?
+    {color:normal.a}You snap back to reality. It was all just a dream.
+    {color:normal.a}You twitch back awake. What a vivid dream.
+    {color:normal.a}A noise breaks your concentration and you snap back to awareness.
+  illegal_activity_woop_woop: |-
+    {color:bad.a}Excuse me, are you trying to exit spectator mode from not spectator mode?
+    {color:bad.a}That's ILLEGAL. I'm calling the cops.
+    {color:normal.a}Automatically reported this error. {color:dark_red}{color:bold}PREPARE FOR QUESTIONING.
+sink.module.tprequest:
+  common:
+    decline: '{color:normal.a}Request declined.'
+    declined: '@{value} {color:bad.a}declined your request.'
+    accept: '{color:normal.a}Request accepted.'
+    accepted: '@{value} {color:normal.a}accepted your request.'
+  error:
+    cooldown: '{color:bad.a}You can send another teleport request in {color:bad.b}'
+    offline: '{color:bad.a}Players must be online to teleport!'
+    popular: '@{value} {color:bad.a}already has a pending request!'

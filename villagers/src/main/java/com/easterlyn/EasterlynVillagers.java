@@ -26,8 +26,7 @@ import org.jetbrains.annotations.NotNull;
 public class EasterlynVillagers extends JavaPlugin {
 
 	private final NamespacedKey versionKey = new NamespacedKey(this, "balanceVersion");
-	@SuppressWarnings("FieldCanBeLocal") // In case of changes, much easier to keep separate.
-	private final int version = 1;
+	private static final int VERSION = 1;
 
 	@Override
 	public void onEnable() {
@@ -103,7 +102,7 @@ public class EasterlynVillagers extends JavaPlugin {
 		if (merchant instanceof PersistentDataHolder) {
 			PersistentDataHolder dataHolder = (PersistentDataHolder) merchant;
 			int storedVersion = dataHolder.getPersistentDataContainer().getOrDefault(versionKey, PersistentDataType.INTEGER, 0);
-			if (storedVersion == version) {
+			if (storedVersion == VERSION) {
 				return;
 			}
 		}
@@ -117,7 +116,7 @@ public class EasterlynVillagers extends JavaPlugin {
 		merchant.setRecipes(newRecipes);
 
 		if (merchant instanceof PersistentDataHolder) {
-			((PersistentDataHolder) merchant).getPersistentDataContainer().set(versionKey, PersistentDataType.INTEGER, version);
+			((PersistentDataHolder) merchant).getPersistentDataContainer().set(versionKey, PersistentDataType.INTEGER, VERSION);
 		}
 	}
 

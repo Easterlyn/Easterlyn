@@ -25,6 +25,7 @@ public class EasterlynSpectators extends JavaPlugin {
 
 	public static final String USER_SPECTATE_RETURN = "spectate.return";
 	public static final String USER_SPECTATE_COOLDOWN = "spectate.cooldown";
+	public static final String USER_SPECTPA = "spectate.tpa";
 
 	@Override
 	public void onEnable() {
@@ -115,6 +116,12 @@ public class EasterlynSpectators extends JavaPlugin {
 
 			Player player = event.getPlayer();
 			User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
+
+			// Don't block request-based teleportation
+			if (user.getStorage().getBoolean(USER_SPECTPA)) {
+				return;
+			}
+
 			Location spectateReturn = user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
 
 			if (spectateReturn != null) {
