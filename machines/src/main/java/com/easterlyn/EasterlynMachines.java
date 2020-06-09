@@ -49,6 +49,7 @@ import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
@@ -63,6 +64,8 @@ import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Merchant;
+import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -76,6 +79,7 @@ public class EasterlynMachines extends JavaPlugin {
 	private final Map<String, Machine> nameRegistry = new HashMap<>();
 	private final Map<ItemStack, Machine> iconRegistry = new HashMap<>();
 	private final BlockMap<Boolean> exploded = new BlockMap<>();
+	private final Map<Merchant, Pair<Machine, ConfigurationSection>> merchants = new HashMap<>();
 
 	@Override
 	public void onEnable() {
@@ -180,6 +184,11 @@ public class EasterlynMachines extends JavaPlugin {
 		registerInventoryEvent(InventoryClickEvent.class, InventoryClickEvent.getHandlerList(), machine -> machine::handleClick);
 		registerInventoryEvent(InventoryDragEvent.class, InventoryDragEvent.getHandlerList(), machine -> machine::handleDrag);
 		registerInventoryEvent(InventoryOpenEvent.class, InventoryOpenEvent.getHandlerList(), machine -> machine::handleOpen);
+		InventoryCloseEvent.getHandlerList().register(new SimpleListener<>(InventoryCloseEvent.class, event -> {
+			if (event.getView().getTopInventory() instanceof MerchantInventory) {
+				merchants.remove(((MerchantInventory) event.getView().getTopInventory()).getMerchant());
+			}
+		}, this, EventPriority.HIGH));
 		BlockPistonExtendEvent.getHandlerList().register(new SimpleListener<>(BlockPistonExtendEvent.class, event -> {
 			if (isMachine(event.getBlock()) || event.getBlocks().stream().anyMatch(this::isMachine)) {
 				event.setCancelled(true);
@@ -255,6 +264,22 @@ public class EasterlynMachines extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		keysToBlocks.entrySet().stream().distinct().forEach(entry -> {
+			ConfigurationSection section = getConfig().getConfigurationSection(CoordinateUtil.pathFromLoc(entry.getKey().getLocation()));
+			if (section == null) {
+				return;
+			}
+
+			String type = section.getString("type");
+			Machine machine = nameRegistry.get(type);
+
+			if (machine == null) {
+				return;
+			}
+
+			machine.disable(section);
+		});
+
 		saveConfig();
 		iconRegistry.clear();
 		nameRegistry.clear();
@@ -473,6 +498,12 @@ public class EasterlynMachines extends JavaPlugin {
 		return new Pair<>(machine, storage);
 	}
 
+	public Merchant getMerchant(String name, Machine machine, ConfigurationSection data) {
+		Merchant merchant = getServer().createMerchant(name);
+		merchants.put(merchant, new Pair<>(machine, data));
+		return merchant;
+	}
+
 	private void hookCreeperHeal() {
 		EntityExplodeEvent.getHandlerList().register(new SimpleListener<>(EntityExplodeEvent.class, event -> {
 			if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")
@@ -534,7 +565,14 @@ public class EasterlynMachines extends JavaPlugin {
 			InventoryHolder holder = event.getView().getTopInventory().getHolder();
 			Machine machine = null;
 			ConfigurationSection section = null;
-			if (holder instanceof Machine) {
+			if (event.getView().getTopInventory() instanceof MerchantInventory) {
+				Merchant merchant = ((MerchantInventory) event.getView().getTopInventory()).getMerchant();
+				Pair<Machine, ConfigurationSection> machineData = merchants.get(merchant);
+				if (machineData != null) {
+					machine = machineData.getLeft();
+					section = machineData.getRight();
+				}
+			} else if (holder instanceof Machine) {
 				machine = (Machine) holder;
 				if (event.getView().getTopInventory().getLocation() != null) {
 					section = getConfig().getConfigurationSection(CoordinateUtil.pathFromLoc(event.getView().getTopInventory().getLocation()));

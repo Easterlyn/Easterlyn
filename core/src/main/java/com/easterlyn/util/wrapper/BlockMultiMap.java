@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 import org.bukkit.Chunk;
 import org.bukkit.block.Block;
@@ -66,6 +67,10 @@ public class BlockMultiMap<T> {
 	@NotNull
 	public Collection<T> remove(@NotNull String world, int chunkX, int chunkZ) {
 		return blockMap.remove(world, chunkX, chunkZ).stream().flatMap(Collection::stream).collect(Collectors.toList());
+	}
+
+	public Collection<Map.Entry<Block, List<T>>> entrySet() {
+		return blockMap.entrySet();
 	}
 
 }

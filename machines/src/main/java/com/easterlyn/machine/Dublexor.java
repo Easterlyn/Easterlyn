@@ -2,6 +2,7 @@ package com.easterlyn.machine;
 
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.EasterlynMachines;
+import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
@@ -11,7 +12,6 @@ import com.easterlyn.util.Shape;
 import com.easterlyn.util.inventory.InventoryUtil;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.tuple.Pair;
-import com.easterlyn.util.tuple.Triple;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,14 +23,11 @@ import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantRecipe;
@@ -38,16 +35,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * Machine for item duplication.
  *
  * @author Jikoo
  */
-public class Dublexor extends Machine implements InventoryHolder, Merchant {
+public class Dublexor extends Machine {
 
-	private static Triple<ItemStack, ItemStack, ItemStack> exampleRecipes;
+	private static MerchantRecipe exampleRecipe;
 
 	private final ItemStack drop, barrier;
 
@@ -105,7 +101,9 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 		if (event.isCancelled() || event.getPlayer().isSneaking()) {
 			return;
 		}
-		event.getPlayer().openInventory(getInventory());
+		Merchant merchant = getMachines().getMerchant(getName(), this, storage);
+		merchant.setRecipes(Collections.singletonList(Dublexor.getExampleRecipe()));
+		event.getPlayer().openMerchant(merchant, true);
 		event.setCancelled(true);
 	}
 
@@ -144,8 +142,7 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 			try {
 				expCost = Integer.parseInt(costString);
 			} catch (NumberFormatException e) {
-				System.err.println("Unable to parse ");
-				e.printStackTrace();
+				ReportableEvent.call("Unable to parse Dublecation cost:" + costString, e, 5);
 				event.setCancelled(true);
 				return;
 			}
@@ -303,16 +300,18 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 			@NotNull ItemStack expCost, @NotNull ItemStack result) {
 		open.setItem(1, expCost);
 		open.setItem(2, result);
-		InventoryUtil.updateVillagerTrades(player, getExampleRecipes(), new Triple<>(input, expCost, result));
+		MerchantRecipe recipe = new MerchantRecipe(result, Integer.MAX_VALUE);
+		recipe.addIngredient(input);
+		recipe.addIngredient(expCost);
+		InventoryUtil.updateVillagerTrades(player, Dublexor.getExampleRecipe(), recipe);
 		player.updateInventory();
 	}
 
 	/**
-	 * Singleton for getting usage help ItemStacks.
+	 * Singleton for getting the usage help recipe.
 	 */
-	@NotNull
-	private static Triple<ItemStack, ItemStack, ItemStack> getExampleRecipes() {
-		if (exampleRecipes == null) {
+	private @NotNull static MerchantRecipe getExampleRecipe() {
+		if (exampleRecipe == null) {
 			ItemStack input = new ItemStack(Material.DIRT, 64);
 			GenericUtil.consumeAs(ItemMeta.class, input.getItemMeta(), itemMeta -> {
 				itemMeta.setDisplayName(ChatColor.GOLD + "Input");
@@ -329,7 +328,6 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 				itemMeta.setLore(lore);
 				cost.setItemMeta(itemMeta);
 			});
-
 			ItemStack result = new ItemStack(Material.DIRT, 64);
 			GenericUtil.consumeAs(ItemMeta.class, cost.getItemMeta(), itemMeta -> {
 				itemMeta.setDisplayName(ChatColor.GOLD + "Copy of Input");
@@ -338,57 +336,13 @@ public class Dublexor extends Machine implements InventoryHolder, Merchant {
 				result.setItemMeta(itemMeta);
 			});
 
-			exampleRecipes = new Triple<>(input, cost, result);
+			MerchantRecipe recipe = new MerchantRecipe(result, Integer.MAX_VALUE);
+			recipe.addIngredient(input);
+			recipe.addIngredient(cost);
+
+			exampleRecipe = recipe;
 		}
-		return exampleRecipes;
-	}
-
-	@NotNull
-	@Override
-	public Inventory getInventory() {
-		return Bukkit.createInventory(this, InventoryType.MERCHANT);
-	}
-
-	@NotNull
-	@Override
-	public List<MerchantRecipe> getRecipes() {
-		Triple<ItemStack, ItemStack, ItemStack> exampleRecipes = getExampleRecipes();
-		MerchantRecipe recipe = new MerchantRecipe(exampleRecipes.getRight(), Integer.MAX_VALUE);
-		recipe.addIngredient(exampleRecipes.getLeft());
-		recipe.addIngredient(exampleRecipes.getMiddle());
-		return Collections.singletonList(recipe);
-	}
-
-	@Override
-	public void setRecipes(@NotNull List<MerchantRecipe> list) {}
-
-	@NotNull
-	@Override
-	public MerchantRecipe getRecipe(int i) throws IndexOutOfBoundsException {
-		Triple<ItemStack, ItemStack, ItemStack> exampleRecipes = getExampleRecipes();
-		MerchantRecipe recipe = new MerchantRecipe(exampleRecipes.getRight(), Integer.MAX_VALUE);
-		recipe.addIngredient(exampleRecipes.getLeft());
-		recipe.addIngredient(exampleRecipes.getMiddle());
-		return recipe;
-	}
-
-	@Override
-	public void setRecipe(int i, @NotNull MerchantRecipe merchantRecipe) throws IndexOutOfBoundsException {}
-
-	@Override
-	public int getRecipeCount() {
-		return 1;
-	}
-
-	@Override
-	public boolean isTrading() {
-		return false;
-	}
-
-	@Nullable
-	@Override
-	public HumanEntity getTrader() {
-		return null;
+		return exampleRecipe;
 	}
 
 }
