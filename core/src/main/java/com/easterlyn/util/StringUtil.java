@@ -56,7 +56,7 @@ public class StringUtil {
 
 	// TODO move item-related methods to ItemUtil
 	public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
-	public static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?([^/?#]+\\.[^/?#]+)([^?#]*)(\\?([^#]*))?(#(.*))?$");
+	public static final Pattern URL_PATTERN = Pattern.compile("^(([^:/?#]+)://)?(([a-zA-Z0-9-_]+\\.)*[a-zA-Z0-9-]+\\.[a-zA-Z0-9-]+)(\\S*)?$");
 
 	private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
 	private static final Pattern COMMAND_PATTERN = Pattern.compile("/.{1,}");
@@ -140,6 +140,7 @@ public class StringUtil {
 		return toJSON(message, Collections.emptyList());
 	}
 
+	// TODO appears to not be parsing colors correctly
 	public static Collection<TextComponent> toJSON(String message, Collection<QuoteConsumer> additionalHandlers) {
 		ParsedText parsedText = new ParsedText();
 		StringBuilder builder = new StringBuilder();

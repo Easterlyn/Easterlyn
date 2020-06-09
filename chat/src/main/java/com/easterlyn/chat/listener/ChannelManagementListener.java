@@ -8,11 +8,9 @@ import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.user.AutoUser;
 import com.easterlyn.user.User;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -116,7 +114,7 @@ public class ChannelManagementListener implements Listener {
 			if (channel == null) {
 				return false;
 			}
-			if (!channel.isPrivate() || channel.isWhitelisted(user)) {
+			if (channel.isWhitelisted(user)) {
 				channel.getMembers().add(user.getUniqueId());
 				return true;
 			}
@@ -140,24 +138,21 @@ public class ChannelManagementListener implements Listener {
 				otherUser = easterlynProvider.getProvider().getUserManager().getUser(player.getUniqueId());
 			}
 
-			List<String> commonChannels = new ArrayList<>(otherUser.getStorage().getStringList(EasterlynChat.USER_CHANNELS));
+			List<String> commonChannels = otherUser.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 			commonChannels.retainAll(channels);
-			StringBuilder commonBuilder = new StringBuilder();
-			Iterator<String> channelIterator = commonChannels.iterator();
-
-			while (channelIterator.hasNext()) {
-				String channelName = channelIterator.next();
-				if (!channelIterator.hasNext() && commonBuilder.length() > 0) {
-					commonBuilder.append("and ");
-				}
-				commonBuilder.append('#').append(channelName);
-				if (channelIterator.hasNext()) {
-					commonBuilder.append(',');
-				}
-				commonBuilder.append(' ');
+			if (commonChannels.isEmpty()) {
+				otherUser.sendMessage(joinMessage.replace("{channels}", ""));
+				return;
 			}
 
-			otherUser.sendMessage(joinMessage.replace("{channels}", commonBuilder.toString()));
+			String merged = "#" + String.join(", #", commonChannels);
+			if (commonChannels.size() > 1) {
+				int lastComma = merged.lastIndexOf(',');
+				int firstSegmentIndex = commonChannels.size() > 2 ? lastComma + 1 : lastComma;
+				merged = merged.substring(0, firstSegmentIndex) + " and" + merged.substring(lastComma + 1);
+			}
+
+			otherUser.sendMessage(joinMessage.replace("{channels}", merged));
 		});
 	}
 

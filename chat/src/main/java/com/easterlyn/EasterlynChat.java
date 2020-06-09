@@ -56,7 +56,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EasterlynChat extends JavaPlugin {
 
-	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#[A-Za-z0-9]{0,15})([\\W&&[^" + ChatColor.COLOR_CHAR + "}]])?$");
+	private static final Pattern CHANNEL_PATTERN = Pattern.compile("^(#(?:[A-Za-z0-9]{0,15}|#))([\\W&&[^" + ChatColor.COLOR_CHAR + "}#]])?$");
 	public static final Channel DEFAULT = new Channel("main", UUID.fromString("902b498d-9909-4e78-b401-b7c4f2b1ab4c"));
 	public static final String USER_CHANNELS = "chat.channels";
 	public static final String USER_CURRENT = "chat.current";
