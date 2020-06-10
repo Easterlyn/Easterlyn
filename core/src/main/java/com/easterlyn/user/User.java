@@ -146,7 +146,7 @@ public class User implements Group {
 			}
 		}
 		builder.append(getUniqueId()).append(")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}]])?$");
-		Pattern pattern = Pattern.compile(builder.toString());
+		Pattern pattern = Pattern.compile(builder.toString(), Pattern.CASE_INSENSITIVE);
 		getTemporaryStorage().put("mentionPattern", pattern);
 		return pattern;
 	}

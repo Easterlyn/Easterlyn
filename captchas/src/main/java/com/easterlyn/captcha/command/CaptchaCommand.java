@@ -22,7 +22,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-@CommandAlias("captcha")
 public class CaptchaCommand extends BaseCommand {
 
 	@Dependency
@@ -32,10 +31,11 @@ public class CaptchaCommand extends BaseCommand {
 		PermissionUtil.addParent("easterlyn.command.baptcha.free", UserRank.MODERATOR.getPermission());
 	}
 
-	@Subcommand("add")
+	@CommandAlias("captcha add")
 	@Description("{@@captcha.commands.captcha.add.description}")
-	@Syntax("<hash>")
 	@CommandPermission("easterlyn.command.captcha.add")
+	@Syntax("<hash>")
+	@CommandCompletion("")
 	public void add(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
 		if (!hash.matches("[0-9A-Za-z]{8,}")) {
 			getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.add.requirements"));
@@ -54,11 +54,11 @@ public class CaptchaCommand extends BaseCommand {
 		}
 	}
 
-	@Subcommand("get")
+	@Subcommand("captcha get")
 	@Description("{@@captcha.commands.captcha.get.description}")
+	@CommandPermission("easterlyn.command.captcha.get")
 	@Syntax("<hash>")
 	@CommandCompletion("@captcha")
-	@CommandPermission("easterlyn.command.captcha.get")
 	public void get(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
 		ItemStack item = captcha.getCaptchaForHash(hash);
 		if (item == null) {
@@ -69,11 +69,10 @@ public class CaptchaCommand extends BaseCommand {
 		getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.get.success"));
 	}
 
-	@Subcommand("batch")
-	@CommandAlias("baptcha")
+	@CommandAlias("baptcha|captcha batch")
 	@Description("")
-	@Syntax("")
 	@CommandPermission("easterlyn.command.captcha.batch")
+	@Syntax("")
 	@CommandCompletion("@permission:value=easterlyn.command.baptcha.free,complete=free")
 	public void baptcha(@Flags(CoreContexts.SELF) Player player,
 			@Optional @Single @CommandPermission("easterlyn.command.captcha.batch.free") String free) {
@@ -145,10 +144,11 @@ public class CaptchaCommand extends BaseCommand {
 				"{value}", String.valueOf(count));
 	}
 
-	@CommandAlias("convert")
+	@CommandAlias("convert|captcha convert")
 	@Description("{@@captcha.commands.captcha.convert}")
-	@Syntax("")
 	@CommandPermission("easterlyn.command.captcha.convert")
+	@Syntax("")
+	@CommandCompletion("")
 	public void convert(@Flags(CoreContexts.SELF) Player player) {
 		getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.batch.success"),
 				"{value}", String.valueOf(captcha.convert(player)));

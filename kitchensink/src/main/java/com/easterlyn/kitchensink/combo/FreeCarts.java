@@ -2,8 +2,12 @@ package com.easterlyn.kitchensink.combo;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Syntax;
+import com.easterlyn.command.CoreContexts;
 import org.bukkit.Location;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Entity;
@@ -31,7 +35,9 @@ public class FreeCarts extends BaseCommand implements Listener {
 	@CommandAlias("freecart|tempcart")
 	@Description("{@@sink.module.freecart.description}")
 	@CommandPermission("easterlyn.command.freecart")
-	public void spawnFreeCart(Player target, double x, double y, double z, double vectorX, double vectorY, double vectorZ) {
+	@Syntax("<player> <x> <y> <z> <vectorX> <vectorY> <vectorZ>")
+	@CommandCompletion("@player") // TODO check if also requires @double @double @double @double @double @double
+	public void spawnFreeCart(@Flags(CoreContexts.ONLINE) Player target, double x, double y, double z, double vectorX, double vectorY, double vectorZ) {
 		target.getWorld().spawn(new Location(target.getWorld(), x, y, z), RideableMinecart.class, minecart -> {
 			minecart.getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
 			minecart.addPassenger(target);

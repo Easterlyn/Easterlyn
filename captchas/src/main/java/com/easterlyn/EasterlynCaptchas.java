@@ -99,6 +99,8 @@ public class EasterlynCaptchas extends JavaPlugin {
 		captchaRecipe.addIngredient(Material.BOOK);
 		getServer().addRecipe(captchaRecipe);
 
+		// TODO allow crafting x + blank captcha to captcha
+
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {
 			register(registration.getProvider());

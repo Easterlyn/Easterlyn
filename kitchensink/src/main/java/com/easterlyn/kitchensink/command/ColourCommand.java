@@ -44,7 +44,7 @@ public class ColourCommand extends BaseCommand {
 	@Description("{@@sink.module.colour.select.description}")
 	@CommandPermission("easterlyn.command.colour.select.self")
 	@Syntax("<colour>")
-	@CommandCompletion("@colour @playerOnlineWithPerm")
+	@CommandCompletion("@colour @playerOnlineIfPerm")
 	public void select(@Flags("colour") ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		user.setColor(colour);
 		String colourName = colour + StringUtil.getFriendlyName(colour);
@@ -60,7 +60,9 @@ public class ColourCommand extends BaseCommand {
 	@Subcommand("set")
 	@Description("{@@sink.module.colour.set.description}")
 	@CommandPermission("easterlyn.command.colour.select.other")
-	public void set(ChatColor colour, User target) {
+	@Syntax("<colour> [player]")
+	@CommandCompletion("@colour @playerOnlineIfPerm")
+	public void set(ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User target) {
 		select(colour, target);
 	}
 
@@ -68,8 +70,9 @@ public class ColourCommand extends BaseCommand {
 	@Private
 	@CommandAlias("lel")
 	@Description("【ＴＡＳＴＥ  ＴＨＥ  ＰＡＩＮＢＯＷ】")
-	@Syntax("[painful to view sentence]")
 	@CommandPermission("easterlyn.command.lel")
+	@Syntax("[painful to view sentence]")
+	@CommandCompletion("")
 	public void requestLordEnglishEyeFuck(String message) {
 		ChatColor[] rainbow = { ChatColor.DARK_RED, ChatColor.RED, ChatColor.GOLD,
 				ChatColor.YELLOW, ChatColor.GREEN, ChatColor.DARK_GREEN, ChatColor.AQUA,

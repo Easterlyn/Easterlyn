@@ -232,7 +232,7 @@ public class EasterlynMachines extends JavaPlugin {
 				event -> getServer().getScheduler().runTask(this, () -> unloadChunkMachines(event.getChunk())), this));
 
 		for (World world : getServer().getWorlds()) {
-			if (!getConfig().getStringList("+disabled-worlds+").contains(world.getName())) {
+			if (getConfig().getStringList("+disabled-worlds+").contains(world.getName())) {
 				continue;
 			}
 			for (Chunk chunk : world.getLoadedChunks()) {
@@ -292,7 +292,7 @@ public class EasterlynMachines extends JavaPlugin {
 
 	private void loadChunkMachines(Chunk chunk) {
 		String worldName = chunk.getWorld().getName();
-		if (!getConfig().isSet(worldName) || !getConfig().getStringList("+disabled-worlds+").contains(worldName)) {
+		if (!getConfig().isSet(worldName) || getConfig().getStringList("+disabled-worlds+").contains(worldName)) {
 			return;
 		}
 		String path = chunk.getWorld().getName() + '.' + chunk.getX() + '_' + chunk.getZ();

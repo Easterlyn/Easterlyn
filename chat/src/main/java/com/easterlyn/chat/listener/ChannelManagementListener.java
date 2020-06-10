@@ -7,13 +7,17 @@ import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.user.AutoUser;
 import com.easterlyn.user.User;
+import com.easterlyn.util.StringUtil;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 import java.util.stream.Collectors;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -87,6 +91,7 @@ public class ChannelManagementListener implements Listener {
 			if (userSection != null) {
 				userSection.getKeys(false).forEach(key -> userData.put(key, userSection.getString(key)));
 			}
+			// TODO lang?
 			new UserChatEvent(new AutoUser(easterlynProvider.getProvider(), userData), EasterlynChat.DEFAULT,
 					event.getUser().getDisplayName() + " is new! Please welcome them.");
 		}
@@ -97,16 +102,14 @@ public class ChannelManagementListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		// TODO convert to language system
 		RegisteredServiceProvider<EasterlynCore> easterlynProvider = chat.getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (easterlynProvider == null) {
 			return;
 		}
 
-		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
-		User user = easterlynProvider.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+		EasterlynCore core = easterlynProvider.getProvider();
+		User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
 		event.getPlayer().setDisplayName(user.getDisplayName());
-		String joinMessage = user.getDisplayName() + " joined {channels}at " + dateFormat.format(new Date());
 
 		List<String> savedChannels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 		List<String> channels = savedChannels.stream().filter(channelName -> {
@@ -128,32 +131,51 @@ public class ChannelManagementListener implements Listener {
 			}
 		}
 
-		event.setJoinMessage("");
+		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
+		String time = dateFormat.format(new Date());
 
 		chat.getServer().getOnlinePlayers().forEach(player -> {
 			User otherUser;
 			if (player.getUniqueId().equals(user.getUniqueId())) {
 				otherUser = user;
 			} else {
-				otherUser = easterlynProvider.getProvider().getUserManager().getUser(player.getUniqueId());
+				otherUser = core.getUserManager().getUser(player.getUniqueId());
+			}
+
+			BaseComponent component = new TextComponent();
+			component.addExtra(user.getMention());
+			String locale = core.getLocaleManager().getLocale(player);
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue("chat.common.join", locale))) {
+				component.addExtra(textComponent);
 			}
 
 			List<String> commonChannels = otherUser.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 			commonChannels.retainAll(channels);
-			if (commonChannels.isEmpty()) {
-				otherUser.sendMessage(joinMessage.replace("{channels}", ""));
-				return;
-			}
 
-			String merged = "#" + String.join(", #", commonChannels);
+			StringJoiner stringJoiner = new StringJoiner(", #", "#", " ").setEmptyValue("");
+			for (String channel : commonChannels) {
+				stringJoiner.add(channel);
+			}
+			String merged = stringJoiner.toString();
+
 			if (commonChannels.size() > 1) {
 				int lastComma = merged.lastIndexOf(',');
 				int firstSegmentIndex = commonChannels.size() > 2 ? lastComma + 1 : lastComma;
-				merged = merged.substring(0, firstSegmentIndex) + " and" + merged.substring(lastComma + 1);
+				merged = merged.substring(0, firstSegmentIndex) + core.getLocaleManager().getValue("chat.common.and", locale) + merged.substring(lastComma + 1);
+			}
+			for (TextComponent textComponent : StringUtil.toJSON(merged)) {
+				if (!textComponent.getText().isEmpty()) {
+					component.addExtra(textComponent);
+				}
+			}
+			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+				component.addExtra(textComponent);
 			}
 
-			otherUser.sendMessage(joinMessage.replace("{channels}", merged));
+			otherUser.sendMessage(component);
 		});
+
+		event.setJoinMessage("");
 	}
 
 	@EventHandler

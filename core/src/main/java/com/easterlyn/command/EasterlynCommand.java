@@ -32,6 +32,7 @@ import org.bukkit.entity.Player;
  * @author Jikoo
  */
 @CommandAlias("easterlyn")
+@Description("{@@core.commands.easterlyn.description}")
 @CommandPermission("easterlyn.command.easterlyn")
 public class EasterlynCommand extends BaseCommand {
 
@@ -39,7 +40,7 @@ public class EasterlynCommand extends BaseCommand {
 	private EasterlynCore plugin;
 
 	@Subcommand("reload")
-	@Description("{@@core.commands.reload.description}")
+	@Description("{@@core.commands.easterlyn.reload.description}")
 	@CommandPermission("easterlyn.command.reload")
 	public void reload() {
 		plugin.reloadConfig();
@@ -47,8 +48,8 @@ public class EasterlynCommand extends BaseCommand {
 		getCurrentCommandIssuer().sendInfo(CoreLang.SUCCESS);
 	}
 
-	@Subcommand("cmdinfo")
 	@CommandAlias("commandinfo")
+	@Subcommand("cmdinfo")
 	@Description("{@@core.commands.commandinfo.description}")
 	@Syntax("<commandName>")
 	@CommandPermission("easterlyn.command.commandinfo")
@@ -87,6 +88,7 @@ public class EasterlynCommand extends BaseCommand {
 	@CommandAlias("ping")
 	@Description("{@@core.commands.ping.description}")
 	@CommandPermission("easterlyn.command.ping.self")
+	@Syntax("[player]")
 	@CommandCompletion("@playerOnlineIfPerm")
 	public void ping(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
 		if (player.getLastLogin() > System.currentTimeMillis() - 15000) {

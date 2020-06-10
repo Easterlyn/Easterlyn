@@ -1,3 +1,5 @@
+# TODO consistency: {target} vs {value} -> {issuer} {target} {value} etc. as needed
+# Player mentions should be @{target} with no preceding color code to allow wrapping
 acf-core:
   permission_denied: '{@@core.common.no_permission}'
   permission_denied_parameter: '{@@core.common.no_permission}'
@@ -41,14 +43,16 @@ core:
     off: '{color:off}off'
     on: '{color:on}on'
   commands:
+    easterlyn:
+      description: '{color:normal.a}Base command for core functions.'
+      reload:
+        description: '{color:normal.a}Reload core configuration.'
     ping:
       description: '{color:normal.a}Check connection to the server!'
       error:
         small_sample: '{color:bad.a}Ping is wildly inaccurate just after login!'
         implementation: '{color:bad.a}Unknown player implementation!'
       message: '{color:normal.b}{player}{color:normal.a}''s ping is {color:normal.b}{value}{color:normal.a}ms!'
-    reload:
-      description: '{color:normal.a}Reload core configuration.'
     commandinfo:
       description: '{color:normal.a}Get details about a command.'
       error:

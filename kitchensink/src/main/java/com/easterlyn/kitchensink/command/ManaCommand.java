@@ -35,24 +35,27 @@ public class ManaCommand extends BaseCommand {
 	EasterlynCaptchas captchas;
 
 	@Subcommand("current")
-	@CommandCompletion("")
+	@Description("{@@sink.module.mana.current.description}")
 	@Syntax("")
+	@CommandCompletion("")
 	public void current(@Flags(CoreContexts.SELF) Player player) {
-		core.getLocaleManager().sendMessage(player, "sink.module.mana.current",
+		core.getLocaleManager().sendMessage(player, "sink.module.mana.current.message",
 				"{exp}", String.valueOf(ExperienceUtil.getExp(player)));
 	}
 
 	@CommandAlias("mana")
-	@CommandCompletion("@integer")
+	@Description("{@@sink.module.mana.description}")
 	@Syntax("<exp>")
+	@CommandCompletion("@integer")
 	public void experience(long experience) {
 		core.getLocaleManager().sendMessage(getCurrentCommandIssuer().getIssuer(), "sink.module.mana.exp_to_level",
 				"{exp}", String.valueOf(experience), "{level}", getFormat().format(ExperienceUtil.getLevelFromExp(experience)));
 	}
 
 	@CommandAlias("mana")
-	@CommandCompletion("@integer")
+	@Description("{@@sink.module.mana.description}")
 	@Syntax("<level>L")
+	@CommandCompletion("@integer")
 	public void level(@Single String argument) {
 		if (!argument.matches("\\d+[lL]")) {
 			showSyntax(getCurrentCommandIssuer(), getLastCommandOperationContext().getRegisteredCommand());
@@ -64,8 +67,9 @@ public class ManaCommand extends BaseCommand {
 	}
 
 	@Subcommand("cost")
-	@CommandCompletion("")
+	@Description("{@@sink.module.mana.cost.description}")
 	@Syntax("")
+	@CommandCompletion("")
 	public void cost(@Flags(CoreContexts.SELF) Player player) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		while (EasterlynCaptchas.isUsedCaptcha(hand)) {
@@ -99,7 +103,7 @@ public class ManaCommand extends BaseCommand {
 		}
 		component.addExtra(itemComponent);
 
-		String value = core.getLocaleManager().getValue("sink.module.mana.exp_to_level",
+		String value = core.getLocaleManager().getValue("sink.module.mana.cost.message",
 				core.getLocaleManager().getLocale(getCurrentCommandIssuer().getIssuer()),
 				"{exp}", getFormat().format(worth), "{level}", String.valueOf(ExperienceUtil.getLevelFromExp((long) worth)));
 		for (TextComponent text : StringUtil.toJSON(value)) {

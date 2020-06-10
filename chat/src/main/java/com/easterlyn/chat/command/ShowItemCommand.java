@@ -16,13 +16,12 @@ import com.easterlyn.user.User;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-@CommandAlias("me")
 public class ShowItemCommand extends BaseCommand {
 
 	@Dependency
 	EasterlynCore core;
 
-	@CommandAlias("show|showitem")
+	@CommandAlias("show|me show")
 	@Description("{@@chat.commands.me.show.description}")
 	@CommandPermission("easterlyn.command.show")
 	@Syntax("[#channel]")

@@ -130,6 +130,7 @@ public class EasterlynChat extends JavaPlugin {
 		// TODO
 		//  - anti-spam listener
 		//  - log signs to #sign
+		//  - Add permission for translating & codes in chat
 
 	}
 

@@ -19,7 +19,7 @@ public class ReportCommand extends BaseCommand {
 
 	@Default
 	@Private
-	@Syntax("<Descriptive report details>")
+	@Syntax("<descriptive details>")
 	public void report(BukkitCommandIssuer issuer, String args) {
 		if (args.indexOf(' ') == -1) {
 			issuer.sendInfo(MessageKey.of("core.commands.report.error.length"));

@@ -3,9 +3,11 @@ package com.easterlyn.kitchensink.command;
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -20,7 +22,9 @@ public class CoordinatesCommand extends BaseCommand {
 	// TODO lang
 	@CommandAlias("coordinates|coords")
 	@Description("Get your coordinates!")
-	@CommandPermission("easterlyn.command.coordinates")
+	@CommandPermission("easterlyn.command.coordinates.self")
+	@Syntax("[player]")
+	@CommandCompletion("@playerOnlineIfPerm")
 	public void getCoordinates(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User target) {
 		Player player = target.getPlayer();
 

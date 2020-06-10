@@ -60,10 +60,11 @@ public class CoreCompletions {
 //		plugin.getCommandManager().getCommandCompletions().registerCompletion(CoreContexts.ONLINE_WITH_PERM, context -> {
 //			context.
 //		});
-		// TODO player, playerOnline, playerOffline, playerOnlineIfPerm, commands
-		// location, worldLocation, material, world, chatcolor out of kitchen sink
+		// TODO
+		//  player, playerOnline, playerOffline, playerOnlineIfPerm, commands, date
+		//  location, worldLocation, material, world, chatcolor out of kitchen sink
 
-		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("password", Collections.singletonList("Hunter2"));
+		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("password", Arrays.asList("Hunter2", "animebuttsdrivemenuts1"));
 	}
 
 	private CoreCompletions() {}

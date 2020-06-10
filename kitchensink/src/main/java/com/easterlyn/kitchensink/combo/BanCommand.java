@@ -8,7 +8,10 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.command.CoreContexts;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.bukkit.OfflinePlayer;
@@ -24,16 +27,18 @@ public class BanCommand extends BaseCommand implements Listener {
 	@CommandAlias("ban")
 	@Description("{@@sink.module.ban.description}")
 	@CommandPermission("easterlyn.command.ban")
+	@Syntax("<player> [reason]")
 	@CommandCompletion("@player")
-	public void ban(BukkitCommandIssuer issuer, OfflinePlayer target, @Default("Big brother is watching.") String reason) {
+	public void ban(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) OfflinePlayer target, @Default("Big brother is watching.") String reason) {
 		tempban(issuer, target, new Date(Long.MAX_VALUE), reason);
 	}
 
 	@CommandAlias("tempban")
 	@CommandPermission("easterlyn.command.tempban")
 	@Description("{@@sink.module.ban.tempban.description}")
+	@Syntax("<player> <date> [reason]")
 	@CommandCompletion("@player @date")
-	public void tempban(BukkitCommandIssuer issuer, OfflinePlayer target, Date date, @Default("Big brother is watching.") String reason) {
+	public void tempban(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) OfflinePlayer target, Date date, @Default("Big brother is watching.") String reason) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm 'on' dd MMM yyyy");
 		String locale = core.getLocaleManager().getLocale(target.getPlayer());
 		String listReason = core.getLocaleManager().getValue("sink.module.ban.banned", locale);

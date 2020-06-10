@@ -1,7 +1,9 @@
 package com.easterlyn.chat.command;
 
+import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
@@ -20,7 +22,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class AetherCommand {
+public class AetherCommand extends BaseCommand {
 
 	@Dependency
 	EasterlynCore core;
@@ -32,6 +34,7 @@ public class AetherCommand {
 	@Description("{@@chat.commands.aether.description}")
 	@CommandPermission("easterlyn.command.aether")
 	@Syntax("<name> <message content>")
+	@CommandCompletion("")
 	public void aether(BukkitCommandIssuer issuer, @Single String name, String text) {
 		Map<String, String> userData = new HashMap<>();
 		userData.put("name", name);

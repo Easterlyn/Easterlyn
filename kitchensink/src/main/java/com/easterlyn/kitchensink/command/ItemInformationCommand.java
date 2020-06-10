@@ -2,10 +2,12 @@ package com.easterlyn.kitchensink.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.CommandAlias;
+import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
@@ -29,6 +31,8 @@ public class ItemInformationCommand extends BaseCommand {
 	@CommandAlias("iteminfo")
 	@Description("{@@sink.module.iteminfo.description}")
 	@CommandPermission("easterlyn.command.iteminfo")
+	@Syntax("")
+	@CommandCompletion("")
 	public void itemInfo(@Flags(CoreContexts.SELF) Player player) {
 		ItemStack hand = player.getInventory().getItemInMainHand();
 		if (hand.getType() == Material.AIR) {

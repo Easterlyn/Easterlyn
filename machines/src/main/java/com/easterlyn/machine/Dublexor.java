@@ -42,6 +42,7 @@ import org.jetbrains.annotations.NotNull;
  * @author Jikoo
  */
 public class Dublexor extends Machine {
+	// TODO no roll
 
 	private static MerchantRecipe exampleRecipe;
 

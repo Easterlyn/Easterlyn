@@ -56,6 +56,7 @@ sink:
     cooldown:
       reset:
         description: '{color:normal.a}Reset cooldowns!'
+        specific.description: '{color:normal.a}Reset a specific cooldown!'
         all: '{color:normal.a}Cooldowns reset!'
         single: '{color:normal.a}Cooldown reset for "{target}"'
     fly:
@@ -129,9 +130,13 @@ sink:
         not_head: '{color:bad.a}You must be holding a player head to use this command.'
     mana:
       description: '{color:normal.a}Check your mana or get mana information!'
-      current: '{color:normal.a}Current mana: {color:normal.b}{exp}'
+      current:
+        description: '{color:normal.a}Check current mana.'
+        message: '{color:normal.a}Current mana: {color:normal.b}{exp}'
       exp_to_level: '{color:normal.b}{exp}{color:normal.a} is level {color:normal.b}{level}'
-      cost: '{color:normal.a} costs {color:normal.b}{exp}{color:normal.a} ({color:normal.b}{level}L{color:normal.a}) to replicate.'
+      cost:
+        description: '{color:normal.a}Check mana cost of item.'
+        message: '{color:normal.a} costs {color:normal.b}{exp}{color:normal.a} ({color:normal.b}{level}L{color:normal.a}) to replicate.'
       air: '{color:normal.a}Nothing in life is free.'
     request:
       accept.description: '{color:normal.a}Accept a pending request.'

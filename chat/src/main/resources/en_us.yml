@@ -14,6 +14,7 @@ chat:
     not_listening_to_channel: '{color:bad.a}You are not listening to {color:bad.b}{value}{color:bad.a}.'
     channel_not_modifiable: '{color:bad.a}Channel is not modifiable!'
     no_content: '{color:bad.a}What are you trying to say in {color:bad.b}{value}{color:bad.a}?'
+    and: ' and'
   commands:
     aether.description: '{color:normal.a}Send messages from the aether.'
     channel:
@@ -82,6 +83,9 @@ chat:
       description: '{color:normal.a}'
       success:
         self: '{color:normal.a}Nickname set to {color:normal.b}{value}'
-        other: '{color:normal.a}Set {target}''s nickname to {color:normal.b}{value}'
+        other: '{color:normal.a}Set nickname of @target {color:normal.a}to {color:normal.b}{value}'
+        remove:
+          self: '{color:normal.a}Nickname removed'
+          other: '{color:normal.a}Removed nickname of @{target}'
       warning:
         spaces: '{color:bad.a}Please note that nicknames with spaces will make it hard to target users by nickname.'
