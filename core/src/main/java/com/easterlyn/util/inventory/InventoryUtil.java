@@ -1,5 +1,7 @@
 package com.easterlyn.util.inventory;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import net.minecraft.server.v1_15_R1.ChatMessage;
 import net.minecraft.server.v1_15_R1.EntityPlayer;
@@ -14,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.MerchantRecipe;
+import org.jetbrains.annotations.NotNull;
 
 public class InventoryUtil {
 
@@ -43,6 +46,13 @@ public class InventoryUtil {
 
 	public static void updateVillagerTrades(Player player, MerchantRecipe... recipes) {
 		if (recipes == null || recipes.length == 0) {
+			return;
+		}
+		updateVillagerTrades(player, Arrays.asList(recipes));
+	}
+
+	public static void updateVillagerTrades(@NotNull Player player, @NotNull Collection<MerchantRecipe> recipes) {
+		if (recipes.size() == 0) {
 			// Setting result in a villager inventory with recipes doesn't play nice clientside.
 			// To make life easier, if there are no recipes, don't send the trade recipe packet.
 			return;

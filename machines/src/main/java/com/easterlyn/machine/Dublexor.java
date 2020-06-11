@@ -25,16 +25,19 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
+import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Machine for item duplication.
@@ -42,7 +45,6 @@ import org.jetbrains.annotations.NotNull;
  * @author Jikoo
  */
 public class Dublexor extends Machine {
-	// TODO no roll
 
 	private static MerchantRecipe exampleRecipe;
 
@@ -147,11 +149,12 @@ public class Dublexor extends Machine {
 				event.setCancelled(true);
 				return;
 			}
+
+			// TODO refund if no space (whoops)
 			Player player = (Player) event.getWhoClicked();
 			if (player.getGameMode() != GameMode.CREATIVE) {
 				ExperienceUtil.changeExp(player, -expCost);
 			}
-
 
 			if (event.getClick().name().contains("SHIFT")) {
 				// Ensure inventory can contain items
@@ -199,12 +202,17 @@ public class Dublexor extends Machine {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(getMachines(), () -> {
 			// Must re-obtain player or update doesn't seem to happen
 			Player player = Bukkit.getPlayer(id);
-			if (player == null || !(player.getOpenInventory().getTopInventory().getHolder() instanceof Dublexor)) {
+			if (player == null || !(player.getOpenInventory().getTopInventory() instanceof MerchantInventory)) {
 				// Player has logged out or closed inventory. Inventories are per-player, ignore.
 				return;
 			}
 
-			Inventory open = player.getOpenInventory().getTopInventory();
+			MerchantInventory open = (MerchantInventory) player.getOpenInventory().getTopInventory();
+			Pair<Machine, ConfigurationSection> machineData = getMachines().getMerchantMachine(open.getMerchant());
+			if (machineData == null || !Dublexor.this.equals(machineData.getLeft())) {
+				return;
+			}
+
 			ItemStack originalInput = open.getItem(0);
 
 			if (originalInput == null || originalInput.getType() == Material.AIR) {
@@ -223,7 +231,7 @@ public class Dublexor extends Machine {
 
 			// Ensure non-unique item (excluding captchas)
 			if (ItemUtil.isUniqueItem(modifiedInput)) {
-				setSecondTrade(player, open, originalInput, expCost, barrier);
+				addTrade(player, open, originalInput, expCost, barrier);
 				return;
 			}
 
@@ -266,7 +274,7 @@ public class Dublexor extends Machine {
 			});
 
 			// Set items
-			setSecondTrade(player, open, originalInput, expCost, result);
+			addTrade(player, open, originalInput, expCost, result);
 		});
 	}
 
@@ -297,15 +305,37 @@ public class Dublexor extends Machine {
 		return new Pair<>(potentialCaptcha, multiplier);
 	}
 
-	private void setSecondTrade(@NotNull Player player, @NotNull Inventory open, @NotNull ItemStack input,
+	private void addTrade(@NotNull Player player, @NotNull MerchantInventory open, @NotNull ItemStack input,
 			@NotNull ItemStack expCost, @NotNull ItemStack result) {
-		open.setItem(1, expCost);
-		open.setItem(2, result);
+		List<MerchantRecipe> recipes = new ArrayList<>(open.getMerchant().getRecipes());
+		for (MerchantRecipe recipe : recipes) {
+			if (input.equals(recipe.getIngredients().get(0))) {
+				open.setItem(1, expCost);
+				open.setItem(2, result);
+				InventoryUtil.updateWindowSlot(player, 0);
+				InventoryUtil.updateWindowSlot(player, 1);
+				InventoryUtil.updateWindowSlot(player, 2);
+				return;
+			}
+		}
+
 		MerchantRecipe recipe = new MerchantRecipe(result, Integer.MAX_VALUE);
 		recipe.addIngredient(input);
 		recipe.addIngredient(expCost);
-		InventoryUtil.updateVillagerTrades(player, Dublexor.getExampleRecipe(), recipe);
-		player.updateInventory();
+
+		// Keep 10 recipes deleting earliest non-help-recipe first
+		if (recipes.size() >= 5) {
+			recipes.remove(1);
+		}
+
+		recipes.add(recipe);
+		open.getMerchant().setRecipes(recipes);
+		InventoryUtil.updateVillagerTrades(player, recipes);
+		open.setItem(1, expCost);
+		open.setItem(2, result);
+		InventoryUtil.updateWindowSlot(player, 0);
+		InventoryUtil.updateWindowSlot(player, 1);
+		InventoryUtil.updateWindowSlot(player, 2);
 	}
 
 	/**
@@ -344,6 +374,12 @@ public class Dublexor extends Machine {
 			exampleRecipe = recipe;
 		}
 		return exampleRecipe;
+	}
+
+	@Override
+	public void handleClose(@NotNull InventoryCloseEvent event, @Nullable ConfigurationSection storage) {
+		// Clear exp item
+		event.getView().getTopInventory().setItem(1, null);
 	}
 
 }

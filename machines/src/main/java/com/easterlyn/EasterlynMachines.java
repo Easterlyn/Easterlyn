@@ -184,6 +184,7 @@ public class EasterlynMachines extends JavaPlugin {
 		registerInventoryEvent(InventoryClickEvent.class, InventoryClickEvent.getHandlerList(), machine -> machine::handleClick);
 		registerInventoryEvent(InventoryDragEvent.class, InventoryDragEvent.getHandlerList(), machine -> machine::handleDrag);
 		registerInventoryEvent(InventoryOpenEvent.class, InventoryOpenEvent.getHandlerList(), machine -> machine::handleOpen);
+		registerInventoryEvent(InventoryCloseEvent.class, InventoryCloseEvent.getHandlerList(), machine -> machine::handleClose);
 		InventoryCloseEvent.getHandlerList().register(new SimpleListener<>(InventoryCloseEvent.class, event -> {
 			if (event.getView().getTopInventory() instanceof MerchantInventory) {
 				merchants.remove(((MerchantInventory) event.getView().getTopInventory()).getMerchant());
@@ -502,6 +503,10 @@ public class EasterlynMachines extends JavaPlugin {
 		Merchant merchant = getServer().createMerchant(name);
 		merchants.put(merchant, new Pair<>(machine, data));
 		return merchant;
+	}
+
+	public @Nullable Pair<Machine, ConfigurationSection> getMerchantMachine(@Nullable Merchant merchant) {
+		return merchants.get(merchant);
 	}
 
 	private void hookCreeperHeal() {

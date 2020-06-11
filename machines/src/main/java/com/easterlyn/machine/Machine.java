@@ -23,6 +23,7 @@ import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockIgniteEvent;
 import org.bukkit.event.block.BlockSpreadEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
@@ -405,13 +406,20 @@ public abstract class Machine {
 	}
 
 	/**
-	 * Handles Inventory opening for blocks inside the Machine. This is not fired by interaction
-	 * opening custom inventories handled by the MachineInventoryTracker.
+	 * Handles Inventory opening for blocks inside the Machine.
 	 *
 	 * @param event the InventoryOpenEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
 	public void handleOpen(@NotNull InventoryOpenEvent event, @Nullable ConfigurationSection storage) {}
+
+	/**
+	 * Handles Inventory closing for blocks inside the Machine.
+	 *
+	 * @param event the InventoryCloseEvent
+	 * @param storage the ConfigurationSection of data specific to the given Machine
+	 */
+	public void handleClose(@NotNull InventoryCloseEvent event, @Nullable ConfigurationSection storage) {}
 
 	/**
 	 * Gets the unique drop for this Machine.
