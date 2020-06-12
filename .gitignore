@@ -6,6 +6,7 @@ custom.properties
 testenv/
 *.jardesc
 *.stackdump
+**/logs/
 
 #################
 ## Maven

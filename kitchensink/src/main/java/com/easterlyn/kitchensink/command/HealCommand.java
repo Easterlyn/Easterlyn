@@ -25,7 +25,7 @@ public class HealCommand extends BaseCommand {
 	@CommandPermission("easterlyn.command.heal")
 	@CommandCompletion("@player")
 	@Syntax("[player]")
-	public void heal(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) { // TODO need better optional player flag
+	public void heal(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
 		AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
 		CommandIssuer issuer = getCurrentCommandIssuer();
 		if (attribute == null) {

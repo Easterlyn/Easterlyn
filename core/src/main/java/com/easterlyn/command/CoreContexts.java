@@ -66,7 +66,23 @@ public class CoreContexts {
 					return getSelf(context.getIssuer());
 				}
 
-				if (context.hasFlag(ONLINE) || context.hasFlag(ONLINE_WITH_PERM)) {
+				if (context.hasFlag(ONLINE_WITH_PERM)) {
+					Player player = null;
+					String firstArg = context.getFirstArg();
+					if (firstArg != null && firstArg.length() > 3) {
+						try {
+							player = getOnline(context.getIssuer(), firstArg);
+						} catch (InvalidCommandArgument ignored) {
+						}
+					}
+					if (player != null) {
+						context.popFirstArg();
+						return player;
+					}
+					return getSelf(context.getIssuer());
+				}
+
+				if (context.hasFlag(ONLINE)) {
 					return getOnline(context.getIssuer(), context.popFirstArg());
 				}
 

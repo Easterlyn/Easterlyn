@@ -50,7 +50,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		/* TODO
 		 *  - CommandRedirect? probably unnecessary, replacing essentials
 		 *    - PlayerCommandPreprocessEvent
-		 *  - Portals?
 		 *  - PlayerListHeaderFooterWelcome
 		 *  - IPCache
 		 *    - Used for seen
