@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -112,84 +113,101 @@ public class Dublexor extends Machine {
 
 	@Override
 	public void handleClick(@NotNull InventoryClickEvent event, ConfigurationSection storage) {
-		updateInventory(event.getWhoClicked().getUniqueId());
-		if (event.getRawSlot() != event.getView().convertSlot(event.getRawSlot())) {
-			// Clicked inv is not the top.
+		if (event.getRawSlot() == 0) {
+			// Clicked slot is input. Update choices.
+			updateInventory(event.getWhoClicked().getUniqueId(), false);
 			return;
 		}
-		if (event.getSlot() == 1) {
-			// Exp slot is being clicked. No adding or removing items.
+
+		if (event.getRawSlot() == 1) {
+			// Clicked slot is exp cost display. No modification allowed.
 			event.setCancelled(true);
 			return;
 		}
-		if (event.getSlot() == 2 && event.getCurrentItem() != null
-				&& event.getCurrentItem().getType() != Material.AIR) {
-			if (event.getCurrentItem().getType() == Material.BARRIER) {
-				event.setCancelled(true);
-				return;
-			}
 
-			// Item is being crafted
-			Inventory top = event.getView().getTopInventory();
-
-			// Color code + "Mana cost: " = 13 characters, as is color code + "Cannot copy"
-			//noinspection ConstantConditions // This is guaranteed to be okay.
-			String costString = top.getItem(1).getItemMeta().getDisplayName().substring(13);
-			if (costString.isEmpty()) {
-				event.setCancelled(true);
-				return;
-			}
-
-			// Remove exp first in case of an unforeseen issue.
-			int expCost;
-			try {
-				expCost = Integer.parseInt(costString);
-			} catch (NumberFormatException e) {
-				ReportableEvent.call("Unable to parse Dublecation cost:" + costString, e, 5);
-				event.setCancelled(true);
-				return;
-			}
-
-			// TODO refund if no space (whoops)
-			Player player = (Player) event.getWhoClicked();
-			if (player.getGameMode() != GameMode.CREATIVE) {
-				ExperienceUtil.changeExp(player, -expCost);
-			}
-
-			if (event.getClick().name().contains("SHIFT")) {
-				// Ensure inventory can contain items
-				if (ItemUtil.hasSpaceFor(event.getCurrentItem(), player.getInventory())) {
-					player.getInventory().addItem(event.getCurrentItem().clone());
-				} else {
-					event.setCancelled(true);
-					return;
-				}
-			} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR
-					|| (event.getCursor().isSimilar(event.getCurrentItem())
-						&& event.getCursor().getAmount() + event.getCurrentItem().getAmount()
-						< event.getCursor().getMaxStackSize())) {
-				// Cursor can contain items
-				ItemStack result = event.getCurrentItem().clone();
-				if (result.isSimilar(event.getCursor())) {
-					result.setAmount(result.getAmount() + event.getCursor().getAmount());
-				}
-				// noinspection deprecation // No alternative available, desync is handled.
-				event.setCursor(result);
-			} else {
-				// Cursor cannot contain items
-				event.setCancelled(true);
-				return;
-			}
-			event.setCurrentItem(null);
+		if (event.getRawSlot() != 2 || event.getCurrentItem() == null
+				|| event.getCurrentItem().getType() == Material.AIR) {
+			// Result slot is not being clicked or there is no result.
+			return;
 		}
+
+		if (event.getCurrentItem().getType() == Material.BARRIER) {
+			// Operation is not allowed.
+			event.setCancelled(true);
+			return;
+		}
+
+		Inventory top = event.getView().getTopInventory();
+
+		// Color code + "Mana cost: " = 13 characters, as is color code + "Cannot copy"
+		//noinspection ConstantConditions // This is guaranteed to be okay.
+		String costString = top.getItem(1).getItemMeta().getDisplayName().substring(13);
+		if (costString.isEmpty()) {
+			event.setCancelled(true);
+			return;
+		}
+
+		// Remove exp first in case of an unforeseen issue.
+		int expCost;
+		try {
+			expCost = Integer.parseInt(costString);
+		} catch (NumberFormatException e) {
+			ReportableEvent.call("Unable to parse Dublecation cost:" + costString, e, 5);
+			event.setCancelled(true);
+			return;
+		}
+
+		Player player = (Player) event.getWhoClicked();
+		if (player.getGameMode() != GameMode.CREATIVE) {
+			ExperienceUtil.changeExp(player, -expCost);
+		}
+
+		if (event.getClick().name().contains("SHIFT")) {
+			// Ensure inventory can contain items
+			if (ItemUtil.hasSpaceFor(event.getCurrentItem(), player.getInventory())) {
+				player.getInventory().addItem(event.getCurrentItem().clone());
+			} else {
+				event.setCancelled(true);
+				if (player.getGameMode() != GameMode.CREATIVE) {
+					ExperienceUtil.changeExp(player, expCost);
+				}
+				return;
+			}
+		} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR
+				|| (event.getCursor().isSimilar(event.getCurrentItem())
+					&& event.getCursor().getAmount() + event.getCurrentItem().getAmount()
+					< event.getCursor().getMaxStackSize())) {
+			// Cursor can contain items
+			ItemStack result = event.getCurrentItem().clone();
+			if (result.isSimilar(event.getCursor())) {
+				result.setAmount(result.getAmount() + event.getCursor().getAmount());
+			}
+			// noinspection deprecation // No alternative available, desync is handled.
+			event.setCursor(result);
+		} else {
+			// Cursor cannot contain items
+			if (player.getGameMode() != GameMode.CREATIVE) {
+				ExperienceUtil.changeExp(player, expCost);
+			}
+			event.setCancelled(true);
+			return;
+		}
+
+		event.setCurrentItem(null);
+
+		updateInventory(player.getUniqueId(), false);
 	}
 
 	@Override
 	public void handleDrag(@NotNull InventoryDragEvent event, ConfigurationSection storage) {
-		updateInventory(event.getWhoClicked().getUniqueId());
-		// Raw slot 1 = second slot of top inventory
 		if (event.getRawSlots().contains(1)) {
+			// Contains cost display slot. No modification allowed.
 			event.setCancelled(true);
+			return;
+		}
+		if (event.getRawSlots().contains(0)) {
+			// Contains input. Update choices.
+			updateInventory(event.getWhoClicked().getUniqueId(), false);
 		}
 	}
 
@@ -198,8 +216,8 @@ public class Dublexor extends Machine {
 	 *
 	 * @param id the UUID of the Player using the Dublexor
 	 */
-	private void updateInventory(final UUID id) {
-		Bukkit.getScheduler().scheduleSyncDelayedTask(getMachines(), () -> {
+	private void updateInventory(final UUID id, boolean fullUpdate) {
+		getMachines().getServer().getScheduler().scheduleSyncDelayedTask(getMachines(), () -> {
 			// Must re-obtain player or update doesn't seem to happen
 			Player player = Bukkit.getPlayer(id);
 			if (player == null || !(player.getOpenInventory().getTopInventory() instanceof MerchantInventory)) {
@@ -216,6 +234,7 @@ public class Dublexor extends Machine {
 			ItemStack originalInput = open.getItem(0);
 
 			if (originalInput == null || originalInput.getType() == Material.AIR) {
+				open.setItem(1, null);
 				return;
 			}
 
@@ -231,7 +250,7 @@ public class Dublexor extends Machine {
 
 			// Ensure non-unique item (excluding captchas)
 			if (ItemUtil.isUniqueItem(modifiedInput)) {
-				addTrade(player, open, originalInput, expCost, barrier);
+				displayTrade(player, open, originalInput, expCost, barrier, fullUpdate);
 				return;
 			}
 
@@ -274,7 +293,7 @@ public class Dublexor extends Machine {
 			});
 
 			// Set items
-			addTrade(player, open, originalInput, expCost, result);
+			displayTrade(player, open, originalInput, expCost, result, fullUpdate);
 		});
 	}
 
@@ -305,16 +324,38 @@ public class Dublexor extends Machine {
 		return new Pair<>(potentialCaptcha, multiplier);
 	}
 
-	private void addTrade(@NotNull Player player, @NotNull MerchantInventory open, @NotNull ItemStack input,
-			@NotNull ItemStack expCost, @NotNull ItemStack result) {
+	/**
+	 * Adds a given trade offer to a Merchant.
+	 *
+	 * @param player the trading Player
+	 * @param open the open MerchantInventory
+	 * @param input the first trade input
+	 * @param expCost the second trade input
+	 * @param result the resulting ItemStack
+	 * @param fullUpdate whether or not a full inventory update is required to prevent client desync
+	 */
+	private void displayTrade(@NotNull Player player, @NotNull MerchantInventory open, @NotNull ItemStack input,
+			@NotNull ItemStack expCost, @NotNull ItemStack result, boolean fullUpdate) {
 		List<MerchantRecipe> recipes = new ArrayList<>(open.getMerchant().getRecipes());
-		for (MerchantRecipe recipe : recipes) {
+
+		// Check if selected recipe is correct for input
+		if (open.getSelectedRecipeIndex() > 0 && input.equals(recipes.get(open.getSelectedRecipeIndex()).getIngredients().get(0))) {
+			setSlots(player, open, expCost, result, fullUpdate);
+			return;
+		}
+
+		// Check if a correct recipe exists
+		for (int i = 0; i < recipes.size(); ++i) {
+			MerchantRecipe recipe = recipes.get(i);
 			if (input.equals(recipe.getIngredients().get(0))) {
-				open.setItem(1, expCost);
-				open.setItem(2, result);
-				InventoryUtil.updateWindowSlot(player, 0);
-				InventoryUtil.updateWindowSlot(player, 1);
-				InventoryUtil.updateWindowSlot(player, 2);
+				// If a recipe is selected, ensure that the correct recipe replaces it
+				if (open.getSelectedRecipeIndex() > 0 && open.getSelectedRecipeIndex() != i) {
+					recipes.set(i, recipes.get(open.getSelectedRecipeIndex()));
+					recipes.set(open.getSelectedRecipeIndex(), recipe);
+					open.getMerchant().setRecipes(recipes);
+					InventoryUtil.updateVillagerTrades(player, recipes);
+				}
+				setSlots(player, open, expCost, result, fullUpdate);
 				return;
 			}
 		}
@@ -323,19 +364,41 @@ public class Dublexor extends Machine {
 		recipe.addIngredient(input);
 		recipe.addIngredient(expCost);
 
-		// Keep 10 recipes deleting earliest non-help-recipe first
+		// Delete the first non-example recipe if list is too large
 		if (recipes.size() >= 5) {
 			recipes.remove(1);
+		}
+
+		// If recipe is selected, swap with selected.
+		if (open.getSelectedRecipeIndex() > 0 && open.getSelectedRecipeIndex() < recipes.size()) {
+			recipe = recipes.set(open.getSelectedRecipeIndex(), recipe);
 		}
 
 		recipes.add(recipe);
 		open.getMerchant().setRecipes(recipes);
 		InventoryUtil.updateVillagerTrades(player, recipes);
+		setSlots(player, open, expCost, result, fullUpdate);
+	}
+
+	/**
+	 * Set slots and update inventory as required.
+	 *
+	 * @param player the Player viewing the Inventory
+	 * @param open the open Inventory
+	 * @param expCost the ItemStack to set in the second slot
+	 * @param fullUpdate true if the entire inventory should be updated instead of just relevant slots
+	 */
+	private void setSlots(@NotNull Player player, @NotNull Inventory open, @Nullable ItemStack expCost,
+			@Nullable ItemStack result, boolean fullUpdate) {
 		open.setItem(1, expCost);
 		open.setItem(2, result);
-		InventoryUtil.updateWindowSlot(player, 0);
-		InventoryUtil.updateWindowSlot(player, 1);
-		InventoryUtil.updateWindowSlot(player, 2);
+		if (fullUpdate) {
+			player.updateInventory();
+		} else {
+			InventoryUtil.updateWindowSlot(player, 0);
+			InventoryUtil.updateWindowSlot(player, 1);
+			InventoryUtil.updateWindowSlot(player, 2);
+		}
 	}
 
 	/**
@@ -380,6 +443,12 @@ public class Dublexor extends Machine {
 	public void handleClose(@NotNull InventoryCloseEvent event, @Nullable ConfigurationSection storage) {
 		// Clear exp item
 		event.getView().getTopInventory().setItem(1, null);
+	}
+
+	@Override
+	public void selectTrade(TradeSelectEvent event, @NotNull ConfigurationSection storage) {
+		event.getInventory().setItem(1, null);
+		updateInventory(event.getWhoClicked().getUniqueId(), true);
 	}
 
 }

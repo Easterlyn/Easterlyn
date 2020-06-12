@@ -28,6 +28,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -428,5 +429,12 @@ public abstract class Machine {
 	 */
 	@NotNull
 	public abstract ItemStack getUniqueDrop();
+
+	/**
+	 * Handles selection of a trade offered by the Machine.
+	 * @param event the TradeSelectEvent
+	 * @param storage the ConfigurationSection of data specific to the given Machine
+	 */
+	public void selectTrade(TradeSelectEvent event, @NotNull ConfigurationSection storage) {}
 
 }

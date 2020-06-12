@@ -55,6 +55,7 @@ import org.bukkit.event.inventory.InventoryEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
+import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
@@ -62,6 +63,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
@@ -190,6 +192,13 @@ public class EasterlynMachines extends JavaPlugin {
 				merchants.remove(((MerchantInventory) event.getView().getTopInventory()).getMerchant());
 			}
 		}, this, EventPriority.HIGH));
+		TradeSelectEvent.getHandlerList().register(new SimpleListener<>(TradeSelectEvent.class, event -> {
+			Pair<Machine, ConfigurationSection> machineData = merchants.get(event.getMerchant());
+			if (machineData != null) {
+				machineData.getLeft().selectTrade(event, machineData.getRight());
+			}
+		}, this));
+
 		BlockPistonExtendEvent.getHandlerList().register(new SimpleListener<>(BlockPistonExtendEvent.class, event -> {
 			if (isMachine(event.getBlock()) || event.getBlocks().stream().anyMatch(this::isMachine)) {
 				event.setCancelled(true);
@@ -265,6 +274,12 @@ public class EasterlynMachines extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		for (Player player : getServer().getOnlinePlayers()) {
+			if (getInventoryMachine(player.getOpenInventory().getTopInventory()) != null) {
+				player.closeInventory();
+			}
+		}
+
 		keysToBlocks.entrySet().stream().distinct().forEach(entry -> {
 			ConfigurationSection section = getConfig().getConfigurationSection(CoordinateUtil.pathFromLoc(entry.getKey().getLocation()));
 			if (section == null) {
@@ -567,28 +582,19 @@ public class EasterlynMachines extends JavaPlugin {
 	private <T extends InventoryEvent> void registerInventoryEvent(Class<T> clazz, HandlerList handlerList,
 			Function<Machine, BiConsumer<T, ConfigurationSection>> consumer) {
 		handlerList.register(new SimpleListener<>(clazz, event -> {
-			InventoryHolder holder = event.getView().getTopInventory().getHolder();
-			Machine machine = null;
+			Machine machine;
 			ConfigurationSection section = null;
-			if (event.getView().getTopInventory() instanceof MerchantInventory) {
-				Merchant merchant = ((MerchantInventory) event.getView().getTopInventory()).getMerchant();
-				Pair<Machine, ConfigurationSection> machineData = merchants.get(merchant);
-				if (machineData != null) {
-					machine = machineData.getLeft();
-					section = machineData.getRight();
-				}
-			} else if (holder instanceof Machine) {
-				machine = (Machine) holder;
+			Pair<Machine, ConfigurationSection> machineData = getInventoryMachine(event.getView().getTopInventory());
+			if (machineData != null) {
+				machine = machineData.getLeft();
+				section = machineData.getRight();
+			} else if (event.getView().getTopInventory().getHolder() instanceof Machine) {
+				machine = (Machine) event.getView().getTopInventory().getHolder();
 				if (event.getView().getTopInventory().getLocation() != null) {
 					section = getConfig().getConfigurationSection(CoordinateUtil.pathFromLoc(event.getView().getTopInventory().getLocation()));
 				}
-			} else if (holder instanceof BlockState) {
-				BlockState blockState = (BlockState) holder;
-				Pair<Machine, ConfigurationSection> machineData = getMachine(blockState.getBlock());
-				if (machineData != null) {
-					machine = machineData.getLeft();
-					section = machineData.getRight();
-				}
+			} else {
+				return;
 			}
 			if (machine == null) {
 				return;
@@ -600,6 +606,21 @@ public class EasterlynMachines extends JavaPlugin {
 				ReportableEvent.call("Caught exception handling Machine event", exception, 5);
 			}
 		}, this, EventPriority.LOW, true));
+	}
+
+	private @Nullable Pair<Machine, ConfigurationSection> getInventoryMachine(Inventory inventory) {
+		if (inventory instanceof MerchantInventory) {
+			Merchant merchant = ((MerchantInventory) inventory).getMerchant();
+			return merchants.get(merchant);
+		}
+		InventoryHolder holder = inventory.getHolder();
+		if (holder instanceof BlockState) {
+			return getMachine(((BlockState) holder).getBlock());
+		}
+		if (inventory.getLocation() != null) {
+			return getMachine(inventory.getLocation().getBlock());
+		}
+		return null;
 	}
 
 }
