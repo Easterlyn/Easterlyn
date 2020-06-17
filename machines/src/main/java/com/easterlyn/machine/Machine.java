@@ -435,6 +435,6 @@ public abstract class Machine {
 	 * @param event the TradeSelectEvent
 	 * @param storage the ConfigurationSection of data specific to the given Machine
 	 */
-	public void selectTrade(TradeSelectEvent event, @NotNull ConfigurationSection storage) {}
+	public void selectTrade(@NotNull TradeSelectEvent event, @NotNull ConfigurationSection storage) {}
 
 }
