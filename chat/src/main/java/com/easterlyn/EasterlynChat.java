@@ -326,6 +326,8 @@ public class EasterlynChat extends JavaPlugin {
 			return (NormalChannel) channel;
 		});
 
+		// TODO ACF is removing leading # from channel display names in completions
+
 		plugin.getCommandManager().getCommandCompletions().registerCompletion("channels",
 				getUserHandler(user -> channels.values().stream().distinct().filter(channel -> channel.isWhitelisted(user))
 					.map(Channel::getDisplayName).collect(Collectors.toSet())));

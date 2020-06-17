@@ -168,7 +168,7 @@ public class ChannelManagementListener implements Listener {
 					component.addExtra(textComponent);
 				}
 			}
-			for (TextComponent textComponent : StringUtil.toJSON(' ' + core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+			for (TextComponent textComponent : StringUtil.toJSON(core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
 				component.addExtra(textComponent);
 			}
 

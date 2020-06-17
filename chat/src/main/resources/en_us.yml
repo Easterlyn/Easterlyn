@@ -19,7 +19,9 @@ chat:
     aether.description: '{color:normal.a}Send messages from the aether.'
     channel:
       description: '{color:normal.a}Chat channel management.'
-      focus.description: '{color:normal.a}Focus on a channel.'
+      focus:
+        description: '{color:normal.a}Focus on a channel.'
+        success: '{color:normal.a}Current channel set to {value}'
       join:
         description: '{color:normal.a}Join a channel.'
         error.password: '{color:normal.a}No can do, buckaroo! Invalid password. Alternately, get someone to manually approve you.'
@@ -52,7 +54,7 @@ chat:
         description: '{color:normal.a}Create a new channel!'
         error:
           duplicate: '{color:bad.a}A channel by that name already exists. Sorry pal.'
-          naming_conventions: '{color:bad.a}Invalid channel name. Valid channel names start with "#" and contain 1-16 alphabetical characters.'
+          naming_conventions: '{color:bad.a}Invalid channel name. Valid channel names start with `"#"` and contain 1-16 alphabetical characters.'
         success: '{color:normal.a}Channel created! Manipulate it with "/channel modify"'
       delete:
         description: '{color:normal.a}DELET CHANEL'

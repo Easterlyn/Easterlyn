@@ -65,6 +65,8 @@ public class ChannelCommand extends BaseCommand {
 		user.getStorage().set(EasterlynChat.USER_CURRENT, channel.getName());
 
 		if (channel.getMembers().contains(user.getUniqueId())) {
+			core.getLocaleManager().sendMessage(user.getPlayer(), "chat.commands.channel.focus.success",
+					"{value}", channel.getDisplayName());
 			return;
 		}
 
