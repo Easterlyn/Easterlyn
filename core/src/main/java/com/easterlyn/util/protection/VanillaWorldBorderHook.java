@@ -1,5 +1,6 @@
 package com.easterlyn.util.protection;
 
+import java.util.Objects;
 import org.bukkit.Location;
 import org.bukkit.WorldBorder;
 import org.bukkit.entity.Player;
@@ -22,7 +23,7 @@ public class VanillaWorldBorderHook extends ProtectionHook {
 
 	@Override
 	public boolean isProtected(Location location) {
-		WorldBorder border = location.getWorld().getWorldBorder();
+		WorldBorder border = Objects.requireNonNull(location.getWorld()).getWorldBorder();
 		double borderRadius = border.getSize() / 2;
 
 		return border.getCenter().getX() - borderRadius > location.getBlockX()

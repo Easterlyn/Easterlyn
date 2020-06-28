@@ -181,9 +181,9 @@ public class LocaleManager {
 		Collection<TextComponent> textComponents = StringUtil.toJSON(message, additionalHandlers);
 		if (sender instanceof Player) {
 			if (type == ChatMessageType.ACTION_BAR) {
-				((Player) sender).sendActionBar(TextComponent.toLegacyText(textComponents.toArray(new BaseComponent[0])));
+				((Player) sender).spigot().sendMessage(ChatMessageType.ACTION_BAR, new TextComponent(textComponents.toArray(new BaseComponent[0])));
 			} else {
-				sender.sendMessage(new TextComponent(textComponents.toArray(new BaseComponent[0])));
+				sender.spigot().sendMessage(new TextComponent(textComponents.toArray(new BaseComponent[0])));
 			}
 			return;
 		}

@@ -14,7 +14,10 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
+import org.bukkit.BanList;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -40,7 +43,8 @@ public class BanCommand extends BaseCommand implements Listener {
 	@CommandCompletion("@player @date")
 	public void tempban(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) OfflinePlayer target, Date date, @Default("Big brother is watching.") String reason) {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm 'on' dd MMM yyyy");
-		String locale = core.getLocaleManager().getLocale(target.getPlayer());
+		Player player = target.getPlayer();
+		String locale = core.getLocaleManager().getLocale(player);
 		String listReason = core.getLocaleManager().getValue("sink.module.ban.banned", locale);
 		if (listReason == null) {
 			listReason = "Banned: ";
@@ -53,7 +57,12 @@ public class BanCommand extends BaseCommand implements Listener {
 				listReason += '\n' + value;
 			}
 		}
-		target.banPlayer(listReason, date, issuer.getIssuer().getName() + " on " + dateFormat.format(new Date()), true);
+		core.getServer().getBanList(BanList.Type.NAME).addBan(Objects.requireNonNull(target.getName()), listReason, date,
+				issuer.getIssuer().getName() + " on " + dateFormat.format(new Date()));
+		if (player != null) {
+			player.kickPlayer(listReason);
+		}
+		//target.banPlayer(listReason, date, issuer.getIssuer().getName() + " on " + dateFormat.format(new Date()), true);// TODO Paper
 		core.getLocaleManager().broadcast("sink.module.ban.announcement",
 				"{target}", target.getName() == null ? target.getUniqueId().toString() : target.getName(),
 				"{reason}", reason);

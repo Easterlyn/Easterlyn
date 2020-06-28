@@ -12,6 +12,7 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.command.CoreContexts;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -53,7 +54,7 @@ public class Meteors extends BaseCommand implements Listener {
 			return;
 		}
 
-		Block targetBlock = issuer.getPlayer().getTargetBlock(100);
+		Block targetBlock = issuer.getPlayer().getTargetBlockExact(100);
 		Location target;
 		if (targetBlock != null) {
 			target = targetBlock.getLocation();
@@ -88,7 +89,7 @@ public class Meteors extends BaseCommand implements Listener {
 	private void createMeteorite(@NotNull Location target, @Nullable Material type, int radius, boolean ignite, boolean damageTerrain) {
 		final BlockData finalType = (type == null || !type.isBlock() ? Material.NETHERRACK : type).createBlockData();
 		final int finalRadius = radius < 0 ? 3 : Math.min(radius, 50);
-		int desired = target.getWorld().getHighestBlockYAt(target.getBlockX(), target.getBlockZ()) + 40 + finalRadius;
+		int desired = Objects.requireNonNull(target.getWorld()).getHighestBlockYAt(target.getBlockX(), target.getBlockZ()) + 40 + finalRadius;
 		int highestPossible = 255 - finalRadius;
 		desired = Math.min(desired, highestPossible);
 		target.add(0, desired - target.getY(), 0);
@@ -101,7 +102,7 @@ public class Meteors extends BaseCommand implements Listener {
 					@Override
 					public void run() {
 						locations.forEach(location -> {
-							FallingBlock fallingBlock = location.getWorld().spawnFallingBlock(location, finalType);
+							FallingBlock fallingBlock = Objects.requireNonNull(location.getWorld()).spawnFallingBlock(location, finalType);
 							// Being struck by a meteorite hurts.
 							fallingBlock.setHurtEntities(true);
 							fallingBlock.setDropItem(false);
@@ -193,7 +194,7 @@ public class Meteors extends BaseCommand implements Listener {
 			boolean ignite = dataContainer.getOrDefault(keyIgnite, PersistentDataType.BYTE, (byte) 0) > 0;
 			boolean damageTerrain = dataContainer.getOrDefault(keyDamageTerrain, PersistentDataType.BYTE, (byte) 0) > 0;
 
-			event.getBlock().getWorld().createExplosion(event.getEntity(), strength, ignite, damageTerrain);
+			event.getBlock().getWorld().createExplosion(event.getEntity().getLocation(), strength, ignite, damageTerrain, event.getEntity());
 		}
 	}
 

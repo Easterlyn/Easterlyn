@@ -43,7 +43,7 @@ public class ItemInformationCommand extends BaseCommand {
 		BaseComponent component = StringUtil.getItemComponent(hand);
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, StringUtil.getItemText(hand)));
 		component = new TextComponent(component, new TextComponent(": "), new TextComponent(ChatColor.stripColor(hand.toString())));
-		player.sendMessage(component);
+		player.spigot().sendMessage(component);
 		player.sendMessage("Hash: " + captchas.calculateHashForItem(hand));
 		player.sendMessage("Mana: " + EconomyUtil.getWorth(hand));
 	}

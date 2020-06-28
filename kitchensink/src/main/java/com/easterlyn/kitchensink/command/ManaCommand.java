@@ -110,7 +110,7 @@ public class ManaCommand extends BaseCommand {
 			component.addExtra(text);
 		}
 
-		player.sendMessage(component);
+		player.spigot().sendMessage(component);
 	}
 
 	private DecimalFormat getFormat() {

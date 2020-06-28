@@ -89,7 +89,7 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 
-			player.sendMessage(component);
+			player.spigot().sendMessage(component);
 		});
 	}
 
@@ -147,7 +147,7 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 
-			player.sendMessage(component);
+			player.spigot().sendMessage(component);
 		});
 
 		channel.getMembers().remove(user.getUniqueId());
@@ -200,7 +200,7 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 
-			player.sendMessage(component);
+			player.spigot().sendMessage(component);
 		});
 	}
 
@@ -244,7 +244,7 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 
-			player.sendMessage(component);
+			player.spigot().sendMessage(component);
 		});
 	}
 
@@ -290,7 +290,7 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 
-			player.sendMessage(component);
+			player.spigot().sendMessage(component);
 		});
 
 		channel.setBanned(target, add);
@@ -349,7 +349,7 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 
-			player.sendMessage(component);
+			player.spigot().sendMessage(component);
 		});
 	}
 
@@ -395,7 +395,7 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 
-			player.sendMessage(component);
+			player.spigot().sendMessage(component);
 		});
 	}
 
@@ -471,7 +471,7 @@ public class ChannelCommand extends BaseCommand {
 				component.addExtra(textComponent);
 			}
 
-			player.sendMessage(component);
+			player.spigot().sendMessage(component);
 		});
 	}
 

@@ -9,16 +9,14 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Triple<L, M, R> extends Pair<L, R> {
 
-	@NotNull
-	private M middle;
+	private @NotNull M middle;
 
 	public Triple(@NotNull L left, @NotNull M middle, @NotNull R right) {
 		super(left, right);
 		this.middle = middle;
 	}
 
-	@NotNull
-	public M getMiddle() {
+	public @NotNull M getMiddle() {
 		return middle;
 	}
 
@@ -33,7 +31,7 @@ public class Triple<L, M, R> extends Pair<L, R> {
 
 	@Override
 	public boolean equals(Object obj) {
-		return super.equals(obj) && middle.equals(((Triple) obj).middle);
+		return super.equals(obj) && middle.equals(((Triple<?, ?, ?>) obj).middle);
 	}
 
 }

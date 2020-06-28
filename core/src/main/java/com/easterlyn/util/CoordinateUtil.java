@@ -129,7 +129,7 @@ public class CoordinateUtil {
 		if (xyz.length < 3) {
 			throw new IllegalArgumentException("Invalid location path: " + string);
 		}
-		return new Location(Bukkit.getWorld(pathSplit[0]), Integer.valueOf(xyz[0]), Integer.valueOf(xyz[1]), Integer.valueOf(xyz[2]));
+		return new Location(Bukkit.getWorld(pathSplit[0]), Integer.parseInt(xyz[0]), Integer.parseInt(xyz[1]), Integer.parseInt(xyz[2]));
 	}
 
 	private CoordinateUtil() {}

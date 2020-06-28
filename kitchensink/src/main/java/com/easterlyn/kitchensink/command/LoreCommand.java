@@ -75,7 +75,8 @@ public class LoreCommand extends BaseCommand {
 
 		GenericUtil.consumeAs(SkullMeta.class, hand.getItemMeta(), skullMeta -> {
 			// TODO custom heads - null UUID, name, data
-			skullMeta.setPlayerProfile(Bukkit.createProfile(owner));
+			//skullMeta.setPlayerProfile(Bukkit.createProfile(owner));// TODO Paper
+			skullMeta.setOwningPlayer(Bukkit.getOfflinePlayer(owner));
 			hand.setItemMeta(skullMeta);
 		});
 		if (owner != null) {

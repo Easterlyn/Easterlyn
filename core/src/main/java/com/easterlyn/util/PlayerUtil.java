@@ -7,16 +7,17 @@ import com.google.common.cache.CacheBuilder;
 import com.mojang.authlib.GameProfile;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import net.minecraft.server.v1_15_R1.DimensionManager;
-import net.minecraft.server.v1_15_R1.EntityPlayer;
-import net.minecraft.server.v1_15_R1.MinecraftServer;
-import net.minecraft.server.v1_15_R1.PlayerInteractManager;
+import java.util.concurrent.TimeoutException;
+import net.minecraft.server.v1_16_R1.EntityPlayer;
+import net.minecraft.server.v1_16_R1.MinecraftServer;
+import net.minecraft.server.v1_16_R1.PlayerInteractManager;
+import net.minecraft.server.v1_16_R1.World;
+import net.minecraft.server.v1_16_R1.WorldServer;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_15_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -38,7 +39,7 @@ public class PlayerUtil {
 				}
 				Player player = (Player) notification.getValue();
 				// Save if over 45 days since last login, removes achievements that should not be present.
-				if (!player.isOnline() && player.getLastSeen() < System.currentTimeMillis() - 3888000000L) {
+				if (!player.isOnline() && player.getLastPlayed() < System.currentTimeMillis() - 3888000000L) {
 					player.saveData();
 				}
 			}).build();
@@ -103,24 +104,10 @@ public class PlayerUtil {
 		} else if (plugin == null) {
 			throw new IllegalAccessException("Asynchronous player load must use PlayerUtils#getPlayer(Plugin, UUID)");
 		}
-		Future<Player> future = Bukkit.getScheduler().callSyncMethod(plugin, () -> getPlayerFor(uuid));
 
-		int ticks = 0;
-		while (!future.isDone() && !future.isCancelled() && ticks < 20) {
-			++ticks;
-			try {
-				Thread.sleep(50L);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-		if (!future.isDone() || future.isCancelled()) {
-			return null;
-		}
 		try {
-			return future.get();
-		} catch (InterruptedException | ExecutionException e) {
+			return Bukkit.getScheduler().callSyncMethod(plugin, () -> getPlayerFor(uuid)).get(1, TimeUnit.SECONDS);
+		} catch (InterruptedException | ExecutionException | TimeoutException e) {
 			e.printStackTrace();
 			return null;
 		}
@@ -134,9 +121,15 @@ public class PlayerUtil {
 			return null;
 		}
 		MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-		EntityPlayer nmsPlayer = new EntityPlayer(server, server.getWorldServer(DimensionManager.OVERWORLD),
+		WorldServer worldServer = server.getWorldServer(World.OVERWORLD);
+
+		if (worldServer == null) {
+			return null;
+		}
+
+		EntityPlayer nmsPlayer = new EntityPlayer(server, worldServer,
 				new GameProfile(uuid, offlinePlayer.getName()),
-				new PlayerInteractManager(server.getWorldServer(DimensionManager.OVERWORLD)));
+				new PlayerInteractManager(worldServer));
 		// TODO: swap to OpenInv to prevent overwriting mounts?
 
 		Player player = nmsPlayer.getBukkitEntity();

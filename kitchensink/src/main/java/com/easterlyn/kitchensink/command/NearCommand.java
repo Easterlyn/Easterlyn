@@ -78,7 +78,7 @@ public class NearCommand extends BaseCommand {
 		// Remove trailing comma component
 		message.getExtra().remove(message.getExtra().size() - 1);
 
-		issuer.sendMessage(message);
+		issuer.spigot().sendMessage(message);
 	}
 
 }

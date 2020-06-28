@@ -81,7 +81,7 @@ public class AutoUser extends User {
 	}
 
 	public void sendMessage(@NotNull BaseComponent... components) {
-		Bukkit.getConsoleSender().sendMessage(components);
+		Bukkit.getConsoleSender().spigot().sendMessage(components);
 	}
 
 	void save() {}

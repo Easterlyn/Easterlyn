@@ -68,29 +68,23 @@ public class ParsedText {
 					builder = new StringBuilder();
 				}
 
-				switch(format) {
-					case BOLD:
-						bold = true;
-						break;
-					case ITALIC:
-						italic = true;
-						break;
-					case UNDERLINE:
-						underline = true;
-						break;
-					case STRIKETHROUGH:
-						strike = true;
-						break;
-					case MAGIC:
-						magic = true;
-						break;
-					default:
-						bold = null;
-						italic = null;
-						underline = null;
-						strike = null;
-						magic = null;
-						color = format == ChatColor.RESET ? null : format;
+				if (ChatColor.BOLD.equals(format)) {
+					bold = true;
+				} else if (ChatColor.ITALIC.equals(format)) {
+					italic = true;
+				} else if (ChatColor.UNDERLINE.equals(format)) {
+					underline = true;
+				} else if (ChatColor.STRIKETHROUGH.equals(format)) {
+					strike = true;
+				} else if (ChatColor.MAGIC.equals(format)) {
+					magic = true;
+				} else {
+					bold = null;
+					italic = null;
+					underline = null;
+					strike = null;
+					magic = null;
+					color = ChatColor.RESET.equals(format) ? null : format;
 				}
 			}
 		}

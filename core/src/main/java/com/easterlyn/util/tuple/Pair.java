@@ -9,18 +9,15 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Pair<L, R> {
 
-	@NotNull
-	private L left;
-	@NotNull
-	private R right;
+	private @NotNull L left;
+	private @NotNull R right;
 
 	public Pair(@NotNull L left, @NotNull R right) {
 		this.left = left;
 		this.right = right;
 	}
 
-	@NotNull
-	public L getLeft() {
+	public @NotNull L getLeft() {
 		return left;
 	}
 
@@ -28,8 +25,7 @@ public class Pair<L, R> {
 		this.left = left;
 	}
 
-	@NotNull
-	public R getRight() {
+	public @NotNull R getRight() {
 		return right;
 	}
 
@@ -53,7 +49,7 @@ public class Pair<L, R> {
 		if (!getClass().isInstance(obj)) {
 			return false;
 		}
-		Pair other = (Pair) obj;
+		Pair<?, ?> other = (Pair<?, ?>) obj;
 		return left.equals(other.left) && right.equals(other.right);
 	}
 

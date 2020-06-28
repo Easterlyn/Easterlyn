@@ -26,7 +26,7 @@ import org.jetbrains.annotations.NotNull;
 public class SimpleUI implements InventoryHolder {
 
 	private final Plugin plugin;
-	private String name;
+	private final String name;
 	private final TreeMap<Integer, Button> buttons = new TreeMap<>();
 	private final Map<Integer, Button> navigation = new HashMap<>();
 	private int startIndex = 0;
@@ -40,7 +40,7 @@ public class SimpleUI implements InventoryHolder {
 	private void registerEvents(Plugin plugin) {
 		for (RegisteredListener registeredListener : InventoryClickEvent.getHandlerList().getRegisteredListeners()) {
 			if (registeredListener instanceof KeyedListener) {
-				if (((KeyedListener) registeredListener).getKey().equals("SimpleUI-" + plugin.getName())) {
+				if (((KeyedListener<?>) registeredListener).getKey().equals("SimpleUI-" + plugin.getName())) {
 					return;
 				}
 			}

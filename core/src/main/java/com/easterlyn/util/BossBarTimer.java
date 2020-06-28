@@ -21,6 +21,7 @@ import org.bukkit.util.BoundingBox;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+@SuppressWarnings("unused")
 public class BossBarTimer {
 
 	// Minimum noticeable boss bar increment on vanilla client - bar is 180px.

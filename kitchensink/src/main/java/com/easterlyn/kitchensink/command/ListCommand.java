@@ -85,7 +85,7 @@ public class ListCommand extends BaseCommand {
 			});
 			components.remove(components.size() -1);
 
-			issuer.getIssuer().sendMessage(components.toArray(new BaseComponent[0]));
+			issuer.getIssuer().spigot().sendMessage(components.toArray(new BaseComponent[0]));
 		}
 
 	}

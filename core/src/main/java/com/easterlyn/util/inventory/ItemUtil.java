@@ -285,7 +285,7 @@ public class ItemUtil {
 
 		// Skulls
 		GenericUtil.biConsumeAs(SkullMeta.class, originalMeta, cleanedMeta,
-				(oldMeta, newMeta) -> newMeta.setPlayerProfile(oldMeta.getPlayerProfile()));
+				(oldMeta, newMeta) -> newMeta.setOwningPlayer(oldMeta.getOwningPlayer()));
 
 		// Normal meta
 		if (originalMeta.hasDisplayName()) {

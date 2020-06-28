@@ -1,7 +1,6 @@
 package com.easterlyn.effect;
 
 import com.easterlyn.EasterlynEffects;
-import com.easterlyn.util.PotionUtil;
 import com.easterlyn.util.StringUtil;
 import java.util.function.Function;
 import org.bukkit.entity.LivingEntity;
@@ -39,7 +38,7 @@ public abstract class EffectPotion extends Effect {
 			level = 1;
 		}
 		int entityDuration = entity instanceof Player ? duration : Integer.MAX_VALUE;
-		PotionUtil.applyIfBetter(entity, new PotionEffect(potionEffect, entityDuration, level - 1));
+		entity.addPotionEffect(new PotionEffect(potionEffect, entityDuration, level - 1));
 	}
 
 }

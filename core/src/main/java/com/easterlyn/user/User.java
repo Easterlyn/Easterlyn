@@ -193,7 +193,7 @@ public class User implements Group {
 	public void sendMessage(@NotNull BaseComponent... components) {
 		Player player = getPlayer();
 		if (player != null) {
-			player.sendMessage(components);
+			player.spigot().sendMessage(components);
 		}
 	}
 

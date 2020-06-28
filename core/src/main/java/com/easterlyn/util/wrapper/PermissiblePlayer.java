@@ -1,10 +1,5 @@
 package com.easterlyn.util.wrapper;
 
-import com.destroystokyo.paper.ClientOption;
-import com.destroystokyo.paper.Title;
-import com.destroystokyo.paper.block.TargetBlockInfo;
-import com.destroystokyo.paper.entity.TargetEntityInfo;
-import com.destroystokyo.paper.profile.PlayerProfile;
 import com.easterlyn.util.PermissionUtil;
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -12,9 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
-import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
 import org.bukkit.EntityEffect;
@@ -39,7 +32,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.PistonMoveReaction;
-import org.bukkit.block.Sign;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
@@ -50,10 +42,7 @@ import org.bukkit.entity.Pose;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Villager;
 import org.bukkit.entity.memory.MemoryKey;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.PlayerResourcePackStatusEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.Inventory;
@@ -122,11 +111,6 @@ public class PermissiblePlayer implements Player {
 		player.closeInventory();
 	}
 
-	@Override
-	public void closeInventory(@NotNull InventoryCloseEvent.Reason reason) {
-		player.closeInventory(reason);
-	}
-
 	@NotNull
 	@Override
 	public Inventory getEnderChest() {
@@ -136,18 +120,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public int getExpToLevel() {
 		return player.getExpToLevel();
-	}
-
-	@Nullable
-	@Override
-	public Entity releaseLeftShoulderEntity() {
-		return player.releaseLeftShoulderEntity();
-	}
-
-	@Nullable
-	@Override
-	public Entity releaseRightShoulderEntity() {
-		return player.releaseRightShoulderEntity();
 	}
 
 	@Override
@@ -197,11 +169,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void setShoulderEntityRight(Entity entity) {
 		player.setShoulderEntityRight(entity);
-	}
-
-	@Override
-	public void openSign(@NotNull Sign sign) {
-		player.openSign(sign);
 	}
 
 	@NotNull
@@ -258,16 +225,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public boolean isHandRaised() {
 		return player.isHandRaised();
-	}
-
-	@Override
-	public boolean isJumping() {
-		return player.isJumping();
-	}
-
-	@Override
-	public void setJumping(boolean b) {
-		player.setJumping(b);
 	}
 
 	@Override
@@ -375,11 +332,6 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public void setKiller(@Nullable Player player) {
-		this.player.setKiller(player);
-	}
-
-	@Override
 	public double getLastDamage() {
 		return player.getLastDamage();
 	}
@@ -451,36 +403,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public Block getTargetBlock(Set<Material> transparent, int maxDistance) {
 		return player.getTargetBlock(transparent, maxDistance);
-	}
-
-	@Nullable
-	@Override
-	public Block getTargetBlock(int i, @NotNull TargetBlockInfo.FluidMode fluidMode) {
-		return player.getTargetBlock(i, fluidMode);
-	}
-
-	@Nullable
-	@Override
-	public BlockFace getTargetBlockFace(int i, @NotNull TargetBlockInfo.FluidMode fluidMode) {
-		return player.getTargetBlockFace(i, fluidMode);
-	}
-
-	@Nullable
-	@Override
-	public TargetBlockInfo getTargetBlockInfo(int i, @NotNull TargetBlockInfo.FluidMode fluidMode) {
-		return player.getTargetBlockInfo(i, fluidMode);
-	}
-
-	@Nullable
-	@Override
-	public Entity getTargetEntity(int i, boolean b) {
-		return player.getTargetEntity(i, b);
-	}
-
-	@Nullable
-	@Override
-	public TargetEntityInfo getTargetEntityInfo(int i, boolean b) {
-		return player.getTargetEntityInfo(i, b);
 	}
 
 	@Override
@@ -1034,39 +956,13 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public int getProtocolVersion() {
-		return player.getProtocolVersion();
-	}
-
-	@Nullable
-	@Override
-	public InetSocketAddress getVirtualHost() {
-		return player.getVirtualHost();
-	}
-
-	@Override
 	public boolean getAllowFlight() {
 		return player.getAllowFlight();
 	}
 
 	@Override
-	public Location getPotentialBedLocation() {
-		return player.getPotentialBedLocation();
-	}
-
-	@Override
 	public Location getBedSpawnLocation() {
 		return player.getBedSpawnLocation();
-	}
-
-	@Override
-	public long getLastLogin() {
-		return player.getLastLogin();
-	}
-
-	@Override
-	public long getLastSeen() {
-		return player.getLastSeen();
 	}
 
 	@NotNull
@@ -1176,16 +1072,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void giveExp(int arg0) {
 		player.giveExp(arg0);
-	}
-
-	@Override
-	public void giveExp(int i, boolean b) {
-		player.giveExp(i, b);
-	}
-
-	@Override
-	public int applyMending(int i) {
-		return player.applyMending(i);
 	}
 
 	@Override
@@ -1360,87 +1246,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void sendMap(@NotNull MapView arg0) {
 		player.sendMap(arg0);
-	}
-
-	@Override
-	public void sendActionBar(@NotNull String s) {
-		player.sendActionBar(s);
-	}
-
-	@Override
-	public void sendActionBar(char c, @NotNull String s) {
-		player.sendActionBar(c, s);
-	}
-
-	@Override
-	public void setPlayerListHeaderFooter(@Nullable BaseComponent[] baseComponents,
-			@Nullable BaseComponent[] baseComponents1) {
-		player.setPlayerListHeaderFooter(baseComponents, baseComponents1);
-	}
-
-	@Override
-	public void setPlayerListHeaderFooter(@Nullable BaseComponent baseComponent,
-			@Nullable BaseComponent baseComponent1) {
-		player.setPlayerListHeaderFooter(baseComponent, baseComponent1);
-	}
-
-	@Override
-	@Deprecated
-	public void setTitleTimes(int i, int i1, int i2) {
-		player.setTitleTimes(i, i1, i2);
-	}
-
-	@Override
-	@Deprecated
-	public void setSubtitle(BaseComponent[] baseComponents) {
-		player.setSubtitle(baseComponents);
-	}
-
-	@Override
-	@Deprecated
-	public void setSubtitle(BaseComponent baseComponent) {
-		player.setSubtitle(baseComponent);
-	}
-
-	@Override
-	@Deprecated
-	public void showTitle(@Nullable BaseComponent[] baseComponents) {
-		player.showTitle(baseComponents);
-	}
-
-	@Override
-	@Deprecated
-	public void showTitle(@Nullable BaseComponent baseComponent) {
-		player.showTitle(baseComponent);
-	}
-
-	@Override
-	@Deprecated
-	public void showTitle(@Nullable BaseComponent[] baseComponents, @Nullable BaseComponent[] baseComponents1, int i,
-			int i1, int i2) {
-		player.showTitle(baseComponents, baseComponents1, i, i1, i2);
-	}
-
-	@Override
-	@Deprecated
-	public void showTitle(@Nullable BaseComponent baseComponent, @Nullable BaseComponent baseComponent1, int i, int i1,
-			int i2) {
-		player.showTitle(baseComponent, baseComponent1, i, i1, i2);
-	}
-
-	@Override
-	public void sendTitle(@NotNull Title title) {
-		player.sendTitle(title);
-	}
-
-	@Override
-	public void updateTitle(@NotNull Title title) {
-		player.updateTitle(title);
-	}
-
-	@Override
-	public void hideTitle() {
-		player.hideTitle();
 	}
 
 	@Override
@@ -1692,29 +1497,6 @@ public class PermissiblePlayer implements Player {
 		return player.spigot();
 	}
 
-	@Nullable
-	@Override
-	public Location getOrigin() {
-		return player.getOrigin();
-	}
-
-	@Override
-	public boolean fromMobSpawner() {
-		return player.fromMobSpawner();
-	}
-
-	@NotNull
-	@Override
-	public Chunk getChunk() {
-		return player.getChunk();
-	}
-
-	@NotNull
-	@Override
-	public CreatureSpawnEvent.SpawnReason getEntitySpawnReason() {
-		return player.getEntitySpawnReason();
-	}
-
 	@Override
 	public void updateInventory() {
 		player.updateInventory();
@@ -1821,26 +1603,6 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
-	public boolean getAffectsSpawning() {
-		return player.getAffectsSpawning();
-	}
-
-	@Override
-	public void setAffectsSpawning(boolean b) {
-		player.setAffectsSpawning(b);
-	}
-
-	@Override
-	public int getViewDistance() {
-		return player.getViewDistance();
-	}
-
-	@Override
-	public void setViewDistance(int i) {
-		player.setViewDistance(i);
-	}
-
-	@Override
 	public void updateCommands() {
 		player.updateCommands();
 	}
@@ -1848,61 +1610,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void openBook(@NotNull ItemStack itemStack) {
 		player.openBook(itemStack);
-	}
-
-	@Override
-	public void setResourcePack(@NotNull String s, @NotNull String s1) {
-		player.setResourcePack(s, s1);
-	}
-
-	@Nullable
-	@Override
-	public PlayerResourcePackStatusEvent.Status getResourcePackStatus() {
-		return player.getResourcePackStatus();
-	}
-
-	@Nullable
-	@Override
-	@Deprecated
-	public String getResourcePackHash() {
-		return player.getResourcePackHash();
-	}
-
-	@Override
-	public boolean hasResourcePack() {
-		return player.hasResourcePack();
-	}
-
-	@NotNull
-	@Override
-	public PlayerProfile getPlayerProfile() {
-		return player.getPlayerProfile();
-	}
-
-	@Override
-	public void setPlayerProfile(@NotNull PlayerProfile playerProfile) {
-		player.setPlayerProfile(playerProfile);
-	}
-
-	@Override
-	public float getCooldownPeriod() {
-		return player.getCooldownPeriod();
-	}
-
-	@Override
-	public float getCooledAttackStrength(float v) {
-		return player.getCooledAttackStrength(v);
-	}
-
-	@Override
-	public void resetCooldown() {
-		player.resetCooldown();
-	}
-
-	@NotNull
-	@Override
-	public <T> T getClientOption(@NotNull ClientOption<T> clientOption) {
-		return player.getClientOption(clientOption);
 	}
 
 	@NotNull
@@ -1977,6 +1684,11 @@ public class PermissiblePlayer implements Player {
 		return player.isCollidable();
 	}
 
+	@Override
+	public @NotNull Set<UUID> getCollidableExemptions() {
+		return player.getCollidableExemptions();
+	}
+
 	@Nullable
 	@Override
 	public <T> T getMemory(@NotNull MemoryKey<T> memoryKey) {
@@ -1986,42 +1698,6 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public <T> void setMemory(@NotNull MemoryKey<T> memoryKey, @Nullable T t) {
 		player.setMemory(memoryKey, t);
-	}
-
-	@Override
-	public int getArrowsStuck() {
-		return player.getArrowsStuck();
-	}
-
-	@Override
-	public void setArrowsStuck(int i) {
-		player.setArrowsStuck(i);
-	}
-
-	@Override
-	public int getShieldBlockingDelay() {
-		return player.getShieldBlockingDelay();
-	}
-
-	@Override
-	public void setShieldBlockingDelay(int i) {
-		player.setShieldBlockingDelay(i);
-	}
-
-	@Nullable
-	@Override
-	public ItemStack getActiveItem() {
-		return player.getActiveItem();
-	}
-
-	@Override
-	public int getItemUseRemainingTime() {
-		return player.getItemUseRemainingTime();
-	}
-
-	@Override
-	public int getHandRaisedTime() {
-		return player.getHandRaisedTime();
 	}
 
 	@Override
