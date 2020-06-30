@@ -42,10 +42,14 @@ public class ItemInformationCommand extends BaseCommand {
 
 		BaseComponent component = StringUtil.getItemComponent(hand);
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, StringUtil.getItemText(hand)));
-		component = new TextComponent(component, new TextComponent(": "), new TextComponent(ChatColor.stripColor(hand.toString())));
+		component = new TextComponent(component, new TextComponent(": "), new TextComponent(hand.toString().replace(ChatColor.COLOR_CHAR, '&')));
 		player.spigot().sendMessage(component);
 		player.sendMessage("Hash: " + captchas.calculateHashForItem(hand));
-		player.sendMessage("Mana: " + EconomyUtil.getWorth(hand));
+		try {
+			player.sendMessage("Mana: " + EconomyUtil.getWorth(hand));
+		} catch (ArithmeticException e) {
+			player.sendMessage("Mana: Too expensive!");
+		}
 	}
 
 }
