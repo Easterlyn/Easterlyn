@@ -54,6 +54,7 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		 *  - IPCache
 		 *    - Used for seen
 		 *    - ServerListPingEvent -> replace "Player"
+		 *  - /worth
 		 */
 
 		// Feature: Command for returning to last location teleported (unnaturally) from.
@@ -107,6 +108,9 @@ public class EasterlynKitchenSink extends JavaPlugin {
 		// Feature: Killer rabbit has a 1/1000 chance to spawn
 		getServer().getPluginManager().registerEvents(new KillerRabbit(), this);
 
+		// Feature: Permission is required to use prefixes in commands.
+		getServer().getPluginManager().registerEvents(new NoCommandPrefix(), this);
+
 		// Feature: Entities killed by creative players or cramming do not drop loot or exp.
 		getServer().getPluginManager().registerEvents(new NoCreativeCrammingDrops(), this);
 
@@ -151,9 +155,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 	}
 
 	private void register(@NotNull EasterlynCore plugin) {
-
-		// Feature: Permission is required to use prefixes in commands.
-		getServer().getPluginManager().registerEvents(new NoCommandPrefix(plugin), this);
 
 		ContextResolver<ChatColor, BukkitCommandExecutionContext> colourResolver = supplier -> {
 			String firstArg = supplier.popFirstArg();

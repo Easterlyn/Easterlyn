@@ -6,4 +6,4 @@ author: Jikoo
 description: ${project.description}
 api-version: ${bukkit-api-version}
 depend: [EasterlynCore]
-softdepend: [ProtocolLib, WorldEdit]
+softdepend: [WorldEdit]

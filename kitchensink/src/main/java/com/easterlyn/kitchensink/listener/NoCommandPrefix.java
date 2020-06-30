@@ -1,19 +1,13 @@
 package com.easterlyn.kitchensink.listener;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.easterlyn.EasterlynCore;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerCommandSendEvent;
+import org.bukkit.event.server.TabCompleteEvent;
 
 public class NoCommandPrefix implements Listener {
-
-	public NoCommandPrefix(EasterlynCore plugin) {
-		try {
-			Class.forName("com.comphenix.protocol.ProtocolLibrary");
-			ProtocolLibrary.getProtocolManager().addPacketListener(new com.easterlyn.kitchensink.listener.RestrictTabCompletion(plugin));
-		} catch (NoClassDefFoundError | ClassNotFoundException ignored) {}
-	}
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
@@ -21,6 +15,28 @@ public class NoCommandPrefix implements Listener {
 		int space = event.getMessage().indexOf(' ');
 		if (!event.getPlayer().hasPermission("easterlyn.commands.unfiltered") && 0 < colon && (colon < space || space < 0)) {
 			event.setMessage("/" + event.getMessage().substring(colon + 1));
+		}
+	}
+
+	@EventHandler
+	public void onCommandSend(PlayerCommandSendEvent event) {
+		if (event.getPlayer().hasPermission("easterlyn.commands.unfiltered")) {
+			return;
+		}
+
+		event.getCommands().removeIf(command -> command.indexOf(':') > -1);
+	}
+
+	@EventHandler
+	public void onTabComplete(TabCompleteEvent event) {
+		if (!(event.getSender() instanceof Player) || event.getSender().hasPermission("easterlyn.commands.unfiltered")) {
+			return;
+		}
+
+		int colon = event.getBuffer().indexOf(':');
+		int space = event.getBuffer().indexOf(' ');
+		if (0 < colon && (colon < space || space < 0)) {
+			event.setCancelled(true);
 		}
 	}
 
