@@ -423,7 +423,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 				stream.writeObject(item);
 			}
 		} catch (IOException e) {
-			e.printStackTrace();
+			ReportableEvent.call("Caught IOException saving captcha:", e, 5);
 		}
 	}
 

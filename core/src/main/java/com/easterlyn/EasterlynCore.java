@@ -4,6 +4,7 @@ import co.aikar.commands.BaseCommand;
 import com.easterlyn.acf.EasterlynCommandManager;
 import com.easterlyn.command.CoreCompletions;
 import com.easterlyn.command.CoreContexts;
+import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.listener.UniqueListener;
 import com.easterlyn.user.UserManager;
 import com.easterlyn.util.BlockUpdateManager;
@@ -69,6 +70,13 @@ public class EasterlynCore extends JavaPlugin {
 		PluginDisableEvent.getHandlerList().register(new SimpleListener<>(PluginDisableEvent.class, event -> {
 			if (pluginCommands.containsKey(event.getPlugin().getClass())) {
 				pluginCommands.get(event.getPlugin().getClass()).forEach(commandManager::unregisterCommand);
+			}
+		}, this));
+
+		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event -> {
+			getLogger().warning(event.getMessage());
+			if (event.hasTrace()) {
+				getLogger().warning(event.getTrace());
 			}
 		}, this));
 
