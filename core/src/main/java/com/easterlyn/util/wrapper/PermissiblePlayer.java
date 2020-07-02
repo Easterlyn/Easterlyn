@@ -147,6 +147,16 @@ public class PermissiblePlayer implements Player {
 		return player.undiscoverRecipes(collection);
 	}
 
+	@Override
+	public boolean hasDiscoveredRecipe(@NotNull NamespacedKey namespacedKey) {
+		return player.hasDiscoveredRecipe(namespacedKey);
+	}
+
+	@Override
+	public @NotNull Set<NamespacedKey> getDiscoveredRecipes() {
+		return player.getDiscoveredRecipes();
+	}
+
 	@Deprecated
 	@Override
 	public Entity getShoulderEntityLeft() {
