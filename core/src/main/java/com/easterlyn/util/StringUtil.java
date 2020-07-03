@@ -7,11 +7,6 @@ import com.easterlyn.util.text.ParsedText;
 import com.easterlyn.util.text.QuoteConsumer;
 import com.easterlyn.util.text.QuoteMatcher;
 import com.easterlyn.util.text.StaticQuoteConsumer;
-import com.google.common.collect.BiMap;
-import com.google.common.collect.HashBiMap;
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.text.Normalizer;
 import java.util.Collection;
 import java.util.Collections;
@@ -20,7 +15,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -33,16 +27,6 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_16_R1.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.PotionMeta;
-import org.bukkit.potion.PotionData;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -67,8 +51,6 @@ public class StringUtil {
 
 	private static final Map<Character, BlockQuoteMatcher> BLOCK_QUOTES = new HashMap<>();
 	private static final Set<QuoteConsumer> QUOTE_CONSUMERS = new HashSet<>();
-
-	private static BiMap<String, String> items;
 
 	static {
 		BLOCK_QUOTES.put('`', new BacktickMatcher());
@@ -287,34 +269,6 @@ public class StringUtil {
 		}
 	}
 
-	@NotNull
-	public static TextComponent getItemComponent(ItemStack itemStack) {
-		boolean named = itemStack.getItemMeta() != null && itemStack.getItemMeta().hasDisplayName();
-		TextComponent component = new TextComponent(toJSON(named ? itemStack.getItemMeta().getDisplayName() : getItemName(itemStack)).toArray(new TextComponent[0]));
-		for (int i = 0; i < component.getExtra().size(); i++) {
-			BaseComponent baseExtra = component.getExtra().get(i);
-			if (baseExtra.hasFormatting()) {
-				break;
-			}
-			baseExtra.setColor(ChatColor.AQUA);
-			if (named) {
-				baseExtra.setItalic(true);
-			}
-		}
-		component.setHoverEvent(getItemHover(itemStack));
-		return component;
-	}
-
-	@NotNull
-	public static String getItemText(@NotNull ItemStack itemStack) {
-		return CraftItemStack.asNMSCopy(itemStack).save(new NBTTagCompound()).toString();
-	}
-
-	@NotNull
-	private static HoverEvent getItemHover(@NotNull ItemStack itemStack) {
-		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(getItemText(itemStack)) });
-	}
-
 	/**
 	 * Trims additional spaces, including ones surrounding chat colors.
 	 *
@@ -470,136 +424,6 @@ public class StringUtil {
 		}
 
 		return builder.toString();
-	}
-
-	@NotNull
-	private static BiMap<String, String> getItems() {
-		if (items != null) {
-			return items;
-		}
-		try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-				Objects.requireNonNull(Objects.requireNonNull(Bukkit.getPluginManager().getPlugin("EasterlynCore")).getResource("items.csv"))))) {
-			items = HashBiMap.create();
-			String line;
-			while ((line = reader.readLine()) != null) {
-				line = line.trim();
-				if (line.isEmpty()) {
-					continue;
-				}
-				String[] row = line.split(",");
-				items.put(row[0], row[1]);
-			}
-		} catch (IOException e) {
-			throw new RuntimeException("Could not load items from items.csv!", e);
-		}
-		return items;
-	}
-
-	@NotNull
-	public static String getItemName(@NotNull ItemStack item) {
-		Material material = item.getType();
-		String name = getItems().get(material.name());
-		if (name == null) {
-			// Even special-cased materials should have an entry.
-			name = getFriendlyName(material);
-		}
-		if (material == Material.POTION || material == Material.SPLASH_POTION || material == Material.LINGERING_POTION
-				|| material == Material.TIPPED_ARROW) {
-			if (!item.hasItemMeta()) {
-				return name;
-			}
-			ItemMeta meta = item.getItemMeta();
-			if (meta instanceof PotionMeta) {
-				return getFriendlyName(material) + " of " + getPotionName((PotionMeta) meta);
-			}
-			return name;
-		}
-		return name;
-	}
-
-	@NotNull
-	private static String getPotionName(@NotNull PotionMeta meta) {
-		PotionData base;
-		try {
-			base = meta.getBasePotionData();
-		} catch (IllegalArgumentException e) {
-			// This can be thrown by Spigot when converting a valid potion with odd data values.
-			return "Questionable Validity";
-		}
-		if (base.getType() != PotionType.UNCRAFTABLE) {
-			StringBuilder name = new StringBuilder();
-			if (base.isExtended()) {
-				name.append("Extended ");
-			}
-			if (meta.getCustomEffects().size() > 0) {
-				name.append("Custom ");
-			}
-			name.append(getFriendlyName(base.getType()));
-			if (base.isUpgraded()) {
-				name.append(" II");
-			}
-			return name.toString();
-		}
-		if (!meta.hasCustomEffects()) {
-			return "No Effect";
-		}
-		if (meta.getCustomEffects().size() > 1) {
-			return "Multiple Effects";
-		}
-		PotionEffect effect = meta.getCustomEffects().get(0);
-		StringBuilder name = new StringBuilder(getFriendlyName(effect.getType().getName()));
-		if (effect.getAmplifier() > 0) {
-			// Effect power is 0-indexed
-			name.append(' ').append(NumberUtil.romanFromInt(effect.getAmplifier() + 1));
-		}
-		return name.toString();
-	}
-
-	public static boolean isMisleadinglyNamed(@NotNull String name, @NotNull Material material) {
-		String materialName = getItems().inverse().get(name);
-		return materialName != null && !materialName.equals(material.name());
-	}
-
-	@Nullable
-	public static Material matchMaterial(@NotNull String search) {
-		String searchMaterialName = search.toUpperCase().replace(' ', '_');
-
-		try {
-			return Material.valueOf(searchMaterialName);
-		} catch (IllegalArgumentException ignored) {}
-
-		String searchFriendlyName = search.replace('_', ' ');
-
-		// TODO ignoreCase
-		String materialName = getItems().inverse().get(searchFriendlyName);
-		if (materialName != null) {
-			return Material.valueOf(materialName);
-		}
-
-		Material material = null;
-
-		float matchLevel = 0F;
-		search = TO_LOWER_CASE.apply(NORMALIZE.apply(searchFriendlyName));
-		for (Map.Entry<String, String> entry : getItems().entrySet()) {
-			float current = compare(search, TO_LOWER_CASE.apply(entry.getValue()));
-			if (current > matchLevel) {
-				matchLevel = current;
-				material = Material.getMaterial(entry.getKey());
-			}
-			if (current == 1F) {
-				return material;
-			}
-		}
-
-		if (material == null) {
-			return null;
-		}
-
-		// Allow more fuzziness for longer named items
-		if (matchLevel > (.7F - (1F / material.name().length()))) {
-			return material;
-		}
-		return null;
 	}
 
 	/**

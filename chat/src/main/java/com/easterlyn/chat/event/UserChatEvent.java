@@ -141,7 +141,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 						item = ItemUtil.AIR;
 					}
 
-					components.addComponent(StringUtil.getItemComponent(item));
+					components.addComponent(ItemUtil.getItemComponent(item));
 				}
 			}));
 		}

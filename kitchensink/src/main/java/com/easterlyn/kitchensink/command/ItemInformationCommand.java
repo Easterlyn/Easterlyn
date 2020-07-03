@@ -12,7 +12,7 @@ import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.util.EconomyUtil;
-import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.inventory.ItemUtil;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -40,8 +40,8 @@ public class ItemInformationCommand extends BaseCommand {
 			return;
 		}
 
-		BaseComponent component = StringUtil.getItemComponent(hand);
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, StringUtil.getItemText(hand)));
+		BaseComponent component = ItemUtil.getItemComponent(hand);
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, ItemUtil.getAsText(hand)));
 		component = new TextComponent(component, new TextComponent(": "), new TextComponent(hand.toString().replace(ChatColor.COLOR_CHAR, '&')));
 		player.spigot().sendMessage(component);
 		player.sendMessage("Hash: " + captchas.calculateHashForItem(hand));

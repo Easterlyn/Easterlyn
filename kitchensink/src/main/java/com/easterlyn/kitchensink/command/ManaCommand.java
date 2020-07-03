@@ -17,6 +17,7 @@ import com.easterlyn.util.Colors;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
 import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.inventory.ItemUtil;
 import java.text.DecimalFormat;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -97,7 +98,7 @@ public class ManaCommand extends BaseCommand {
 
 		BaseComponent component = new TextComponent();
 
-		TextComponent itemComponent = StringUtil.getItemComponent(hand);
+		TextComponent itemComponent = ItemUtil.getItemComponent(hand);
 		if (hand.getAmount() > 1) {
 			itemComponent.addExtra(Colors.getOrDefault("normal.b", ChatColor.DARK_AQUA) + "x" + hand.getAmount());
 		}

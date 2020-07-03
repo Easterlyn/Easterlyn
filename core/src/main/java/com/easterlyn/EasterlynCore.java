@@ -34,10 +34,6 @@ import org.reflections.Reflections;
  */
 public class EasterlynCore extends JavaPlugin {
 
-	/*
-	 * TODO
-	 *  - Generic useful command conditions
-	 */
 	private final LocaleManager localeManager = new LocaleManager(this, "en_us");
 	private final UserManager userManager = new UserManager(this);
 	private final BlockUpdateManager blockUpdateManager = new BlockUpdateManager(this);

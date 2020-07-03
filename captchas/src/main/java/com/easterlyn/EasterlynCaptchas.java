@@ -3,13 +3,13 @@ package com.easterlyn;
 import com.easterlyn.captcha.CaptchaListener;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.NumberUtil;
-import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -58,13 +58,12 @@ public class EasterlynCaptchas extends JavaPlugin {
 					if (!captchaFolder.exists() && !captchaFolder.mkdirs()) {
 						throw new FileNotFoundException();
 					}
-					File file = new File(captchaFolder, hash);
+					File file = new File(captchaFolder, hash + ".nbt");
 					if (!file.exists()) {
 						throw new FileNotFoundException();
 					}
-					try (BukkitObjectInputStream stream = new BukkitObjectInputStream(
-							new FileInputStream(file))) {
-						return ((ItemStack) stream.readObject()).clone();
+					try (BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file))) {
+						return ItemUtil.getAsItem(inputStream);
 					}
 				}
 
@@ -74,30 +73,40 @@ public class EasterlynCaptchas extends JavaPlugin {
 	public void onEnable() {
 		getServer().getServicesManager().register(EasterlynCaptchas.class, this, this, ServicePriority.Normal);
 
-		// Add the captchacard recipes
-		ItemStack captchaItem = getBlankCaptchacard();
-		ShapelessRecipe captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha1"), captchaItem);
-		captchaRecipe.addIngredient(2, Material.PAPER);
-		getServer().addRecipe(captchaRecipe);
-		captchaItem = captchaItem.clone();
-		captchaItem.setAmount(2);
-		captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha2"), captchaItem);
-		captchaRecipe.addIngredient(4, Material.PAPER);
-		getServer().addRecipe(captchaRecipe);
-		captchaItem = captchaItem.clone();
-		captchaItem.setAmount(3);
-		captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha3"), captchaItem);
-		captchaRecipe.addIngredient(6, Material.PAPER);
-		getServer().addRecipe(captchaRecipe);
-		captchaItem = captchaItem.clone();
-		captchaItem.setAmount(4);
-		captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha4"), captchaItem);
-		captchaRecipe.addIngredient(8, Material.PAPER);
-		getServer().addRecipe(captchaRecipe);
+		File captchaDir = new File(getDataFolder(), "captcha");
+		File failureDir = new File(getDataFolder(), "corrupt_captchas");
+		File successDir = new File(getDataFolder(), "converted_captchas");
+		String[] list = captchaDir.list((directory, name) -> !name.endsWith(".nbt"));
+		if (list != null) {
+			Arrays.stream(list).map(fileName -> new File(captchaDir, fileName)).forEach(file -> {
+				try (BukkitObjectInputStream stream = new BukkitObjectInputStream(
+						new FileInputStream(file))) {
+					ItemStack itemStack = (ItemStack) stream.readObject();
+					ItemUtil.writeItemToFile(itemStack, new File(captchaDir, file.getName() + ".nbt"));
+					if (successDir.mkdirs()) {
+						file.renameTo(new File(successDir, file.getName()));
+					}
+				} catch (Exception e) {
+					System.out.println("unable to convert captcha " + file.getName() + " - must be manually converted");
+					if (failureDir.mkdirs()) {
+						file.renameTo(new File(failureDir, file.getName()));
+					}
+				}
+			});
+		}
 
-		captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, RECIPE_KEY), new ItemStack(Material.DIRT));
-		captchaRecipe.addIngredient(Material.BOOK);
-		getServer().addRecipe(captchaRecipe);
+		// Add the captchacard recipes
+		for (int i = 1; i < 5; ++i) {
+			ItemStack captchaItem = getBlankCaptchacard();
+			captchaItem.setAmount(2 * i);
+			ShapelessRecipe captchaRecipe = new ShapelessRecipe(new NamespacedKey(this, "captcha" + i), captchaItem);
+			captchaRecipe.addIngredient(2 * i, Material.PAPER);
+			getServer().addRecipe(captchaRecipe);
+		}
+
+		ShapelessRecipe uncaptchaRecipe = new ShapelessRecipe(new NamespacedKey(this, RECIPE_KEY), new ItemStack(Material.DIRT));
+		uncaptchaRecipe.addIngredient(Material.BOOK);
+		getServer().addRecipe(uncaptchaRecipe);
 
 		// TODO allow crafting x + blank captcha to captcha
 
@@ -150,9 +159,11 @@ public class EasterlynCaptchas extends JavaPlugin {
 	 */
 	public boolean canNotCaptcha(@Nullable ItemStack item) {
 		if (item == null || item.getType() == Material.AIR
-				/* Book meta is very volatile, no reason to allow creation of codes that will never be reused. */
+				// Book meta is very volatile, no reason to allow creation of codes that will never be reused.
 				|| item.getType() == Material.WRITABLE_BOOK
-				|| item.getType() == Material.WRITTEN_BOOK) {
+				|| item.getType() == Material.WRITTEN_BOOK
+				// Knowledge book is specifically for usage, not for storage.
+				|| item.getType() == Material.KNOWLEDGE_BOOK) {
 			return true;
 		}
 		if (item.hasItemMeta()) {
@@ -321,14 +332,14 @@ public class EasterlynCaptchas extends JavaPlugin {
 	private String getHashByItem(@NotNull ItemStack item) {
 		item = item.clone();
 		String itemHash = calculateHashForItem(item);
-		this.cache.put(itemHash, item);
 		this.save(itemHash, item);
+		this.cache.put(itemHash, item);
 		return itemHash;
 	}
 
 	@NotNull
 	public String calculateHashForItem(@NotNull ItemStack item) {
-		String itemString = new TextComponent(StringUtil.getItemText(item)).toString();
+		String itemString = new TextComponent(ItemUtil.getAsText(item)).toString();
 		BigInteger hash = NumberUtil.md5(itemString);
 		String itemHash = NumberUtil.getBase(hash, 62, 8);
 		ItemStack captcha;

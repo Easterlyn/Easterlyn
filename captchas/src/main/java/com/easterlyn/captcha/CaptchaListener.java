@@ -3,7 +3,6 @@ package com.easterlyn.captcha;
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.BlockUtil;
-import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.inventory.ItemUtil;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
@@ -72,6 +71,10 @@ public class CaptchaListener implements Listener {
 		ItemStack captchaItem = captcha.getCaptchaForItem(toCaptcha);
 		event.setResult(Event.Result.DENY);
 
+		if (captchaItem == null) {
+			return;
+		}
+
 		// Decrement captcha stack
 		if (hotbar) {
 			event.getView().getBottomInventory().setItem(event.getHotbarButton(), ItemUtil.decrement(blankCaptcha, 1));
@@ -80,10 +83,6 @@ public class CaptchaListener implements Listener {
 			event.setCurrentItem(ItemUtil.decrement(blankCaptcha, 1));
 			//noinspection deprecation // No alternative. Functions fine due to inventory update.
 			event.setCursor(null);
-		}
-
-		if (captchaItem == null) {
-			return;
 		}
 
 		// Add to bottom inventory first
@@ -116,7 +115,7 @@ public class CaptchaListener implements Listener {
 		ItemStack captchaStack = captcha.getItemByCaptcha(hand);
 		if (captchaStack == null || captchaStack.isSimilar(hand)) {
 			String hash = EasterlynCaptchas.getHashFromCaptcha(hand);
-			ReportableEvent.call("Invalid captcha belonging to " + event.getPlayer().getName() + ": " + (hash == null ? StringUtil.getItemText(hand) : hash));
+			ReportableEvent.call("Invalid captcha belonging to " + event.getPlayer().getName() + ": " + (hash == null ? ItemUtil.getAsText(hand) : hash));
 			return;
 		}
 

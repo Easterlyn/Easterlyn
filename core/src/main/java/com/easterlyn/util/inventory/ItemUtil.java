@@ -5,8 +5,12 @@ import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.StringUtil;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -17,9 +21,15 @@ import java.util.Map.Entry;
 import java.util.Objects;
 import java.util.Set;
 import java.util.function.Function;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_16_R1.NBTCompressedStreamTools;
+import net.minecraft.server.v1_16_R1.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CookingRecipe;
@@ -60,6 +70,7 @@ public class ItemUtil {
 	public static final ItemStack AIR = new ItemStack(Material.AIR);
 	public static final String UNIQUE_KEYED_PREFIX = "easterlyn_unique_";
 	private static final Set<Function<ItemStack, Boolean>> UNIQUE_CHECKS = new HashSet<>();
+	private static BiMap<String, String> items;
 
 	static {
 		addUniqueCheck(itemStack -> {
@@ -74,8 +85,6 @@ public class ItemUtil {
 			return lore != null && lore.contains(ChatColor.DARK_PURPLE + "Unique");
 		});
 	}
-
-	private static BiMap<String, String> items;
 
 	private static BiMap<String, String> getItems() {
 		if (items != null) {
@@ -415,11 +424,11 @@ public class ItemUtil {
 	public static String recipeToText(@NotNull Recipe recipe) {
 		if (recipe instanceof CookingRecipe) {
 			String type = recipe.getClass().getName().toUpperCase().replace("RECIPE", "");
-			return String.format("%s: %s -> %s", type, itemToText(((FurnaceRecipe) recipe).getInput()), itemToText(recipe.getResult()));
+			return String.format("%s: %s -> %s", type, itemToSimpleText(((FurnaceRecipe) recipe).getInput()), itemToSimpleText(recipe.getResult()));
 		} else if (recipe instanceof ShapelessRecipe) {
 			StringBuilder builder = new StringBuilder("SHAPELESS: ");
 			for (ItemStack ingredient : ((ShapelessRecipe) recipe).getIngredientList()) {
-				builder.append(itemToText(ingredient)).append(" + ");
+				builder.append(itemToSimpleText(ingredient)).append(" + ");
 			}
 			builder.replace(builder.length() - 2, builder.length(), "-> ").append(recipe.getResult());
 			return builder.toString();
@@ -428,7 +437,7 @@ public class ItemUtil {
 			Map<Character, String> mappings = new HashMap<>();
 			int longestMapping = 3; // "AIR".length() == 3
 			for (Entry<Character, ItemStack> mapping : ((ShapedRecipe) recipe).getIngredientMap().entrySet()) {
-				String newMapping = itemToText(mapping.getValue());
+				String newMapping = itemToSimpleText(mapping.getValue());
 				longestMapping = Math.max(longestMapping, newMapping.length());
 				mappings.put(mapping.getKey(), newMapping);
 			}
@@ -452,14 +461,14 @@ public class ItemUtil {
 				builder.delete(builder.length() - 1, builder.length());
 				builder.append('\n');
 			}
-			builder.delete(builder.length() - 1, builder.length()).append(" -> ").append(itemToText(recipe.getResult()));
+			builder.delete(builder.length() - 1, builder.length()).append(" -> ").append(itemToSimpleText(recipe.getResult()));
 			return builder.toString();
 		}
 		return recipe.toString();
 	}
 
 	@NotNull
-	private static String itemToText(@Nullable ItemStack item) {
+	private static String itemToSimpleText(@Nullable ItemStack item) {
 		if (item == null || item.getType() == Material.AIR) {
 			return "AIR";
 		}
@@ -469,6 +478,46 @@ public class ItemUtil {
 			builder.append('x').append(item.getAmount());
 		}
 		return builder.toString();
+	}
+
+	@NotNull
+	public static TextComponent getItemComponent(ItemStack itemStack) {
+		boolean named = itemStack.getItemMeta() != null && itemStack.getItemMeta().hasDisplayName();
+		TextComponent component = new TextComponent(StringUtil.toJSON(named ? itemStack.getItemMeta().getDisplayName() : getItemName(itemStack)).toArray(new TextComponent[0]));
+		for (int i = 0; i < component.getExtra().size(); i++) {
+			BaseComponent baseExtra = component.getExtra().get(i);
+			if (baseExtra.hasFormatting()) {
+				break;
+			}
+			baseExtra.setColor(net.md_5.bungee.api.ChatColor.AQUA);
+			if (named) {
+				baseExtra.setItalic(true);
+			}
+		}
+		component.setHoverEvent(getItemHover(itemStack));
+		return component;
+	}
+
+	@NotNull
+	public static String getAsText(@NotNull ItemStack itemStack) {
+		return CraftItemStack.asNMSCopy(itemStack).save(new NBTTagCompound()).toString();
+	}
+
+	public static ItemStack getAsItem(InputStream stream) throws IOException {
+		NBTTagCompound nbtTagCompound = NBTCompressedStreamTools.a(stream);
+		return CraftItemStack.asBukkitCopy(net.minecraft.server.v1_16_R1.ItemStack.a(nbtTagCompound));
+	}
+
+	public static void writeItemToFile(ItemStack itemStack, File file) throws IOException {
+		try (FileOutputStream fileOut = new FileOutputStream(file);
+				BufferedOutputStream outputStream = new BufferedOutputStream(fileOut)) {
+			NBTCompressedStreamTools.a(CraftItemStack.asNMSCopy(itemStack).save(new NBTTagCompound()), outputStream);
+		}
+	}
+
+	@NotNull
+	private static HoverEvent getItemHover(@NotNull ItemStack itemStack) {
+		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(getAsText(itemStack)) });
 	}
 
 }
