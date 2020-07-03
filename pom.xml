@@ -161,6 +161,7 @@
                                     <id>copy</id>
                                     <directory>${project.build.directory}</directory>
                                     <workOnFullPath>true</workOnFullPath>
+                                    <replaceExisting>true</replaceExisting>
                                     <includes>
                                         <include>*.jar</include>
                                     </includes>
@@ -170,6 +171,10 @@
                                     <paths>
                                         <path>
                                             <from>${project.build.directory}</from>
+                                            <!--
+                                             ~ Property should be defined in build command, i.e.:
+                                             ~ mvn clean package -Dproject.build.finaldir=/minecraft/testserver/plugins/
+                                            -->
                                             <!--suppress UnresolvedMavenProperty -->
                                             <to>${project.build.finaldir}</to>
                                         </path>
