@@ -6,12 +6,3 @@ updates:
     interval: daily
     time: "10:00"
   open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: com.discord4j:Discord4J
-    versions:
-    - "> 2.10.1"
-    - "< 2.11"
-  - dependency-name: com.discord4j:Discord4J
-    versions:
-    - ">= 3.a"
-    - "< 4"
