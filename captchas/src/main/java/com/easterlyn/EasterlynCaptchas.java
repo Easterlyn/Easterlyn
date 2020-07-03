@@ -16,8 +16,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,7 +38,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.io.BukkitObjectInputStream;
 import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -75,36 +72,6 @@ public class EasterlynCaptchas extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		getServer().getServicesManager().register(EasterlynCaptchas.class, this, this, ServicePriority.Normal);
-
-		File captchaDir = new File(getDataFolder(), "captcha");
-		File failureDir = new File(getDataFolder(), "corrupt_captchas");
-		File successDir = new File(getDataFolder(), "converted_captchas");
-		String[] list = captchaDir.list((directory, name) -> !name.endsWith(".nbt"));
-		if (list != null) {
-			Arrays.stream(list).map(fileName -> new File(captchaDir, fileName)).forEach(file -> {
-				File toFile = new File(captchaDir, file.getName() + ".nbt");
-				if (toFile.exists()) {
-					try {
-						Files.move(file.toPath(), new File(successDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
-					} catch (IOException ignored) {}
-					return;
-				}
-
-				try (BukkitObjectInputStream stream = new BukkitObjectInputStream(
-						new FileInputStream(file))) {
-					ItemStack itemStack = (ItemStack) stream.readObject();
-					ItemUtil.writeItemToFile(itemStack, toFile);
-					successDir.mkdirs();
-					Files.move(file.toPath(), new File(successDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
-				} catch (Exception e) {
-					System.out.println("unable to convert captcha " + file.getName() + " - must be manually converted");
-					failureDir.mkdirs();
-					try {
-						Files.move(file.toPath(), new File(failureDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
-					} catch (IOException ignored) {}
-				}
-			});
-		}
 
 		// Add the captchacard recipes
 		for (int i = 1; i < 5; ++i) {
