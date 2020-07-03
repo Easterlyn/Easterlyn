@@ -47,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EasterlynCaptchas extends JavaPlugin {
 
+	private static final String OLD_HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
 	private static final String HASH_PREFIX = ChatColor.LIGHT_PURPLE.toString();
 	public static final String RECIPE_KEY = ItemUtil.UNIQUE_KEYED_PREFIX + "captcha_uncraft";
 
@@ -280,26 +281,16 @@ public class EasterlynCaptchas extends JavaPlugin {
 		if (captcha == null) {
 			return null;
 		}
-		if (!isCaptcha(captcha)) {
-			// Not a card.
-			captcha = captcha.clone();
-			captcha.setAmount(1);
-			return captcha;
-		}
-		//noinspection ConstantConditions // Must have lore or isCaptcha would fail.
-		for (String lore : captcha.getItemMeta().getLore()) {
-			if (!lore.startsWith(HASH_PREFIX)) {
-				continue;
-			}
-			lore = lore.substring(HASH_PREFIX.length());
-			if (!lore.matches("[0-9A-Za-z]{8,}")) {
-				continue;
-			}
-			ItemStack item = getItemByHash(lore);
+
+		String hashFromCaptcha = getHashFromCaptcha(captcha);
+
+		if (hashFromCaptcha != null) {
+			ItemStack item = getItemByHash(hashFromCaptcha);
 			if (item != null) {
 				return item;
 			}
 		}
+
 		captcha = captcha.clone();
 		captcha.setAmount(1);
 		return captcha;
@@ -314,17 +305,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 			return null;
 		}
 		//noinspection ConstantConditions // Must have lore or isCaptcha would fail.
-		for (String lore : captcha.getItemMeta().getLore()) {
-			if (!lore.startsWith(HASH_PREFIX)) {
-				continue;
-			}
-			lore = lore.substring(HASH_PREFIX.length());
-			if (!lore.matches("[0-9A-Za-z]{8,}")) {
-				continue;
-			}
-			return lore;
-		}
-		return null;
+		return findHashIfPresent(captcha.getItemMeta().getLore());
 	}
 
 	private @Nullable ItemStack getItemByHash(@NotNull String hash) {
@@ -380,7 +361,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 				// Properly convert contents of double captchas
 				int amount = storedItem.getAmount();
 				//noinspection ConstantConditions // Must have lore or isUsedCaptcha would fail.
-				String internalHash = this.findHashIfPresent(storedItem.getItemMeta().getLore());
+				String internalHash = findHashIfPresent(storedItem.getItemMeta().getLore());
 				if (internalHash == null) {
 					continue;
 				}
@@ -411,12 +392,15 @@ public class EasterlynCaptchas extends JavaPlugin {
 	}
 
 	@Nullable
-	private String findHashIfPresent(List<String> lore) {
+	private static String findHashIfPresent(List<String> lore) {
 		for (String line : lore) {
-			if (!line.startsWith(HASH_PREFIX)) {
+			if (line.startsWith(HASH_PREFIX)) {
+				line = line.substring(HASH_PREFIX.length());
+			} else if (line.startsWith(OLD_HASH_PREFIX)) {
+				line = line.substring(OLD_HASH_PREFIX.length());
+			} else {
 				continue;
 			}
-			line = line.substring(HASH_PREFIX.length());
 			if (line.matches("[0-9A-Za-z]{8,}")) {
 				// Modern format
 				return line;
