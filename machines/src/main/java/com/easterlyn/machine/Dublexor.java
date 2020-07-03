@@ -2,6 +2,7 @@ package com.easterlyn.machine;
 
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.EasterlynMachines;
+import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
@@ -14,15 +15,12 @@ import com.easterlyn.util.tuple.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.function.BiConsumer;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -31,11 +29,12 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -47,13 +46,9 @@ import org.jetbrains.annotations.Nullable;
  * @author Jikoo
  */
 public class Dublexor extends Machine {
-	// TODO:
-	//  - single item doesn't work
-	//  - cost display slot doesn't refresh properly
 
 	private static MerchantRecipe exampleRecipe;
 
-	private final NamespacedKey dublekey;
 	private final ItemStack drop, barrier;
 
 	public Dublexor(EasterlynMachines machines) {
@@ -78,8 +73,6 @@ public class Dublexor extends Machine {
 		shape.setVectorData(new Vector(-1, 0, -1), m);
 		shape.setVectorData(new Vector(1, 0, 1), m);
 		shape.setVectorData(new Vector(-1, 0, 1), m);
-
-		dublekey = new NamespacedKey(machines, "dublexor");
 
 		drop = new ItemStack(Material.ENCHANTING_TABLE);
 		GenericUtil.consumeAs(ItemMeta.class, drop.getItemMeta(), itemMeta -> {
@@ -112,11 +105,9 @@ public class Dublexor extends Machine {
 		if (event.isCancelled() || event.getPlayer().isSneaking()) {
 			return;
 		}
-		/*Merchant merchant = getMachines().getMerchant(getName(), this, storage);
+		Merchant merchant = getMachines().getMerchant(getName(), this, storage);
 		merchant.setRecipes(Collections.singletonList(Dublexor.getExampleRecipe()));
-		event.getPlayer().openMerchant(merchant, true);*/
-		event.getPlayer().sendMessage("The Dublexor is currently busted as HECK so you can't use it");
-		event.getPlayer().sendMessage("MY BAD, SORRY.");
+		event.getPlayer().openMerchant(merchant, true);
 		event.setCancelled(true);
 	}
 
@@ -124,7 +115,7 @@ public class Dublexor extends Machine {
 	public void handleClick(@NotNull InventoryClickEvent event, ConfigurationSection storage) {
 		if (event.getRawSlot() == 0) {
 			// Clicked slot is input. Update choices.
-			updateLater(event.getWhoClicked().getUniqueId(), this::addInputRecipe);
+			updateInventory(event.getWhoClicked().getUniqueId(), false);
 			return;
 		}
 
@@ -140,54 +131,71 @@ public class Dublexor extends Machine {
 			return;
 		}
 
-		MerchantInventory merchantInv = (MerchantInventory) event.getView().getTopInventory();
-		ItemStack expDisplay = merchantInv.getItem(1);
-
-		if (expDisplay == null ||expDisplay.getType() == Material.AIR) {
-			// No exp cost set up.
+		if (event.getCurrentItem().getType() == Material.BARRIER) {
+			// Operation is not allowed.
 			event.setCancelled(true);
 			return;
 		}
 
-		MerchantRecipe selectedRecipe = merchantInv.getSelectedRecipe();
+		Inventory top = event.getView().getTopInventory();
 
-		if (selectedRecipe == null) {
-			// Operation is not happening.
+		// Color code + "Mana cost: " = 13 characters, as is color code + "Cannot copy"
+		//noinspection ConstantConditions // This is guaranteed to be okay.
+		String costString = top.getItem(1).getItemMeta().getDisplayName().substring(13);
+		if (costString.isEmpty()) {
 			event.setCancelled(true);
 			return;
 		}
 
-		int expCost = expDisplay.getItemMeta().getPersistentDataContainer()
-				.getOrDefault(dublekey, PersistentDataType.INTEGER, Integer.MAX_VALUE);
-
-		if (expCost == Integer.MAX_VALUE) {
+		// Remove exp first in case of an unforeseen issue.
+		int expCost;
+		try {
+			expCost = Integer.parseInt(costString);
+		} catch (NumberFormatException e) {
+			ReportableEvent.call("Unable to parse Dublecation cost:" + costString, e, 5);
 			event.setCancelled(true);
 			return;
 		}
 
-		ItemStack originalInput = merchantInv.getItem(0);
-		ItemStack clonedInput;
-		if (originalInput != null) {
-			clonedInput = originalInput.clone();
-		} else {
-			clonedInput = null;
+		Player player = (Player) event.getWhoClicked();
+		if (player.getGameMode() != GameMode.CREATIVE) {
+			ExperienceUtil.changeExp(player, -expCost);
 		}
 
-		int recipeIndex = merchantInv.getSelectedRecipeIndex();
-		int uses = selectedRecipe.getUses();
-
-		// TODO while this is technically safe (recipes are capped by uses) could use more double checking
-		updateLater(event.getWhoClicked().getUniqueId(), (player, inventory) -> {
-			if (player.getGameMode() == GameMode.CREATIVE) {
+		if (event.getClick().name().contains("SHIFT")) {
+			// Ensure inventory can contain items
+			if (ItemUtil.hasSpaceFor(event.getCurrentItem(), player.getInventory())) {
+				player.getInventory().addItem(event.getCurrentItem().clone());
+			} else {
+				event.setCancelled(true);
+				if (player.getGameMode() != GameMode.CREATIVE) {
+					ExperienceUtil.changeExp(player, expCost);
+				}
 				return;
 			}
-			MerchantRecipe recipe = inventory.getMerchant().getRecipe(recipeIndex);
-			int timesUsed = recipe.getUses() - uses;
-			ExperienceUtil.changeExp(player, -expCost * timesUsed);
-		}, (player, inventory) -> {
-			inventory.setItem(0, clonedInput);
-			inventory.setItem(1, getExpDisplay(player, clonedInput));
-		}, this::recalculateUses);
+		} else if (event.getCursor() == null || event.getCursor().getType() == Material.AIR
+				|| (event.getCursor().isSimilar(event.getCurrentItem())
+					&& event.getCursor().getAmount() + event.getCurrentItem().getAmount()
+					< event.getCursor().getMaxStackSize())) {
+			// Cursor can contain items
+			ItemStack result = event.getCurrentItem().clone();
+			if (result.isSimilar(event.getCursor())) {
+				result.setAmount(result.getAmount() + event.getCursor().getAmount());
+			}
+			// noinspection deprecation // No alternative available, desync is handled.
+			event.setCursor(result);
+		} else {
+			// Cursor cannot contain items
+			if (player.getGameMode() != GameMode.CREATIVE) {
+				ExperienceUtil.changeExp(player, expCost);
+			}
+			event.setCancelled(true);
+			return;
+		}
+
+		event.setCurrentItem(null);
+
+		updateInventory(player.getUniqueId(), false);
 	}
 
 	@Override
@@ -199,14 +207,8 @@ public class Dublexor extends Machine {
 		}
 		if (event.getRawSlots().contains(0)) {
 			// Contains input. Update choices.
-			updateLater(event.getWhoClicked().getUniqueId(), this::setExpDisplay, this::addInputRecipe);
+			updateInventory(event.getWhoClicked().getUniqueId(), false);
 		}
-	}
-
-	@Override
-	public void selectTrade(@NotNull TradeSelectEvent event, @NotNull ConfigurationSection storage) {
-		event.getInventory().setItem(1, null);
-		updateLater(event.getWhoClicked().getUniqueId(), this::setExpDisplay, this::addInputRecipe);
 	}
 
 	/**
@@ -214,12 +216,7 @@ public class Dublexor extends Machine {
 	 *
 	 * @param id the UUID of the Player using the Dublexor
 	 */
-	@SafeVarargs
-	private final void updateLater(final @NotNull UUID id,
-			final @NotNull BiConsumer<Player, MerchantInventory>... consumers) {
-		if (consumers.length == 0) {
-			throw new IllegalStateException("You dummy, you forgot the update functions.");
-		}
+	private void updateInventory(final UUID id, boolean fullUpdate) {
 		getMachines().getServer().getScheduler().scheduleSyncDelayedTask(getMachines(), () -> {
 			// Must re-obtain player or update doesn't seem to happen
 			Player player = Bukkit.getPlayer(id);
@@ -233,113 +230,71 @@ public class Dublexor extends Machine {
 			if (machineData == null || !Dublexor.this.equals(machineData.getLeft())) {
 				return;
 			}
-			for (BiConsumer<Player, MerchantInventory> consumer : consumers) {
-				consumer.accept(player, open);
-			}
-		});
-	}
 
-	private void setExpDisplay(Player player, MerchantInventory open) {
-		open.setItem(1, getExpDisplay(player, open.getItem(0)));
-		InventoryUtil.updateWindowSlot(player, 1);
-	}
+			ItemStack originalInput = open.getItem(0);
 
-	private ItemStack getExpDisplay(@NotNull Player player, @Nullable ItemStack input) {
-		if (input == null || input.getType() == Material.AIR) {
-			return null;
-		}
-
-		ItemStack expItem = new ItemStack(Material.EXPERIENCE_BOTTLE, 1);
-
-		Pair<ItemStack, Integer> uncaptcha = unCaptcha(input);
-		ItemStack modifiedInput = uncaptcha.getLeft();
-		int multiplier = uncaptcha.getRight();
-
-		// Ensure non-unique item (excluding captchas)
-		if (ItemUtil.isUniqueItem(modifiedInput)) {
-			GenericUtil.consumeAs(ItemMeta.class, expItem.getItemMeta(), itemMeta -> {
-				itemMeta.setDisplayName(ChatColor.RED + "Cannot copy");
-				itemMeta.getPersistentDataContainer().set(dublekey, PersistentDataType.INTEGER, Integer.MIN_VALUE);
-				expItem.setItemMeta(itemMeta);
-			});
-			return expItem;
-		}
-
-		// Calculate cost based on final item, adjusting for captcha depth and quantities.
-		int cost;
-		try {
-			double doubleCost = NumberUtil.multiplySafe(EconomyUtil.getWorth(modifiedInput), multiplier);
-			if (doubleCost > Integer.MAX_VALUE) {
-				cost = Integer.MIN_VALUE;
-			} else {
-				cost = (int) Math.ceil(doubleCost);
-			}
-		} catch (ArithmeticException e) {
-			cost = Integer.MIN_VALUE;
-		}
-
-		int playerExp = ExperienceUtil.getExp(player);
-		ArrayList<String> lore = new ArrayList<>();
-		lore.add(ChatColor.GOLD + "Current: " + playerExp);
-		int remainder = playerExp - cost;
-
-		ChatColor color;
-		if (remainder >= 0 || player.getGameMode() == GameMode.CREATIVE) {
-			color = ChatColor.GREEN;
-			lore.add(ChatColor.GOLD + "Remainder: " + remainder);
-		} else {
-			color = ChatColor.RED;
-			lore.add(color.toString() + ChatColor.BOLD + "Not enough mana!");
-		}
-
-		if (player.getGameMode() == GameMode.CREATIVE) {
-			lore.add(ChatColor.GOLD + "Creative exp bypass engaged.");
-		}
-
-		int finalCost = cost;
-		GenericUtil.consumeAs(ItemMeta.class, expItem.getItemMeta(), itemMeta -> {
-			itemMeta.setDisplayName(color + "Mana cost: " + finalCost);
-			itemMeta.setLore(lore);
-			itemMeta.getPersistentDataContainer().set(dublekey, PersistentDataType.INTEGER, finalCost);
-			expItem.setItemMeta(itemMeta);
-		});
-		return expItem;
-	}
-
-	private void addInputRecipe(Player player, MerchantInventory open) {
-		ItemStack input = open.getItem(0);
-
-		if (input == null || input.getType() == Material.AIR) {
-			return;
-		}
-
-		input = input.clone();
-		ArrayList<MerchantRecipe> recipes = new ArrayList<>(open.getMerchant().getRecipes());
-
-		Iterator<MerchantRecipe> iterator = recipes.iterator();
-		while (iterator.hasNext()) {
-			MerchantRecipe recipe = iterator.next();
-			// Existing recipe matches.
-			if (recipe.getResult().equals(input)) {
+			if (originalInput == null || originalInput.getType() == Material.AIR) {
+				open.setItem(1, null);
 				return;
 			}
-			// Existing recipe will interfere with client's ability to display trade.
-			if (recipe.getResult().isSimilar(input)) {
-				iterator.remove();
-				break;
+
+			ItemStack expCost = new ItemStack(Material.EXPERIENCE_BOTTLE);
+			GenericUtil.consumeAs(ItemMeta.class, expCost.getItemMeta(), itemMeta -> {
+				itemMeta.setDisplayName(ChatColor.RED + "Cannot copy");
+				expCost.setItemMeta(itemMeta);
+			});
+
+			Pair<ItemStack, Integer> uncaptcha = unCaptcha(originalInput.clone());
+			ItemStack modifiedInput = uncaptcha.getLeft();
+			int multiplier = uncaptcha.getRight();
+
+			// Ensure non-unique item (excluding captchas)
+			if (ItemUtil.isUniqueItem(modifiedInput)) {
+				displayTrade(player, open, originalInput, expCost, barrier, fullUpdate);
+				return;
 			}
-		}
 
-		ItemStack result = input.clone();
-		MerchantRecipe recipe = new MerchantRecipe(result, Integer.MAX_VALUE);
-		recipe.addIngredient(input);
-		recipe.addIngredient(new ItemStack(Material.EXPERIENCE_BOTTLE));
-		recalculateModifiesRecipe(player.getGameMode() == GameMode.CREATIVE ? Integer.MAX_VALUE : ExperienceUtil.getExp(player), recipe);
-		recipes.add(recipe);
-		open.getMerchant().setRecipes(recipes);
-		open.setItem(2, result);
+			// Calculate cost based on final item.
+			double resultCost = EconomyUtil.getWorth(modifiedInput);
 
-		InventoryUtil.updateVillagerTrades(player, recipes);
+			// Adjust cost based on captcha depth and quantities.
+			try {
+				resultCost = NumberUtil.multiplySafe(resultCost, multiplier);
+			} catch (ArithmeticException e) {
+				resultCost = Double.POSITIVE_INFINITY;
+			}
+			int exp = (int) Math.ceil(resultCost);
+			int playerExp = ExperienceUtil.getExp(player);
+			int remainder = resultCost == Double.POSITIVE_INFINITY ? Integer.MIN_VALUE : playerExp - exp;
+
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add(ChatColor.GOLD + "Current: " + playerExp);
+
+			ItemStack result;
+			ChatColor color;
+			if (remainder >= 0 || player.getGameMode() == GameMode.CREATIVE) {
+				color = ChatColor.GREEN;
+				lore.add(ChatColor.GOLD + "Remainder: " + remainder);
+				result = originalInput.clone();
+			} else {
+				color = ChatColor.RED;
+				lore.add(color.toString() + ChatColor.BOLD + "Not enough mana!");
+				result = barrier;
+			}
+
+			if (player.getGameMode() == GameMode.CREATIVE) {
+				lore.add(ChatColor.GOLD + "Creative exp bypass engaged.");
+			}
+
+			GenericUtil.consumeAs(ItemMeta.class, expCost.getItemMeta(), itemMeta -> {
+				itemMeta.setDisplayName(color + "Mana cost: " + exp);
+				itemMeta.setLore(lore);
+				expCost.setItemMeta(itemMeta);
+			});
+
+			// Set items
+			displayTrade(player, open, originalInput, expCost, result, fullUpdate);
+		});
 	}
 
 	private Pair<ItemStack, Integer> unCaptcha(ItemStack potentialCaptcha) {
@@ -359,6 +314,7 @@ public class Dublexor extends Machine {
 			ItemStack newModInput = registration.getProvider().getItemByCaptcha(potentialCaptcha);
 			if (newModInput == null || potentialCaptcha.isSimilar(newModInput)) {
 				// Broken captcha, don't infinitely loop.
+				potentialCaptcha = barrier;
 				break;
 			}
 			multiplier = Math.multiplyExact(multiplier, Math.max(1, Math.abs(potentialCaptcha.getAmount())));
@@ -368,96 +324,81 @@ public class Dublexor extends Machine {
 		return new Pair<>(potentialCaptcha, multiplier);
 	}
 
-	private void recalculateUses(@NotNull Player player, @NotNull MerchantInventory inventory) {
-		int expTotal = player.getGameMode() == GameMode.CREATIVE ? Integer.MAX_VALUE : ExperienceUtil.getExp(player);
-		boolean updatedRecipes = false;
+	/**
+	 * Adds a given trade offer to a Merchant.
+	 *
+	 * @param player the trading Player
+	 * @param open the open MerchantInventory
+	 * @param input the first trade input
+	 * @param expCost the second trade input
+	 * @param result the resulting ItemStack
+	 * @param fullUpdate whether or not a full inventory update is required to prevent client desync
+	 */
+	private void displayTrade(@NotNull Player player, @NotNull MerchantInventory open, @NotNull ItemStack input,
+			@NotNull ItemStack expCost, @NotNull ItemStack result, boolean fullUpdate) {
+		List<MerchantRecipe> recipes = new ArrayList<>(open.getMerchant().getRecipes());
 
-		List<MerchantRecipe> recipes = new ArrayList<>(inventory.getMerchant().getRecipes());
-
-		for (MerchantRecipe recipe : recipes) {
-			if (recalculateModifiesRecipe(expTotal, recipe)) {
-				updatedRecipes = true;
-			}
-		}
-
-		if (!updatedRecipes) {
+		// Check if selected recipe is correct for input
+		if (open.getSelectedRecipeIndex() > 0 && input.equals(recipes.get(open.getSelectedRecipeIndex()).getIngredients().get(0))) {
+			setSlots(player, open, expCost, result, fullUpdate);
 			return;
 		}
 
-		inventory.getMerchant().setRecipes(recipes);
+		// Check if a correct recipe exists
+		for (int i = 0; i < recipes.size(); ++i) {
+			MerchantRecipe recipe = recipes.get(i);
+			if (input.equals(recipe.getIngredients().get(0))) {
+				// If a recipe is selected, ensure that the correct recipe replaces it
+				if (open.getSelectedRecipeIndex() > 0 && open.getSelectedRecipeIndex() != i) {
+					recipes.set(i, recipes.get(open.getSelectedRecipeIndex()));
+					recipes.set(open.getSelectedRecipeIndex(), recipe);
+					open.getMerchant().setRecipes(recipes);
+					InventoryUtil.updateVillagerTrades(player, recipes);
+				}
+				setSlots(player, open, expCost, result, fullUpdate);
+				return;
+			}
+		}
+
+		MerchantRecipe recipe = new MerchantRecipe(result, Integer.MAX_VALUE);
+		recipe.addIngredient(input);
+		recipe.addIngredient(expCost);
+
+		// Delete the first non-example recipe if list is too large
+		if (recipes.size() >= 5) {
+			recipes.remove(1);
+		}
+
+		// If recipe is selected, swap with selected.
+		if (open.getSelectedRecipeIndex() > 0 && open.getSelectedRecipeIndex() < recipes.size()) {
+			recipe = recipes.set(open.getSelectedRecipeIndex(), recipe);
+		}
+
+		recipes.add(recipe);
+		open.getMerchant().setRecipes(recipes);
 		InventoryUtil.updateVillagerTrades(player, recipes);
+		setSlots(player, open, expCost, result, fullUpdate);
 	}
 
-	private boolean recalculateModifiesRecipe(int expTotal, @NotNull MerchantRecipe recipe) {
-		List<ItemStack> ingredients = recipe.getIngredients();
-		if (ingredients.size() < 2) {
-			return false;
+	/**
+	 * Set slots and update inventory as required.
+	 *
+	 * @param player the Player viewing the Inventory
+	 * @param open the open Inventory
+	 * @param expCost the ItemStack to set in the second slot
+	 * @param fullUpdate true if the entire inventory should be updated instead of just relevant slots
+	 */
+	private void setSlots(@NotNull Player player, @NotNull Inventory open, @Nullable ItemStack expCost,
+			@Nullable ItemStack result, boolean fullUpdate) {
+		open.setItem(1, expCost);
+		open.setItem(2, result);
+		if (fullUpdate) {
+			player.updateInventory();
+		} else {
+			InventoryUtil.updateWindowSlot(player, 0);
+			InventoryUtil.updateWindowSlot(player, 1);
+			InventoryUtil.updateWindowSlot(player, 2);
 		}
-
-		Pair<ItemStack, Integer> uncaptcha = unCaptcha(recipe.getIngredients().get(0).clone());
-		ItemStack modifiedInput = uncaptcha.getLeft();
-		int multiplier = uncaptcha.getRight();
-
-		// Ensure non-unique item (excluding captchas)
-		if (ItemUtil.isUniqueItem(modifiedInput)) {
-			return denyModifiesRecipe(recipe);
-		}
-
-		int cost;
-
-		// Calculate cost based on final item, adjusting for captcha depth and quantities.
-		try {
-			double doubleCost = NumberUtil.multiplySafe(EconomyUtil.getWorth(modifiedInput), multiplier);
-			if (doubleCost > Integer.MAX_VALUE) {
-				cost = Integer.MIN_VALUE;
-			} else {
-				cost = (int) Math.ceil(doubleCost);
-			}
-		} catch (ArithmeticException e) {
-			cost = Integer.MIN_VALUE;
-		}
-
-		// Disallow costs < 0.
-		if (cost <= 0) {
-			return denyModifiesRecipe(recipe);
-		}
-
-		// Allow infinite uses in creative.
-		if (expTotal == Integer.MAX_VALUE) {
-			if (recipe.getMaxUses() != Integer.MAX_VALUE) {
-				recipe.setMaxUses(Integer.MAX_VALUE);
-				recipe.setUses(0);
-				return true;
-			}
-			return false;
-		}
-
-		int uses = expTotal / cost;
-		if (uses <= 0) {
-			return denyModifiesRecipe(recipe);
-		}
-
-		if (recipe.getMaxUses() - recipe.getUses() == uses) {
-			return false;
-		}
-
-		recipe.setMaxUses(recipe.getUses() + uses);
-		return true;
-	}
-
-	private boolean denyModifiesRecipe(@NotNull MerchantRecipe recipe) {
-		if (recipe.getUses() != recipe.getMaxUses() || recipe.getMaxUses() < 1) {
-			recipe.setMaxUses(1);
-			recipe.setUses(1);
-			return true;
-		}
-		return false;
-	}
-
-	@Override
-	public void handleClose(@NotNull InventoryCloseEvent event, @Nullable ConfigurationSection storage) {
-		// Clear exp item
-		event.getView().getTopInventory().setItem(1, null);
 	}
 
 	/**
@@ -489,14 +430,25 @@ public class Dublexor extends Machine {
 				result.setItemMeta(itemMeta);
 			});
 
-			MerchantRecipe recipe = new MerchantRecipe(result, 1);
+			MerchantRecipe recipe = new MerchantRecipe(result, Integer.MAX_VALUE);
 			recipe.addIngredient(input);
 			recipe.addIngredient(cost);
-			recipe.setUses(1);
 
 			exampleRecipe = recipe;
 		}
 		return exampleRecipe;
+	}
+
+	@Override
+	public void handleClose(@NotNull InventoryCloseEvent event, @Nullable ConfigurationSection storage) {
+		// Clear exp item
+		event.getView().getTopInventory().setItem(1, null);
+	}
+
+	@Override
+	public void selectTrade(TradeSelectEvent event, @NotNull ConfigurationSection storage) {
+		event.getInventory().setItem(1, null);
+		updateInventory(event.getWhoClicked().getUniqueId(), true);
 	}
 
 }
