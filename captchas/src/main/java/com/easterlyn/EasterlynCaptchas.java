@@ -16,6 +16,8 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -81,6 +83,9 @@ public class EasterlynCaptchas extends JavaPlugin {
 			Arrays.stream(list).map(fileName -> new File(captchaDir, fileName)).forEach(file -> {
 				File toFile = new File(captchaDir, file.getName() + ".nbt");
 				if (toFile.exists()) {
+					try {
+						Files.move(file.toPath(), new File(successDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+					} catch (IOException ignored) {}
 					return;
 				}
 
@@ -89,11 +94,13 @@ public class EasterlynCaptchas extends JavaPlugin {
 					ItemStack itemStack = (ItemStack) stream.readObject();
 					ItemUtil.writeItemToFile(itemStack, toFile);
 					successDir.mkdirs();
-					file.renameTo(new File(successDir, file.getName()));
+					Files.move(file.toPath(), new File(successDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
 				} catch (Exception e) {
 					System.out.println("unable to convert captcha " + file.getName() + " - must be manually converted");
 					failureDir.mkdirs();
-					file.renameTo(new File(failureDir, file.getName()));
+					try {
+						Files.move(file.toPath(), new File(failureDir, file.getName()).toPath(), StandardCopyOption.REPLACE_EXISTING);
+					} catch (IOException ignored) {}
 				}
 			});
 		}

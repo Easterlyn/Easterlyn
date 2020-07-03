@@ -19,6 +19,7 @@ import java.util.stream.Collectors;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -67,12 +68,19 @@ public class ChannelManagementListener implements Listener {
 				core.getLocaleManager().sendMessage(event.getPlayer(), "chat.common.no_matching_channel", "{value}", '#' + channelName);
 				return;
 			}
+			if (!user.getStorage().getStringList(EasterlynChat.USER_CHANNELS).contains(channel.getName())) {
+				core.getLocaleManager().sendMessage(event.getPlayer(), "chat.common.not_listening_to_channel", "{value}", channel.getDisplayName());
+				return;
+			}
 			event.setMessage(event.getMessage().substring(space + 1));
 		}
 
 		// User's channel
 		if (channel == null) {
-			channel = chat.getChannels().get(user.getStorage().getString(EasterlynChat.USER_CURRENT));
+			String currentChannelName = user.getStorage().getString(EasterlynChat.USER_CURRENT);
+			if (currentChannelName != null) {
+				channel = chat.getChannels().get(currentChannelName);
+			}
 			if (channel == null) {
 				core.getLocaleManager().sendMessage(event.getPlayer(), "chat.common.not_listening_to_channel");
 				return;
@@ -91,9 +99,12 @@ public class ChannelManagementListener implements Listener {
 			if (userSection != null) {
 				userSection.getKeys(false).forEach(key -> userData.put(key, userSection.getString(key)));
 			}
-			// TODO lang?
-			new UserChatEvent(new AutoUser(easterlynProvider.getProvider(), userData), EasterlynChat.DEFAULT,
-					event.getUser().getDisplayName() + " is new! Please welcome them.");
+			Player player = event.getUser().getPlayer();
+			if (player != null && !player.hasPlayedBefore()) {
+				// TODO lang?
+				new UserChatEvent(new AutoUser(easterlynProvider.getProvider(), userData), EasterlynChat.DEFAULT,
+						event.getUser().getDisplayName() + " is new! Please welcome them.");
+			}
 		}
 		event.getUser().getStorage().set(EasterlynChat.USER_CURRENT, EasterlynChat.DEFAULT.getName());
 		event.getUser().getStorage().set(EasterlynChat.USER_CHANNELS, Collections.singletonList(EasterlynChat.DEFAULT.getName()));

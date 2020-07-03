@@ -301,9 +301,7 @@ public class User implements Group {
 				user.getStorage().set("ip", player.getAddress().getHostString());
 			}
 
-			if (!player.hasPlayedBefore()) {
-				pluginManager.callEvent(new UserCreationEvent(user));
-			}
+			pluginManager.callEvent(new UserCreationEvent(user));
 		}
 
 		return user;

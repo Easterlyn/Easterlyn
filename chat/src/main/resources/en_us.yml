@@ -11,7 +11,7 @@ chat:
     no_matching_channel: '{color:bad.a}No such channel: {color:bad.b}{value}'
     no_channel_access: '{color:bad.a}You do not have access to {color:bad.b}{value}{color:bad.a}. Try joining it!'
     listening_to_channel: '{color:bad.a}You are listening to {color:bad.b}{value}{color:bad.a}.'
-    not_listening_to_channel: '{color:bad.a}You are not listening to {color:bad.b}{value}{color:bad.a}.'
+    not_listening_to_channel: '{color:bad.a}You are not listening to {value}'
     channel_not_modifiable: '{color:bad.a}Channel is not modifiable!'
     no_content: '{color:bad.a}What are you trying to say in {color:bad.b}{value}{color:bad.a}?'
     and: ' and'
