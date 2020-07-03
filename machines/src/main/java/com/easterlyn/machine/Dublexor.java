@@ -32,7 +32,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -113,9 +112,11 @@ public class Dublexor extends Machine {
 		if (event.isCancelled() || event.getPlayer().isSneaking()) {
 			return;
 		}
-		Merchant merchant = getMachines().getMerchant(getName(), this, storage);
+		/*Merchant merchant = getMachines().getMerchant(getName(), this, storage);
 		merchant.setRecipes(Collections.singletonList(Dublexor.getExampleRecipe()));
-		event.getPlayer().openMerchant(merchant, true);
+		event.getPlayer().openMerchant(merchant, true);*/
+		event.getPlayer().sendMessage("The Dublexor is currently busted as HECK so you can't use it");
+		event.getPlayer().sendMessage("MY BAD, SORRY.");
 		event.setCancelled(true);
 	}
 
@@ -158,6 +159,12 @@ public class Dublexor extends Machine {
 
 		int expCost = expDisplay.getItemMeta().getPersistentDataContainer()
 				.getOrDefault(dublekey, PersistentDataType.INTEGER, Integer.MAX_VALUE);
+
+		if (expCost == Integer.MAX_VALUE) {
+			event.setCancelled(true);
+			return;
+		}
+
 		ItemStack originalInput = merchantInv.getItem(0);
 		ItemStack clonedInput;
 		if (originalInput != null) {
