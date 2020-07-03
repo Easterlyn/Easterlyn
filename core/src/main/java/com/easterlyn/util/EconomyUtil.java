@@ -759,6 +759,20 @@ public class EconomyUtil {
 					// Duplicate via other means, not alchemy
 				case WRITTEN_BOOK:
 				case WRITABLE_BOOK:
+					// temp blacklist
+				case ANCIENT_DEBRIS:
+				case NETHERITE_INGOT:
+				case NETHERITE_AXE:
+				case NETHERITE_BLOCK:
+				case NETHERITE_BOOTS:
+				case NETHERITE_CHESTPLATE:
+				case NETHERITE_HELMET:
+				case NETHERITE_HOE:
+				case NETHERITE_LEGGINGS:
+				case NETHERITE_PICKAXE:
+				case NETHERITE_SCRAP:
+				case NETHERITE_SHOVEL:
+				case NETHERITE_SWORD:
 					values.put(material, Double.MAX_VALUE);
 				default:
 					break;

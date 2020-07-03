@@ -201,6 +201,9 @@ public class NumberUtil {
 	}
 
 	public static double addSafe(double x, double y) throws ArithmeticException {
+		if (x == Double.POSITIVE_INFINITY || x == Double.NEGATIVE_INFINITY || y == Double.POSITIVE_INFINITY || y == Double.NEGATIVE_INFINITY) {
+			throw new ArithmeticException("double overflow");
+		}
 		double value = BigDecimal.valueOf(x).add(BigDecimal.valueOf(y)).doubleValue();
 		if (value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY) {
 			throw new ArithmeticException("double overflow");
@@ -209,6 +212,9 @@ public class NumberUtil {
 	}
 
 	public static double subtractSafe(double x, double y) throws ArithmeticException {
+		if (x == Double.POSITIVE_INFINITY || x == Double.NEGATIVE_INFINITY || y == Double.POSITIVE_INFINITY || y == Double.NEGATIVE_INFINITY) {
+			throw new ArithmeticException("double overflow");
+		}
 		double value = BigDecimal.valueOf(x).subtract(BigDecimal.valueOf(y)).doubleValue();
 		if (value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY) {
 			throw new ArithmeticException("double overflow");
@@ -217,6 +223,9 @@ public class NumberUtil {
 	}
 
 	public static double multiplySafe(double x, double y) throws ArithmeticException {
+		if (x == Double.POSITIVE_INFINITY || x == Double.NEGATIVE_INFINITY || y == Double.POSITIVE_INFINITY || y == Double.NEGATIVE_INFINITY) {
+			throw new ArithmeticException("double overflow");
+		}
 		double value = BigDecimal.valueOf(x).multiply(BigDecimal.valueOf(y)).doubleValue();
 		if (value == Double.POSITIVE_INFINITY || value == Double.NEGATIVE_INFINITY) {
 			throw new ArithmeticException("double overflow");
