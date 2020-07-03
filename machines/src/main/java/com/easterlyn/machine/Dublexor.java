@@ -255,7 +255,12 @@ public class Dublexor extends Machine {
 			}
 
 			// Calculate cost based on final item.
-			double resultCost = EconomyUtil.getWorth(modifiedInput);
+			double resultCost;
+			try {
+				resultCost = EconomyUtil.getWorth(modifiedInput);
+			} catch (ArithmeticException e) {
+				resultCost = Double.POSITIVE_INFINITY;
+			}
 
 			// Adjust cost based on captcha depth and quantities.
 			try {
