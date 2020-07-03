@@ -150,7 +150,7 @@ public class EasterlynNetherPortals extends JavaPlugin {
 	@Nullable
 	private Location findPortal(@NotNull Location location) {
 		Block block = location.getBlock();
-		int searchRadius = block.getWorld().getEnvironment() == World.Environment.NORMAL ? 10 : 2;
+		int searchRadius = block.getWorld().getEnvironment() == World.Environment.NORMAL ? 18 : 2;
 		// Set up to search outwards in radius from center.
 		List<Integer> searchCoordinates = new ArrayList<>(searchRadius * 2 + 1);
 		searchCoordinates.add(0);
