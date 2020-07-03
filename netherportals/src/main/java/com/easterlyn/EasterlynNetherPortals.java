@@ -6,6 +6,7 @@ import com.easterlyn.util.Shape;
 import com.easterlyn.util.event.SimpleListener;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import org.bukkit.Axis;
 import org.bukkit.Location;
@@ -117,7 +118,7 @@ public class EasterlynNetherPortals extends JavaPlugin {
 	private Location calculateDestination(@NotNull Location from) {
 		World world;
 		double x, y, z;
-		String baseWorldName = from.getWorld().getName().replaceAll("(.*)_(the_end|nether)", "$1");
+		String baseWorldName = Objects.requireNonNull(from.getWorld()).getName().replaceAll("(.*)_(the_end|nether)", "$1");
 		switch (from.getWorld().getEnvironment()) {
 			case NETHER:
 				world = getServer().getWorld(baseWorldName);
@@ -149,7 +150,7 @@ public class EasterlynNetherPortals extends JavaPlugin {
 	@Nullable
 	private Location findPortal(@NotNull Location location) {
 		Block block = location.getBlock();
-		int searchRadius = 2;
+		int searchRadius = block.getWorld().getEnvironment() == World.Environment.NORMAL ? 10 : 2;
 		// Set up to search outwards in radius from center.
 		List<Integer> searchCoordinates = new ArrayList<>(searchRadius * 2 + 1);
 		searchCoordinates.add(0);
@@ -162,7 +163,7 @@ public class EasterlynNetherPortals extends JavaPlugin {
 		 * in case of rounding errors. Since portals have to be 3 tall and the portal center
 		 * system seeks to the bottom of the portal, there's no need to search downwards.
 		 */
-		int searchY = location.getWorld().getEnvironment() == World.Environment.NORMAL ? 4 : 2;
+		int searchY = block.getWorld().getEnvironment() == World.Environment.NORMAL ? 4 : 2;
 		for (int dX : searchCoordinates) {
 			for (int dZ : searchCoordinates) {
 				for (int dY = 0; dY < searchY; ++dY) {
@@ -218,7 +219,7 @@ public class EasterlynNetherPortals extends JavaPlugin {
 		}
 		PortalCreateEvent createEvent = new PortalCreateEvent(
 				getNetherPortal().getBuildLocations(to.getBlock(), direction).keySet().stream().map(Block::getState).collect(Collectors.toList()),
-				to.getWorld(), entity, PortalCreateEvent.CreateReason.NETHER_PAIR);
+				Objects.requireNonNull(to.getWorld()), entity, PortalCreateEvent.CreateReason.NETHER_PAIR);
 		getServer().getPluginManager().callEvent(createEvent);
 		if (!createEvent.isCancelled()) {
 			getNetherPortal().build(to.getBlock(), direction);

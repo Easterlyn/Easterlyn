@@ -23,6 +23,10 @@ public class VanillaWorldBorderHook extends ProtectionHook {
 
 	@Override
 	public boolean isProtected(Location location) {
+		return isOutsideBorder(location);
+	}
+
+	public static boolean isOutsideBorder(Location location) {
 		WorldBorder border = Objects.requireNonNull(location.getWorld()).getWorldBorder();
 		double borderRadius = border.getSize() / 2;
 
