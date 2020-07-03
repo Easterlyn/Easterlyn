@@ -2,6 +2,7 @@ package com.easterlyn.util.protection;
 
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldguard.WorldGuard;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.flags.Flags;
 import com.sk89q.worldguard.protection.flags.StateFlag.State;
 import org.bukkit.Location;
@@ -49,7 +50,7 @@ public class WorldGuardHook extends ProtectionHook {
 	public boolean canBuildAt(Player player, Location location) {
 		return WorldGuard.getInstance().getPlatform().getRegionContainer().createQuery()
 				.getApplicableRegions(BukkitAdapter.adapt(location))
-				.queryState(null, Flags.ENTRY, Flags.BUILD) == State.ALLOW;
+				.queryState(WorldGuardPlugin.inst().wrapPlayer(player), Flags.ENTRY, Flags.BUILD) == State.ALLOW;
 	}
 
 }
