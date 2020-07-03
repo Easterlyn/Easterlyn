@@ -13,7 +13,6 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
@@ -38,7 +37,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -383,17 +381,11 @@ public class EasterlynCaptchas extends JavaPlugin {
 				ReportableEvent.call("Unable to create captcha directory!");
 				return;
 			}
-			File file = new File(captchaFolder, hash);
+			File file = new File(captchaFolder, hash + ".nbt");
 			if (file.exists()) {
 				return;
 			}
-			if (!file.createNewFile()) {
-				ReportableEvent.call("Unable to write captcha file!");
-				return;
-			}
-			try (BukkitObjectOutputStream stream = new BukkitObjectOutputStream(new FileOutputStream(file))) {
-				stream.writeObject(item);
-			}
+			ItemUtil.writeItemToFile(item, file);
 		} catch (IOException e) {
 			ReportableEvent.call("Caught IOException saving captcha:", e, 5);
 		}
