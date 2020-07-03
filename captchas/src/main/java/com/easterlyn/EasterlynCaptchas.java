@@ -45,7 +45,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class EasterlynCaptchas extends JavaPlugin {
 
-	private static final String HASH_PREFIX = ChatColor.DARK_AQUA.toString() + ChatColor.YELLOW + ChatColor.LIGHT_PURPLE;
+	private static final String HASH_PREFIX = ChatColor.LIGHT_PURPLE.toString();
 	public static final String RECIPE_KEY = ItemUtil.UNIQUE_KEYED_PREFIX + "captcha_uncraft";
 
 	private final LoadingCache<String, ItemStack> cache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES)
@@ -79,18 +79,21 @@ public class EasterlynCaptchas extends JavaPlugin {
 		String[] list = captchaDir.list((directory, name) -> !name.endsWith(".nbt"));
 		if (list != null) {
 			Arrays.stream(list).map(fileName -> new File(captchaDir, fileName)).forEach(file -> {
+				File toFile = new File(captchaDir, file.getName() + ".nbt");
+				if (toFile.exists()) {
+					return;
+				}
+
 				try (BukkitObjectInputStream stream = new BukkitObjectInputStream(
 						new FileInputStream(file))) {
 					ItemStack itemStack = (ItemStack) stream.readObject();
-					ItemUtil.writeItemToFile(itemStack, new File(captchaDir, file.getName() + ".nbt"));
-					if (successDir.mkdirs()) {
-						file.renameTo(new File(successDir, file.getName()));
-					}
+					ItemUtil.writeItemToFile(itemStack, toFile);
+					successDir.mkdirs();
+					file.renameTo(new File(successDir, file.getName()));
 				} catch (Exception e) {
 					System.out.println("unable to convert captcha " + file.getName() + " - must be manually converted");
-					if (failureDir.mkdirs()) {
-						file.renameTo(new File(failureDir, file.getName()));
-					}
+					failureDir.mkdirs();
+					file.renameTo(new File(failureDir, file.getName()));
 				}
 			});
 		}
