@@ -12,7 +12,9 @@ import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.FireworkEffect;
+import org.bukkit.Keyed;
 import org.bukkit.Material;
+import org.bukkit.Tag;
 import org.bukkit.block.BlockState;
 import org.bukkit.craftbukkit.v1_16_R1.enchantments.CraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
@@ -358,13 +360,20 @@ public class EconomyUtil {
 		mappings.remove(Material.LAPIS_BLOCK);
 		mappings.remove(Material.LAPIS_ORE);
 
-		mappings.entrySet().removeIf(entry -> entry.getValue() == Double.MAX_VALUE);
+		mappings.entrySet().removeIf(entry -> entry.getValue() == Double.POSITIVE_INFINITY);
 
 		return mappings;
 	}
 
 	private static Map<Material, Double> createBaseWorth() {
 		Map<Material, Double> values = new HashMap<>();
+
+		setWorth(values, 1D, Tag.LEAVES);
+		setWorth(values, 5D, Tag.WOOL);
+		// Tag.LOGS actually only contains stems and Tag.LOGS_THAT_BURN
+		setWorth(values, 8D, Tag.ACACIA_LOGS, Tag.BIRCH_LOGS, Tag.DARK_OAK_LOGS, Tag.JUNGLE_LOGS, Tag.OAK_LOGS,
+				Tag.SPRUCE_LOGS, Tag.CRIMSON_STEMS, Tag.WARPED_STEMS);
+		setWorth(values, 70D, Tag.ITEMS_CREEPER_DROP_MUSIC_DISCS);
 
 		for (Material material : Material.values()) {
 			switch (material) {
@@ -375,12 +384,6 @@ public class EconomyUtil {
 				case FERN:
 				case GRAVEL:
 				case GRASS:
-				case ACACIA_LEAVES:
-				case BIRCH_LEAVES:
-				case DARK_OAK_LEAVES:
-				case JUNGLE_LEAVES:
-				case OAK_LEAVES:
-				case SPRUCE_LEAVES:
 				case MELON_SLICE:
 				case POISONOUS_POTATO:
 				case SAND:
@@ -413,6 +416,7 @@ public class EconomyUtil {
 				case RED_TULIP:
 				case SEAGRASS:
 				case SOUL_SAND:
+				case SOUL_SOIL:
 				case SUGAR_CANE:
 				case SWEET_BERRIES:
 				case VINE:
@@ -454,22 +458,6 @@ public class EconomyUtil {
 				case RABBIT:
 				case COD:
 				case SALMON:
-				case BLACK_WOOL:
-				case BLUE_WOOL:
-				case BROWN_WOOL:
-				case CYAN_WOOL:
-				case GRAY_WOOL:
-				case GREEN_WOOL:
-				case LIGHT_BLUE_WOOL:
-				case LIGHT_GRAY_WOOL:
-				case LIME_WOOL:
-				case MAGENTA_WOOL:
-				case ORANGE_WOOL:
-				case PINK_WOOL:
-				case PURPLE_WOOL:
-				case RED_WOOL:
-				case WHITE_WOOL:
-				case YELLOW_WOOL:
 					values.put(material, 5D);
 					break;
 				case BAKED_POTATO:
@@ -480,30 +468,6 @@ public class EconomyUtil {
 					values.put(material, 6D);
 					break;
 				case COOKED_CHICKEN:
-				case ACACIA_LOG:
-				case BIRCH_LOG:
-				case DARK_OAK_LOG:
-				case JUNGLE_LOG:
-				case OAK_LOG:
-				case SPRUCE_LOG:
-				case ACACIA_WOOD:
-				case BIRCH_WOOD:
-				case DARK_OAK_WOOD:
-				case JUNGLE_WOOD:
-				case OAK_WOOD:
-				case SPRUCE_WOOD:
-				case STRIPPED_ACACIA_LOG:
-				case STRIPPED_BIRCH_LOG:
-				case STRIPPED_DARK_OAK_LOG:
-				case STRIPPED_JUNGLE_LOG:
-				case STRIPPED_OAK_LOG:
-				case STRIPPED_SPRUCE_LOG:
-				case STRIPPED_ACACIA_WOOD:
-				case STRIPPED_BIRCH_WOOD:
-				case STRIPPED_DARK_OAK_WOOD:
-				case STRIPPED_JUNGLE_WOOD:
-				case STRIPPED_OAK_WOOD:
-				case STRIPPED_SPRUCE_WOOD:
 				case MUTTON:
 				case BEEF:
 				case REDSTONE:
@@ -553,6 +517,7 @@ public class EconomyUtil {
 				case RABBIT_FOOT:
 				case SPIDER_EYE:
 				case INK_SAC:
+				case EXPERIENCE_BOTTLE: // 11 exp to fill a bottle, bottle worth roughly 1
 					values.put(material, 12D);
 					break;
 				case BLACK_TERRACOTTA:
@@ -572,7 +537,6 @@ public class EconomyUtil {
 				case WHITE_TERRACOTTA:
 				case YELLOW_TERRACOTTA:
 				case TERRACOTTA:
-				case EXPERIENCE_BOTTLE: // 11 exp to fill a bottle, bottle worth roughly 1 and some padding
 					values.put(material, 13D);
 					break;
 				case COOKED_PORKCHOP:
@@ -638,22 +602,11 @@ public class EconomyUtil {
 					values.put(material, 44D);
 					break;
 				case IRON_ORE:
+					// Special case disks - also in dungeon loot
 				case MUSIC_DISC_13:
 				case MUSIC_DISC_CAT:
 				case NAUTILUS_SHELL:
 					values.put(material, 50D);
-					break;
-				case MUSIC_DISC_11:
-				case MUSIC_DISC_BLOCKS:
-				case MUSIC_DISC_CHIRP:
-				case MUSIC_DISC_FAR:
-				case MUSIC_DISC_MALL:
-				case MUSIC_DISC_MELLOHI:
-				case MUSIC_DISC_STAL:
-				case MUSIC_DISC_STRAD:
-				case MUSIC_DISC_WAIT:
-				case MUSIC_DISC_WARD:
-					values.put(material, 70D);
 					break;
 				case OBSIDIAN:
 				case REDSTONE_ORE:
@@ -667,6 +620,7 @@ public class EconomyUtil {
 					values.put(material, 108D);
 					break;
 				case GOLD_ORE:
+				case NETHER_GOLD_ORE:
 				case LAVA_BUCKET:
 				case MILK_BUCKET:
 				case WATER_BUCKET:
@@ -699,6 +653,7 @@ public class EconomyUtil {
 					values.put(material, 750D);
 					break;
 				case DIAMOND_HORSE_ARMOR:
+				case TOTEM_OF_UNDYING:
 				case WET_SPONGE:
 					values.put(material, 1000D);
 					break;
@@ -719,7 +674,6 @@ public class EconomyUtil {
 				case TRIDENT:
 					values.put(material, 3142D);
 					break;
-				case TOTEM_OF_UNDYING:
 				case HEART_OF_THE_SEA:
 					values.put(material, 5000D);
 					break;
@@ -760,26 +714,21 @@ public class EconomyUtil {
 					// Duplicate via other means, not alchemy
 				case WRITTEN_BOOK:
 				case WRITABLE_BOOK:
-					// temp blacklist
-				case ANCIENT_DEBRIS:
+					// TODO debug why this is registering as 432 (4x gold_ingot), some bad math somewhere
 				case NETHERITE_INGOT:
-				case NETHERITE_AXE:
-				case NETHERITE_BLOCK:
-				case NETHERITE_BOOTS:
-				case NETHERITE_CHESTPLATE:
-				case NETHERITE_HELMET:
-				case NETHERITE_HOE:
-				case NETHERITE_LEGGINGS:
-				case NETHERITE_PICKAXE:
-				case NETHERITE_SCRAP:
-				case NETHERITE_SHOVEL:
-				case NETHERITE_SWORD:
-					values.put(material, Double.MAX_VALUE);
+					values.put(material, Double.POSITIVE_INFINITY);
 				default:
 					break;
 			}
 		}
 		return values;
+	}
+
+	@SafeVarargs
+	private static void setWorth(@NotNull Map<Material, Double> values, double value, @NotNull Tag<Material>... tags) {
+		for (Tag<Material> tag : tags) {
+			tag.getValues().forEach(material -> values.put(material, value));
+		}
 	}
 
 	private static double addRecipeCosts(Material material, Set<Material> pastMaterials) {
@@ -790,7 +739,7 @@ public class EconomyUtil {
 
 		// Check if mid-calculation
 		if (pastMaterials.contains(material)) {
-			return Double.MAX_VALUE;
+			return Double.POSITIVE_INFINITY;
 		}
 
 		// Create a new list for sub-elements
@@ -798,7 +747,7 @@ public class EconomyUtil {
 		// Add to mid-calc list
 		pastMaterials.add(material);
 
-		double minimum = Double.MAX_VALUE;
+		double minimum = Double.POSITIVE_INFINITY;
 
 		nextRecipe: for (Recipe bukkitRecipe : Bukkit.getRecipesFor(new ItemStack(material))) {
 			ItemStack result = bukkitRecipe.getResult();
@@ -809,6 +758,15 @@ public class EconomyUtil {
 
 			RecipeWrapper recipe = new RecipeWrapper(bukkitRecipe);
 
+			if (recipe.getResult().getType() != material) {
+				ReportableEvent.call("improper wrap of recipe: " + ((Keyed) bukkitRecipe).getKey().toString() + " type: " + bukkitRecipe.getClass().getSimpleName());
+				continue;
+			}
+
+			if (recipe.getRecipeIngredients().isEmpty()) {
+				continue;
+			}
+
 			double newMinimum = 0;
 
 			for (Map.Entry<EnumSet<Material>, Integer> ingredient : recipe.getRecipeIngredients().entrySet()) {
@@ -816,7 +774,7 @@ public class EconomyUtil {
 					continue nextRecipe;
 				}
 
-				double bestMaterialPrice = Double.MAX_VALUE;
+				double bestMaterialPrice = Double.POSITIVE_INFINITY;
 				for (Material potential : ingredient.getKey()) {
 					if (pastMaterials.contains(potential)) {
 						continue;
@@ -839,7 +797,7 @@ public class EconomyUtil {
 				} catch (ArithmeticException ignored) {}
 			}
 
-			if (newMinimum <= 0 || newMinimum == Double.MAX_VALUE) {
+			if (newMinimum <= 0 || newMinimum == Double.POSITIVE_INFINITY) {
 				continue;
 			}
 
@@ -854,7 +812,7 @@ public class EconomyUtil {
 				}
 			}
 
-			if (newMinimum == Double.MAX_VALUE) {
+			if (newMinimum == Double.POSITIVE_INFINITY) {
 				continue;
 			}
 
@@ -866,7 +824,7 @@ public class EconomyUtil {
 
 		// No value = no make.
 		if (minimum <= 0) {
-			minimum = Double.MAX_VALUE;
+			minimum = Double.POSITIVE_INFINITY;
 		}
 
 		// Map and return.

@@ -137,7 +137,7 @@ sink:
       cost:
         description: '{color:normal.a}Check mana cost of item.'
         message: '{color:normal.a} costs {color:normal.b}{exp}{color:normal.a} ({color:normal.b}{level}L{color:normal.a}) to replicate.'
-        oh_no: '{color.bad.a} cannot be dublecated:{color.bad.b} {value}'
+        oh_no: '{color:bad.a} cannot be dublecated:{color:bad.b} {value}'
       air: '{color:normal.a}Nothing in life is free.'
     request:
       accept.description: '{color:normal.a}Accept a pending request.'

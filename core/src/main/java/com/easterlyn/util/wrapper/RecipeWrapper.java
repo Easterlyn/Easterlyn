@@ -39,6 +39,8 @@ public class RecipeWrapper {
 			return;
 		}
 
+		// TODO handle smithing recipe
+
 		ingredients = new HashMap<>();
 
 		for (RecipeItemStack ingredient : iRecipeOptional.get().a()) {
@@ -46,17 +48,8 @@ public class RecipeWrapper {
 			EnumSet<Material> materials = EnumSet.noneOf(Material.class);
 			for (ItemStack itemStack : ingredient.choices) {
 				Material material = CraftMagicNumbers.getMaterial(itemStack.getItem());
-				if (material == null) {
+				if (material == null || material.isAir()) {
 					continue;
-				}
-
-				switch (material) {
-					case AIR:
-					case CAVE_AIR:
-					case VOID_AIR:
-						continue;
-					default:
-						break;
 				}
 
 				materials.add(material);

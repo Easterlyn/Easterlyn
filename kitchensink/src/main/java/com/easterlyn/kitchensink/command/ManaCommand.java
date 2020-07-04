@@ -95,19 +95,19 @@ public class ManaCommand extends BaseCommand {
 			itemComponent.addExtra(Colors.getOrDefault("normal.b", ChatColor.DARK_AQUA) + "x" + hand.getAmount());
 		}
 		component.addExtra(itemComponent);
+		String locale = core.getLocaleManager().getLocale(getCurrentCommandIssuer().getIssuer());
 
 		double worth;
 		try {
 			worth = EconomyUtil.getWorth(hand);
 
-			String value = core.getLocaleManager().getValue("sink.module.mana.cost.message",
-					core.getLocaleManager().getLocale(getCurrentCommandIssuer().getIssuer()),
+			String value = core.getLocaleManager().getValue("sink.module.mana.cost.message", locale,
 					"{exp}", getFormat().format(worth), "{level}", String.valueOf(ExperienceUtil.getLevelFromExp((long) worth)));
 			for (TextComponent text : StringUtil.toJSON(value)) {
 				component.addExtra(text);
 			}
 		} catch (ArithmeticException e) {
-			for (TextComponent text : StringUtil.toJSON(core.getLocaleManager().getValue("sink.module.mana.cost.oh_no", "{value}", e.getMessage()))) {
+			for (TextComponent text : StringUtil.toJSON(core.getLocaleManager().getValue("sink.module.mana.cost.oh_no", locale, "{value}", e.getMessage()))) {
 				component.addExtra(text);
 			}
 		}
