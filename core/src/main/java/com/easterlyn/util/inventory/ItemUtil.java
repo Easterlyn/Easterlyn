@@ -404,7 +404,7 @@ public class ItemUtil {
 			return true;
 		}
 		ItemStack toAdd = is.clone();
-		for (ItemStack invStack : inv.getContents()) {
+		for (ItemStack invStack : inv.getStorageContents()) {
 			//noinspection ConstantConditions
 			if (invStack == null) {
 				return true;
