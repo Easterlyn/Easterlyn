@@ -88,14 +88,6 @@ public class ManaCommand extends BaseCommand {
 			return;
 		}
 
-		double worth;
-		try {
-			worth = EconomyUtil.getWorth(hand);
-		} catch (ArithmeticException e) {
-			player.sendMessage(e.getMessage());
-			return;
-		}
-
 		BaseComponent component = new TextComponent();
 
 		TextComponent itemComponent = ItemUtil.getItemComponent(hand);
@@ -104,11 +96,20 @@ public class ManaCommand extends BaseCommand {
 		}
 		component.addExtra(itemComponent);
 
-		String value = core.getLocaleManager().getValue("sink.module.mana.cost.message",
-				core.getLocaleManager().getLocale(getCurrentCommandIssuer().getIssuer()),
-				"{exp}", getFormat().format(worth), "{level}", String.valueOf(ExperienceUtil.getLevelFromExp((long) worth)));
-		for (TextComponent text : StringUtil.toJSON(value)) {
-			component.addExtra(text);
+		double worth;
+		try {
+			worth = EconomyUtil.getWorth(hand);
+
+			String value = core.getLocaleManager().getValue("sink.module.mana.cost.message",
+					core.getLocaleManager().getLocale(getCurrentCommandIssuer().getIssuer()),
+					"{exp}", getFormat().format(worth), "{level}", String.valueOf(ExperienceUtil.getLevelFromExp((long) worth)));
+			for (TextComponent text : StringUtil.toJSON(value)) {
+				component.addExtra(text);
+			}
+		} catch (ArithmeticException e) {
+			for (TextComponent text : StringUtil.toJSON(core.getLocaleManager().getValue("sink.module.mana.cost.oh_no", "{value}", e.getMessage()))) {
+				component.addExtra(text);
+			}
 		}
 
 		player.spigot().sendMessage(component);

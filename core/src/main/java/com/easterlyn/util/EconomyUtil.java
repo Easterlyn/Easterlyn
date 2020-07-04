@@ -1,5 +1,6 @@
 package com.easterlyn.util;
 
+import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.wrapper.RecipeWrapper;
 import java.util.EnumSet;
@@ -49,12 +50,12 @@ public class EconomyUtil {
 	public static double getWorth(@NotNull ItemStack itemStack) throws ArithmeticException {
 		// TODO should this have a cache?
 		if (itemStack.getAmount() < 1) {
-			throw new ArithmeticException("Cannot calculate worth of stack size < 1");
+			throw new ArithmeticException("stack size < 1");
 		}
 		double cost = getMappings().getOrDefault(itemStack.getType(), Double.POSITIVE_INFINITY);
 		if (cost == Double.POSITIVE_INFINITY) {
 			// Item worth could not be calculated
-			throw new ArithmeticException("item too spicy " + itemStack.toString());
+			throw new ArithmeticException("material is invaluable");
 		}
 
 		ItemMeta itemMeta = itemStack.hasItemMeta() ? itemStack.getItemMeta() : null;
@@ -65,7 +66,7 @@ public class EconomyUtil {
 		}
 
 		if (ItemUtil.isUniqueItem(itemStack)) {
-			throw new ArithmeticException("item too spicy " + itemStack.toString());
+			throw new ArithmeticException("item is unique");
 		}
 
 		if (itemStack.getEnchantments().size() > 0 || itemMeta.hasDisplayName() || itemMeta.hasLore() || itemMeta.isUnbreakable()) {
@@ -74,7 +75,7 @@ public class EconomyUtil {
 				case FIREWORK_STAR:
 				case PAPER:
 					// Special case: items used for unique cards, slips, or objects.
-					throw new ArithmeticException("item too spicy " + itemStack.toString());
+					throw new ArithmeticException("item is unique");
 				default:
 					break;
 			}
@@ -87,7 +88,7 @@ public class EconomyUtil {
 				for (ItemStack item : ((InventoryHolder) state).getInventory().getContents()) {
 					//noinspection ConstantConditions - Array is not null, but individual elements may be.
 					if (item != null && item.getType() != Material.AIR) {
-						throw new ArithmeticException("item too spicy " + itemStack.toString());
+						throw new ArithmeticException("item has additional items stored inside");
 					}
 				}
 			}
@@ -161,7 +162,7 @@ public class EconomyUtil {
 
 			if (potionMeta.hasCustomEffects()) {
 				// Custom potions are unsupported.
-				throw new ArithmeticException("item too spicy " + itemStack.toString());
+				throw new ArithmeticException("item has custom effects");
 			}
 
 			PotionData potionData = potionMeta.getBasePotionData();
@@ -228,9 +229,8 @@ public class EconomyUtil {
 					break;
 				case LUCK:
 				case UNCRAFTABLE:
-					return Double.MAX_VALUE;
 				default:
-					throw new ArithmeticException("PotionType too spicy: " + potionData.getType().name());
+					throw new ArithmeticException("unsupported potion " + potionData.getType().name());
 			}
 
 			if (potionData.isExtended()) {
@@ -270,7 +270,8 @@ public class EconomyUtil {
 		cost = NumberUtil.multiplySafe(cost, itemStack.getAmount());
 
 		if (cost <= 0) {
-			throw new ArithmeticException("item too spicy " + itemStack.toString());
+			ReportableEvent.call("Found ItemStack with worth < 0: " + ItemUtil.getAsText(itemStack));
+			throw new ArithmeticException("item worth evaluated < 0");
 		}
 		return cost;
 	}
