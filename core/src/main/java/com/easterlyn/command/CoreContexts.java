@@ -28,12 +28,12 @@ public class CoreContexts {
 	private static final Pattern INTEGER_PATTERN = Pattern.compile("$(-?\\d+)[dl]?^", Pattern.CASE_INSENSITIVE);
 
 	public static void register(EasterlynCore plugin) {
-		ContextResolver<Integer, BukkitCommandExecutionContext> integerResolver = context -> {
+		ContextResolver<Long, BukkitCommandExecutionContext> longResolver = context -> {
 			String firstArg = context.popFirstArg();
 			Matcher matcher = INTEGER_PATTERN.matcher(firstArg);
 			if (matcher.find()) {
 				try {
-					return Integer.valueOf(matcher.group(1));
+					return Long.valueOf(matcher.group(1));
 				} catch (NumberFormatException e) {
 					throw new InvalidCommandArgument(CoreLang.WHOLE_NUMBER);
 				}
@@ -41,14 +41,19 @@ public class CoreContexts {
 
 			firstArg = firstArg.toUpperCase();
 			if (firstArg.matches("[IVXLCDM]+")) {
-				return NumberUtil.intFromRoman(firstArg);
+				return (long) NumberUtil.intFromRoman(firstArg);
 			}
 
 			throw new InvalidCommandArgument(CoreLang.WHOLE_NUMBER);
 		};
 
-		plugin.getCommandManager().getCommandContexts().registerContext(int.class, integerResolver);
-		plugin.getCommandManager().getCommandContexts().registerContext(Integer.class, integerResolver);
+		plugin.getCommandManager().getCommandContexts().registerContext(long.class, longResolver);
+		plugin.getCommandManager().getCommandContexts().registerContext(Long.class, longResolver);
+
+		ContextResolver<Integer, BukkitCommandExecutionContext> intResolver = context -> Math.toIntExact(longResolver.getContext(context));
+
+		plugin.getCommandManager().getCommandContexts().registerContext(int.class, intResolver);
+		plugin.getCommandManager().getCommandContexts().registerContext(Integer.class, intResolver);
 
 
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(BukkitCommandIssuer.class,
