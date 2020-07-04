@@ -1,8 +1,8 @@
 # TODO consistency: {target} vs {value} -> {issuer} {target} {value} etc. as needed
 # Player mentions should be @{target} with no preceding color code to allow wrapping
 acf-core:
-  permission_denied: '{@@core.common.no_permission}'
-  permission_denied_parameter: '{@@core.common.no_permission}'
+  permission_denied: '{color:bad.a}By order of the Jarl, stop right there!'
+  permission_denied_parameter: '{color:bad.a}By order of the Jarl, stop right there!'
   error_generic_logged: '{color:bad.a}An error occurred. This problem has been logged. Sorry for the inconvenience.'
   unknown_command: '{color:bad.a}Unknown Command, please type {color:command}/help'
   invalid_syntax: '{color:bad.a}Usage: {color:command}{command} {color:bad.b}{syntax}'
@@ -15,7 +15,7 @@ acf-core:
   must_be_max_length: '{color:bad.a}Error: Must be at most {color:bad.b}{max}{color:bad.a} characters long.'
   please_specify_at_most: '{color:bad.a}Error: Please specify a value at most {color:bad.b}{max}{color:bad.a}.'
   please_specify_at_least: '{color:bad.a}Error: Please specify a value at least {color:bad.b}{min}{color:bad.a}.'
-  not_allowed_on_console: '{@@core.common.no_console}'
+  not_allowed_on_console: 'Not available to console!'
   could_not_find_player: '{color:bad.a}Error: Could not find a player by the name: {color:bad.b}{search}'
   no_command_matched_search: '{color:bad.a}No command matched {color:bad.b}{search}'
   help_page_information: '{color:normal.a}- Showing page {color:normal.b}{page}{color:normal.a} of {color:normal.a}{totalpages}{color:normal.a} ({color:normal.b}{results}{color:normal.a} results).'
