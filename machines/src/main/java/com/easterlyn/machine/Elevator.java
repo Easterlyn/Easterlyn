@@ -48,18 +48,15 @@ public class Elevator extends Machine {
 	}
 
 	private int getCurrentBoost(ConfigurationSection storage) {
-		return storage.getInt("duration", 1);
+		return storage.getInt("duration", 3);
 	}
 
 	private int adjustBlockBoost(ConfigurationSection storage, int difference) {
-		int boost = getCurrentBoost(storage) + difference;
-		if (boost < 1) {
-			return 1;
+		int currentBoost = getCurrentBoost(storage);
+		int boost = Math.min(50, Math.max(3, currentBoost + difference));
+		if (currentBoost != boost) {
+			storage.set("duration", boost);
 		}
-		if (boost > 50) {
-			return 50;
-		}
-		storage.set("duration", boost);
 		return boost;
 	}
 
@@ -129,6 +126,7 @@ public class Elevator extends Machine {
 			ui.draw(event.getView().getTopInventory());
 		}));
 		ItemStack itemStack2 = new ItemStack(Material.ELYTRA);
+		itemStack2.setAmount(getCurrentBoost(storage));
 		GenericUtil.consumeAs(ItemMeta.class, itemStack2.getItemMeta(), itemMeta -> {
 			itemMeta.setDisplayName(ChatColor.WHITE + "Ticks of Boost");
 			itemMeta.setLore(Arrays.asList(ChatColor.WHITE + "1 tick = 1/20 second", ChatColor.WHITE + "Roughly 1 block/tick"));

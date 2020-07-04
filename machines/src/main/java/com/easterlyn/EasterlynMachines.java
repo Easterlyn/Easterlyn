@@ -35,7 +35,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -155,7 +154,7 @@ public class EasterlynMachines extends JavaPlugin {
 
 		// Machine event handlers
 		PlayerInteractEvent.getHandlerList().register(new SimpleListener<>(PlayerInteractEvent.class, event -> {
-			if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) {
+			if (event.getClickedBlock() == null) {
 				return;
 			}
 			Pair<Machine, ConfigurationSection> machine = getMachine(event.getClickedBlock());

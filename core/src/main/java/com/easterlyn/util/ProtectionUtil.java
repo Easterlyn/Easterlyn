@@ -18,6 +18,8 @@ public class ProtectionUtil {
 				.forEach(clazz -> {
 					try {
 						HOOKS.add(clazz.getConstructor().newInstance());
+					} catch (NoClassDefFoundError ignored) {
+						// Dependency not present
 					} catch (ReflectiveOperationException e) {
 						e.printStackTrace();
 					}
