@@ -43,6 +43,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Machine for Entity teleportation.
@@ -260,7 +261,7 @@ public class Transportalizer extends Machine {
 		Block pad = event.getClickedBlock().getRelative(BlockFace.DOWN);
 		Block source;
 		Block target;
-		boolean push = pad.getType() == Material.GREEN_CARPET;
+		boolean push = pad.getType() == Material.LIME_CARPET;
 		if (push) {
 			source = pad;
 			target = remote;
@@ -268,67 +269,44 @@ public class Transportalizer extends Machine {
 			source = remote;
 			target = pad;
 		}
+		String failureMessage = null;
 		for (Entity entity : keyBlock.getWorld().getNearbyEntities(BoundingBox.of(source))) {
-			// TODO find first valid target instead of just failing on invalid
-			if (push) {
-				if (!canPush(event.getPlayer(), entity, target.getLocation())) {
+			failureMessage = getFailureMessage(event.getPlayer(), entity, push, source.getLocation(),
+					target.getLocation(), storage, cost);
+			if (failureMessage != null) {
+				if (!push && entity instanceof Player) {
+					// Special case: pulling Player requires acceptance of a request
 					return;
 				}
-			} else {
-				if (!canPull(event.getPlayer(), entity, source.getLocation(), target.getLocation(), storage, cost)) {
-					return;
-				}
+				continue;
 			}
 			setFuel(storage, fuel - cost);
 			teleport(entity, source.getLocation(), target.getLocation());
 			return;
 		}
+
+		if (failureMessage != null) {
+			event.getPlayer().sendMessage(failureMessage);
+		}
 	}
 
-	private boolean canPush(Player player, Entity entity, Location to) {
-		// Ender dragon or ender dragon parts
-		if (entity instanceof ComplexLivingEntity || entity instanceof ComplexEntityPart) {
-			player.sendMessage(ChatColor.RED + "Great effort, but you can't transportalize a dragon.");
-			return false;
-		}
-		if (entity instanceof Player) {
+	private @Nullable String getFailureMessage(Player player, Entity entity, boolean push, Location from, Location to,
+			ConfigurationSection storage, int cost) {
+		if (push && entity instanceof Player) {
 			// Sender must have button access to send players
 			if (!ProtectionUtil.canUseButtonsAt(player, to)) {
-				player.sendMessage(ChatColor.RED + "You do not have access to the location specified!");
-				return false;
+				return ChatColor.RED + "You do not have access to the location specified!";
 			}
-			return true;
+			return null;
 		}
-		if (entity instanceof Monster || entity instanceof Explosive || entity instanceof ExplosiveMinecart) {
-			// Hostiles, TNT, wither projectiles, fireballs, etc. require build permissions
-			if (!ProtectionUtil.canBuildAt(player, to)) {
-				player.sendMessage(ChatColor.RED + "You do not have access to the location specified!");
-				return false;
-			}
-			return true;
-		}
-		if (!ProtectionUtil.canMobsSpawn(to) && !ProtectionUtil.canBuildAt(player, to)) {
-			player.sendMessage(ChatColor.RED + "You do not have access to the location specified!");
-			return false;
-		}
-		return true;
-	}
 
-	private boolean canPull(Player player, Entity entity, Location from, Location to,
-			ConfigurationSection storage, int cost) {
-		// Ender dragon or ender dragon parts
-		if (entity instanceof ComplexLivingEntity || entity instanceof ComplexEntityPart) {
-			player.sendMessage(ChatColor.RED + "Great effort, but you can't transportalize a dragon.");
-			return false;
-		}
-		if (entity instanceof Player) {
+		if (!push && entity instanceof Player) {
 			RegisteredServiceProvider<EasterlynCore> registration = getMachines().getServer().getServicesManager().getRegistration(EasterlynCore.class);
 			if (registration == null) {
-				player.sendMessage("Easterlyn core plugin not loaded! Cannot pull players.");
-				return false;
+				return "Easterlyn core plugin not loaded! Cannot pull players.";
 			}
 			if (player.getUniqueId().equals(entity.getUniqueId())) {
-				return true;
+				return null;
 			}
 
 			User target = registration.getProvider().getUserManager().getUser(entity.getUniqueId());
@@ -353,24 +331,39 @@ public class Transportalizer extends Machine {
 				}
 			})) {
 				target.sendMessage(issuer.getDisplayName() + " is requesting to transportalize you!\nUse /accept or /decline to manage the request.");
-				return true;
+				return "";
 			}
-			return false;
+			return null;
 		}
+
+		// Ender dragon or ender dragon parts
+		if (entity instanceof ComplexLivingEntity || entity instanceof ComplexEntityPart) {
+			return ChatColor.RED + "Great effort, but you can't transportalize a dragon.";
+		}
+
 		if (entity instanceof ArmorStand) {
-			// Pulling armor stands from an area requires build trust
-			if (!ProtectionUtil.canBuildAt(player, to)) {
-				player.sendMessage(ChatColor.RED + "You do not have access to the location specified!");
-				return false;
+			// Armor stand manipulation requires the ability to build
+			if (!ProtectionUtil.canBuildAt(player, from) || !ProtectionUtil.canBuildAt(player, to)) {
+				return ChatColor.RED + "You do not have access to the location specified!";
 			}
-			return true;
+			return null;
 		}
-		// Pulling out of a protected area requires container access
-		if (!ProtectionUtil.canOpenChestsAt(player, to)) {
-			player.sendMessage(ChatColor.RED + "You do not have access to the location specified!");
-			return false;
+
+		if (entity instanceof Monster || entity instanceof Explosive || entity instanceof ExplosiveMinecart) {
+			// Hostiles, TNT, wither projectiles, fireballs, etc. require build permissions
+			if (!ProtectionUtil.canOpenChestsAt(player, from)
+					|| !ProtectionUtil.canBuildAt(player, to)) {
+				return ChatColor.RED + "You do not have access to the location specified!";
+			}
+			return null;
 		}
-		return true;
+
+		// Generic push/pull requires chest access in send location and full access in arrival location
+		if (!ProtectionUtil.canOpenChestsAt(player, from)
+				|| !ProtectionUtil.canMobsSpawn(to) && !ProtectionUtil.canBuildAt(player, to)) {
+			return ChatColor.RED + "You do not have access to the location specified!";
+		}
+		return null;
 	}
 
 	@Override
