@@ -16,9 +16,8 @@ import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
-import com.easterlyn.util.StringUtil;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 
 @CommandAlias("colour|color")
 @Description("{@@sink.module.colour.description}")
@@ -32,9 +31,14 @@ public class ColourCommand extends BaseCommand {
 	@Private
 	public void colour(BukkitCommandIssuer issuer) {
 		StringBuilder builder = new StringBuilder();
-		for (ChatColor colour : ChatColor.values()) {
-			builder.append(colour).append('&').append(colour.getChar()).append(' ')
-					.append(colour.name().toLowerCase()).append(ChatColor.RESET).append(' ');
+		for (int i = '0'; i <= 'r'; ++i) {
+			if (i > 'f' && i < 'k' || i > 'o' && i < 'r') {
+				continue;
+			}
+			char code = (char) i;
+			ChatColor colour = ChatColor.getByChar(code);
+			builder.append(colour).append('&').append(code).append(' ')
+					.append(colour.getName().toLowerCase()).append(ChatColor.RESET).append(' ');
 		}
 		// ACF forces color code translations for & codes, have to manually circumvent.
 		issuer.getIssuer().sendMessage(builder.toString());
@@ -44,10 +48,10 @@ public class ColourCommand extends BaseCommand {
 	@Description("{@@sink.module.colour.select.description}")
 	@CommandPermission("easterlyn.command.colour.select.self")
 	@Syntax("<colour>")
-	@CommandCompletion("@colour @playerOnlineIfPerm")
+	@CommandCompletion("@colour @player")
 	public void select(@Flags("colour") ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		user.setColor(colour);
-		String colourName = colour + StringUtil.getFriendlyName(colour);
+		String colourName = colour + colour.getName();
 		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.colour.set.self",
 				"{value}", colourName);
 		user.sendMessage("Set colour to " + colourName);

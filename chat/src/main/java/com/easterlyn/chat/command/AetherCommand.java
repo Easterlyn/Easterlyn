@@ -56,11 +56,11 @@ public class AetherCommand extends BaseCommand {
 		@Override
 		public TextComponent getMention() {
 			TextComponent component = new TextComponent("@" + getDisplayName());
-			component.setColor(getColor().asBungee());
+			component.setColor(getColor());
 			component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
 
 			TextComponent line = new TextComponent("#main");
-			line.setColor(Colors.CHANNEL.asBungee());
+			line.setColor(Colors.CHANNEL);
 			TextComponent extra = new TextComponent("on Discord");
 			extra.setColor(ChatColor.WHITE);
 			line.addExtra(extra);

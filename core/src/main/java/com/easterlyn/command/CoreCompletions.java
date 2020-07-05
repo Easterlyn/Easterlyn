@@ -1,51 +1,56 @@
 package com.easterlyn.command;
 
+import co.aikar.commands.BukkitCommandCompletionContext;
+import co.aikar.commands.CommandCompletions;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.util.StringUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class CoreCompletions {
 
 	public static void register(EasterlynCore plugin) {
-		plugin.getCommandManager().getCommandCompletions().registerAsyncCompletion("integer", context -> {
+		CommandCompletions<BukkitCommandCompletionContext> completions = plugin.getCommandManager().getCommandCompletions();
+		completions.registerAsyncCompletion("integer", context -> {
 			String input = context.getInput();
 			if (!input.matches("-?\\d+?")) {
 				return Collections.emptyList();
 			}
-			ArrayList<String> completions = new ArrayList<>();
+			ArrayList<String> values = new ArrayList<>();
 			if (!input.isEmpty()) {
-				completions.add(input);
+				values.add(input);
 			}
 			for (int i = input.isEmpty() ? 1 : 0; i < 10; ++i) {
-				completions.add(input + i);
+				values.add(input + i);
 			}
-			return completions;
+			return values;
 		});
-		plugin.getCommandManager().getCommandCompletions().setDefaultCompletion("integer", int.class, Integer.class, long.class, Long.class);
+		completions.setDefaultCompletion("integer", int.class, Integer.class, long.class, Long.class);
 
-		plugin.getCommandManager().getCommandCompletions().registerAsyncCompletion("decimal", context -> {
+		completions.registerAsyncCompletion("decimal", context -> {
 			String input = context.getInput();
 			if (!input.matches("-?\\d+?\\.?\\d+?")) {
 				return Collections.emptyList();
 			}
-			ArrayList<String> completions = new ArrayList<>();
+			ArrayList<String> values = new ArrayList<>();
 			if (!input.isEmpty()) {
-				completions.add(input);
+				values.add(input);
 			}
 			for (int i = input.isEmpty() ? 1 : 0; i < 10; ++i) {
-				completions.add(input + i);
+				values.add(input + i);
 			}
 			if (input.indexOf('.') == -1) {
-				completions.add(input + '.');
+				values.add(input + '.');
 			}
-			return completions;
+			return values;
 		});
-		plugin.getCommandManager().getCommandCompletions().setDefaultCompletion("decimal", double.class, Double.class, float.class, Float.class);
+		completions.setDefaultCompletion("decimal", double.class, Double.class, float.class, Float.class);
 
-		plugin.getCommandManager().getCommandCompletions().registerAsyncCompletion("permission", context -> {
+		completions.registerAsyncCompletion("permission", context -> {
 			if (context.hasConfig("value") && !context.getIssuer().hasPermission(context.getConfig("value"))) {
 				return Collections.emptyList();
 			}
@@ -57,14 +62,22 @@ public class CoreCompletions {
 					.collect(Collectors.toList());
 		});
 
-//		plugin.getCommandManager().getCommandCompletions().registerCompletion(CoreContexts.ONLINE_WITH_PERM, context -> {
-//			context.
-//		});
+		completions.registerCompletion("player", context -> {
+			Player issuer = context.getPlayer();
+			ArrayList<String> values = new ArrayList<>();
+			for (Player player : Bukkit.getOnlinePlayers()) {
+				if (issuer == null || issuer.canSee(player)) {
+					values.add(player.getName());
+				}
+			}
+			return values;
+		});
+		completions.setDefaultCompletion("player", Player.class);
 		// TODO
-		//  player, playerOnline, playerOffline, playerOnlineIfPerm, commands, date
-		//  location, worldLocation, material, world, chatcolor out of kitchen sink
+		//  commands, date
+		//  location, worldLocation, material, world, chatcolor, chatformat
 
-		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("password", Arrays.asList("Hunter2", "animebuttsdrivemenuts1"));
+		completions.registerStaticCompletion("password", Arrays.asList("Hunter2", "animebuttsdrivemenuts1"));
 	}
 
 	private CoreCompletions() {}

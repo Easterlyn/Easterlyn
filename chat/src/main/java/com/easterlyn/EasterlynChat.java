@@ -219,7 +219,7 @@ public class EasterlynChat extends JavaPlugin {
 				} else {
 					int end = matcher.end(1);
 					component = new TextComponent(matcher.group().substring(0, end));
-					component.setColor(Colors.CHANNEL.asBungee());
+					component.setColor(Colors.CHANNEL);
 					component.setUnderlined(true);
 					component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 							TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelName)));

@@ -23,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
 public class BanCommand extends BaseCommand implements Listener {
+	// TODO IP bans
 
 	@Dependency
 	EasterlynCore core;

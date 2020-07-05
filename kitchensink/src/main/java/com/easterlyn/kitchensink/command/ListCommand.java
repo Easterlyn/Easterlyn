@@ -70,7 +70,7 @@ public class ListCommand extends BaseCommand {
 
 			List<BaseComponent> components = new ArrayList<>(users.size() * 2 + 2);
 			TextComponent component = new TextComponent(groupName);
-			component.setColor(ranks[i].getColor().asBungee());
+			component.setColor(ranks[i].getColor());
 			components.add(component);
 			component = new TextComponent(": ");
 			component.setColor(ChatColor.YELLOW);

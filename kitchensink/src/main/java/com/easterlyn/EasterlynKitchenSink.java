@@ -1,10 +1,6 @@
 package com.easterlyn;
 
 import co.aikar.commands.BaseCommand;
-import co.aikar.commands.BukkitCommandExecutionContext;
-import co.aikar.commands.InvalidCommandArgument;
-import co.aikar.commands.MessageKeys;
-import co.aikar.commands.contexts.ContextResolver;
 import com.easterlyn.kitchensink.combo.BackCommand;
 import com.easterlyn.kitchensink.combo.BanCommand;
 import com.easterlyn.kitchensink.combo.DeathPointCommand;
@@ -27,12 +23,8 @@ import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
 import com.easterlyn.kitchensink.listener.WitherFacts;
 import com.easterlyn.util.event.SimpleListener;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -155,51 +147,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 	}
 
 	private void register(@NotNull EasterlynCore plugin) {
-
-		ContextResolver<ChatColor, BukkitCommandExecutionContext> colourResolver = supplier -> {
-			String firstArg = supplier.popFirstArg();
-			ChatColor matchedColor = null;
-			if (firstArg.length() == 1 || firstArg.length() == 2 && firstArg.charAt(0) == '&') {
-				matchedColor = ChatColor.getByChar(Character.toLowerCase(firstArg.charAt(firstArg.length() - 1)));
-			} else {
-				try {
-					matchedColor = ChatColor.valueOf(firstArg.toUpperCase());
-				} catch (IllegalArgumentException ignored) {}
-			}
-			if (matchedColor == null || supplier.hasFlag("colour") && !matchedColor.isColor()
-					|| supplier.hasFlag("format") && !matchedColor.isFormat()) {
-				throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF, "{valid}",
-						Arrays.stream(ChatColor.values()).filter(chatColor -> supplier.hasFlag("format")
-								? chatColor.isFormat() : !supplier.hasFlag("colour") || chatColor.isColor())
-								.map(ChatColor::name).collect(Collectors.joining(", ", "[", "]")));
-			}
-
-			return matchedColor;
-		};
-
-		plugin.getCommandManager().getCommandContexts().registerContext(ChatColor.class, colourResolver);
-
-		plugin.getCommandManager().getCommandContexts().registerContext(net.md_5.bungee.api.ChatColor.class, context -> colourResolver.getContext(context).asBungee());
-
-		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(World.class, context -> {
-			String worldName = context.getFirstArg();
-			if (worldName == null) {
-				if (context.isOptional() && context.getIssuer().isPlayer()) {
-					return context.getIssuer().getPlayer().getWorld();
-				}
-				throw new InvalidCommandArgument("No world specified!");
-			}
-
-			World world = plugin.getServer().getWorld(worldName.toLowerCase());
-			if (world == null) {
-				if (context.isOptional() && context.getIssuer().isPlayer()) {
-					return context.getIssuer().getPlayer().getWorld();
-				}
-				throw new InvalidCommandArgument("No world specified!");
-			}
-			context.popFirstArg();
-			return world;
-		});
 
 		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.kitchensink.command");
 

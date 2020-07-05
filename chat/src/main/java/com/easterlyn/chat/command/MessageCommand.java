@@ -25,6 +25,7 @@ import java.util.UUID;
 
 public class MessageCommand extends BaseCommand {
 
+	// TODO timeout system
 	private final HashMap<UUID, User> replies = new HashMap<>();
 
 	@Dependency
@@ -37,7 +38,7 @@ public class MessageCommand extends BaseCommand {
 	@Description("{@@chat.commands.message.description}")
 	@CommandPermission("easterlyn.command.message")
 	@Syntax("<recipient> <message>")
-	@CommandCompletion("@playerOnline")
+	@CommandCompletion("@player")
 	public void sendMessage(BukkitCommandIssuer sender, @Flags(CoreContexts.ONLINE) User target, String message) {
 		User issuer;
 		if (sender.isPlayer()) {
@@ -75,7 +76,7 @@ public class MessageCommand extends BaseCommand {
 	@CommandPermission("easterlyn.command.message")
 	@Syntax("<message>")
 	@CommandCompletion("")
-	public void sendMessage(BukkitCommandIssuer sender, String message) {
+	public void sendMessage(@Flags(CoreContexts.SELF) BukkitCommandIssuer sender, String message) {
 		User target = replies.get(sender.getUniqueId());
 		if (target == null) {
 			core.getLocaleManager().sendMessage(sender.getIssuer(), "chat.commands.reply.error.no_target");

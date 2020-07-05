@@ -39,7 +39,7 @@ public class BackCommand extends BaseCommand implements Listener {
 	@Description("{@@sink.module.back.description}")
 	@CommandPermission("easterlyn.command.back.self")
 	@Syntax("[target]")
-	@CommandCompletion("@playerOnlineWithPerm")
+	@CommandCompletion("@player")
 	public void back(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		boolean other = !issuer.getUniqueId().equals(user.getUniqueId());
 

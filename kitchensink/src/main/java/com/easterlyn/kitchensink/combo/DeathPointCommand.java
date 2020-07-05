@@ -39,7 +39,7 @@ public class DeathPointCommand extends BaseCommand implements Listener {
 	@Description("{@@sink.module.death.description}")
 	@CommandPermission("easterlyn.command.death.self")
 	@Syntax("[target]")
-	@CommandCompletion("@playerOnlineWithPerm")
+	@CommandCompletion("@player")
 	public void death(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		boolean other = !issuer.getUniqueId().equals(user.getUniqueId());
 

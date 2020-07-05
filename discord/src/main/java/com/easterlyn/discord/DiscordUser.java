@@ -18,11 +18,11 @@ public class DiscordUser extends User {
 	@Override
 	public TextComponent getMention() {
 		TextComponent component = new TextComponent("@" + getDisplayName());
-		component.setColor(getColor().asBungee());
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://easterlyn.com/discord.html"));
+		component.setColor(getColor());
+		component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
 
 		TextComponent line = new TextComponent("#main");
-		line.setColor(Colors.CHANNEL.asBungee());
+		line.setColor(Colors.CHANNEL);
 		TextComponent extra = new TextComponent("on Discord");
 		extra.setColor(ChatColor.WHITE);
 		line.addExtra(extra);
@@ -30,7 +30,7 @@ public class DiscordUser extends User {
 		component.addExtra(line);
 
 		line = new TextComponent("\n" + getDisplayName());
-		line.setColor(getColor().asBungee());
+		line.setColor(getColor());
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getUniqueId());
 		if (offlinePlayer.getName() != null && !offlinePlayer.getName().equals(line.getText().trim())) {
 			TextComponent realName = new TextComponent(" (" + offlinePlayer.getName() + ")");
@@ -41,7 +41,7 @@ public class DiscordUser extends User {
 
 		UserRank rank = getRank();
 		line = new TextComponent("\n" + rank.getFriendlyName());
-		line.setColor(rank.getColor().asBungee());
+		line.setColor(rank.getColor());
 		component.addExtra(line);
 
 		return component;

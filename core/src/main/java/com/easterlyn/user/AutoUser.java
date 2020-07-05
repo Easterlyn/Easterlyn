@@ -7,12 +7,12 @@ import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import java.util.Map;
 import java.util.UUID;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
@@ -39,8 +39,7 @@ public class AutoUser extends User {
 				GenericUtil.orDefault(userData.get("name"), "Auto User"));
 	}
 
-	@NotNull
-	public ChatColor getColor() {
+	public @NotNull ChatColor getColor() {
 		return Colors.getOrDefault(userData.get("color"), getRank().getColor());
 	}
 
@@ -60,7 +59,7 @@ public class AutoUser extends User {
 
 	public TextComponent getMention() {
 		TextComponent component = new TextComponent("@" + getDisplayName());
-		component.setColor(getColor().asBungee());
+		component.setColor(getColor());
 
 		String click = userData.get("click");
 		if (click != null && !click.isEmpty()) {

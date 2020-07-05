@@ -58,7 +58,7 @@ public class Channel implements Group {
 			return mention;
 		}
 		TextComponent component = new TextComponent(getDisplayName());
-		component.setColor(Colors.CHANNEL.asBungee());
+		component.setColor(Colors.CHANNEL);
 		component.setUnderlined(true);
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
 				TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + getDisplayName())));

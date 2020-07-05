@@ -6,7 +6,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -97,7 +97,7 @@ public class Colors {
 		}
 
 		try {
-			return ChatColor.valueOf(colorName.toUpperCase(Locale.ENGLISH));
+			return ChatColor.of(colorName);
 		} catch (IllegalArgumentException e) {
 			return defaultColor;
 		}

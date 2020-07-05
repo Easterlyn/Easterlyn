@@ -57,7 +57,7 @@ public class LoginCommands extends BaseCommand implements Listener {
 	@Subcommand("add")
 	@Description("{@@sink.module.onlogin.add.description}")
 	@Syntax("</command parameters>")
-	@CommandCompletion("@playerOnlineWithPerm")
+	@CommandCompletion("@player")
 	public void add(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, String command) {
 		CommandIssuer issuer = getCurrentCommandIssuer();
 		List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
@@ -78,7 +78,7 @@ public class LoginCommands extends BaseCommand implements Listener {
 	@Subcommand("remove")
 	@Description("{@@sink.module.onlogin.remove.description}")
 	@Syntax("<index>")
-	@CommandCompletion("@playerOnlineWithPerm @integer")
+	@CommandCompletion("@player @integer")
 	public void remove(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, int commandIndex) {
 		CommandIssuer issuer = getCurrentCommandIssuer();
 		List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));

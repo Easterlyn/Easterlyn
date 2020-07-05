@@ -4,16 +4,22 @@ import co.aikar.commands.BukkitCommandExecutionContext;
 import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.CommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
+import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.ContextResolver;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.User;
+import com.easterlyn.util.Colors;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.PlayerUtil;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -25,7 +31,7 @@ public class CoreContexts {
 	public static final String ONLINE = "online";
 	public static final String ONLINE_WITH_PERM = "otherWithPerm";
 
-	private static final Pattern INTEGER_PATTERN = Pattern.compile("$(-?\\d+)[dl]?^", Pattern.CASE_INSENSITIVE);
+	private static final Pattern INTEGER_PATTERN = Pattern.compile("(-?\\d+)[dl]?", Pattern.CASE_INSENSITIVE);
 
 	public static void register(EasterlynCore plugin) {
 		ContextResolver<Long, BukkitCommandExecutionContext> longResolver = context -> {
@@ -151,6 +157,54 @@ public class CoreContexts {
 			String firstArg = context.popFirstArg();
 			long duration = NumberUtil.parseDuration(firstArg);
 			return new Date(Math.addExact(System.currentTimeMillis(), duration));
+		});
+
+		plugin.getCommandManager().getCommandContexts().registerContext(ChatColor.class, new ContextResolver<ChatColor, BukkitCommandExecutionContext>() {
+			@Override
+			public ChatColor getContext(BukkitCommandExecutionContext context1) throws InvalidCommandArgument {
+				ChatColor matched = Colors.getOrDefault(context1.popFirstArg(), null);
+				if (matched == null) {
+					invalid(context1);
+				}
+				if (matched == ChatColor.RESET || !context1.hasFlag("colour") && !context1.hasFlag("format")) {
+					// Reset is a special case - used to clear colour settings
+					return matched;
+				}
+				boolean format = matched == ChatColor.BOLD || matched == ChatColor.UNDERLINE
+						|| matched == ChatColor.STRIKETHROUGH || matched == ChatColor.MAGIC;
+				if (context1.hasFlag("colour") && format || context1.hasFlag("format") && !format) {
+					invalid(context1);
+				}
+				return matched;
+			}
+
+			private void invalid(BukkitCommandExecutionContext context1) {
+				throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF, "{valid}",
+						Arrays.stream(org.bukkit.ChatColor.values()).filter(chatColor -> context1.hasFlag("format")
+							? chatColor.isFormat() : !context1.hasFlag("colour") || chatColor.isColor())
+							.map(Enum::name).collect(Collectors.joining(", ", "[", "]")));
+			}
+		});
+
+		// TODO lang for invalid args
+		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(World.class, context -> {
+			String worldName = context.getFirstArg();
+			if (worldName == null) {
+				if (context.isOptional() && context.getIssuer().isPlayer()) {
+					return context.getIssuer().getPlayer().getWorld();
+				}
+				throw new InvalidCommandArgument("No world specified!");
+			}
+
+			World world = plugin.getServer().getWorld(worldName.toLowerCase());
+			if (world == null) {
+				if (context.isOptional() && context.getIssuer().isPlayer()) {
+					return context.getIssuer().getPlayer().getWorld();
+				}
+				throw new InvalidCommandArgument("No world specified!");
+			}
+			context.popFirstArg();
+			return world;
 		});
 	}
 

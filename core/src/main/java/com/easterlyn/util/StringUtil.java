@@ -85,10 +85,10 @@ public class StringUtil {
 				}
 				TextComponent component = new TextComponent();
 				component.setText('[' + matcher.group(3).toLowerCase(Locale.ENGLISH) + ']');
-				component.setColor(Colors.WEB_LINK.asBungee());
+				component.setColor(Colors.WEB_LINK);
 				component.setUnderlined(true);
 				TextComponent[] hover = { new TextComponent(url) };
-				hover[0].setColor(Colors.WEB_LINK.asBungee());
+				hover[0].setColor(Colors.WEB_LINK);
 				hover[0].setUnderlined(true);
 				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
@@ -100,9 +100,9 @@ public class StringUtil {
 			public void addComponents(@NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
 				String group = matcherSupplier.get().group();
 				TextComponent component = new TextComponent(group);
-				component.setColor(Colors.COMMAND.asBungee());
+				component.setColor(Colors.COMMAND);
 				TextComponent hover = new TextComponent("Click to run!");
-				hover.setColor(Colors.COMMAND.asBungee());
+				hover.setColor(Colors.COMMAND);
 				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent[] {hover}));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ChatColor.stripColor(group.trim())));
 				components.addComponent(component);

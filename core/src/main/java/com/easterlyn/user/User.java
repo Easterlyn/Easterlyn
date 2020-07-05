@@ -22,12 +22,12 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
@@ -99,10 +99,11 @@ public class User implements Group {
 			getStorage().set("color", null);
 			return;
 		}
-		if (!color.isColor()) {
+		if (color == ChatColor.BOLD || color == ChatColor.UNDERLINE || color == ChatColor.ITALIC
+				|| color == ChatColor.STRIKETHROUGH || color == ChatColor.MAGIC) {
 			throw new IllegalArgumentException("Color must be a color, not a format code!");
 		}
-		getStorage().set("color", color.name());
+		getStorage().set("color", color.getName());
 	}
 
 	public boolean isOnline() {
@@ -154,14 +155,14 @@ public class User implements Group {
 	@Override
 	public TextComponent getMention() {
 		TextComponent component = new TextComponent("@" + getDisplayName());
-		component.setColor(getColor().asBungee());
+		component.setColor(getColor());
 		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getUniqueId());
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 				(offlinePlayer.isOnline() ? "/msg " : "/mail send ") + (offlinePlayer.getName() != null ? offlinePlayer.getName() : getUniqueId())));
 
 		List<TextComponent> hovers = new ArrayList<>();
 		TextComponent line = new TextComponent(getDisplayName());
-		line.setColor(getColor().asBungee());
+		line.setColor(getColor());
 		if (offlinePlayer.getName() != null && !offlinePlayer.getName().equals(line.getText())) {
 			TextComponent realName = new TextComponent(" (" + offlinePlayer.getName() + ")");
 			realName.setColor(net.md_5.bungee.api.ChatColor.WHITE);
@@ -171,13 +172,13 @@ public class User implements Group {
 		extra.setColor(net.md_5.bungee.api.ChatColor.WHITE);
 		line.addExtra(extra);
 		extra = new TextComponent("Click to message!");
-		extra.setColor(Colors.COMMAND.asBungee());
+		extra.setColor(Colors.COMMAND);
 		line.addExtra(extra);
 		hovers.add(line);
 
 		UserRank rank = getRank();
 		line = new TextComponent("\n" + rank.getFriendlyName());
-		line.setColor(rank.getColor().asBungee());
+		line.setColor(rank.getColor());
 		hovers.add(line);
 		// TODO class and affinity
 		// TODO could cache in temp store, but needs to be deleted on perm change (login/command)
