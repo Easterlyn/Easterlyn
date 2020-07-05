@@ -166,6 +166,7 @@ sink:
           @{value} {color:normal.a}is requesting to teleport you to them!
           {color:normal.a}Use /accept or /decline to manage the request.
       common:
+        issued: '{color:normal.a}Request sent!'
         decline: '{color:normal.a}Request declined.'
         declined: '@{value} {color:bad.a}declined your request.'
         accept: '{color:normal.a}Request accepted.'

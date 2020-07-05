@@ -93,6 +93,7 @@ public class TeleportRequestCommand extends BaseCommand {
 								+ issuer.getStorage().getLong(TPREQUEST) - sink.getConfig().getLong(CONFIG_IGNORE));
 			}
 		})) {
+			core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.common.issued");
 			core.getLocaleManager().sendMessage(requestedPlayer,
 					to ? "sink.module.tprequest.to.request" : "sink.module.tprequest.pull.request",
 					"{value}", issuingPlayer.getName());
