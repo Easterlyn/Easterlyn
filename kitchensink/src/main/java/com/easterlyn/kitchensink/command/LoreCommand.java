@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("lore")
 @Description("{@@sink.module.lore.description}")
@@ -207,7 +208,7 @@ public class LoreCommand extends BaseCommand {
 		}
 
 		GenericUtil.consumeAs(ItemMeta.class, hand.getItemMeta(), meta ->
-				handleLore(player, line, null, hand, meta, (lore, newLine) -> {
+				handleLore(player, line, "", hand, meta, (lore, newLine) -> {
 			lore.remove(line - 1);
 			return "sink.module.lore.delete.success";
 		}));
@@ -285,8 +286,8 @@ public class LoreCommand extends BaseCommand {
 		return false;
 	}
 
-	private void handleLore(Player player, int line, String text, ItemStack hand, ItemMeta meta,
-			BiFunction<List<String>, String, String> function) {
+	private void handleLore(@NotNull Player player, int line, @NotNull String text, @NotNull ItemStack hand,
+			@NotNull ItemMeta meta, @NotNull BiFunction<List<String>, String, String> function) {
 		if (!meta.hasLore()) {
 			core.getLocaleManager().sendMessage(player, "sink.module.lore.error.no_lore");
 			return;
