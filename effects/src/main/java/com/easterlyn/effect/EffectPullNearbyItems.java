@@ -11,6 +11,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Cause all nearby items to be sucked to the player.
@@ -24,7 +25,7 @@ public class EffectPullNearbyItems extends Effect {
 	}
 
 	@Override
-	public void applyEffect(LivingEntity entity, int level, Event event) {
+	public void applyEffect(@NotNull LivingEntity entity, int level, Event event) {
 		final double radius = level * 1.5;
 		final UUID uuid = entity.getUniqueId();
 		new BukkitRunnable() {

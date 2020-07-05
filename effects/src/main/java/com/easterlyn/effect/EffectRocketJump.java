@@ -6,6 +6,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.Event;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -27,6 +28,10 @@ public class EffectRocketJump extends Effect {
 	@Override
 	public void applyEffect(@NotNull LivingEntity entity, int level, Event event) {
 		if (!(event instanceof PlayerInteractEvent)) {
+			return;
+		}
+		PlayerInteractEvent interactEvent = (PlayerInteractEvent) event;
+		if (interactEvent.getAction() != Action.RIGHT_CLICK_AIR || interactEvent.getAction() != Action.RIGHT_CLICK_BLOCK) {
 			return;
 		}
 		if (entity.getMetadata(getName()).stream().anyMatch(value -> value.asLong() > System.currentTimeMillis())) {

@@ -21,7 +21,9 @@ import java.util.stream.Collectors;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
@@ -86,7 +88,7 @@ public class EasterlynEffects extends JavaPlugin {
 			}
 		}, this));
 		PlayerInteractEvent.getHandlerList().register(new SimpleListener<>(PlayerInteractEvent.class,
-				event -> applyEffects(event.getPlayer(), event), this));
+				event -> applyEffects(event.getPlayer(), event), this, EventPriority.NORMAL, false));
 		PlayerChangedWorldEvent.getHandlerList().register(new SimpleListener<>(PlayerChangedWorldEvent.class,
 				event -> applyEffects(event.getPlayer(), event), this));
 
@@ -101,6 +103,11 @@ public class EasterlynEffects extends JavaPlugin {
 			}
 		}, this));
 
+		getServer().getScheduler().runTaskTimer(this, () -> {
+			for (Player player : getServer().getOnlinePlayers()) {
+				applyEffects(player, null);
+			}
+		}, 20L, 20L);
 
 	}
 
@@ -197,10 +204,7 @@ public class EasterlynEffects extends JavaPlugin {
 	@NotNull
 	public List<String> organizeEffectLore(@NotNull List<String> lore, boolean ignoreCase,
 			boolean overwrite, boolean cap, String... toAdd) {
-		ArrayList<String> oldLore = new ArrayList<>();
-		if (lore != null) {
-			oldLore.addAll(lore);
-		}
+		ArrayList<String> oldLore = new ArrayList<>(lore);
 		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
 		Iterator<String> iterator = oldLore.iterator();
 		while (iterator.hasNext()) {
