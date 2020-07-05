@@ -104,9 +104,8 @@ public class SimpleUI implements InventoryHolder {
 	@Override
 	public @NotNull
 	Inventory getInventory() {
-		int highestIndex = buttons.size() > 0 ? buttons.lastKey() : 0;
-		int requiredSize = Math.max(54, Math.max(9, (int) Math.ceil(highestIndex / 9D) * 9));
-		Inventory inventory = Bukkit.createInventory(this, requiredSize > 54 ? 54 : requiredSize, name);
+		int requiredSize = Math.min(54, Math.max(9, (int) Math.ceil(getHighestButton() / 9D) * 9));
+		Inventory inventory = Bukkit.createInventory(this, requiredSize, name);
 		draw(inventory);
 		return inventory;
 	}
@@ -174,7 +173,7 @@ public class SimpleUI implements InventoryHolder {
 				int highestRequiredButton = getHighestButton();
 				int maxPage = (int) Math.ceil(highestRequiredButton / 45D);
 				ItemStack itemStack;
-				if (highestCurrentButton > highestRequiredButton) {
+				if (highestCurrentButton < highestRequiredButton) {
 					itemStack = new ItemStack(Material.ARROW);
 					GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
 						itemMeta.setDisplayName(ChatColor.WHITE + "Next Page");
