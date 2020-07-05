@@ -74,7 +74,7 @@ public class BackCommand extends BaseCommand implements Listener {
 					issuer.sendInfo(MessageKey.of("sink.module.back.success_other"),
 							"{target}", player.getName());
 				} else {
-					user.getStorage().set(BACK_COOLDOWN, System.currentTimeMillis() + 30000L);
+					user.getStorage().set(BACK_COOLDOWN, System.currentTimeMillis() + 300000L);
 				}
 				core.getLocaleManager().sendMessage(player, "sink.module.back.success");
 			} else {
@@ -82,7 +82,7 @@ public class BackCommand extends BaseCommand implements Listener {
 			}
 		}, player).withFailureFunction(BossBarTimer.supplierPlayerImmobile(player),
 				() -> core.getLocaleManager().sendMessage(player, "sink.common.teleport.movement"))
-				.schedule(sink, BACK_COOLDOWN, 4, TimeUnit.SECONDS);
+				.schedule(sink, BACK_COOLDOWN + '.' + player.getUniqueId(), 4, TimeUnit.SECONDS);
 	}
 
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)

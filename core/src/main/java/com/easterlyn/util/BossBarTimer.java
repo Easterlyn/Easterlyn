@@ -113,13 +113,14 @@ public class BossBarTimer {
 			@Override
 			public synchronized void cancel() throws IllegalStateException {
 				if (displayType.isFinished(bossBar.getProgress())) {
+					onComplete.run();
+				} else {
 					if (onFailure != null) {
 						onFailure.run();
 					}
-				} else {
-					onComplete.run();
 				}
 
+				bossBar.removeAll();
 				plugin.getServer().removeBossBar(bossBar.getKey());
 
 				super.cancel();
