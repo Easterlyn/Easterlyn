@@ -89,16 +89,16 @@ sink:
         success: '{color:normal.a}Reset meta!'
       skull:
         description: '{color:normal.a}Set a player head''s owner.'
-        success: '{color:normal.a}Owner set to "{color:reset}{value}'
+        success: '{color:normal.a}Owner set to "{color:reset}{value}"'
       author:
         description: '{color:normal.a}Set a book''s author.'
-        success: '{color:normal.a}Author set to "{color:reset}{value}'
+        success: '{color:normal.a}Author set to "{color:reset}{value}"'
       title:
         description: '{color:normal.a}Set a book''s title.'
-        success: '{color:normal.a}Title set to "{color:reset}{value}'
+        success: '{color:normal.a}Title set to "{color:reset}{value}"'
       name:
         description: '{color:normal.a}Set an item''s name.'
-        success: '{color:normal.a}Name set to "{color:reset}{value}'
+        success: '{color:normal.a}Name set to "{color:reset}{value}"'
       delete:
         description: '{color:normal.a}Delete a line of lore.'
         success: '{color:normal.a}Deleted "{color:reset}{old_value}{color:normal.a}" at {color:normal.b}{line}{color:normal.a}!'

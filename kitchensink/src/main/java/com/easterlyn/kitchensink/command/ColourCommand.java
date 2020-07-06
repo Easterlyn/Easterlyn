@@ -15,6 +15,7 @@ import co.aikar.commands.annotation.Syntax;
 import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
+import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.User;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -31,12 +32,16 @@ public class ColourCommand extends BaseCommand {
 	@Private
 	public void colour(BukkitCommandIssuer issuer) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = '0'; i <= 'r'; ++i) {
-			if (i > 'f' && i < 'k' || i > 'o' && i < 'r') {
+		for (int i = 0; i <= 28; ++i) {
+			char code = Character.forDigit(i, 36);
+			if (code > 'f' && code < 'k' || code > 'o' && code < 'r') {
 				continue;
 			}
-			char code = (char) i;
 			ChatColor colour = ChatColor.getByChar(code);
+			if (colour == null) {
+				ReportableEvent.call("Invalid colour character from /colour: " + code);
+				continue;
+			}
 			builder.append(colour).append('&').append(code).append(' ')
 					.append(colour.getName().toLowerCase()).append(ChatColor.RESET).append(' ');
 		}
