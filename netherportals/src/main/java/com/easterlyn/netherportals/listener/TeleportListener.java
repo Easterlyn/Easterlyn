@@ -34,22 +34,22 @@ public class TeleportListener implements Listener {
 			return;
 		}
 
-		// Hijack portal creation entirely
-		event.setCreationRadius(0);
-		event.setCanCreatePortal(false);
+		event.setSearchRadius(event.getPlayer().getWorld().getEnvironment() == World.Environment.NETHER ? 18 : 2);
+		event.setCreationRadius(event.getSearchRadius());
 
-		int radius = event.getFrom().getWorld().getEnvironment() == World.Environment.NETHER ? 8 : 1;
-		event.setSearchRadius(radius);
-
-		Location to = portals.getPortalDestination(event.getPlayer(), event.getFrom());
-
-		if (to == null) {
+		Location preciseTo = portals.calculateDestination(event.getFrom());
+		Location oldTo = event.getTo();
+		if (preciseTo == null || preciseTo.getWorld() == null || oldTo != null && oldTo.getWorld() == null) {
 			event.getPlayer().setPortalCooldown(40);
 			event.setCancelled(true);
 			return;
 		}
 
-		event.setTo(to);
+		if (oldTo != null && preciseTo.getWorld().equals(oldTo.getWorld())) {
+			if (oldTo.distanceSquared(preciseTo) > event.getSearchRadius() * event.getSearchRadius()) {
+				event.setTo(preciseTo);
+			}
+		}
 	}
 
 	@EventHandler(ignoreCancelled = true)
@@ -63,7 +63,7 @@ public class TeleportListener implements Listener {
 		// Don't allow event to progress - don't risk vanilla portal generation
 		event.setCancelled(true);
 
-		event.getEntity().setPortalCooldown(40);
+		event.getEntity().setPortalCooldown(120);
 		Location to = portals.getPortalDestination(event.getEntity(), adjacentPortal.getLocation());
 		if (to != null) {
 			event.getEntity().teleport(to, PlayerTeleportEvent.TeleportCause.NETHER_PORTAL);

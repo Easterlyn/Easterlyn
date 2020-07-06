@@ -114,8 +114,7 @@ public class EasterlynNetherPortals extends JavaPlugin {
 		return null;
 	}
 
-	@Nullable
-	private Location calculateDestination(@NotNull Location from) {
+	public @Nullable Location calculateDestination(@NotNull Location from) {
 		World world;
 		double x, y, z;
 		String baseWorldName = Objects.requireNonNull(from.getWorld()).getName().replaceAll("(.*)_(the_end|nether)", "$1");
