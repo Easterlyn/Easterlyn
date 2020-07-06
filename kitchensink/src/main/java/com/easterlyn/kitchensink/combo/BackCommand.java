@@ -91,13 +91,13 @@ public class BackCommand extends BaseCommand implements Listener {
 			case COMMAND:
 			case END_GATEWAY:
 			case PLUGIN:
-			case UNKNOWN:
 				break;
+			case CHORUS_FRUIT:
+			case END_PORTAL:
 			case ENDER_PEARL:
 			case NETHER_PORTAL:
-			case END_PORTAL:
 			case SPECTATE:
-			case CHORUS_FRUIT:
+			case UNKNOWN:
 			default:
 				return;
 		}
