@@ -148,6 +148,7 @@ public class EasterlynChat extends JavaPlugin {
 				config.set(channel.getName(), null);
 			}
 		});
+		saveConfig();
 	}
 
 	private boolean loadChannel(@NotNull String name, @Nullable ConfigurationSection data) {
