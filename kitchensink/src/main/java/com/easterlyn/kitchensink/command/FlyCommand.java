@@ -23,9 +23,9 @@ public class FlyCommand extends BaseCommand {
 
 	@CommandAlias("fly")
 	@Description("{@@sink.module.fly.description}")
-	@CommandPermission("easterlyn.command.fly")
+	@CommandPermission("easterlyn.command.fly.self")
 	@CommandCompletion("@player @boolean")
-	@Syntax("/fly [player] [true|false]")
+	@Syntax("[player] [true|false]")
 	public void fly(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player, @Default("toggle") @Single String flightString) {
 
 		Boolean flight = StringUtil.asBoolean(flightString);

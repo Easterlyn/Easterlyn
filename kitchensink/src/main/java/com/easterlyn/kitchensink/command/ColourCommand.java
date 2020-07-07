@@ -53,13 +53,13 @@ public class ColourCommand extends BaseCommand {
 	@Description("{@@sink.module.colour.select.description}")
 	@CommandPermission("easterlyn.command.colour.select.self")
 	@Syntax("<colour>")
-	@CommandCompletion("@colour @player")
+	@CommandCompletion("@colour")
 	public void select(@Flags("colour") ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		user.setColor(colour);
+		// TODO color hack -> wrong color
 		String colourName = colour + colour.getName();
 		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.colour.set.self",
 				"{value}", colourName);
-		user.sendMessage("Set colour to " + colourName);
 		if (!getCurrentCommandIssuer().getUniqueId().equals(user.getUniqueId())) {
 			getCurrentCommandIssuer().sendInfo(MessageKey.of("sink.module.colour.set.other"),
 					"{target}", user.getDisplayName(), "{value}", colourName);
@@ -70,7 +70,7 @@ public class ColourCommand extends BaseCommand {
 	@Description("{@@sink.module.colour.set.description}")
 	@CommandPermission("easterlyn.command.colour.select.other")
 	@Syntax("<colour> [player]")
-	@CommandCompletion("@colour @playerOnlineIfPerm")
+	@CommandCompletion("@colour @player")
 	public void set(ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User target) {
 		select(colour, target);
 	}

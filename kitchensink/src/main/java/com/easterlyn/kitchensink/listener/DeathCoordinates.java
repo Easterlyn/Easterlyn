@@ -12,6 +12,7 @@ public class DeathCoordinates implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		// TODO fun messages, clickable location component
+		// TODO permanent record - maybe merge into /death
 		Player player = event.getEntity();
 		Location location = player.getLocation();
 		String message = "Death point: {X} {Y} {Z}".replace("{X}", String.valueOf(location.getBlockX()))

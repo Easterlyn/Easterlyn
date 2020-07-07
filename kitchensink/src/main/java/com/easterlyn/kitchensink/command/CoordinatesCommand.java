@@ -25,7 +25,7 @@ public class CoordinatesCommand extends BaseCommand {
 	@Description("Get your coordinates!")
 	@CommandPermission("easterlyn.command.coordinates.self")
 	@Syntax("[player]")
-	@CommandCompletion("@playerOnlineIfPerm")
+	@CommandCompletion("@player")
 	public void getCoordinates(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User target) {
 		Player player = target.getPlayer();
 

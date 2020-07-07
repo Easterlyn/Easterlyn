@@ -85,7 +85,7 @@ chat:
       description: '{color:normal.a}'
       success:
         self: '{color:normal.a}Nickname set to {color:normal.b}{value}'
-        other: '{color:normal.a}Set nickname of @target {color:normal.a}to {color:normal.b}{value}'
+        other: '{color:normal.a}Set nickname of @{target} {color:normal.a}to {color:normal.b}{value}'
         remove:
           self: '{color:normal.a}Nickname removed'
           other: '{color:normal.a}Removed nickname of @{target}'

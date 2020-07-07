@@ -22,7 +22,7 @@ public class HealCommand extends BaseCommand {
 
 	@CommandAlias("heal")
 	@Description("{@@sink.module.heal.description}")
-	@CommandPermission("easterlyn.command.heal")
+	@CommandPermission("easterlyn.command.heal.self")
 	@CommandCompletion("@player")
 	@Syntax("[player]")
 	public void heal(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
@@ -42,7 +42,7 @@ public class HealCommand extends BaseCommand {
 
 	@CommandAlias("feed")
 	@Description("{@@sink.module.feed.description}")
-	@CommandPermission("easterlyn.command.feed")
+	@CommandPermission("easterlyn.command.feed.self")
 	@CommandCompletion("@player")
 	@Syntax("[player]")
 	public void feed(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {

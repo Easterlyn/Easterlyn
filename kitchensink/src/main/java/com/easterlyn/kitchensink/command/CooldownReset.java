@@ -36,7 +36,7 @@ public class CooldownReset extends BaseCommand {
 	@Subcommand("back")
 	@Description("{@@sink.module.cooldown.reset.specific.description}")
 	@Syntax("")
-	@CommandCompletion("")
+	@CommandCompletion("@player")
 	public void resetBack(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.cooldown.reset.single",
 				"{target}", "/back");
@@ -46,7 +46,7 @@ public class CooldownReset extends BaseCommand {
 	@Subcommand("death")
 	@Description("{@@sink.module.cooldown.reset.specific.description}")
 	@Syntax("")
-	@CommandCompletion("")
+	@CommandCompletion("@player")
 	public void resetDeath(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.cooldown.reset.single",
 				"{target}", "/death");

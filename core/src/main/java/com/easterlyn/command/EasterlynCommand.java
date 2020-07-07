@@ -89,7 +89,7 @@ public class EasterlynCommand extends BaseCommand {
 	@Description("{@@core.commands.ping.description}")
 	@CommandPermission("easterlyn.command.ping.self")
 	@Syntax("[player]")
-	@CommandCompletion("@playerOnlineIfPerm")
+	@CommandCompletion("@player")
 	public void ping(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
 		/*if (player.getLastLogin() > System.currentTimeMillis() - 15000) { // Requires Paper
 			issuer.sendInfo(MessageKey.of("core.commands.ping.error.small_sample"));
