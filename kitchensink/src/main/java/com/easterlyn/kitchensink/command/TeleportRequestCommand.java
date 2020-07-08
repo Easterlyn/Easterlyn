@@ -22,7 +22,7 @@ public class TeleportRequestCommand extends BaseCommand {
 
 	private static final String CONFIG_ACCEPT = "command.teleportrequest.accept";
 	private static final String CONFIG_IGNORE = "command.teleportrequest.ignore";
-	private static final String TPREQUEST = "kitchensink.tprequest";
+	public static final String TPREQUEST_COOLDOWN = "kitchensink.tprequest";
 
 	@Dependency
 	EasterlynCore core;
@@ -48,7 +48,7 @@ public class TeleportRequestCommand extends BaseCommand {
 	}
 
 	private void tpRequest(User issuer, User requested, boolean to) {
-		long nextTPA = issuer.getStorage().getLong(TPREQUEST);
+		long nextTPA = issuer.getStorage().getLong(TPREQUEST_COOLDOWN);
 		if (nextTPA > System.currentTimeMillis()) {
 			SimpleDateFormat format = new SimpleDateFormat("m:ss");
 			core.getLocaleManager().sendMessage(issuer.getPlayer(), "sink.module.tprequest.error.cooldown",
@@ -56,7 +56,7 @@ public class TeleportRequestCommand extends BaseCommand {
 			return;
 		}
 
-		issuer.getStorage().set(TPREQUEST, System.currentTimeMillis() + sink.getConfig().getLong(CONFIG_IGNORE));
+		issuer.getStorage().set(TPREQUEST_COOLDOWN, System.currentTimeMillis() + sink.getConfig().getLong(CONFIG_IGNORE));
 
 		Player issuingPlayer = issuer.getPlayer();
 		Player requestedPlayer = requested.getPlayer();
@@ -88,9 +88,9 @@ public class TeleportRequestCommand extends BaseCommand {
 				core.getLocaleManager().sendMessage(requestedPlayer, "sink.module.tprequest.common.decline");
 				core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.common.declined",
 						"{value}", requestedPlayer.getName());
-				issuer.getStorage().set(TPREQUEST,
+				issuer.getStorage().set(TPREQUEST_COOLDOWN,
 						System.currentTimeMillis() + sink.getConfig().getLong(CONFIG_ACCEPT)
-								+ issuer.getStorage().getLong(TPREQUEST) - sink.getConfig().getLong(CONFIG_IGNORE));
+								+ issuer.getStorage().getLong(TPREQUEST_COOLDOWN) - sink.getConfig().getLong(CONFIG_IGNORE));
 			}
 		})) {
 			core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.common.issued");

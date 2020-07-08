@@ -31,6 +31,7 @@ public class CooldownReset extends BaseCommand {
 		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.cooldown.reset.all");
 		user.getStorage().set(BackCommand.BACK_COOLDOWN, null);
 		user.getStorage().set(DeathPointCommand.DEATH_COOLDOWN, null);
+		user.getStorage().set(TeleportRequestCommand.TPREQUEST_COOLDOWN, null);
 	}
 
 	@Subcommand("back")
@@ -51,6 +52,16 @@ public class CooldownReset extends BaseCommand {
 		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.cooldown.reset.single",
 				"{target}", "/death");
 		user.getStorage().set(DeathPointCommand.DEATH_COOLDOWN, null);
+	}
+
+	@Subcommand("tpa")
+	@Description("{@@sink.module.cooldown.reset.specific.description}")
+	@Syntax("")
+	@CommandCompletion("@player")
+	public void resetTpa(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.cooldown.reset.single",
+				"{target}", "/tpa");
+		user.getStorage().set(TeleportRequestCommand.TPREQUEST_COOLDOWN, null);
 	}
 
 }
