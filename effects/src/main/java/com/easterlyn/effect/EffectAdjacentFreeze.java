@@ -3,6 +3,7 @@ package com.easterlyn.effect;
 import com.easterlyn.EasterlynEffects;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
@@ -22,7 +23,8 @@ public class EffectAdjacentFreeze extends EffectAdjacentBlockPlacement {
 		if (block.getType() == Material.WATER) {
 			if (handleBlockSet(player, block, Material.ICE)) {
 				if (currentCount == 0) {
-					block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.ENTITY_GENERIC_SWIM, 16, 1);
+					block.getWorld().playSound(block.getLocation().add(.5, 0, .5), Sound.ENTITY_GENERIC_SWIM,
+							SoundCategory.BLOCKS, 16, 1);
 				}
 				return true;
 			}

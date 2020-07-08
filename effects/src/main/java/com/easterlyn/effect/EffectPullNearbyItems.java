@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.LivingEntity;
@@ -45,7 +46,7 @@ public class EffectPullNearbyItems extends Effect {
 					near.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, near.getLocation(), 1);
 					near.teleport(player);
 					if (!(event instanceof IndirectBreakEvent)) {
-						player.playSound(near.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.1F, 1.5F);
+						player.playSound(near.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, SoundCategory.BLOCKS, 0.1F, 1.5F);
 					}
 					Item item = (Item) near;
 					if (item.getPickupDelay() < 1000) {
