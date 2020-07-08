@@ -60,8 +60,17 @@ import org.jetbrains.annotations.NotNull;
 public class Densificator extends Machine {
 
 	private static final LoadingCache<Material, List<RecipeWrapper>> recipeCache;
+	private static final EnumSet<Material> materialWhitelist;
 
 	static {
+		materialWhitelist = EnumSet.of(Material.GOLD_INGOT, Material.IRON_INGOT, Material.LEATHER);
+
+		for (Material material : Material.values()) {
+			if (material.isOccluding()) {
+				materialWhitelist.add(material);
+			}
+		}
+
 		recipeCache = CacheBuilder.newBuilder().expireAfterAccess(5, TimeUnit.MINUTES).build(
 				new CacheLoader<Material, List<RecipeWrapper>>() {
 					@Override
@@ -73,7 +82,7 @@ public class Densificator extends Machine {
 								return;
 							}
 
-							if (!recipe.getResult().getType().isOccluding()) {
+							if (!materialWhitelist.contains(recipe.getResult().getType())) {
 								return;
 							}
 
