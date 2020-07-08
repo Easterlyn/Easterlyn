@@ -1,6 +1,7 @@
 package com.easterlyn.effect;
 
 import com.easterlyn.EasterlynEffects;
+import com.easterlyn.effect.event.IndirectBreakEvent;
 import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Particle;
@@ -43,7 +44,9 @@ public class EffectPullNearbyItems extends Effect {
 					}
 					near.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, near.getLocation(), 1);
 					near.teleport(player);
-					player.playSound(near.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.1F, 1.5F);
+					if (!(event instanceof IndirectBreakEvent)) {
+						player.playSound(near.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, 0.1F, 1.5F);
+					}
 					Item item = (Item) near;
 					if (item.getPickupDelay() < 1000) {
 						item.setPickupDelay(0);
