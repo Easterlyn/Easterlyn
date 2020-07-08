@@ -89,8 +89,7 @@ public class TeleportRequestCommand extends BaseCommand {
 				core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.common.declined",
 						"{value}", requestedPlayer.getName());
 				issuer.getStorage().set(TPREQUEST_COOLDOWN,
-						System.currentTimeMillis() + sink.getConfig().getLong(CONFIG_ACCEPT)
-								+ issuer.getStorage().getLong(TPREQUEST_COOLDOWN) - sink.getConfig().getLong(CONFIG_IGNORE));
+						issuer.getStorage().getLong(TPREQUEST_COOLDOWN) - sink.getConfig().getLong(CONFIG_IGNORE) + sink.getConfig().getLong(CONFIG_ACCEPT));
 			}
 		})) {
 			core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.common.issued");
