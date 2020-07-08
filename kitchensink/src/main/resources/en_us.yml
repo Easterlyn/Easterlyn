@@ -51,8 +51,8 @@ sink:
       select.description: '{color:normal.a}Select your colour.'
       set:
         description: '{color:normal.a}Set someone''s colour. Bypasses selection limitations.'
-        self: '{color:normal.a}Set color to {value}'
-        other: '{color:normal.a}Set color of @{target} to {value}'
+        self: '{color:normal.a}Set color to '
+        other: '{color:normal.a}Set color of @{target} to '
     cooldown:
       reset:
         description: '{color:normal.a}Reset cooldowns!'

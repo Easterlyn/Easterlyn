@@ -12,13 +12,15 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
-import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.User;
+import com.easterlyn.util.StringUtil;
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandSender;
 
 @CommandAlias("colour|color")
 @Description("{@@sink.module.colour.description}")
@@ -56,14 +58,26 @@ public class ColourCommand extends BaseCommand {
 	@CommandCompletion("@colour")
 	public void select(@Flags("colour") ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
 		user.setColor(colour);
-		// TODO color hack -> wrong color
-		String colourName = colour + colour.getName();
-		core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.colour.set.self",
-				"{value}", colourName);
-		if (!getCurrentCommandIssuer().getUniqueId().equals(user.getUniqueId())) {
-			getCurrentCommandIssuer().sendInfo(MessageKey.of("sink.module.colour.set.other"),
-					"{target}", user.getDisplayName(), "{value}", colourName);
+		TextComponent textComponent = new TextComponent();
+		for (TextComponent element : StringUtil.toJSON(core.getLocaleManager().getValue("sink.module.colour.set.self",
+				core.getLocaleManager().getLocale(user.getPlayer())))) {
+			textComponent.addExtra(element);
 		}
+		TextComponent colourComponent = new TextComponent(colour.getName());
+		colourComponent.setColor(colour);
+		textComponent.addExtra(colourComponent);
+		user.sendMessage(textComponent);
+		if (getCurrentCommandIssuer().getUniqueId().equals(user.getUniqueId())) {
+			return;
+		}
+
+		textComponent = new TextComponent();
+		for (TextComponent element : StringUtil.toJSON(core.getLocaleManager().getValue("sink.module.colour.set.other",
+				core.getLocaleManager().getLocale(user.getPlayer()), "{target}", user.getDisplayName()))) {
+			textComponent.addExtra(element);
+		}
+		textComponent.addExtra(colourComponent);
+		((CommandSender) getCurrentCommandIssuer().getIssuer()).spigot().sendMessage(textComponent);
 	}
 
 	@Subcommand("set")
