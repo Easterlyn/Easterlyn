@@ -14,7 +14,9 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
+import org.bukkit.Tag;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -38,6 +40,8 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.BoundingBox;
@@ -96,6 +100,17 @@ public class Transportalizer extends Machine {
 			itemMeta.setDisplayName(ChatColor.WHITE + "Transportalizer");
 			drop.setItemMeta(itemMeta);
 		});
+
+		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(machines, "transportalizer"), drop);
+		recipe.shape("BAB", "DCD", "FEF");
+		recipe.setIngredient('A', Material.END_CRYSTAL);
+		recipe.setIngredient('B', new RecipeChoice.MaterialChoice(Tag.BUTTONS));
+		recipe.setIngredient('C', Material.ENDER_CHEST);
+		recipe.setIngredient('D', Material.ENDER_EYE);
+		recipe.setIngredient('E', Material.HOPPER);
+		recipe.setIngredient('F', new RecipeChoice.MaterialChoice(Material.QUARTZ_BLOCK, Material.QUARTZ_PILLAR,
+				Material.SMOOTH_QUARTZ, Material.CHISELED_QUARTZ_BLOCK));
+		machines.getServer().addRecipe(recipe);
 	}
 
 	@Override

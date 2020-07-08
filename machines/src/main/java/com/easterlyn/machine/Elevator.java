@@ -10,6 +10,7 @@ import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -18,6 +19,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
@@ -45,6 +48,14 @@ public class Elevator extends Machine {
 			itemMeta.setDisplayName(ChatColor.WHITE + "Elevator");
 			drop.setItemMeta(itemMeta);
 		});
+
+		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(machines, "elevator"), drop);
+		recipe.shape("BDB", "ACA", "BAB");
+		recipe.setIngredient('A', Material.ENDER_EYE);
+		recipe.setIngredient('B', Material.PHANTOM_MEMBRANE);
+		recipe.setIngredient('C', new RecipeChoice.MaterialChoice(Material.PURPUR_BLOCK, Material.PURPUR_PILLAR));
+		recipe.setIngredient('D', Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+		machines.getServer().addRecipe(recipe);
 	}
 
 	private int getCurrentBoost(ConfigurationSection storage) {

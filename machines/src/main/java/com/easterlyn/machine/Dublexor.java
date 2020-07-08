@@ -21,6 +21,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -34,6 +35,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
+import org.bukkit.inventory.RecipeChoice;
+import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.Vector;
@@ -85,6 +88,17 @@ public class Dublexor extends Machine {
 			itemMeta.setDisplayName(ChatColor.RED + "No Result");
 			barrier.setItemMeta(itemMeta);
 		});
+
+		ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(machines, "dublexor"), drop);
+		recipe.shape("BAB", "DCD", "FEF");
+		recipe.setIngredient('A', Material.ENCHANTING_TABLE);
+		recipe.setIngredient('B', Material.EXPERIENCE_BOTTLE);
+		recipe.setIngredient('C', Material.BEACON);
+		recipe.setIngredient('D', Material.OBSIDIAN);
+		recipe.setIngredient('E', Material.SEA_LANTERN);
+		recipe.setIngredient('F', new RecipeChoice.MaterialChoice(Material.QUARTZ_BLOCK, Material.QUARTZ_PILLAR,
+				Material.SMOOTH_QUARTZ, Material.CHISELED_QUARTZ_BLOCK));
+		machines.getServer().addRecipe(recipe);
 	}
 
 	@NotNull
