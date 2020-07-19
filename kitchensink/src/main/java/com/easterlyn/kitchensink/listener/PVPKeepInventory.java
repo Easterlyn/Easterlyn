@@ -70,6 +70,7 @@ public class PVPKeepInventory implements Listener {
 		ExperienceUtil.changeExp(event.getEntity(), -dropped);
 		event.setKeepLevel(true);
 		event.setKeepInventory(true);
+		event.getDrops().clear();
 	}
 
 }
