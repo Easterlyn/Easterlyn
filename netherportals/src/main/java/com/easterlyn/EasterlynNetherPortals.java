@@ -7,6 +7,7 @@ import com.easterlyn.util.event.SimpleListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 import org.bukkit.Axis;
 import org.bukkit.Location;
@@ -79,14 +80,48 @@ public class EasterlynNetherPortals extends JavaPlugin {
 		}
 		// Bounding box must be inside portal.
 		BoundingBox boundingBox = entity.getBoundingBox();
-		World world = entity.getWorld();
-		for (int y = (int) Math.floor(boundingBox.getMinY()); y <= Math.ceil(boundingBox.getMaxY()); ++y) {
-			for (int x = (int) Math.floor(boundingBox.getMinX()); x <= Math.ceil(boundingBox.getMaxX()); ++x) {
-				for (int z = (int) Math.floor(boundingBox.getMinZ()); z <= Math.ceil(boundingBox.getMaxZ()); ++z) {
-					Block maybePortal = world.getBlockAt(x, y, z);
-					if (maybePortal.getType() == Material.NETHER_PORTAL) {
-						return maybePortal;
+		int dXMax = (int) Math.ceil(boundingBox.getWidthX() / 2D);
+		int dZMax = (int) Math.ceil(boundingBox.getWidthZ() / 2D);
+		return spiralRectangle(dXMax, dZMax, (x, z) -> {
+			// Feet should always be in portal due to portal block shape unless portal is busted.
+			Block potential = exact.getRelative(x, 0, z);
+			if (potential.getType() == Material.NETHER_PORTAL) {
+				return potential;
+			}
+			return null;
+		});
+	}
+
+	private <T> T spiralRectangle(int side1Max, int side2Max, BiFunction<Integer, Integer, T> coordConsumer) {
+		boolean swap = side1Max > side2Max;
+
+		if (swap) {
+			int temp = side1Max;
+			side1Max = side2Max;
+			side2Max = temp;
+		}
+
+		for (int radius = 1; radius <= side1Max || radius <= side2Max; ++radius) {
+			int side1 = -Math.min(side1Max, radius);
+			int side2 = Math.min(side2Max, radius);
+			while (side1 <= radius && side2 > -radius) {
+				T value = coordConsumer.apply(swap ? side2 : side1, swap ? side1 : side2);
+				if (value != null) {
+					return value;
+				}
+				value = coordConsumer.apply(swap ? -side2 : -side1, swap ? -side1 : -side2);
+				if (value != null) {
+					return value;
+				}
+
+				if (side1 < radius) {
+					if (side1 < side1Max) {
+						++side1;
+					} else {
+						break;
 					}
+				} else {
+					--side2;
 				}
 			}
 		}
