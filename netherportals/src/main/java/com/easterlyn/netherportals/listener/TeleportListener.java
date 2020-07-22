@@ -30,26 +30,27 @@ public class TeleportListener implements Listener {
 
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerPortal(PlayerPortalEvent event) {
-		if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL) {
+		if (event.getCause() != PlayerTeleportEvent.TeleportCause.NETHER_PORTAL
+				|| event.getFrom().getWorld() == null) {
 			return;
 		}
 
-		event.setSearchRadius(event.getPlayer().getWorld().getEnvironment() == World.Environment.NETHER ? 18 : 2);
-		event.setCreationRadius(event.getSearchRadius());
+		// Hijack portal creation entirely
+		event.setCreationRadius(0);
+		event.setCanCreatePortal(false);
 
-		Location preciseTo = portals.calculateDestination(event.getFrom());
-		Location oldTo = event.getTo();
-		if (preciseTo == null || preciseTo.getWorld() == null || oldTo != null && oldTo.getWorld() == null) {
+		int radius = event.getFrom().getWorld().getEnvironment() == World.Environment.NETHER ? 8 : 1;
+		event.setSearchRadius(radius);
+
+		Location to = portals.getPortalDestination(event.getPlayer(), event.getFrom());
+
+		if (to == null) {
 			event.getPlayer().setPortalCooldown(40);
 			event.setCancelled(true);
 			return;
 		}
 
-		if (oldTo != null && preciseTo.getWorld().equals(oldTo.getWorld())) {
-			if (oldTo.distanceSquared(preciseTo) > event.getSearchRadius() * event.getSearchRadius()) {
-				event.setTo(preciseTo);
-			}
-		}
+		event.setTo(to);
 	}
 
 	@EventHandler(ignoreCancelled = true)
