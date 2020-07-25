@@ -29,6 +29,7 @@ import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import reactor.core.publisher.Mono;
 
 public class MinecraftBridge {
 
@@ -52,7 +53,7 @@ public class MinecraftBridge {
 		// PlayerCommandPreprocessEvent MONITOR -> log commands
 		// PlayerJoinEvent/PlayerQuitEvent -> post
 
-		client.getEventDispatcher().on(MessageCreateEvent.class).subscribe(event -> {
+		client.getEventDispatcher().on(MessageCreateEvent.class).flatMap(event -> Mono.fromRunnable(() -> {
 			if (!event.getMessage().getAuthor().isPresent() || event.getMessage().getAuthor().get().isBot()) {
 				return;
 			}
@@ -61,21 +62,17 @@ public class MinecraftBridge {
 			String msg = event.getMessage().getContent().orElse("");
 			MessageChannel channel = event.getMessage().getChannel().block();
 
-			if (channel == null) {
-				return;
-			}
-
 			boolean command = msg.length() > 0 && msg.charAt(0) == '/';
 
-			if (command) {
-				if (channel instanceof TextChannel) {
-					event.getMessage().delete();
-				}
+//			if (command) {
+//				if (channel instanceof TextChannel) {
+//					event.getMessage().delete();
+//				}
 				// TODO command handling changes
 //				if (plugin.handleDiscordCommand(msg, author, channel)) {
 //					return;
 //				}
-			}
+//			}
 
 			boolean main = channel instanceof TextChannel && plugin.getChannelIDs(ChannelType.MAIN).stream()
 					.anyMatch(mainChannel -> mainChannel.getId().equals(channel.getId()));
@@ -91,7 +88,8 @@ public class MinecraftBridge {
 					return;
 				}
 				warnings.put(id, true);
-				channel.createMessage(author.getMention() + ", you must run /link in Minecraft to use this feature!");
+				channel.createMessage(author.getMention() + ", you must run `/link` in Minecraft to use this feature!" +
+						"\nN.B. Linking is currently not enabled. Please contact an admin.");
 				return;
 			}
 
@@ -101,7 +99,11 @@ public class MinecraftBridge {
 			}
 
 			handleDiscordChat(sender, event.getMessage());
-		});
+		}).onErrorResume(error -> {
+			System.out.println("Caught exception handling Discord event:");
+			error.printStackTrace();
+			return Mono.empty();
+		}).thenReturn(event)).subscribe();
 
 		UserChatEvent.getHandlerList().register(new SimpleListener<>(UserChatEvent.class, event -> {
 			// TODO may want to try to softdepend on chat instead of hard
@@ -151,25 +153,21 @@ public class MinecraftBridge {
 			}
 			content = content.concat(attachment.getProxyUrl());
 		}
+		String finalContent = content;
 		if (!user.hasPermission("easterlyn.discord.unfiltered")) {
-			MessageChannel channel = null;
-			if (content.indexOf('\n') > 0) {
-				channel = message.getChannel().block();
-				if (channel != null) {
-					channel.createMessage("Newlines are not allowed in messages to Minecraft, "
+			message.getChannel().doOnSuccess(messageChannel -> {
+				Mono<Message> replyMono;
+				if (finalContent.indexOf('\n') > 0) {
+					replyMono = messageChannel.createMessage("Newlines are not allowed in messages to Minecraft, "
 							+ message.getAuthor().get().getMention());
+				} else if (finalContent.length() > 255) {
+					replyMono = messageChannel.createMessage("Messages from Discord may not be over 255 characters, "
+								+ message.getAuthor().get().getMention());
+				} else {
+					return;
 				}
-			} else if (content.length() > 255) {
-				channel = message.getChannel().block();
-				if (channel != null) {
-					channel.createMessage("Messages from Discord may not be over 255 characters, "
-							+ message.getAuthor().get().getMention());
-				}
-			}
-			if (channel != null) {
-				message.addReaction(ReactionEmoji.unicode(":no_entry_sign:"));
-				return;
-			}
+				replyMono.doOnSuccess(replyMessage -> replyMessage.addReaction(ReactionEmoji.unicode(":no_entry_sign:"))).subscribe();
+			}).subscribe();
 		}
 
 		new UserChatEvent(user, EasterlynChat.DEFAULT, sanitizeForMinecraft(content)).send();

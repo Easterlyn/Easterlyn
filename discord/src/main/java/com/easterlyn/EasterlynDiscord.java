@@ -9,19 +9,18 @@ import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
-import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.core.object.util.Snowflake;
 import java.io.File;
 import java.time.Duration;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Phaser;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -78,15 +77,16 @@ public class EasterlynDiscord extends JavaPlugin {
 		if (Bukkit.isPrimaryThread()) {
 			throw new IllegalStateException("Don't demand information from Discord on the main thread.");
 		}
-		List<TextChannel> list = new ArrayList<>();
-		if (!this.isEnabled()) {
-			return list;
+		Collection<TextChannel> collection = Collections.newSetFromMap(new ConcurrentHashMap<>());
+		if (!this.isEnabled() || client == null) {
+			return collection;
 		}
 		ConfigurationSection guildSection = this.getConfig().getConfigurationSection("guilds");
 		if (guildSection == null) {
-			return list;
+			return collection;
 		}
 
+		Phaser phaser = new Phaser(1);
 		for (String guildIDString : guildSection.getKeys(false)) {
 			// Parse guild ID
 			Snowflake guildID;
@@ -96,30 +96,25 @@ public class EasterlynDiscord extends JavaPlugin {
 				continue;
 			}
 
-			Guild guild = client.getGuildById(guildID).block();
-			// Ensure valid guild
-			if (guild == null) {
-				continue;
-			}
-
-			String channelIdString = guildSection.getString(guildIDString + '.' + type);
+			String channelIdString = guildSection.getString(guildIDString + '.' + type.getPath());
 			if (channelIdString == null) {
 				continue;
 			}
-
-			Snowflake snowflake;
+			Snowflake channelID;
 			try {
-				snowflake = Snowflake.of(channelIdString);
+				channelID = Snowflake.of(channelIdString);
 			} catch (NumberFormatException e) {
 				continue;
 			}
-			TextChannel channel = guild.getChannelById(snowflake).cast(TextChannel.class).block();
 
-			if (channel != null) {
-				list.add(channel);
-			}
+			phaser.register();
+			client.getGuildById(guildID)
+					.flatMap(guild -> guild.getChannelById(channelID).cast(TextChannel.class).doOnSuccess(collection::add))
+					.doOnSuccessOrError((obj, thrown) -> phaser.arriveAndDeregister()).subscribe();
 		}
-		return list;
+
+		phaser.arriveAndAwaitAdvance();
+		return collection;
 	}
 
 	@Nullable
@@ -141,6 +136,11 @@ public class EasterlynDiscord extends JavaPlugin {
 	}
 
 	public void postMessage(ChannelType channelType, String message) {
+		if (!client.isConnected()) {
+			// TODO handle client not connected
+			return;
+		}
+
 		if (channelType.getAggregateTime() > 0) {
 			Pair<StringBuffer, Long> aggregateData = messageQueue.get(channelType);
 			if (aggregateData == null) {
