@@ -9,7 +9,7 @@ import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
-import discord4j.core.object.entity.TextChannel;
+import discord4j.core.object.entity.GuildMessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
 import discord4j.core.object.util.Snowflake;
@@ -73,11 +73,27 @@ public class EasterlynDiscord extends JavaPlugin {
 		plugin.getLocaleManager().addLocaleSupplier(this);
 	}
 
-	public Collection<TextChannel> getChannelIDs(ChannelType type) {
+	public boolean isChannelType(Snowflake channelID, ChannelType type) {
+		ConfigurationSection guildSection = this.getConfig().getConfigurationSection("guilds");
+		if (guildSection == null) {
+			return false;
+		}
+
+		String channelIdString = channelID.asString();
+		for (String guildIDString : guildSection.getKeys(false)) {
+			if (channelIdString.equals(guildSection.getString(guildIDString + ".channels." + type.getPath()))) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	public Collection<GuildMessageChannel> getChannelIDs(ChannelType type) {
 		if (Bukkit.isPrimaryThread()) {
 			throw new IllegalStateException("Don't demand information from Discord on the main thread.");
 		}
-		Collection<TextChannel> collection = Collections.newSetFromMap(new ConcurrentHashMap<>());
+		Collection<GuildMessageChannel> collection = Collections.newSetFromMap(new ConcurrentHashMap<>());
 		if (!this.isEnabled() || client == null) {
 			return collection;
 		}
@@ -96,7 +112,7 @@ public class EasterlynDiscord extends JavaPlugin {
 				continue;
 			}
 
-			String channelIdString = guildSection.getString(guildIDString + '.' + type.getPath());
+			String channelIdString = guildSection.getString(guildIDString + ".channels." + type.getPath());
 			if (channelIdString == null) {
 				continue;
 			}
@@ -109,8 +125,13 @@ public class EasterlynDiscord extends JavaPlugin {
 
 			phaser.register();
 			client.getGuildById(guildID)
-					.flatMap(guild -> guild.getChannelById(channelID).cast(TextChannel.class).doOnSuccess(collection::add))
-					.doOnSuccessOrError((obj, thrown) -> phaser.arriveAndDeregister()).subscribe();
+					.flatMap(guild -> guild.getChannelById(channelID).cast(GuildMessageChannel.class).doOnSuccess(collection::add))
+					.doOnSuccessOrError((obj, thrown) -> {
+						if (thrown != null) {
+							thrown.printStackTrace();
+						}
+						phaser.arriveAndDeregister();
+					}).subscribe();
 		}
 
 		phaser.arriveAndAwaitAdvance();
@@ -141,6 +162,10 @@ public class EasterlynDiscord extends JavaPlugin {
 			return;
 		}
 
+		if (channelType == ChannelType.MAIN) {
+			postMessage(ChannelType.LOG, message);
+		}
+
 		if (channelType.getAggregateTime() > 0) {
 			Pair<StringBuffer, Long> aggregateData = messageQueue.get(channelType);
 			if (aggregateData == null) {
@@ -150,7 +175,7 @@ public class EasterlynDiscord extends JavaPlugin {
 
 			// Max message length is 2000. Cap aggregation to 1900 to be safe.
 			if (aggregateData.getLeft().length() + message.length() + 1 > 1900) {
-				postAggregatedMessage(channelType, aggregateData.getLeft().toString());
+				directPostMessage(channelType, aggregateData.getLeft().toString());
 				aggregateData.getLeft().delete(0, aggregateData.getLeft().length());
 			}
 
@@ -160,25 +185,25 @@ public class EasterlynDiscord extends JavaPlugin {
 			aggregateData.getLeft().append(message);
 
 			if (aggregateData.getRight() <= System.currentTimeMillis()) {
+				// Typing status while aggregating
+				getChannelIDs(channelType).forEach(channel ->
+						channel.typeUntil(Mono.delay(Duration.ofMillis(channelType.getAggregateTime()))).subscribe());
+
 				aggregateData.setRight(System.currentTimeMillis() + channelType.getAggregateTime());
 				Pair<StringBuffer, Long> data = aggregateData;
 				getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-					postAggregatedMessage(channelType, data.getLeft().toString());
+					directPostMessage(channelType, data.getLeft().toString());
 					data.getLeft().delete(0, data.getLeft().length());
-
-					// Typing status while aggregating
-					getChannelIDs(channelType).forEach(channel ->
-							channel.typeUntil(Mono.delay(Duration.ofMillis(channelType.getAggregateTime()))));
 				}, channelType.getAggregateTime() / 20);
 			}
 
-
 			return;
 		}
-		postAggregatedMessage(channelType, message);
+
+		directPostMessage(channelType, message);
 	}
 
-	private void postAggregatedMessage(ChannelType channelType, String message) {
+	private void directPostMessage(ChannelType channelType, String message) {
 		if (!client.isConnected()) {
 			// TODO handle client not connected
 			return;
@@ -188,12 +213,12 @@ public class EasterlynDiscord extends JavaPlugin {
 			String search = message.substring(0, 1900);
 			int index = search.lastIndexOf('\n');
 			if (index > -1) {
-				postAggregatedMessage(channelType, message.substring(0, index));
+				directPostMessage(channelType, message.substring(0, index));
 				// Ignore newline.
 				message = message.substring(index + 1);
 				continue;
 			}
-			postAggregatedMessage(channelType, message.substring(0, 1900));
+			directPostMessage(channelType, message.substring(0, 1900));
 			message = message.substring(1900);
 		}
 
@@ -203,7 +228,7 @@ public class EasterlynDiscord extends JavaPlugin {
 		}
 
 
-		getChannelIDs(channelType).forEach(channel -> channel.createMessage(finalMessage));
+		getChannelIDs(channelType).forEach(channel -> channel.createMessage(finalMessage).subscribe());
 
 	}
 

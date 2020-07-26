@@ -3,7 +3,7 @@ package com.easterlyn.discord;
 public enum ChannelType {
 
 	LOG(30000),
-	MAIN(1000),
+	MAIN(200),
 	REPORT(10000),
 	WELCOME(0);
 

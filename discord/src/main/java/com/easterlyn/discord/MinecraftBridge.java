@@ -4,6 +4,7 @@ import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
+import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.event.SimpleListener;
@@ -14,20 +15,21 @@ import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Attachment;
 import discord4j.core.object.entity.Channel;
 import discord4j.core.object.entity.GuildChannel;
+import discord4j.core.object.entity.GuildMessageChannel;
 import discord4j.core.object.entity.Message;
 import discord4j.core.object.entity.MessageChannel;
-import discord4j.core.object.entity.TextChannel;
 import discord4j.core.object.entity.User;
 import discord4j.core.object.reaction.ReactionEmoji;
 import discord4j.core.object.util.Snowflake;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.bukkit.ChatColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import reactor.core.publisher.Mono;
 
@@ -74,8 +76,7 @@ public class MinecraftBridge {
 //				}
 //			}
 
-			boolean main = channel instanceof TextChannel && plugin.getChannelIDs(ChannelType.MAIN).stream()
-					.anyMatch(mainChannel -> mainChannel.getId().equals(channel.getId()));
+			boolean main = channel instanceof GuildMessageChannel && plugin.isChannelType(channel.getId(), ChannelType.MAIN);
 
 			if (!main && !command) {
 				return;
@@ -89,7 +90,7 @@ public class MinecraftBridge {
 				}
 				warnings.put(id, true);
 				channel.createMessage(author.getMention() + ", you must run `/link` in Minecraft to use this feature!" +
-						"\nN.B. Linking is currently not enabled. Please contact an admin.");
+						"\nLinking is currently not enabled, sorry. Give me a bit.").subscribe();
 				return;
 			}
 
@@ -136,6 +137,23 @@ public class MinecraftBridge {
 			}
 
 		}, plugin, EventPriority.MONITOR));
+
+		UserLoadEvent.getHandlerList().register(new SimpleListener<>(UserLoadEvent.class, event -> {
+			if (!event.getUser().isOnline()) {
+				return;
+			}
+			String message = ChatColor.stripColor(event.getUser().getDisplayName()) + " logs in.";
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+					plugin.postMessage(ChannelType.MAIN, message);
+			});
+		}, plugin));
+
+		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event -> {
+			String message = ChatColor.stripColor(event.getPlayer().getDisplayName()) + " logs out.";
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+				plugin.postMessage(ChannelType.MAIN, message);
+			});
+		}, plugin));
 	}
 
 	private void handleCommand(DiscordUser user, String command, MessageChannel channel) {
@@ -221,9 +239,9 @@ public class MinecraftBridge {
 
 		if (event.getChannel().getName().equals(EasterlynChat.DEFAULT.getName())) {
 			plugin.postMessage(ChannelType.MAIN, message);
+		} else {
+			plugin.postMessage(ChannelType.LOG, message);
 		}
-
-		plugin.postMessage(ChannelType.LOG, message);
 
 	}
 
