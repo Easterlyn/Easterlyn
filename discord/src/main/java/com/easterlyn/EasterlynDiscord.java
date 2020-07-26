@@ -50,7 +50,7 @@ public class EasterlynDiscord extends JavaPlugin {
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
 			client = DiscordClientBuilder.create(token).setInitialPresence(Presence.online(Activity.playing("play.easterlyn.com"))).build();
 			new MinecraftBridge(this, client).setup();
-			client.login();
+			client.login().subscribe();
 		});
 
 		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event ->
