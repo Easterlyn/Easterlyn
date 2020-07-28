@@ -4,7 +4,6 @@ import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
-import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.event.SimpleListener;
@@ -29,6 +28,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import reactor.core.publisher.Mono;
@@ -138,22 +138,13 @@ public class MinecraftBridge {
 
 		}, plugin, EventPriority.MONITOR));
 
-		UserLoadEvent.getHandlerList().register(new SimpleListener<>(UserLoadEvent.class, event -> {
-			if (!event.getUser().isOnline()) {
-				return;
-			}
-			String message = ChatColor.stripColor(event.getUser().getDisplayName()) + " logs in.";
-			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-					plugin.postMessage(ChannelType.MAIN, message);
-			});
-		}, plugin));
+		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class, event ->
+			plugin.postMessage(ChannelType.MAIN, ChatColor.stripColor(event.getPlayer().getDisplayName()) + " logs in."),
+				plugin, EventPriority.MONITOR));
 
-		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event -> {
-			String message = ChatColor.stripColor(event.getPlayer().getDisplayName()) + " logs out.";
-			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-				plugin.postMessage(ChannelType.MAIN, message);
-			});
-		}, plugin));
+		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event ->
+				plugin.postMessage(ChannelType.MAIN, ChatColor.stripColor(event.getPlayer().getDisplayName()) + " logs out."),
+				plugin));
 	}
 
 	private void handleCommand(DiscordUser user, String command, MessageChannel channel) {

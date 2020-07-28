@@ -162,6 +162,11 @@ public class EasterlynDiscord extends JavaPlugin {
 			return;
 		}
 
+		if (getServer().isPrimaryThread()) {
+			getServer().getScheduler().runTaskAsynchronously(this, () -> postMessage(channelType, message));
+			return;
+		}
+
 		if (channelType == ChannelType.MAIN) {
 			postMessage(ChannelType.LOG, message);
 		}
