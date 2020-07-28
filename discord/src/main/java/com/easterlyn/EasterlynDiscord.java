@@ -7,12 +7,13 @@ import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.event.SimpleListener;
 import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
+import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
-import discord4j.core.object.entity.GuildMessageChannel;
+import discord4j.core.GatewayDiscordClient;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
-import discord4j.core.object.util.Snowflake;
 import java.io.File;
 import java.time.Duration;
 import java.util.Collection;
@@ -33,7 +34,7 @@ import reactor.core.publisher.Mono;
 public class EasterlynDiscord extends JavaPlugin {
 
 	private final Map<ChannelType, Pair<StringBuffer, Long>> messageQueue = new ConcurrentHashMap<>();
-	private DiscordClient client;
+	private GatewayDiscordClient client;
 	private ConcurrentConfiguration datastore;
 
 	@Override
@@ -48,9 +49,12 @@ public class EasterlynDiscord extends JavaPlugin {
 		}
 
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
-			client = DiscordClientBuilder.create(token).setInitialPresence(Presence.online(Activity.playing("play.easterlyn.com"))).build();
-			new MinecraftBridge(this, client).setup();
-			client.login().subscribe();
+			DiscordClient client = DiscordClientBuilder.create(token).build();
+			client.login().doOnSuccess(gatewayClient -> {
+				this.client = gatewayClient;
+				new MinecraftBridge(this, gatewayClient).setup();
+				gatewayClient.updatePresence(Presence.online(Activity.playing("play.easterlyn.com"))).subscribe();
+			}).subscribe();
 		});
 
 		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event ->
@@ -157,7 +161,7 @@ public class EasterlynDiscord extends JavaPlugin {
 	}
 
 	public void postMessage(ChannelType channelType, String message) {
-		if (!client.isConnected()) {
+		if (client == null) {
 			// TODO handle client not connected
 			return;
 		}
@@ -209,7 +213,7 @@ public class EasterlynDiscord extends JavaPlugin {
 	}
 
 	private void directPostMessage(ChannelType channelType, String message) {
-		if (!client.isConnected()) {
+		if (client == null) {
 			// TODO handle client not connected
 			return;
 		}

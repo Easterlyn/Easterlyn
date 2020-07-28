@@ -9,17 +9,17 @@ import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import discord4j.core.DiscordClient;
+import discord4j.common.util.Snowflake;
+import discord4j.core.GatewayDiscordClient;
 import discord4j.core.event.domain.message.MessageCreateEvent;
 import discord4j.core.object.entity.Attachment;
-import discord4j.core.object.entity.Channel;
-import discord4j.core.object.entity.GuildChannel;
-import discord4j.core.object.entity.GuildMessageChannel;
 import discord4j.core.object.entity.Message;
-import discord4j.core.object.entity.MessageChannel;
 import discord4j.core.object.entity.User;
+import discord4j.core.object.entity.channel.Channel;
+import discord4j.core.object.entity.channel.GuildChannel;
+import discord4j.core.object.entity.channel.GuildMessageChannel;
+import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
-import discord4j.core.object.util.Snowflake;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,11 +36,11 @@ import reactor.core.publisher.Mono;
 public class MinecraftBridge {
 
 	private final EasterlynDiscord plugin;
-	private final DiscordClient client;
+	private final GatewayDiscordClient client;
 	private final Cache<Snowflake, Boolean> warnings;
 	private final Pattern mention = Pattern.compile("<([@#]|:\\w+:)(\\d+)>");
 
-	public MinecraftBridge(EasterlynDiscord plugin, DiscordClient client) {
+	public MinecraftBridge(EasterlynDiscord plugin, GatewayDiscordClient client) {
 		this.plugin = plugin;
 		this.client = client;
 
@@ -61,7 +61,10 @@ public class MinecraftBridge {
 			}
 
 			User author = event.getMessage().getAuthor().get();
-			String msg = event.getMessage().getContent().orElse("");
+			String msg = event.getMessage().getContent();
+			if (msg == null) {
+				msg = "";
+			}
 			MessageChannel channel = event.getMessage().getChannel().block();
 
 			boolean command = msg.length() > 0 && msg.charAt(0) == '/';
@@ -152,10 +155,10 @@ public class MinecraftBridge {
 	}
 
 	private void handleDiscordChat(DiscordUser user, Message message) {
-		if (!message.getContent().isPresent() && message.getAttachments().isEmpty() || !message.getAuthor().isPresent()) {
+		String content = message.getContent();
+		if ((content == null || content.isEmpty()) && message.getAttachments().isEmpty() || !message.getAuthor().isPresent()) {
 			return;
 		}
-		String content = message.getContent().orElse("");
 		for (Attachment attachment : message.getAttachments()) {
 			if (!content.isEmpty()) {
 				content = content.concat(" ");
