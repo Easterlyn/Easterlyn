@@ -17,6 +17,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.serialization.ConfigurationSerializable;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -28,39 +31,91 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ConcurrentConfiguration implements Configuration {
 
+	private final Plugin plugin;
+	private final File file;
+	private final Object lock;
 	private final ConfigurationSection internal;
+	private boolean dirty = false;
+	private BukkitTask saveTask;
 
-	public ConcurrentConfiguration() {
-		this.internal = new YamlConfiguration();
+	public ConcurrentConfiguration(Plugin plugin) {
+		this(plugin, null, new Object(), new YamlConfiguration());
 	}
 
-	private ConcurrentConfiguration(ConfigurationSection configuration) {
-		this.internal = configuration;
+	private ConcurrentConfiguration(Plugin plugin, File file, Object lock, ConfigurationSection section) {
+		this.plugin = plugin;
+		this.file = file;
+		this.lock = lock;
+		this.internal = section;
 	}
 
-	public static ConcurrentConfiguration load(File file) {
-		return new ConcurrentConfiguration(YamlConfiguration.loadConfiguration(file));
+	public static ConcurrentConfiguration load(Plugin plugin, File file) {
+		return new ConcurrentConfiguration(plugin, file, new Object(), file != null ? YamlConfiguration.loadConfiguration(file) : new YamlConfiguration());
 	}
-
 
 	public void save(File file) throws IOException {
-		synchronized (internal) {
-			if (internal instanceof FileConfiguration) {
-				((FileConfiguration) internal).save(file);
-			} else if (internal.getRoot() instanceof FileConfiguration) {
+		if (this.file != null) {
+			throw new IllegalStateException("ConcurrentConfiguration is set to autosave!");
+		}
+		saveNow(file);
+	}
+
+	private void save() {
+		if (file == null || saveTask != null || !dirty) {
+			return;
+		}
+		try {
+			saveTask = new BukkitRunnable() {
+				@Override
+				public void run() {
+					try {
+						saveNow(file);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+
+				@Override
+				public synchronized void cancel() throws IllegalStateException {
+					super.cancel();
+					try {
+						saveNow(file);
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
+			}.runTaskLater(plugin, 200L);
+		} catch (IllegalStateException e) {
+			// Plugin is being disabled, cannot schedule tasks
+			try {
+				saveNow(file);
+			} catch (IOException ioException) {
+				ioException.printStackTrace();
+			}
+		}
+	}
+
+	private void saveNow(File file) throws IOException {
+		synchronized (lock) {
+			if (!this.dirty) {
+				return;
+			}
+
+			if (internal.getRoot() instanceof FileConfiguration) {
 				((FileConfiguration) internal.getRoot()).save(file);
 			} else {
 				throw new UnsupportedOperationException(
 						String.format("Cannot save internal ConfigurationSection implementation %s",
 								internal.getClass().getName()));
 			}
+			this.dirty = false;
 		}
 	}
 
 	@NotNull
 	@Override
 	public Set<String> getKeys(boolean deep) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getKeys(deep);
 		}
 	}
@@ -68,35 +123,35 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public Map<String, Object> getValues(boolean deep) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getValues(deep);
 		}
 	}
 
 	@Override
 	public boolean contains(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.contains(path);
 		}
 	}
 
 	@Override
 	public boolean contains(@NotNull String path, boolean ignoreDefault) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.contains(path, ignoreDefault);
 		}
 	}
 
 	@Override
 	public boolean isSet(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isSet(path);
 		}
 	}
 
 	@Override
 	public String getCurrentPath() {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getCurrentPath();
 		}
 	}
@@ -104,184 +159,186 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public String getName() {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getName();
 		}
 	}
 
 	@Override
 	public Configuration getRoot() {
-		synchronized (internal) {
-			return new ConcurrentConfiguration(internal.getRoot());
+		synchronized (lock) {
+			return new ConcurrentConfiguration(plugin, file, lock, internal.getRoot());
 		}
 	}
 
 	@Override
 	public ConfigurationSection getParent() {
-		synchronized (internal) {
-			return new ConcurrentConfiguration(internal.getParent());
+		synchronized (lock) {
+			return new ConcurrentConfiguration(plugin, file, lock, internal.getParent());
 		}
 	}
 
 	@Override
 	public Object get(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.get(path);
 		}
 	}
 
 	@Override
 	public Object get(@NotNull String path, Object defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.get(path, defaultValue);
 		}
 	}
 
 	@Override
 	public void set(@NotNull String path, Object value) {
-		synchronized (internal) {
+		synchronized (lock) {
 			internal.set(path, value);
+			dirty = true;
+			save();
 		}
 	}
 
 	@NotNull
 	@Override
 	public ConfigurationSection createSection(@NotNull String path) {
-		synchronized (internal) {
-			return new ConcurrentConfiguration(internal.createSection(path));
+		synchronized (lock) {
+			return new ConcurrentConfiguration(plugin, file, lock, internal.createSection(path));
 		}
 	}
 
 	@NotNull
 	@Override
 	public ConfigurationSection createSection(@NotNull String path, @NotNull Map<?, ?> mappings) {
-		synchronized (internal) {
-			return new ConcurrentConfiguration(internal.createSection(path, mappings));
+		synchronized (lock) {
+			return new ConcurrentConfiguration(plugin, file, lock, internal.createSection(path, mappings));
 		}
 	}
 
 	@Override
 	public String getString(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getString(path);
 		}
 	}
 
 	@Override
 	public String getString(@NotNull String path, String defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getString(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isString(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isString(path);
 		}
 	}
 
 	@Override
 	public int getInt(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getInt(path);
 		}
 	}
 
 	@Override
 	public int getInt(@NotNull String path, int defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getInt(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isInt(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isInt(path);
 		}
 	}
 
 	@Override
 	public boolean getBoolean(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getBoolean(path);
 		}
 	}
 
 	@Override
 	public boolean getBoolean(@NotNull String path, boolean defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getBoolean(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isBoolean(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isBoolean(path);
 		}
 	}
 
 	@Override
 	public double getDouble(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getDouble(path);
 		}
 	}
 
 	@Override
 	public double getDouble(@NotNull String path, double defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getDouble(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isDouble(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isDouble(path);
 		}
 	}
 
 	@Override
 	public long getLong(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getLong(path);
 		}
 	}
 
 	@Override
 	public long getLong(@NotNull String path, long defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getLong(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isLong(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isLong(path);
 		}
 	}
 
 	@Override
 	public List<?> getList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getList(path);
 		}
 	}
 
 	@Override
 	public List<?> getList(@NotNull String path, List<?> defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getList(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isList(path);
 		}
 	}
@@ -289,7 +346,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<String> getStringList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getStringList(path);
 		}
 	}
@@ -297,7 +354,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Integer> getIntegerList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getIntegerList(path);
 		}
 	}
@@ -305,7 +362,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Boolean> getBooleanList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getBooleanList(path);
 		}
 	}
@@ -313,7 +370,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Double> getDoubleList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getDoubleList(path);
 		}
 	}
@@ -321,7 +378,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Float> getFloatList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getFloatList(path);
 		}
 	}
@@ -329,7 +386,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Long> getLongList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getLongList(path);
 		}
 	}
@@ -337,7 +394,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Byte> getByteList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getByteList(path);
 		}
 	}
@@ -345,7 +402,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Character> getCharacterList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getCharacterList(path);
 		}
 	}
@@ -353,7 +410,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Short> getShortList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getShortList(path);
 		}
 	}
@@ -361,119 +418,119 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public List<Map<?, ?>> getMapList(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getMapList(path);
 		}
 	}
 
 	@Override
 	public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getObject(s, aClass);
 		}
 	}
 
 	@Override
 	public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass, T t) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getObject(s, aClass, t);
 		}
 	}
 
 	@Override
 	public <T extends ConfigurationSerializable> T getSerializable(@NotNull String s, @NotNull Class<T> aClass) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getSerializable(s, aClass);
 		}
 	}
 
 	@Override
 	public <T extends ConfigurationSerializable> T getSerializable(@NotNull String s, @NotNull Class<T> aClass, T t) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getSerializable(s, aClass, t);
 		}
 	}
 
 	@Override
 	public Vector getVector(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getVector(path);
 		}
 	}
 
 	@Override
 	public Vector getVector(@NotNull String path, Vector defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getVector(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isVector(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isVector(path);
 		}
 	}
 
 	@Override
 	public OfflinePlayer getOfflinePlayer(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getOfflinePlayer(path);
 		}
 	}
 
 	@Override
 	public OfflinePlayer getOfflinePlayer(@NotNull String path, OfflinePlayer defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getOfflinePlayer(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isOfflinePlayer(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isOfflinePlayer(path);
 		}
 	}
 
 	@Override
 	public ItemStack getItemStack(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getItemStack(path);
 		}
 	}
 
 	@Override
 	public ItemStack getItemStack(@NotNull String path, ItemStack defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getItemStack(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isItemStack(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isItemStack(path);
 		}
 	}
 
 	@Override
 	public Color getColor(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getColor(path);
 		}
 	}
 
 	@Override
 	public Color getColor(@NotNull String path, Color defaultValue) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getColor(path, defaultValue);
 		}
 	}
 
 	@Override
 	public boolean isColor(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isColor(path);
 		}
 	}
@@ -481,7 +538,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@Nullable
 	@Override
 	public Location getLocation(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getLocation(path);
 		}
 	}
@@ -489,63 +546,63 @@ public class ConcurrentConfiguration implements Configuration {
 	@Nullable
 	@Override
 	public Location getLocation(@NotNull String path, @Nullable Location location) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.getLocation(path, location);
 		}
 	}
 
 	@Override
 	public boolean isLocation(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isLocation(path);
 		}
 	}
 
 	@Override
 	public ConfigurationSection getConfigurationSection(@NotNull String path) {
-		synchronized (internal) {
-			return new ConcurrentConfiguration(internal.getConfigurationSection(path));
+		synchronized (lock) {
+			return new ConcurrentConfiguration(plugin, file, lock, internal.getConfigurationSection(path));
 		}
 	}
 
 	@Override
 	public boolean isConfigurationSection(@NotNull String path) {
-		synchronized (internal) {
+		synchronized (lock) {
 			return internal.isConfigurationSection(path);
 		}
 	}
 
 	@Override
 	public ConfigurationSection getDefaultSection() {
-		synchronized (internal) {
-			return new ConcurrentConfiguration(internal.getDefaultSection());
+		synchronized (lock) {
+			return new ConcurrentConfiguration(plugin, file, lock, internal.getDefaultSection());
 		}
 	}
 
 	@Override
 	public void addDefault(@NotNull String path, Object value) {
-		synchronized (internal) {
+		synchronized (lock) {
 			internal.addDefault(path, value);
 		}
 	}
 
 	@Override
 	public void addDefaults(@NotNull Map<String, Object> defaults) {
-		synchronized (internal) {
+		synchronized (lock) {
 			defaults.forEach(internal::addDefault);
 		}
 	}
 
 	@Override
 	public void addDefaults(@NotNull Configuration configuration) {
-		synchronized (internal) {
+		synchronized (lock) {
 			configuration.getKeys(false).forEach(key -> internal.addDefault(key, configuration.get(key)));
 		}
 	}
 
 	@Override
 	public void setDefaults(@NotNull Configuration configuration) {
-		synchronized (internal) {
+		synchronized (lock) {
 			ConfigurationSection defaultSection = internal.getDefaultSection();
 			if (defaultSection != null){
 				new HashSet<>(internal.getDefaultSection().getKeys(false)).forEach(key -> internal.addDefault(key, null));
@@ -557,7 +614,7 @@ public class ConcurrentConfiguration implements Configuration {
 
 	@Override
 	public Configuration getDefaults() {
-		synchronized (internal) {
+		synchronized (lock) {
 			return Objects.requireNonNull(internal.getRoot()).getDefaults();
 		}
 	}
@@ -565,7 +622,7 @@ public class ConcurrentConfiguration implements Configuration {
 	@NotNull
 	@Override
 	public ConfigurationOptions options() {
-		synchronized (internal) {
+		synchronized (lock) {
 			return Objects.requireNonNull(internal.getRoot()).options();
 		}
 	}

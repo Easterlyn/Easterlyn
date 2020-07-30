@@ -24,7 +24,7 @@ public class AutoUser extends User {
 	private final Map<String, String> userData;
 
 	public AutoUser(@NotNull EasterlynCore core, @NotNull Map<String, String> userData) {
-		super(core, new UUID(0, 0), new ConcurrentConfiguration());
+		super(core, new UUID(0, 0), new ConcurrentConfiguration(core));
 		this.userData = userData;
 	}
 

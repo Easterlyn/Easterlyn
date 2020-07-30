@@ -12,7 +12,6 @@ import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.command.Group;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import java.io.File;
-import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -262,21 +261,12 @@ public class User implements Group {
 		return plugin;
 	}
 
-	void save() {
-		File file = new File(plugin.getDataFolder().getPath() + File.separatorChar + "users", getUniqueId().toString() + ".yml");
-		try {
-			getStorage().save(file);
-		} catch (IOException e) {
-			throw new RuntimeException("Unable to save data for " + getUniqueId(), e);
-		}
-	}
-
 	@NotNull
 	static User load(@NotNull EasterlynCore plugin, @NotNull final UUID uuid) {
 		PluginManager pluginManager = plugin.getServer().getPluginManager();
 		File file = new File(plugin.getDataFolder().getPath() + File.separatorChar + "users", uuid.toString() + ".yml");
+		ConcurrentConfiguration storage = ConcurrentConfiguration.load(plugin, file);
 		if (file.exists()) {
-			ConcurrentConfiguration storage = ConcurrentConfiguration.load(file);
 			User user = new User(plugin, uuid, storage);
 			Player player = user.getPlayer();
 
@@ -295,7 +285,7 @@ public class User implements Group {
 
 		Player player = Bukkit.getPlayer(uuid);
 
-		User user = new User(plugin, uuid, new ConcurrentConfiguration());
+		User user = new User(plugin, uuid, new ConcurrentConfiguration(plugin));
 		if (player != null) {
 			user.getStorage().set("name", player.getName());
 			if (player.getAddress() != null) {

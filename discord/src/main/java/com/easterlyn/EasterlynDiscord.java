@@ -40,7 +40,7 @@ public class EasterlynDiscord extends JavaPlugin {
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
-		datastore = ConcurrentConfiguration.load(new File(getDataFolder(), "datastore.yml"));
+		datastore = ConcurrentConfiguration.load(this, new File(getDataFolder(), "datastore.yml"));
 
 		String token = getConfig().getString("token");
 		if (token == null || token.isEmpty()) {

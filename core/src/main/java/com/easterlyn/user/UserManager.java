@@ -17,6 +17,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -36,7 +37,6 @@ public class UserManager {
 				.removalListener(notification -> {
 			User user = (User) notification.getValue();
 			plugin.getServer().getPluginManager().callEvent(new UserUnloadEvent(user));
-			user.save();
 			PermissionUtil.releasePermissionData(user.getUniqueId());
 		}).build(new CacheLoader<UUID, User>() {
 			@Override
@@ -47,18 +47,20 @@ public class UserManager {
 			}
 		});
 
-		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class,
-				playerQuitEvent -> plugin.getServer().getScheduler().runTaskAsynchronously(
-						plugin, () -> {
-							User user = userCache.getIfPresent(playerQuitEvent.getPlayer().getUniqueId());
-							if (user != null) {
-								// Save on quit as well as unload just in case
-								user.save();
-								// Keep permissions loaded if userdata is still loaded
-								PermissionUtil.loadPermissionData(playerQuitEvent.getPlayer().getUniqueId());
-							}
-						}
-				), plugin));
+		AsyncPlayerPreLoginEvent.getHandlerList().register(new SimpleListener<>(AsyncPlayerPreLoginEvent.class, event -> {
+			if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+				getUser(event.getUniqueId());
+			}
+		}, plugin));
+
+		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event ->
+				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+					User user = userCache.getIfPresent(event.getPlayer().getUniqueId());
+					if (user != null) {
+						// Keep permissions loaded if userdata is still loaded
+						PermissionUtil.loadPermissionData(event.getPlayer().getUniqueId());
+					}
+				}), plugin));
 
 		StringUtil.addQuoteConsumer(new QuoteConsumer() {
 			@Override
