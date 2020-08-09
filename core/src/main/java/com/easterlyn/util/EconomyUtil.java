@@ -75,6 +75,7 @@ public class EconomyUtil {
 			switch (itemStack.getType()) {
 				case DRAGON_BREATH:
 				case FIREWORK_STAR:
+				case HONEY_BOTTLE:
 				case PAPER:
 					// Special case: items used for unique cards, slips, or objects.
 					throw new ArithmeticException("item is unique");
