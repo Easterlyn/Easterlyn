@@ -7,10 +7,15 @@ import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.event.SimpleListener;
 import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
+import com.google.common.cache.CacheBuilder;
+import com.google.common.cache.CacheLoader;
+import com.google.common.cache.LoadingCache;
 import discord4j.common.util.Snowflake;
 import discord4j.core.DiscordClient;
 import discord4j.core.DiscordClientBuilder;
 import discord4j.core.GatewayDiscordClient;
+import discord4j.core.object.entity.Guild;
+import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.presence.Activity;
 import discord4j.core.object.presence.Presence;
@@ -22,6 +27,8 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Phaser;
+import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.server.PluginEnableEvent;
@@ -34,28 +41,31 @@ import reactor.core.publisher.Mono;
 public class EasterlynDiscord extends JavaPlugin {
 
 	private final Map<ChannelType, Pair<StringBuffer, Long>> messageQueue = new ConcurrentHashMap<>();
-	private GatewayDiscordClient client;
 	private ConcurrentConfiguration datastore;
+	private LoadingCache<Object, Object> pendingAuthentications;
+	private GatewayDiscordClient client;
 
 	@Override
 	public void onEnable() {
 		saveDefaultConfig();
 		datastore = ConcurrentConfiguration.load(this, new File(getDataFolder(), "datastore.yml"));
+		pendingAuthentications = CacheBuilder.newBuilder()
+				.expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<>() {
+					@Override
+					public Object load(@NotNull Object key) {
+						if (!(key instanceof UUID)) {
+							throw new IllegalArgumentException("Key must be a UUID");
+						}
+						String code;
+						do {
+							code = generateCode();
+						} while (pendingAuthentications.getIfPresent(code) != null);
+						pendingAuthentications.put(code, key);
+						return code;
+					}
+				});
 
-		String token = getConfig().getString("token");
-		if (token == null || token.isEmpty()) {
-			getLogger().warning("No token provided! Nothing to do.");
-			return;
-		}
-
-		getServer().getScheduler().runTaskAsynchronously(this, () -> {
-			DiscordClient client = DiscordClientBuilder.create(token).build();
-			client.login().doOnSuccess(gatewayClient -> {
-				this.client = gatewayClient;
-				new MinecraftBridge(this, gatewayClient).setup();
-				gatewayClient.updatePresence(Presence.online(Activity.playing("play.easterlyn.com"))).subscribe();
-			}).subscribe();
-		});
+		connect();
 
 		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event ->
 				postMessage(ChannelType.REPORT, event.getMessage() + (event.hasTrace() ? event.getTrace() : "")), this));
@@ -70,6 +80,23 @@ public class EasterlynDiscord extends JavaPlugin {
 				register((EasterlynCore) event.getPlugin());
 			}
 		}, this));
+	}
+
+	private void connect() {
+		String token = getConfig().getString("token");
+		if (token == null || token.isEmpty()) {
+			getLogger().warning("No token provided! Nothing to do.");
+			return;
+		}
+
+		getServer().getScheduler().runTaskAsynchronously(this, () -> {
+			DiscordClient client = DiscordClientBuilder.create(token).build();
+			client.login().doOnSuccess(gatewayClient -> {
+				this.client = gatewayClient;
+				new MinecraftBridge(this, gatewayClient).setup();
+				gatewayClient.updatePresence(Presence.online(Activity.playing("play.easterlyn.com"))).subscribe();
+			}).subscribe();
+		});
 	}
 
 	private void register(EasterlynCore plugin) {
@@ -133,21 +160,16 @@ public class EasterlynDiscord extends JavaPlugin {
 
 			phaser.register();
 			client.getGuildById(guildID)
-					.flatMap(guild -> guild.getChannelById(channelID).cast(GuildMessageChannel.class).doOnSuccess(collection::add))
-					.doOnSuccessOrError((obj, thrown) -> {
-						if (thrown != null) {
-							thrown.printStackTrace();
-						}
-						phaser.arriveAndDeregister();
-					}).subscribe();
+					.flatMap(guild -> guild.getChannelById(channelID).cast(GuildMessageChannel.class)
+							.doOnSuccess(collection::add)).doOnError(Throwable::printStackTrace)
+					.doOnTerminate(phaser::arriveAndDeregister).subscribe();
 		}
 
 		phaser.arriveAndAwaitAdvance();
 		return collection;
 	}
 
-	@Nullable
-	public DiscordUser getUser(@NotNull Snowflake id) throws IllegalStateException {
+	public @Nullable DiscordUser getUser(@NotNull Snowflake id) throws IllegalStateException {
 		String uuidString = datastore.getString("link." + id.asString());
 		if (uuidString == null) {
 			return null;
@@ -155,13 +177,42 @@ public class EasterlynDiscord extends JavaPlugin {
 		return getUser(UUID.fromString(uuidString));
 	}
 
-	@NotNull
-	public DiscordUser getUser(@NotNull UUID uuid) throws IllegalStateException {
+	public @NotNull DiscordUser getUser(@NotNull UUID uuid) throws IllegalStateException {
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration == null) {
 			throw new IllegalStateException("EasterlynCore not enabled!");
 		}
 		return new DiscordUser(registration.getProvider().getUserManager().getUser(uuid));
+	}
+
+	public @NotNull String getPendingLink(@NotNull UUID uuid) {
+		return (String) pendingAuthentications.getUnchecked(uuid);
+	}
+
+	public @Nullable UUID getPendingLink(@NotNull String code) {
+		return (UUID) pendingAuthentications.getIfPresent(code);
+	}
+
+	public @NotNull Mono<Snowflake> getFirstMemberSnowflake(@NotNull String string) {
+		try {
+			return Mono.justOrEmpty(Snowflake.of(string));
+		} catch (NumberFormatException ignored) {}
+
+		String id = string.toLowerCase();
+
+		return client.getGuilds().flatMap(Guild::getMembers)
+				.skipUntil(member -> member.getDisplayName().toLowerCase().startsWith(id) || member.getTag().toLowerCase().startsWith(id))
+				.next().map(Member::getId);
+	}
+
+	public void addLink(@NotNull UUID uuid, @NotNull Snowflake snowflake) {
+		Object linkCode = pendingAuthentications.getIfPresent(uuid);
+		if (linkCode != null) {
+			pendingAuthentications.invalidate(uuid);
+			pendingAuthentications.invalidate(linkCode);
+		}
+
+		datastore.set("link." + snowflake.asString(), uuid.toString());
 	}
 
 	public void postMessage(ChannelType channelType, String message) {
@@ -240,10 +291,16 @@ public class EasterlynDiscord extends JavaPlugin {
 			return;
 		}
 
-
 		getChannelIDs(channelType).forEach(channel -> channel.createMessage(finalMessage).subscribe());
-
 	}
 
+	private static String generateCode() {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < 6; i++) {
+			String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+			sb.append(chars.charAt(ThreadLocalRandom.current().nextInt(chars.length())));
+		}
+		return sb.toString();
+	}
 
 }

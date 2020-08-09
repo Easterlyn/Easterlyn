@@ -4,8 +4,6 @@ import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
-import com.easterlyn.user.UserRank;
-import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -20,6 +18,7 @@ import discord4j.core.object.entity.channel.GuildChannel;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
 import discord4j.core.object.entity.channel.MessageChannel;
 import discord4j.core.object.reaction.ReactionEmoji;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -31,6 +30,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 
 public class MinecraftBridge {
@@ -49,11 +49,6 @@ public class MinecraftBridge {
 	}
 
 	public void setup() {
-		PermissionUtil.addParent("easterlyn.command.unlogged", UserRank.MODERATOR.getPermission());
-
-		// TODO
-		// PlayerCommandPreprocessEvent MONITOR -> log commands
-		// PlayerJoinEvent/PlayerQuitEvent -> post
 
 		client.getEventDispatcher().on(MessageCreateEvent.class).flatMap(event -> Mono.fromRunnable(() -> {
 			if (event.getMessage().getAuthor().isEmpty() || event.getMessage().getAuthor().get().isBot()) {
@@ -64,21 +59,31 @@ public class MinecraftBridge {
 			String msg = event.getMessage().getContent();
 			MessageChannel channel = event.getMessage().getChannel().block();
 
-			boolean command = msg.startsWith(plugin.getCommandPrefix());
+			String command = null;
+			String commandData = null;
+			if (msg.startsWith(plugin.getCommandPrefix())) {
+				int prefixLength = plugin.getCommandPrefix().length();
+				int space = msg.indexOf(' ');
+				if (space < prefixLength) {
+					space = msg.length();
+				}
+				command = msg.substring(prefixLength, space).toLowerCase();
+				commandData = msg.substring(space < msg.length() ? space + 1 : space);
+			}
 
-//			if (command) {
-//				if (channel instanceof TextChannel) {
-//					event.getMessage().delete();
-//				}
-				// TODO command handling changes
-//				if (plugin.handleDiscordCommand(msg, author, channel)) {
-//					return;
-//				}
-//			}
+			if (command != null && command.equals("link")) {
+				UUID pendingLink = plugin.getPendingLink(commandData);
+				if (pendingLink == null) {
+					channel.createMessage("Invalid link code! If your code has expired, rerun `/link` in Minecraft for a new one." +
+							"\nIf you're having trouble, try clicking the message to copy the code!");
+				} else {
+					plugin.addLink(pendingLink, author.getId());
+				}
+			}
 
 			boolean main = channel instanceof GuildMessageChannel && plugin.isChannelType(channel.getId(), ChannelType.MAIN);
 
-			if (!main && !command) {
+			if (!main && command == null) {
 				return;
 			}
 
@@ -89,13 +94,12 @@ public class MinecraftBridge {
 					return;
 				}
 				warnings.put(id, true);
-				channel.createMessage(author.getMention() + ", you must run `/link` in Minecraft to use this feature!" +
-						"\nLinking is currently not enabled, sorry. Give me a bit.").subscribe();
+				channel.createMessage(author.getMention() + ", you must run `/link` in Minecraft to use this feature!").subscribe();
 				return;
 			}
 
-			if (command) {
-				handleCommand(sender, msg, channel);
+			if (command != null) {
+				handleCommand(sender, channel, command, commandData);
 				return;
 			}
 
@@ -117,7 +121,7 @@ public class MinecraftBridge {
 		}, plugin));
 
 		PlayerCommandPreprocessEvent.getHandlerList().register(new SimpleListener<>(PlayerCommandPreprocessEvent.class, event -> {
-			if (event.getPlayer().hasPermission("easterlyn.command.unlogged")) {
+			if (event.getPlayer().hasPermission("easterlyn.discord.exempt.commandlog")) {
 				return;
 			}
 			RegisteredServiceProvider<EasterlynCore> registration = plugin.getServer().getServicesManager().getRegistration(EasterlynCore.class);
@@ -147,7 +151,8 @@ public class MinecraftBridge {
 				plugin));
 	}
 
-	private void handleCommand(DiscordUser user, String command, MessageChannel channel) {
+	private void handleCommand(@NotNull DiscordUser user, @NotNull MessageChannel channel,
+			@NotNull String command, @NotNull String commandData) {
 		// TODO
 	}
 
