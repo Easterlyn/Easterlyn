@@ -77,6 +77,10 @@ public class EasterlynDiscord extends JavaPlugin {
 		plugin.getLocaleManager().addLocaleSupplier(this);
 	}
 
+	public String getCommandPrefix() {
+		return "/";
+	}
+
 	public boolean isChannelType(Snowflake channelID, ChannelType type) {
 		ConfigurationSection guildSection = this.getConfig().getConfigurationSection("guilds");
 		if (guildSection == null) {

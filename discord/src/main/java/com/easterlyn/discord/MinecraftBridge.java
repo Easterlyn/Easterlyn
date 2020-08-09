@@ -56,18 +56,15 @@ public class MinecraftBridge {
 		// PlayerJoinEvent/PlayerQuitEvent -> post
 
 		client.getEventDispatcher().on(MessageCreateEvent.class).flatMap(event -> Mono.fromRunnable(() -> {
-			if (!event.getMessage().getAuthor().isPresent() || event.getMessage().getAuthor().get().isBot()) {
+			if (event.getMessage().getAuthor().isEmpty() || event.getMessage().getAuthor().get().isBot()) {
 				return;
 			}
 
 			User author = event.getMessage().getAuthor().get();
 			String msg = event.getMessage().getContent();
-			if (msg == null) {
-				msg = "";
-			}
 			MessageChannel channel = event.getMessage().getChannel().block();
 
-			boolean command = msg.length() > 0 && msg.charAt(0) == '/';
+			boolean command = msg.startsWith(plugin.getCommandPrefix());
 
 //			if (command) {
 //				if (channel instanceof TextChannel) {
@@ -156,7 +153,7 @@ public class MinecraftBridge {
 
 	private void handleDiscordChat(DiscordUser user, Message message) {
 		String content = message.getContent();
-		if ((content == null || content.isEmpty()) && message.getAttachments().isEmpty() || !message.getAuthor().isPresent()) {
+		if (content.isBlank() && message.getAttachments().isEmpty() || message.getAuthor().isEmpty()) {
 			return;
 		}
 		for (Attachment attachment : message.getAttachments()) {
