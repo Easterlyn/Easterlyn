@@ -16,7 +16,7 @@ import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.v1_16_R1.enchantments.CraftEnchantment;
+import org.bukkit.craftbukkit.v1_16_R2.enchantments.CraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.CampfireRecipe;
 import org.bukkit.inventory.CookingRecipe;
@@ -290,9 +290,9 @@ public class EconomyUtil {
 	 * @return the cost of the enchantment
 	 */
 	private static double getEnchantCost(Enchantment enchantment, double level, boolean stored) {
-		double enchantCost = net.minecraft.server.v1_16_R1.Enchantment.Rarity.COMMON.a() + 10
+		double enchantCost = net.minecraft.server.v1_16_R2.Enchantment.Rarity.COMMON.a() + 10
 				- (enchantment instanceof CraftEnchantment ? ((CraftEnchantment) enchantment).getHandle().d().a()
-				: net.minecraft.server.v1_16_R1.Enchantment.Rarity.UNCOMMON.a());
+				: net.minecraft.server.v1_16_R2.Enchantment.Rarity.UNCOMMON.a());
 		enchantCost *= (stored ? 60 : 65);
 		// Balance: Base cost on percentage of max level, not only current level
 		enchantCost *= Math.pow(2D, Math.abs(level)) / Math.pow(2D, enchantment.getMaxLevel());

@@ -7,11 +7,13 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Default;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
+import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Private;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
+import com.easterlyn.command.CoreContexts;
 import com.easterlyn.util.StringUtil;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -34,7 +36,7 @@ public class LinkCommand extends BaseCommand {
 
 	@Default
 	@Private
-	public void link(Player issuer) {
+	public void link(@Flags(CoreContexts.SELF) Player issuer) {
 		String pendingLink = discord.getPendingLink(issuer.getUniqueId());
 		String message = core.getLocaleManager().getValue("discord.commands.link.code", core.getLocaleManager().getLocale(issuer),
 				"{value}", pendingLink);
@@ -67,7 +69,11 @@ public class LinkCommand extends BaseCommand {
 
 	@Private
 	@CommandAlias("link")
-	public void link(Player issuer, @SuppressWarnings("unused") String assistMeICannotBeReliedUponToRead) {
+	@Description("{@@discord.commands.link.description.self}")
+	@CommandPermission("easterlyn.command.link.self")
+	@Syntax("")
+	@CommandCompletion("")
+	public void link(@Flags(CoreContexts.SELF) Player issuer, @SuppressWarnings("unused") String assistMeICannotBeReliedUponToRead) {
 		core.getLocaleManager().sendMessage(issuer, "discord.commands.link.reading_comprehension");
 		link(issuer);
 	}

@@ -6,15 +6,15 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import net.minecraft.server.v1_16_R1.IRecipe;
-import net.minecraft.server.v1_16_R1.ItemStack;
-import net.minecraft.server.v1_16_R1.MinecraftKey;
-import net.minecraft.server.v1_16_R1.RecipeItemStack;
+import net.minecraft.server.v1_16_R2.IRecipe;
+import net.minecraft.server.v1_16_R2.ItemStack;
+import net.minecraft.server.v1_16_R2.MinecraftKey;
+import net.minecraft.server.v1_16_R2.RecipeItemStack;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R1.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_16_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R2.util.CraftMagicNumbers;
 import org.bukkit.inventory.Recipe;
 
 /**
@@ -31,9 +31,9 @@ public class RecipeWrapper {
 		Preconditions.checkArgument(recipe instanceof Keyed, "%s does not implement Keyed!", recipe.getClass());
 		Keyed keyed = ((Keyed) recipe);
 		Optional<? extends IRecipe<?>> iRecipeOptional = ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager()
-				.a(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
+				.getRecipe(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
 
-		if (!iRecipeOptional.isPresent()) {
+		if (iRecipeOptional.isEmpty()) {
 			ingredients = Collections.emptyMap();
 			result = new org.bukkit.inventory.ItemStack(Material.AIR);
 			return;

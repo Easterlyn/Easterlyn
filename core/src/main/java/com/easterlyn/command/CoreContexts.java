@@ -15,6 +15,7 @@ import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.PlayerUtil;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -61,12 +62,20 @@ public class CoreContexts {
 		plugin.getCommandManager().getCommandContexts().registerContext(int.class, intResolver);
 		plugin.getCommandManager().getCommandContexts().registerContext(Integer.class, intResolver);
 
+		plugin.getCommandManager().getCommandContexts().registerContext(UUID.class, context -> {
+			String firstArg = context.popFirstArg();
+			try {
+				return UUID.fromString(firstArg);
+			} catch (IllegalArgumentException e) {
+				throw new InvalidCommandArgument("UUID required"); // TODO lang
+			}
+			// TODO allow fetching by player after
+		});
 
 		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(BukkitCommandIssuer.class,
 				CommandExecutionContext::getIssuer);
 
-		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(Player.class,
-				new IssuerAwareContextResolver <Player, BukkitCommandExecutionContext>() {
+		plugin.getCommandManager().getCommandContexts().registerIssuerAwareContext(Player.class, new IssuerAwareContextResolver<>() {
 
 			@Override
 			public Player getContext(BukkitCommandExecutionContext context) throws InvalidCommandArgument {
@@ -159,7 +168,7 @@ public class CoreContexts {
 			return new Date(Math.addExact(System.currentTimeMillis(), duration));
 		});
 
-		plugin.getCommandManager().getCommandContexts().registerContext(ChatColor.class, new ContextResolver<ChatColor, BukkitCommandExecutionContext>() {
+		plugin.getCommandManager().getCommandContexts().registerContext(ChatColor.class, new ContextResolver<>() {
 			@Override
 			public ChatColor getContext(BukkitCommandExecutionContext context1) throws InvalidCommandArgument {
 				ChatColor matched = Colors.getOrDefault(context1.popFirstArg(), null);
@@ -181,8 +190,8 @@ public class CoreContexts {
 			private void invalid(BukkitCommandExecutionContext context1) {
 				throw new InvalidCommandArgument(MessageKeys.PLEASE_SPECIFY_ONE_OF, "{valid}",
 						Arrays.stream(org.bukkit.ChatColor.values()).filter(chatColor -> context1.hasFlag("format")
-							? chatColor.isFormat() : !context1.hasFlag("colour") || chatColor.isColor())
-							.map(Enum::name).collect(Collectors.joining(", ", "[", "]")));
+								? chatColor.isFormat() : !context1.hasFlag("colour") || chatColor.isColor())
+								.map(Enum::name).collect(Collectors.joining(", ", "[", "]")));
 			}
 		});
 

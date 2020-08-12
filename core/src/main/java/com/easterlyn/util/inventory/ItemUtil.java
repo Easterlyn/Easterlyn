@@ -24,12 +24,13 @@ import java.util.function.Function;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_16_R1.NBTCompressedStreamTools;
-import net.minecraft.server.v1_16_R1.NBTTagCompound;
+import net.md_5.bungee.api.chat.hover.content.Text;
+import net.minecraft.server.v1_16_R2.NBTCompressedStreamTools;
+import net.minecraft.server.v1_16_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CookingRecipe;
@@ -505,7 +506,7 @@ public class ItemUtil {
 
 	public static ItemStack getAsItem(InputStream stream) throws IOException {
 		NBTTagCompound nbtTagCompound = NBTCompressedStreamTools.a(stream);
-		return CraftItemStack.asBukkitCopy(net.minecraft.server.v1_16_R1.ItemStack.a(nbtTagCompound));
+		return CraftItemStack.asBukkitCopy(net.minecraft.server.v1_16_R2.ItemStack.a(nbtTagCompound));
 	}
 
 	public static void writeItemToFile(ItemStack itemStack, File file) throws IOException {
@@ -517,7 +518,7 @@ public class ItemUtil {
 
 	@NotNull
 	private static HoverEvent getItemHover(@NotNull ItemStack itemStack) {
-		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new BaseComponent[] { new TextComponent(getAsText(itemStack)) });
+		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Text(new BaseComponent[] { new TextComponent(getAsText(itemStack)) }));
 	}
 
 }
