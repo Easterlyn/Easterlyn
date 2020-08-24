@@ -9,6 +9,7 @@ import net.luckperms.api.cacheddata.CachedPermissionData;
 import net.luckperms.api.model.user.User;
 import net.luckperms.api.query.QueryOptions;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
@@ -102,6 +103,12 @@ public class PermissionUtil {
 	}
 
 	public static void releasePermissionData(UUID uuid) {
+		Player player = Bukkit.getPlayer(uuid);
+		if (player != null) {
+			// Player is online, do not release data
+			return;
+		}
+
 		RegisteredServiceProvider<LuckPerms> registration = Bukkit.getServicesManager().getRegistration(LuckPerms.class);
 		if (registration == null) {
 			return;

@@ -10,6 +10,7 @@ import com.easterlyn.user.UserManager;
 import com.easterlyn.util.BlockUpdateManager;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.LocaleManager;
+import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.event.SimpleListener;
 import com.google.common.collect.HashMultimap;
@@ -19,6 +20,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.server.PluginDisableEvent;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.ServicePriority;
@@ -75,6 +78,9 @@ public class EasterlynCore extends JavaPlugin {
 				getLogger().warning(event.getTrace());
 			}
 		}, this));
+
+		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class,
+				event -> PlayerUtil.removeFromCache(event.getPlayer().getUniqueId()), this, EventPriority.LOW));
 
 	}
 

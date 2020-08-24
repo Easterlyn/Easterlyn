@@ -1,5 +1,6 @@
 package com.easterlyn.util.wrapper;
 
+import com.easterlyn.EasterlynCore;
 import com.easterlyn.util.PermissionUtil;
 import java.net.InetSocketAddress;
 import java.util.Collection;
@@ -7,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.Phaser;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Effect;
@@ -80,14 +82,25 @@ import org.jetbrains.annotations.Nullable;
 public class PermissiblePlayer implements Player {
 
 	private final Player player;
+	private final Phaser phaser;
 
 	public PermissiblePlayer(Player player) {
 		this.player = player;
-		PermissionUtil.loadPermissionData(player.getUniqueId());
+		this.phaser = new Phaser(1);
+		if (Bukkit.isPrimaryThread()) {
+			Bukkit.getScheduler().runTaskAsynchronously(EasterlynCore.getPlugin(EasterlynCore.class), () -> {
+				PermissionUtil.loadPermissionData(player.getUniqueId());
+				phaser.arriveAndDeregister();
+			});
+		} else {
+			PermissionUtil.loadPermissionData(player.getUniqueId());
+			phaser.arriveAndDeregister();
+		}
 	}
 
 	@Override
 	public boolean hasPermission(@NotNull String arg0) {
+		phaser.awaitAdvance(phaser.getPhase() + 1);
 		return PermissionUtil.hasPermission(getUniqueId(), arg0);
 	}
 
