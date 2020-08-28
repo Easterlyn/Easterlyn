@@ -1,6 +1,8 @@
 package com.easterlyn.util;
 
+import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.inventory.ItemUtil;
+import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -9,6 +11,8 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import net.minecraft.server.v1_16_R2.BlockPosition;
 import net.minecraft.server.v1_16_R2.IBlockData;
+import net.minecraft.server.v1_16_R2.Item;
+import net.minecraft.server.v1_16_R2.ItemTool;
 import net.minecraft.server.v1_16_R2.TileEntity;
 import net.minecraft.server.v1_16_R2.TileEntityFurnace;
 import net.minecraft.server.v1_16_R2.WorldServer;
@@ -49,6 +53,24 @@ import org.jetbrains.annotations.Nullable;
 public class BlockUtil {
 
 	private static final Set<BiFunction<Block, ItemStack, Boolean>> BLOCK_FUNCTIONS = new HashSet<>();
+	private static final Field ITEMTOOL_A;
+
+	static {
+		Field fieldItemToolA;
+		try {
+			fieldItemToolA = ItemTool.class.getDeclaredField("a");
+			fieldItemToolA.setAccessible(true);
+			Class<?> type = fieldItemToolA.getType();
+			if (!Set.class.isAssignableFrom(type)) {
+				throw new NoSuchFieldException("DiggerItem.blocks is no longer mapped to ItemTool.a!");
+			}
+		} catch (NoSuchFieldException e) {
+			e.printStackTrace();
+			fieldItemToolA = null;
+		}
+
+		ITEMTOOL_A = fieldItemToolA;
+	}
 
 	public static Collection<ItemStack> getDrops(@Nullable ItemStack tool, @NotNull Block block) {
 		if (tool == null) {
@@ -113,14 +135,61 @@ public class BlockUtil {
 		}
 	}
 
-	private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material broken) {
-		net.minecraft.server.v1_16_R2.Block block = CraftMagicNumbers.getBlock(broken);
+	public static boolean isToolRequired(@NotNull Material blockType) {
+		net.minecraft.server.v1_16_R2.Block block = CraftMagicNumbers.getBlock(blockType);
+
 		if (block == null) {
 			return false;
 		}
+
 		IBlockData data = block.getBlockData();
-		return /*data.getMaterial().isAlwaysDestroyable() ||*/ tool != null && tool.getType() != Material.AIR // TODO FIXME
-				&& CraftMagicNumbers.getItem(tool.getType()).canDestroySpecialBlock(data);
+
+		return !data.getMaterial().isReplaceable() && data.isRequiresSpecialTool();
+	}
+
+	public static boolean isCorrectTool(@Nullable ItemStack tool, @NotNull Material blockType) {
+		if (!isToolRequired(blockType)) {
+			return true;
+		}
+
+		if (ITEMTOOL_A == null) {
+			return isUsableTool(tool, blockType);
+		}
+
+		if (tool == null || tool.getType().isAir()) {
+			return false;
+		}
+
+		Item item = CraftMagicNumbers.getItem(tool.getType());
+
+		if (!(item instanceof ItemTool)) {
+			return false;
+		}
+
+		try {
+			Set<?> toolBlocks = (Set<?>) ITEMTOOL_A.get(item);
+			return toolBlocks.contains(CraftMagicNumbers.getBlock(blockType));
+		} catch (IllegalAccessException | ClassCastException e) {
+			ReportableEvent.call("Exception fetching list of blocks breakable by tool!", e, 10);
+			return isUsableTool(tool, blockType);
+		}
+	}
+
+	private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material blockType) {
+		net.minecraft.server.v1_16_R2.Block block = CraftMagicNumbers.getBlock(blockType);
+
+		if (block == null) {
+			return false;
+		}
+
+		IBlockData data = block.getBlockData();
+
+		if (data.getMaterial().isReplaceable() || !data.isRequiresSpecialTool()) {
+			// Instant break or always breakable
+			return true;
+		}
+
+		return tool != null && tool.getType() != Material.AIR && CraftMagicNumbers.getItem(tool.getType()).canDestroySpecialBlock(data);
 	}
 
 	public static void addRightClickFunction(@NotNull BiFunction<Block, ItemStack, Boolean> function) {
@@ -134,22 +203,25 @@ public class BlockUtil {
 		}
 
 		Block block = event.getClickedBlock();
+		Material blockType = block.getType();
+
+		if (blockType.isInteractable()) {
+			return true;
+		}
+
 		ItemStack hand = ItemUtil.getHeldItem(event);
 
-		switch (block.getType()) {
-			case END_STONE:
-				// Special case: player is probably attempting to bottle dragon's breath
-				return block.getWorld().getEnvironment() == World.Environment.THE_END
-						&& hand.getType() == Material.GLASS_BOTTLE;
-			case CARTOGRAPHY_TABLE:
-			case CRAFTING_TABLE:
-			case DRAGON_EGG:
-			case LOOM:
-			case STONECUTTER:
-				return true;
-			default:
-				break;
+		if (blockType == Material.END_STONE) {
+			// Special case: player is probably attempting to bottle dragon's breath
+			return block.getWorld().getEnvironment() == World.Environment.THE_END
+					&& hand.getType() == Material.GLASS_BOTTLE;
 		}
+
+		// TODO Log stripping, path creation, etc. special tool interactions are not accounted for
+		/*Item item = CraftMagicNumbers.getItem(hand.getType());
+		if (item instanceof ItemAxe) {
+			// need reflection ItemAxe.a
+		}*/
 
 		BlockState state = block.getState();
 		if (state instanceof InventoryHolder || state instanceof TileState) {
