@@ -12,7 +12,7 @@ import com.easterlyn.util.Colors;
 import com.easterlyn.util.LocaleManager;
 import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.StringUtil;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.lang.reflect.Constructor;
@@ -66,21 +66,21 @@ public class EasterlynCore extends JavaPlugin {
 		// Listener for preventing ruining unique items
 		getServer().getPluginManager().registerEvents(new UniqueListener(), this);
 
-		PluginDisableEvent.getHandlerList().register(new SimpleListener<>(PluginDisableEvent.class, event -> {
+		Event.register(PluginDisableEvent.class, event -> {
 			if (pluginCommands.containsKey(event.getPlugin().getClass())) {
 				pluginCommands.get(event.getPlugin().getClass()).forEach(commandManager::unregisterCommand);
 			}
-		}, this));
+		}, this);
 
-		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event -> {
+		Event.register(ReportableEvent.class, event -> {
 			getLogger().warning(event.getMessage());
 			if (event.hasTrace()) {
 				getLogger().warning(event.getTrace());
 			}
-		}, this));
+		}, this);
 
-		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class,
-				event -> PlayerUtil.removeFromCache(event.getPlayer().getUniqueId()), this, EventPriority.LOW));
+		Event.register(PlayerJoinEvent.class,
+				event -> PlayerUtil.removeFromCache(event.getPlayer().getUniqueId()), this, EventPriority.LOW);
 
 	}
 

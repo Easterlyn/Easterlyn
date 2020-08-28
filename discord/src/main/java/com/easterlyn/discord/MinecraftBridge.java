@@ -4,7 +4,7 @@ import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import discord4j.common.util.Snowflake;
@@ -110,7 +110,7 @@ public class MinecraftBridge {
 			return Mono.empty();
 		}).thenReturn(event)).subscribe();
 
-		UserChatEvent.getHandlerList().register(new SimpleListener<>(UserChatEvent.class, event -> {
+		Event.register(UserChatEvent.class, event -> {
 			// TODO may want to try to softdepend on chat instead of hard
 			if (event.isAsynchronous()) {
 				handleMinecraftChat(event);
@@ -118,9 +118,9 @@ public class MinecraftBridge {
 				// Ensure handling is done asynchronously even if chat is somehow sent on main thread
 				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> handleMinecraftChat(event));
 			}
-		}, plugin));
+		}, plugin);
 
-		PlayerCommandPreprocessEvent.getHandlerList().register(new SimpleListener<>(PlayerCommandPreprocessEvent.class, event -> {
+		Event.register(PlayerCommandPreprocessEvent.class, event -> {
 			if (event.getPlayer().hasPermission("easterlyn.discord.exempt.commandlog")) {
 				return;
 			}
@@ -140,15 +140,15 @@ public class MinecraftBridge {
 				plugin.postMessage(ChannelType.LOG, event.getPlayer().getName() + " issued command: " + event.getMessage());
 			}
 
-		}, plugin, EventPriority.MONITOR));
+		}, plugin, EventPriority.MONITOR);
 
-		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class, event ->
+		Event.register(PlayerJoinEvent.class, event ->
 			plugin.postMessage(ChannelType.MAIN, ChatColor.stripColor(event.getPlayer().getDisplayName()) + " logs in."),
-				plugin, EventPriority.MONITOR));
+				plugin, EventPriority.MONITOR);
 
-		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event ->
+		Event.register(PlayerQuitEvent.class, event ->
 				plugin.postMessage(ChannelType.MAIN, ChatColor.stripColor(event.getPlayer().getDisplayName()) + " logs out."),
-				plugin));
+				plugin);
 	}
 
 	private void handleCommand(@NotNull DiscordUser user, @NotNull MessageChannel channel,

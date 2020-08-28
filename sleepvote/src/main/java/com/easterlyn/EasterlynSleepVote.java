@@ -1,6 +1,6 @@
 package com.easterlyn;
 
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.Bukkit;
@@ -29,27 +29,23 @@ public class EasterlynSleepVote extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class,
-				event -> getServer().getScheduler().runTask(this,
-						() -> updateBar(event.getPlayer().getWorld())), this));
+		Event.register(PlayerJoinEvent.class, event -> getServer().getScheduler().runTask(this,
+				() -> updateBar(event.getPlayer().getWorld())), this);
 
-		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class,
-				event -> getServer().getScheduler().runTask(this,
-						() -> updateBar(event.getPlayer().getWorld())), this));
+		Event.register(PlayerQuitEvent.class, event -> getServer().getScheduler().runTask(this,
+				() -> updateBar(event.getPlayer().getWorld())), this);
 
-		PlayerBedLeaveEvent.getHandlerList().register(new SimpleListener<>(PlayerBedLeaveEvent.class,
-				event -> getServer().getScheduler().runTask(this,
-						() -> updateBar(event.getPlayer().getWorld())), this));
+		Event.register(PlayerBedLeaveEvent.class, event -> getServer().getScheduler().runTask(this,
+				() -> updateBar(event.getPlayer().getWorld())), this);
 
-		PlayerBedEnterEvent.getHandlerList().register(new SimpleListener<>(PlayerBedEnterEvent.class,
-				event -> getServer().getScheduler().runTaskLater(this,
-						() -> updateBar(event.getPlayer().getWorld()), 510L), this));
+		Event.register(PlayerBedEnterEvent.class, event -> getServer().getScheduler().runTaskLater(this,
+				() -> updateBar(event.getPlayer().getWorld()), 510L), this);
 
-		PlayerChangedWorldEvent.getHandlerList().register(new SimpleListener<>(PlayerChangedWorldEvent.class,
-				event -> getServer().getScheduler().runTask(this, () -> {
+		Event.register(PlayerChangedWorldEvent.class, event -> getServer().getScheduler().runTask(this,
+				() -> {
 					updateBar(event.getFrom());
 					updateBar(event.getPlayer().getWorld());
-				}), this));
+				}), this);
 	}
 
 	private void updateBar(World world) {

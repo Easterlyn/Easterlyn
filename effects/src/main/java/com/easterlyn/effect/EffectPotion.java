@@ -18,7 +18,7 @@ public abstract class EffectPotion extends Effect {
 	private final int duration;
 
 	EffectPotion(@NotNull EasterlynEffects plugin, @NotNull PotionEffectType effect) {
-		this(plugin, effect, 200, EquipmentSlots.ALL, 500, 2, 10);
+		this(plugin, effect, 200, EquipmentSlots.ALL, 500, 2, 5);
 	}
 
 	EffectPotion(@NotNull EasterlynEffects plugin, @NotNull PotionEffectType effect, int duration,

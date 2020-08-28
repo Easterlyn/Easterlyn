@@ -3,7 +3,7 @@ package com.easterlyn;
 import com.easterlyn.captcha.CaptchaListener;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.NumberUtil;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -48,7 +48,7 @@ public class EasterlynCaptchas extends JavaPlugin {
 
 	private final LoadingCache<String, ItemStack> cache = CacheBuilder.newBuilder().expireAfterAccess(30, TimeUnit.MINUTES)
 			.removalListener((RemovalListener<String, ItemStack>) notification -> save(notification.getKey(), notification.getValue()))
-			.build(new CacheLoader<String, ItemStack>() {
+			.build(new CacheLoader<>() {
 
 				@Override
 				public ItemStack load(@NotNull String hash) throws Exception {
@@ -91,11 +91,11 @@ public class EasterlynCaptchas extends JavaPlugin {
 			register(registration.getProvider());
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
+		Event.register(PluginEnableEvent.class, event -> {
 			if (event.getPlugin() instanceof EasterlynCore) {
 				register((EasterlynCore) event.getPlugin());
 			}
-		}, this));
+		}, this);
 
 		// TODO quote matcher for {captcha:code}
 

@@ -38,6 +38,7 @@ import org.bukkit.block.data.BlockData;
 import org.bukkit.conversations.Conversation;
 import org.bukkit.conversations.ConversationAbandonedEvent;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityCategory;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Pose;
@@ -192,6 +193,11 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public void setShoulderEntityRight(Entity entity) {
 		player.setShoulderEntityRight(entity);
+	}
+
+	@Override
+	public boolean dropItem(boolean b) {
+		return player.dropItem(b);
 	}
 
 	@NotNull
@@ -1721,6 +1727,11 @@ public class PermissiblePlayer implements Player {
 	@Override
 	public <T> void setMemory(@NotNull MemoryKey<T> memoryKey, @Nullable T t) {
 		player.setMemory(memoryKey, t);
+	}
+
+	@Override
+	public @NotNull EntityCategory getCategory() {
+		return player.getCategory();
 	}
 
 	@Override

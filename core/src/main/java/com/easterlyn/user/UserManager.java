@@ -5,7 +5,7 @@ import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.easterlyn.util.text.ParsedText;
 import com.easterlyn.util.text.QuoteConsumer;
 import com.google.common.cache.CacheBuilder;
@@ -38,7 +38,7 @@ public class UserManager {
 			User user = (User) notification.getValue();
 			plugin.getServer().getPluginManager().callEvent(new UserUnloadEvent(user));
 			PermissionUtil.releasePermissionData(user.getUniqueId());
-		}).build(new CacheLoader<UUID, User>() {
+		}).build(new CacheLoader<>() {
 			@Override
 			public User load(@NotNull final UUID uuid) {
 				User user = User.load(plugin, uuid);
@@ -47,20 +47,20 @@ public class UserManager {
 			}
 		});
 
-		AsyncPlayerPreLoginEvent.getHandlerList().register(new SimpleListener<>(AsyncPlayerPreLoginEvent.class, event -> {
+		Event.register(AsyncPlayerPreLoginEvent.class, event -> {
 			if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
 				getUser(event.getUniqueId());
 			}
-		}, plugin));
+		}, plugin);
 
-		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event ->
+		Event.register(PlayerQuitEvent.class, event ->
 				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 					User user = userCache.getIfPresent(event.getPlayer().getUniqueId());
 					if (user != null) {
 						// Keep permissions loaded if userdata is still loaded
 						PermissionUtil.loadPermissionData(event.getPlayer().getUniqueId());
 					}
-				}), plugin));
+				}), plugin);
 
 		StringUtil.addQuoteConsumer(new QuoteConsumer() {
 			@Override

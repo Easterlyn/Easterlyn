@@ -3,7 +3,7 @@ package com.easterlyn;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.NumberUtil;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.easterlyn.util.inventory.ItemUtil;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -30,29 +30,28 @@ public class EasterlynVillagers extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		ChunkLoadEvent.getHandlerList().register(new SimpleListener<>(ChunkLoadEvent.class,
-				event -> getServer().getScheduler().runTask(this, () -> {
-					for (Entity entity : event.getChunk().getEntities()) {
-						if (entity instanceof Merchant) {
-							adjustMerchant((Merchant) entity);
-						}
-					}
-				}), this));
+		Event.register(ChunkLoadEvent.class, event -> getServer().getScheduler().runTask(this, () -> {
+			for (Entity entity : event.getChunk().getEntities()) {
+				if (entity instanceof Merchant) {
+					adjustMerchant((Merchant) entity);
+				}
+			}
+		}), this);
 
-		EntitySpawnEvent.getHandlerList().register(new SimpleListener<>(EntitySpawnEvent.class, event -> {
+		Event.register(EntitySpawnEvent.class, event -> {
 			if (event.getEntity() instanceof Merchant) {
 				adjustMerchant((Merchant) event.getEntity());
 			}
-		}, this));
+		}, this);
 
-		VillagerAcquireTradeEvent.getHandlerList().register(new SimpleListener<>(VillagerAcquireTradeEvent.class, event -> {
+		Event.register(VillagerAcquireTradeEvent.class, event -> {
 			MerchantRecipe adjustRecipe = adjustRecipe(event.getRecipe());
 			if (adjustRecipe == null) {
 				event.setCancelled(true);
 			} else {
 				event.setRecipe(adjustRecipe);
 			}
-		}, this));
+		}, this);
 	}
 
 	@SuppressWarnings("unused") // IDE does not recognize indirect usage.

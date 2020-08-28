@@ -21,7 +21,7 @@ import com.easterlyn.kitchensink.listener.OnlyWitherKillsItems;
 import com.easterlyn.kitchensink.listener.PVPKeepInventory;
 import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
 import com.easterlyn.kitchensink.listener.WitherFacts;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
@@ -126,12 +126,12 @@ public class EasterlynKitchenSink extends JavaPlugin {
 			register(registration.getProvider());
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class,
+		Event.register(PluginEnableEvent.class,
 				pluginEnableEvent -> {
 					if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
 						register((EasterlynCore) pluginEnableEvent.getPlugin());
 					}
-				}, this));
+				}, this);
 	}
 
 	@Override

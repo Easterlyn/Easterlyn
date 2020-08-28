@@ -4,7 +4,7 @@ import com.easterlyn.discord.ChannelType;
 import com.easterlyn.discord.DiscordUser;
 import com.easterlyn.discord.MinecraftBridge;
 import com.easterlyn.event.ReportableEvent;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import com.google.common.cache.CacheBuilder;
@@ -67,19 +67,19 @@ public class EasterlynDiscord extends JavaPlugin {
 
 		connect();
 
-		ReportableEvent.getHandlerList().register(new SimpleListener<>(ReportableEvent.class, event ->
-				postMessage(ChannelType.REPORT, event.getMessage() + (event.hasTrace() ? event.getTrace() : "")), this));
+		Event.register(ReportableEvent.class, event ->
+				postMessage(ChannelType.REPORT, event.getMessage() + (event.hasTrace() ? event.getTrace() : "")), this);
 
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {
 			register(registration.getProvider());
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
+		Event.register(PluginEnableEvent.class, event -> {
 			if (event.getPlugin() instanceof EasterlynCore) {
 				register((EasterlynCore) event.getPlugin());
 			}
-		}, this));
+		}, this);
 	}
 
 	private void connect() {

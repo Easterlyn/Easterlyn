@@ -5,7 +5,7 @@ import com.easterlyn.machine.Machine;
 import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.CoordinateUtil;
 import com.easterlyn.util.Direction;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.tuple.Pair;
 import com.easterlyn.util.wrapper.BlockMap;
@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -34,7 +35,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.HandlerList;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockEvent;
 import org.bukkit.event.block.BlockFadeEvent;
@@ -103,7 +103,7 @@ public class EasterlynMachines extends JavaPlugin {
 			iconRegistry.put(machine.getUniqueDrop(), machine);
 		});
 
-		BlockPlaceEvent.getHandlerList().register(new SimpleListener<>(BlockPlaceEvent.class, event -> {
+		Event.register(BlockPlaceEvent.class, event -> {
 
 			Player player = event.getPlayer();
 
@@ -148,12 +148,12 @@ public class EasterlynMachines extends JavaPlugin {
 					break;
 				}
 			}
-		}, this, EventPriority.HIGHEST));
+		}, this, EventPriority.HIGHEST);
 
 		hookCreeperHeal();
 
 		// Machine event handlers
-		PlayerInteractEvent.getHandlerList().register(new SimpleListener<>(PlayerInteractEvent.class, event -> {
+		Event.register(PlayerInteractEvent.class, event -> {
 			if (event.getClickedBlock() == null) {
 				return;
 			}
@@ -161,8 +161,8 @@ public class EasterlynMachines extends JavaPlugin {
 			if (machine != null) {
 				machine.getLeft().handleInteract(event, machine.getRight());
 			}
-		}, this, EventPriority.LOW));
-		InventoryMoveItemEvent.getHandlerList().register(new SimpleListener<>(InventoryMoveItemEvent.class, event -> {
+		}, this, EventPriority.LOW);
+		Event.register(InventoryMoveItemEvent.class, event -> {
 			InventoryHolder inventoryHolder = event.getDestination().getHolder();
 			// For now, sending inv is not checked, as no machines require it.
 			if (inventoryHolder instanceof BlockState) {
@@ -171,8 +171,8 @@ public class EasterlynMachines extends JavaPlugin {
 					pair.getLeft().handleHopperMoveItem(event, pair.getRight());
 				}
 			}
-		}, this, EventPriority.LOW));
-		InventoryPickupItemEvent.getHandlerList().register(new SimpleListener<>(InventoryPickupItemEvent.class, event -> {
+		}, this, EventPriority.LOW);
+		Event.register(InventoryPickupItemEvent.class, event -> {
 			InventoryHolder inventoryHolder = event.getInventory().getHolder();
 			// For now, sending inv is not checked, as no machines require it.
 			if (inventoryHolder instanceof BlockState) {
@@ -181,64 +181,69 @@ public class EasterlynMachines extends JavaPlugin {
 					pair.getLeft().handleHopperPickupItem(event, pair.getRight());
 				}
 			}
-		}, this, EventPriority.LOW));
-		registerInventoryEvent(InventoryClickEvent.class, InventoryClickEvent.getHandlerList(), machine -> machine::handleClick);
-		registerInventoryEvent(InventoryDragEvent.class, InventoryDragEvent.getHandlerList(), machine -> machine::handleDrag);
-		registerInventoryEvent(InventoryOpenEvent.class, InventoryOpenEvent.getHandlerList(), machine -> machine::handleOpen);
-		registerInventoryEvent(InventoryCloseEvent.class, InventoryCloseEvent.getHandlerList(), machine -> machine::handleClose);
-		InventoryCloseEvent.getHandlerList().register(new SimpleListener<>(InventoryCloseEvent.class, event -> {
+		}, this, EventPriority.LOW);
+		registerInventoryEvent(InventoryClickEvent.class, machine -> machine::handleClick);
+		registerInventoryEvent(InventoryDragEvent.class, machine -> machine::handleDrag);
+		registerInventoryEvent(InventoryOpenEvent.class, machine -> machine::handleOpen);
+		registerInventoryEvent(InventoryCloseEvent.class, machine -> machine::handleClose);
+		Event.register(InventoryCloseEvent.class, event -> {
 			if (event.getView().getTopInventory() instanceof MerchantInventory) {
 				merchants.remove(((MerchantInventory) event.getView().getTopInventory()).getMerchant());
 			}
-		}, this, EventPriority.HIGH));
-		TradeSelectEvent.getHandlerList().register(new SimpleListener<>(TradeSelectEvent.class, event -> {
+		}, this, EventPriority.HIGH);
+		Event.register(TradeSelectEvent.class, event -> {
 			Pair<Machine, ConfigurationSection> machineData = merchants.get(event.getMerchant());
 			if (machineData != null) {
 				machineData.getLeft().selectTrade(event, machineData.getRight());
 			}
-		}, this));
+		}, this);
 
-		BlockPistonExtendEvent.getHandlerList().register(new SimpleListener<>(BlockPistonExtendEvent.class, event -> {
+		Event.register(BlockPistonExtendEvent.class, event -> {
 			if (isMachine(event.getBlock()) || event.getBlocks().stream().anyMatch(this::isMachine)) {
 				event.setCancelled(true);
 			}
-		}, this, EventPriority.LOW));
-		BlockPistonRetractEvent.getHandlerList().register(new SimpleListener<>(BlockPistonRetractEvent.class, event -> {
+		}, this, EventPriority.LOW);
+		Event.register(BlockPistonRetractEvent.class, event -> {
 			if (isMachine(event.getBlock()) || event.getBlocks().stream().anyMatch(this::isMachine)) {
 				event.setCancelled(true);
 			}
-		}, this, EventPriority.LOW));
-		SimpleListener<PlayerBucketEvent> bucketListener = new SimpleListener<>(PlayerBucketEvent.class, event -> {
+		}, this, EventPriority.LOW);
+		Event.register(PlayerBucketEmptyEvent.class, event -> {
 			if (isMachine(event.getBlockClicked().getRelative(event.getBlockFace()))) {
 				// If we do end up creating a lava well etc. this will need to be added to an event.
 				event.setCancelled(true);
 			}
 		}, this, EventPriority.LOW);
-		PlayerBucketEmptyEvent.getHandlerList().register(bucketListener);
-		PlayerBucketFillEvent.getHandlerList().register(bucketListener);
-		registerBlockEvent(BlockBreakEvent.class, BlockBreakEvent.getHandlerList(), machine -> machine::handleBreak);
-		registerBlockEvent(BlockFadeEvent.class, BlockFadeEvent.getHandlerList(), machine -> machine::handleFade);
-		registerBlockEvent(BlockFromToEvent.class, BlockFromToEvent.getHandlerList(), machine -> machine::handleFromTo);
-		registerBlockEvent(BlockIgniteEvent.class, BlockIgniteEvent.getHandlerList(), machine -> machine::handleIgnite);
-		registerBlockEvent(BlockSpreadEvent.class, BlockSpreadEvent.getHandlerList(), machine -> machine::handleSpread);
+		Consumer<PlayerBucketEvent> bucketConsumer = event -> {
+			if (isMachine(event.getBlockClicked().getRelative(event.getBlockFace()))) {
+				event.setCancelled(true);
+			}
+		};
+		Event.register(PlayerBucketEmptyEvent.class, bucketConsumer::accept, this, EventPriority.LOW);
+		Event.register(PlayerBucketFillEvent.class, bucketConsumer::accept, this, EventPriority.LOW);
+		registerBlockEvent(BlockBreakEvent.class, machine -> machine::handleBreak);
+		registerBlockEvent(BlockFadeEvent.class, machine -> machine::handleFade);
+		registerBlockEvent(BlockFromToEvent.class, machine -> machine::handleFromTo);
+		registerBlockEvent(BlockIgniteEvent.class, machine -> machine::handleIgnite);
+		registerBlockEvent(BlockSpreadEvent.class, machine -> machine::handleSpread);
 
 		// Prevent all external machine manipulation
-		BlockPhysicsEvent.getHandlerList().register(new SimpleListener<>(BlockPhysicsEvent.class, event -> {
+		Event.register(BlockPhysicsEvent.class, event -> {
 			if (isMachine(event.getBlock())) {
 				event.setCancelled(true);
 			}
-		}, this));
-		EntityChangeBlockEvent.getHandlerList().register(new SimpleListener<>(EntityChangeBlockEvent.class, event -> {
+		}, this);
+		Event.register(EntityChangeBlockEvent.class, event -> {
 			if (isMachine(event.getBlock())) {
 				event.setCancelled(true);
 			}
-		}, this));
+		}, this);
 
-		ChunkLoadEvent.getHandlerList().register(new SimpleListener<>(ChunkLoadEvent.class,
-				event -> getServer().getScheduler().runTask(this, () -> loadChunkMachines(event.getChunk())), this));
+		Event.register(ChunkLoadEvent.class, event ->
+				getServer().getScheduler().runTask(this, () -> loadChunkMachines(event.getChunk())), this);
 		// TODO periodic save system (timer triggered by chunk unload?)
-		ChunkUnloadEvent.getHandlerList().register(new SimpleListener<>(ChunkUnloadEvent.class,
-				event -> getServer().getScheduler().runTask(this, () -> unloadChunkMachines(event.getChunk())), this));
+		Event.register(ChunkUnloadEvent.class, event -> getServer().getScheduler().runTask(this,
+				() -> unloadChunkMachines(event.getChunk())), this);
 
 		for (World world : getServer().getWorlds()) {
 			if (getConfig().getStringList("+disabled-worlds+").contains(world.getName())) {
@@ -254,12 +259,11 @@ public class EasterlynMachines extends JavaPlugin {
 			register(registration.getProvider());
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class,
-				pluginEnableEvent -> {
-					if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
-						register((EasterlynCore) pluginEnableEvent.getPlugin());
-					}
-				}, this));
+		Event.register(PluginEnableEvent.class, pluginEnableEvent -> {
+			if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
+				register((EasterlynCore) pluginEnableEvent.getPlugin());
+			}
+		}, this);
 	}
 
 	private void register(@NotNull EasterlynCore plugin) {
@@ -524,7 +528,7 @@ public class EasterlynMachines extends JavaPlugin {
 	}
 
 	private void hookCreeperHeal() {
-		EntityExplodeEvent.getHandlerList().register(new SimpleListener<>(EntityExplodeEvent.class, event -> {
+		Event.register(EntityExplodeEvent.class, event -> {
 			if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")
 					&& CreeperConfig.getWorld(event.getLocation().getWorld().getName()).shouldReplace(event.getEntity())
 					&& event.getEntityType() != EntityType.ENDER_DRAGON) {
@@ -538,14 +542,14 @@ public class EasterlynMachines extends JavaPlugin {
 
 			// CreeperHeal is not set to heal whatever destroyed this machine. Prevent damage.
 			event.blockList().removeIf(block -> blocksToKeys.get(block) != null);
-		}, this));
+		}, this);
 
 		try {
 			Class.forName("com.nitnelave.CreeperHeal.events.CHBlockHealEvent");
 		} catch (ClassNotFoundException e) {
 			return;
 		}
-		CHBlockHealEvent.getHandlerList().register(new SimpleListener<>(CHBlockHealEvent.class, event -> {
+		Event.register(CHBlockHealEvent.class, event -> {
 			Boolean shouldRestore = this.exploded.get(event.getBlock().getBlock());
 			if (shouldRestore != null) {
 				exploded.remove(event.getBlock().getBlock());
@@ -560,12 +564,12 @@ public class EasterlynMachines extends JavaPlugin {
 				}
 				event.setCancelled(true);
 			}
-		}, this));
+		}, this);
 	}
 
-	private <T extends BlockEvent> void registerBlockEvent(Class<T> clazz, HandlerList handlerList,
+	private <T extends BlockEvent> void registerBlockEvent(Class<T> clazz,
 			Function<Machine, BiConsumer<T, ConfigurationSection>> consumer) {
-		handlerList.register(new SimpleListener<>(clazz, event -> {
+		Event.register(clazz, event -> {
 			Pair<Machine, ConfigurationSection> machine = getMachine(event.getBlock());
 			if (machine == null) {
 				return;
@@ -575,12 +579,12 @@ public class EasterlynMachines extends JavaPlugin {
 			} catch (Exception exception) {
 				ReportableEvent.call("Caught exception handling Machine event", exception, 5);
 			}
-		}, this, EventPriority.LOW, true));
+		}, this, EventPriority.LOW);
 	}
 
-	private <T extends InventoryEvent> void registerInventoryEvent(Class<T> clazz, HandlerList handlerList,
+	private <T extends InventoryEvent> void registerInventoryEvent(Class<T> clazz,
 			Function<Machine, BiConsumer<T, ConfigurationSection>> consumer) {
-		handlerList.register(new SimpleListener<>(clazz, event -> {
+		Event.register(clazz, event -> {
 			Machine machine;
 			ConfigurationSection section = null;
 			Pair<Machine, ConfigurationSection> machineData = getInventoryMachine(event.getView().getTopInventory());
@@ -604,7 +608,7 @@ public class EasterlynMachines extends JavaPlugin {
 			} catch (Exception exception) {
 				ReportableEvent.call("Caught exception handling Machine event", exception, 5);
 			}
-		}, this, EventPriority.LOW, true));
+		}, this, EventPriority.LOW, true);
 	}
 
 	private @Nullable Pair<Machine, ConfigurationSection> getInventoryMachine(Inventory inventory) {

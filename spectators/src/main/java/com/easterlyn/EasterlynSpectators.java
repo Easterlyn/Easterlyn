@@ -3,7 +3,7 @@ package com.easterlyn;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.PermissionUtil;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -32,7 +32,7 @@ public class EasterlynSpectators extends JavaPlugin {
 		PermissionUtil.addParent("easterlyn.spectators.unrestricted", UserRank.STAFF.getPermission());
 		PermissionUtil.addParent("easterlyn.spectators.nightvision", UserRank.MODERATOR.getPermission());
 
-		BlockBreakEvent.getHandlerList().register(new SimpleListener<>(BlockBreakEvent.class, event -> {
+		Event.register(BlockBreakEvent.class, event -> {
 			if (event.getPlayer().hasPermission("easterlyn.spectators.unrestricted")) {
 				return;
 			}
@@ -59,9 +59,9 @@ public class EasterlynSpectators extends JavaPlugin {
 					block.setType(Material.STONE);
 				}
 			}
-		}, this, EventPriority.LOW));
+		}, this, EventPriority.LOW);
 
-		PlayerQuitEvent.getHandlerList().register(new SimpleListener<>(PlayerQuitEvent.class, event -> {
+		Event.register(PlayerQuitEvent.class, event -> {
 			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 			if (registration == null) {
 				return;
@@ -79,9 +79,9 @@ public class EasterlynSpectators extends JavaPlugin {
 			}
 
 			player.teleport(spectateReturn);
-		}, this));
+		}, this);
 
-		PlayerJoinEvent.getHandlerList().register(new SimpleListener<>(PlayerJoinEvent.class, event -> {
+		Event.register(PlayerJoinEvent.class, event -> {
 			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 			if (registration == null) {
 				return;
@@ -102,9 +102,9 @@ public class EasterlynSpectators extends JavaPlugin {
 			if (player.getGameMode() == GameMode.SPECTATOR) {
 				player.setGameMode(GameMode.SURVIVAL);
 			}
-		}, this));
+		}, this);
 
-		PlayerTeleportEvent.getHandlerList().register(new SimpleListener<>(PlayerTeleportEvent.class, event -> {
+		Event.register(PlayerTeleportEvent.class, event -> {
 			if (event.getCause() != PlayerTeleportEvent.TeleportCause.SPECTATE) {
 				return;
 			}
@@ -128,9 +128,9 @@ public class EasterlynSpectators extends JavaPlugin {
 				event.setCancelled(true);
 				player.sendMessage("Spectating via hotbar is currently disabled. Please use `/spectpa`!");
 			}
-		}, this));
+		}, this);
 
-		PlayerGameModeChangeEvent.getHandlerList().register(new SimpleListener<>(PlayerGameModeChangeEvent.class, event -> {
+		Event.register(PlayerGameModeChangeEvent.class, event -> {
 			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 			if (registration == null) {
 				return;
@@ -146,19 +146,18 @@ public class EasterlynSpectators extends JavaPlugin {
 			if (spectateReturn != null) {
 				event.setCancelled(true);
 			}
-		}, this));
+		}, this);
 
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {
 			register(registration.getProvider());
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class,
-				pluginEnableEvent -> {
-					if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
-						register((EasterlynCore) pluginEnableEvent.getPlugin());
-					}
-				}, this));
+		Event.register(PluginEnableEvent.class, pluginEnableEvent -> {
+			if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
+				register((EasterlynCore) pluginEnableEvent.getPlugin());
+			}
+		}, this);
 	}
 
 	private void register(EasterlynCore plugin) {

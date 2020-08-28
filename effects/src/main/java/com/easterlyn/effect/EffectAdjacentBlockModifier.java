@@ -26,6 +26,8 @@ public abstract class EffectAdjacentBlockModifier extends Effect {
 		super(plugin, name, EquipmentSlots.TOOL, cost, 1, 1);
 		this.faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
 				BlockFace.EAST, BlockFace.WEST };
+
+
 	}
 
 	@Override

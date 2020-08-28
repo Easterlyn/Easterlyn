@@ -3,7 +3,7 @@ package com.easterlyn;
 import com.easterlyn.effect.Effect;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.NumberUtil;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.easterlyn.util.tuple.Pair;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -22,7 +22,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -74,34 +73,32 @@ public class EasterlynEffects extends JavaPlugin {
 			}
 		}
 
+		// TODO event per effect, Effect#tick?
 		// Register events for effects
-		BlockBreakEvent.getHandlerList().register(new SimpleListener<>(BlockBreakEvent.class,
-				event -> applyEffects(event.getPlayer(), event), this));
-		FurnaceExtractEvent.getHandlerList().register(new SimpleListener<>(FurnaceExtractEvent.class,
-				event -> applyEffects(event.getPlayer(), event), this));
-		EntityDamageEvent.getHandlerList().register(new SimpleListener<>(EntityDamageEvent.class, event -> {
+		Event.register(BlockBreakEvent.class, event -> applyEffects(event.getPlayer(), event), this);
+		Event.register(FurnaceExtractEvent.class, event -> applyEffects(event.getPlayer(), event), this);
+		Event.register(EntityDamageEvent.class, event -> {
 			if (event.getEntity() instanceof LivingEntity) {
 				applyEffects((LivingEntity) event.getEntity(), event);
 			}
 			if (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof LivingEntity) {
 				applyEffects((LivingEntity) ((EntityDamageByEntityEvent) event).getDamager(), event);
 			}
-		}, this));
-		PlayerInteractEvent.getHandlerList().register(new SimpleListener<>(PlayerInteractEvent.class,
-				event -> applyEffects(event.getPlayer(), event), this, EventPriority.NORMAL, false));
-		PlayerChangedWorldEvent.getHandlerList().register(new SimpleListener<>(PlayerChangedWorldEvent.class,
-				event -> applyEffects(event.getPlayer(), event), this));
+		}, this);
+		Event.register(PlayerInteractEvent.class, event ->
+				applyEffects(event.getPlayer(), event), this, EventPriority.NORMAL, false);
+		Event.register(PlayerChangedWorldEvent.class, event -> applyEffects(event.getPlayer(), event), this);
 
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {
 			register(registration.getProvider());
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
+		Event.register(PluginEnableEvent.class, event -> {
 			if (event.getPlugin() instanceof EasterlynCore) {
 				register((EasterlynCore) event.getPlugin());
 			}
-		}, this));
+		}, this);
 
 		getServer().getScheduler().runTaskTimer(this, () -> {
 			for (Player player : getServer().getOnlinePlayers()) {
@@ -167,7 +164,7 @@ public class EasterlynEffects extends JavaPlugin {
 	 *
 	 * @param entity the LivingEntity
 	 */
-	private void applyEffects(@NotNull LivingEntity entity, @Nullable Event event) {
+	private void applyEffects(@NotNull LivingEntity entity, @Nullable org.bukkit.event.Event event) {
 		EntityEquipment equipment = entity.getEquipment();
 		if (equipment == null) {
 			return;

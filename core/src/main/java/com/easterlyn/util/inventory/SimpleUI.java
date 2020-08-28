@@ -1,7 +1,7 @@
 package com.easterlyn.util.inventory;
 
 import com.easterlyn.util.GenericUtil;
-import com.easterlyn.util.event.KeyedListener;
+import com.easterlyn.util.event.Event;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,9 +20,9 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.plugin.RegisteredListener;
 import org.jetbrains.annotations.NotNull;
 
+@SuppressWarnings("unused")
 public class SimpleUI implements InventoryHolder {
 
 	private final Plugin plugin;
@@ -38,15 +38,7 @@ public class SimpleUI implements InventoryHolder {
 	}
 
 	private void registerEvents(Plugin plugin) {
-		for (RegisteredListener registeredListener : InventoryClickEvent.getHandlerList().getRegisteredListeners()) {
-			if (registeredListener instanceof KeyedListener) {
-				if (((KeyedListener<?>) registeredListener).getKey().equals("SimpleUI-" + plugin.getName())) {
-					return;
-				}
-			}
-		}
-
-		InventoryClickEvent.getHandlerList().register(new KeyedListener<>(InventoryClickEvent.class, event -> {
+		Event.register(InventoryClickEvent.class, event -> {
 			if (!(event.getView().getTopInventory().getHolder() instanceof SimpleUI)) {
 				return;
 			}
@@ -70,7 +62,7 @@ public class SimpleUI implements InventoryHolder {
 			if (button != null) {
 				button.getConsumer().accept(event);
 			}
-		}, plugin, "SimpleUI-" + plugin.getName(), EventPriority.LOW));
+		}, plugin, "SimpleUI-" + plugin.getName(), EventPriority.LOW);
 	}
 
 	public void addButton(Button button) {

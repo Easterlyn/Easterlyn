@@ -3,7 +3,7 @@ package com.easterlyn;
 import com.easterlyn.netherportals.listener.TeleportListener;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.Shape;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,12 +37,11 @@ public class EasterlynNetherPortals extends JavaPlugin {
 			registration.getProvider().getLocaleManager().addLocaleSupplier(this);
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class,
-				pluginEnableEvent -> {
-					if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
-						((EasterlynCore) pluginEnableEvent.getPlugin()).getLocaleManager().addLocaleSupplier(this);
-					}
-				}, this));
+		Event.register(PluginEnableEvent.class, pluginEnableEvent -> {
+			if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
+				((EasterlynCore) pluginEnableEvent.getPlugin()).getLocaleManager().addLocaleSupplier(this);
+			}
+		}, this);
 	}
 
 	@Nullable

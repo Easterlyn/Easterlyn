@@ -19,7 +19,7 @@ import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
-import com.easterlyn.util.event.SimpleListener;
+import com.easterlyn.util.event.Event;
 import com.easterlyn.util.text.ParsedText;
 import com.easterlyn.util.text.StaticQuoteConsumer;
 import java.lang.reflect.Constructor;
@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -72,11 +73,11 @@ public class EasterlynChat extends JavaPlugin {
 			register(registration.getProvider());
 		}
 
-		PluginEnableEvent.getHandlerList().register(new SimpleListener<>(PluginEnableEvent.class, event -> {
+		Event.register(PluginEnableEvent.class, event -> {
 			if (event.getPlugin() instanceof EasterlynCore) {
 				register((EasterlynCore) event.getPlugin());
 			}
-		}, this));
+		}, this);
 
 		// Permission to use >greentext.
 		PermissionUtil.getOrCreate("easterlyn.chat.greentext", PermissionDefault.TRUE);
@@ -223,7 +224,7 @@ public class EasterlynChat extends JavaPlugin {
 					component.setColor(Colors.CHANNEL);
 					component.setUnderlined(true);
 					component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-							TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelName)));
+							new Text(TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + channelName))));
 					component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channelName));
 				}
 				components.addComponent(component);
