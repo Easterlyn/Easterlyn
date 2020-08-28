@@ -74,6 +74,7 @@ public class EconomyUtil {
 		if (itemStack.getEnchantments().size() > 0 || itemMeta.hasDisplayName() || itemMeta.hasLore() || itemMeta.isUnbreakable()) {
 			switch (itemStack.getType()) {
 				case DRAGON_BREATH:
+				case EXPERIENCE_BOTTLE:
 				case FIREWORK_STAR:
 				case HONEY_BOTTLE:
 				case PAPER:
