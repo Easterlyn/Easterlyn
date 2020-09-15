@@ -480,6 +480,26 @@ public class PermissiblePlayer implements Player {
 	}
 
 	@Override
+	public int getArrowCooldown() {
+		return player.getArrowCooldown();
+	}
+
+	@Override
+	public void setArrowCooldown(int i) {
+		player.setArrowCooldown(i);
+	}
+
+	@Override
+	public int getArrowsInBody() {
+		return player.getArrowsInBody();
+	}
+
+	@Override
+	public void setArrowsInBody(int i) {
+		player.setArrowsInBody(i);
+	}
+
+	@Override
 	public void setMaximumNoDamageTicks(int ticks) {
 		player.setMaximumNoDamageTicks(ticks);
 	}
