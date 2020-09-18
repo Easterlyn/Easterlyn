@@ -2,16 +2,21 @@ package com.easterlyn.util;
 
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.inventory.ItemUtil;
+import com.easterlyn.util.reflection.ReflectionUtil;
 import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
 import net.minecraft.server.v1_16_R2.BlockPosition;
 import net.minecraft.server.v1_16_R2.IBlockData;
 import net.minecraft.server.v1_16_R2.Item;
+import net.minecraft.server.v1_16_R2.ItemAxe;
+import net.minecraft.server.v1_16_R2.ItemHoe;
+import net.minecraft.server.v1_16_R2.ItemSpade;
 import net.minecraft.server.v1_16_R2.ItemTool;
 import net.minecraft.server.v1_16_R2.TileEntity;
 import net.minecraft.server.v1_16_R2.TileEntityFurnace;
@@ -58,12 +63,7 @@ public class BlockUtil {
 	static {
 		Field fieldItemToolA;
 		try {
-			fieldItemToolA = ItemTool.class.getDeclaredField("a");
-			fieldItemToolA.setAccessible(true);
-			Class<?> type = fieldItemToolA.getType();
-			if (!Set.class.isAssignableFrom(type)) {
-				throw new NoSuchFieldException("DiggerItem.blocks is no longer mapped to ItemTool.a!");
-			}
+			fieldItemToolA = ReflectionUtil.getField(ItemTool.class, "a", Set.class);
 		} catch (NoSuchFieldException e) {
 			e.printStackTrace();
 			fieldItemToolA = null;
@@ -217,11 +217,19 @@ public class BlockUtil {
 					&& hand.getType() == Material.GLASS_BOTTLE;
 		}
 
-		// TODO Log stripping, path creation, etc. special tool interactions are not accounted for
-		/*Item item = CraftMagicNumbers.getItem(hand.getType());
-		if (item instanceof ItemAxe) {
-			// need reflection ItemAxe.a
-		}*/
+		Item item = CraftMagicNumbers.getItem(hand.getType());
+		if (item instanceof ItemAxe || item instanceof ItemHoe || item instanceof ItemSpade) {
+			Map<?, ?> blockBlockMap = null;
+			try {
+				blockBlockMap = ReflectionUtil.getFieldValue(item, "a", Map.class);
+			} catch (ReflectiveOperationException e) {
+				e.printStackTrace();
+				// TODO error -> ReportableEvent once tested
+			}
+			if (blockBlockMap != null && blockBlockMap.containsKey(CraftMagicNumbers.getBlock(blockType))) {
+				return true;
+			}
+		}
 
 		BlockState state = block.getState();
 		if (state instanceof InventoryHolder || state instanceof TileState) {
