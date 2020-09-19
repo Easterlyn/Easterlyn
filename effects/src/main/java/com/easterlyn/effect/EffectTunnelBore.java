@@ -3,8 +3,8 @@ package com.easterlyn.effect;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynEffects;
 import com.easterlyn.effect.event.IndirectBreakEvent;
-import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.BlockUpdateManager;
+import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.ExperienceUtil;
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
@@ -58,14 +58,24 @@ public class EffectTunnelBore extends Effect {
 			return;
 		}
 
+		Block block = breakEvent.getBlock();
+
+		if (!BlockUtil.isCorrectTool(player.getInventory().getItemInMainHand(), breakEvent.getBlock().getType())) {
+			// Require correct tool used
+			return;
+		}
+
 		RegisteredServiceProvider<EasterlynCore> registration = getPlugin().getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration == null) {
 			return;
 		}
 		BlockUpdateManager budManager = registration.getProvider().getBlockUpdateManager();
-
-		Block block = breakEvent.getBlock();
-		float hardness = block.getType().getHardness();
+		/*
+		 * Forgiveness of .25 hardness allows indirect breaking of most common related materials
+		 * while not excessively increasing risk of accidents inside builds. Allows for mining gravel
+		 * via sand and dirt, etc.
+		 */
+		float hardness = block.getType().getHardness() + 0.25F;
 		for (BlockFace yLevel : levels) {
 			if (block.getY() == 0 && yLevel == BlockFace.DOWN) {
 				continue;
@@ -85,9 +95,11 @@ public class EffectTunnelBore extends Effect {
 		player.updateInventory();
 	}
 
-	private boolean handleBlock(float requiredHardness, Block block, Player player, BlockUpdateManager budManager) {
+	private boolean handleBlock(float requiredHardness, Block block, Player player,
+			BlockUpdateManager budManager) {
 		float blockHardness = block.getType().getHardness();
-		if (blockHardness > requiredHardness || blockHardness < 0 || block.getState() instanceof InventoryHolder) {
+		if (blockHardness > requiredHardness || blockHardness < 0 || block.getState() instanceof InventoryHolder
+				|| !BlockUtil.isCorrectTool(player.getInventory().getItemInMainHand(), block.getType())) {
 			return false;
 		}
 

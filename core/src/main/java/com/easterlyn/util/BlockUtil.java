@@ -50,8 +50,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * Utility for getting accurate drops from a block - Block.getDrops(ItemStack) does not take into
- * account enchantments.
+ * Utility for block-related functions.
  *
  * @author Jikoo
  */
@@ -148,22 +147,14 @@ public class BlockUtil {
 	}
 
 	public static boolean isCorrectTool(@Nullable ItemStack tool, @NotNull Material blockType) {
-		if (!isToolRequired(blockType)) {
-			return true;
+		Item item;
+		if (tool == null || tool.getType().isAir()
+				|| !((item = CraftMagicNumbers.getItem(tool.getType())) instanceof ItemTool)) {
+			return !isToolRequired(blockType);
 		}
 
 		if (ITEMTOOL_A == null) {
 			return isUsableTool(tool, blockType);
-		}
-
-		if (tool == null || tool.getType().isAir()) {
-			return false;
-		}
-
-		Item item = CraftMagicNumbers.getItem(tool.getType());
-
-		if (!(item instanceof ItemTool)) {
-			return false;
 		}
 
 		try {
@@ -223,17 +214,11 @@ public class BlockUtil {
 			try {
 				blockBlockMap = ReflectionUtil.getFieldValue(item, "a", Map.class);
 			} catch (ReflectiveOperationException e) {
-				e.printStackTrace();
-				// TODO error -> ReportableEvent once tested
+				ReportableEvent.call("Exception fetching list of blocks modifiable by tool!", e, 10);
 			}
 			if (blockBlockMap != null && blockBlockMap.containsKey(CraftMagicNumbers.getBlock(blockType))) {
 				return true;
 			}
-		}
-
-		BlockState state = block.getState();
-		if (state instanceof InventoryHolder || state instanceof TileState) {
-			return true;
 		}
 
 		BlockData blockData = block.getBlockData();
@@ -246,6 +231,11 @@ public class BlockUtil {
 		}
 
 		if (blockData instanceof Waterlogged && (hand.getType() == Material.BUCKET || hand.getType() == Material.WATER_BUCKET)) {
+			return true;
+		}
+
+		BlockState state = block.getState();
+		if (state instanceof InventoryHolder || state instanceof TileState) {
 			return true;
 		}
 
