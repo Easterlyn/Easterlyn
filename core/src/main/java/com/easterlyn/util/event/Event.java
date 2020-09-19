@@ -29,7 +29,7 @@ public class Event {
 			@NotNull Plugin plugin, @NotNull EventPriority priority, boolean ignoreCancelled) {
 		HandlerList handlerList;
 		try {
-			Method getHandlers = eventClass.getMethod("getHandlers");
+			Method getHandlers = eventClass.getMethod("getHandlerList");
 			Object handlerListObj = getHandlers.invoke(null);
 			handlerList = (HandlerList) handlerListObj;
 		} catch (Exception e) {
