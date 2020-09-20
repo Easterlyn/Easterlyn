@@ -3,6 +3,7 @@ package com.easterlyn;
 import com.easterlyn.util.event.Event;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import org.bukkit.Bukkit;
 import org.bukkit.NamespacedKey;
 import org.bukkit.World;
@@ -13,8 +14,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBedLeaveEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.world.TimeSkipEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -29,14 +32,12 @@ public class EasterlynSleepVote extends JavaPlugin {
 
 	@Override
 	public void onEnable() {
-		Event.register(PlayerJoinEvent.class, event -> getServer().getScheduler().runTask(this,
-				() -> updateBar(event.getPlayer().getWorld())), this);
+		Consumer<PlayerEvent> eventConsumer = event -> getServer().getScheduler().runTask(this,
+				() -> updateBar(event.getPlayer().getWorld()));
 
-		Event.register(PlayerQuitEvent.class, event -> getServer().getScheduler().runTask(this,
-				() -> updateBar(event.getPlayer().getWorld())), this);
-
-		Event.register(PlayerBedLeaveEvent.class, event -> getServer().getScheduler().runTask(this,
-				() -> updateBar(event.getPlayer().getWorld())), this);
+		Event.register(PlayerJoinEvent.class, eventConsumer::accept, this);
+		Event.register(PlayerQuitEvent.class, eventConsumer::accept, this);
+		Event.register(PlayerBedLeaveEvent.class, eventConsumer::accept, this);
 
 		Event.register(PlayerBedEnterEvent.class, event -> getServer().getScheduler().runTaskLater(this,
 				() -> updateBar(event.getPlayer().getWorld()), 510L), this);
@@ -46,6 +47,14 @@ public class EasterlynSleepVote extends JavaPlugin {
 					updateBar(event.getFrom());
 					updateBar(event.getPlayer().getWorld());
 				}), this);
+
+		Event.register(TimeSkipEvent.class, event -> getServer().getScheduler().runTask(this, () -> {
+			BukkitTask oldTask = worldTasks.remove(event.getWorld().getName());
+			if (oldTask != null) {
+				oldTask.cancel();
+			}
+			updateBar(event.getWorld());
+		}), this);
 	}
 
 	private void updateBar(World world) {
