@@ -69,7 +69,7 @@ public class EasterlynSleepVote extends JavaPlugin {
 		}
 
 		// Technically 0/0 is 100%, but for the purpose of clearing when no players are sleeping, it is not.
-		double percentage =  sleeping == 0 ? 0 : total == 0 ? 1 : sleeping / total;
+		double percentage =  sleeping == 0 || total == 0 ? 0 : sleeping / total;
 
 		NamespacedKey worldKey = new NamespacedKey(this, world.getUID().toString());
 		BossBar bossBar = Bukkit.getBossBar(worldKey);
