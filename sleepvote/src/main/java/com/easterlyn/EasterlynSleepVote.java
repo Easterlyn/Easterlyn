@@ -53,12 +53,6 @@ public class EasterlynSleepVote extends JavaPlugin {
 			return;
 		}
 
-		BossBar bossBar = Bukkit.getBossBar(new NamespacedKey(this, world.getName()));
-		if (bossBar == null) {
-			bossBar = Bukkit.createBossBar(new NamespacedKey(this, world.getName()),
-					"Sleeping Percentage", BarColor.BLUE, BarStyle.SOLID);
-		}
-
 		long worldTime = world.getTime();
 		boolean day = worldTime > NIGHT_END || worldTime < NIGHT_START;
 
@@ -77,14 +71,24 @@ public class EasterlynSleepVote extends JavaPlugin {
 		// Technically 0/0 is 100%, but for the purpose of clearing when no players are sleeping, it is not.
 		double percentage =  sleeping == 0 ? 0 : total == 0 ? 1 : sleeping / total;
 
+		NamespacedKey worldKey = new NamespacedKey(this, world.getUID().toString());
+		BossBar bossBar = Bukkit.getBossBar(worldKey);
+
 		if (percentage <= 0) {
 			BukkitTask bukkitTask = worldTasks.remove(world.getName());
 			if (bukkitTask != null && !bukkitTask.isCancelled()) {
 				bukkitTask.cancel();
 			}
-			bossBar.removeAll();
-			bossBar.setProgress(0);
+			if (bossBar != null) {
+				bossBar.removeAll();
+				bossBar.setProgress(0);
+				Bukkit.removeBossBar(worldKey);
+			}
 			return;
+		}
+
+		if (bossBar == null) {
+			bossBar = Bukkit.createBossBar(worldKey, "Sleeping Percentage", BarColor.BLUE, BarStyle.SOLID);
 		}
 
 		// Day sleep to reset rain: 50% required, no time change
