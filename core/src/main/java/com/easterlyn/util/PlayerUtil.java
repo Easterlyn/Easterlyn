@@ -18,6 +18,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_16_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -132,7 +133,7 @@ public class PlayerUtil {
 				new PlayerInteractManager(worldServer));
 		// TODO: swap to OpenInv to prevent overwriting mounts?
 
-		Player player = nmsPlayer.getBukkitEntity();
+		CraftPlayer player = nmsPlayer.getBukkitEntity();
 		if (player == null) {
 			return null;
 		}
