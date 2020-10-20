@@ -26,6 +26,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Statistic;
@@ -182,7 +183,7 @@ public class User implements Group {
 		// TODO class and affinity
 		// TODO could cache in temp store, but needs to be deleted on perm change (login/command)
 
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hovers.toArray(new TextComponent[0])));
+		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hovers.toArray(new TextComponent[0]))));
 		return component;
 	}
 

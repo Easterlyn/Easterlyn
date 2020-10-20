@@ -14,6 +14,7 @@ import java.util.Objects;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -49,7 +50,7 @@ public class CoordinatesCommand extends BaseCommand {
 		richText.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
 				String.format("%1$s %2$.0f %3$.0f %4$.0f %5$.0f %6$.0f", loc.getWorld().getName(),
 						loc.getX(), loc.getY(), loc.getZ(), loc.getPitch(), loc.getYaw())));
-		richText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, TextComponent.fromLegacyText(ChatColor.YELLOW + "Click to insert into chat!")));
+		richText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(TextComponent.fromLegacyText(ChatColor.YELLOW + "Click to insert into chat!"))));
 		issuer.getIssuer().spigot().sendMessage(richText);
 	}
 

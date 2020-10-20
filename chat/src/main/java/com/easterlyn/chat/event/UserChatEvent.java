@@ -23,6 +23,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -101,7 +102,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 		TextComponent[] channelHover = new TextComponent[] {new TextComponent("/join "), new TextComponent(channel.getDisplayName())};
 		channelHover[0].setColor(Colors.COMMAND);
 		channelHover[1].setColor(Colors.CHANNEL);
-		channelElement.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, channelHover));
+		channelElement.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(channelHover)));
 		channelElement.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channel.getDisplayName()));
 
 		TextComponent channelName = new TextComponent(channel.getDisplayName());

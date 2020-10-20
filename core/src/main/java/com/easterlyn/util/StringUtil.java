@@ -27,6 +27,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,7 +91,7 @@ public class StringUtil {
 				TextComponent[] hover = { new TextComponent(url) };
 				hover[0].setColor(Colors.WEB_LINK);
 				hover[0].setUnderlined(true);
-				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, hover));
+				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hover)));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
 				components.addComponent(component);
 			}
@@ -103,7 +104,7 @@ public class StringUtil {
 				component.setColor(Colors.COMMAND);
 				TextComponent hover = new TextComponent("Click to run!");
 				hover.setColor(Colors.COMMAND);
-				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new TextComponent[] {hover}));
+				component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new TextComponent[] {hover})));
 				component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, ChatColor.stripColor(group.trim())));
 				components.addComponent(component);
 			}

@@ -38,7 +38,7 @@ public class AetherCommand extends BaseCommand {
 	public void aether(BukkitCommandIssuer issuer, @Single String name, String text) {
 		Map<String, String> userData = new HashMap<>();
 		userData.put("name", name);
-		userData.put("color", issuer.isPlayer() ? core.getUserManager().getUser(issuer.getUniqueId()).getColor().name() : Colors.RANK_HEAD_ADMIN.name());
+		userData.put("color", issuer.isPlayer() ? core.getUserManager().getUser(issuer.getUniqueId()).getColor().getName() : Colors.RANK_HEAD_ADMIN.getName());
 		Channel channel = chat.getChannels().get("aether");
 		if (channel == null) {
 			ReportableEvent.call("Channel #aether not set up when executing /aether!");

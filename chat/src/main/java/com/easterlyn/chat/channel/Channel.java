@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
@@ -61,7 +62,7 @@ public class Channel implements Group {
 		component.setColor(Colors.CHANNEL);
 		component.setUnderlined(true);
 		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
-				TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + getDisplayName())));
+				new Text(TextComponent.fromLegacyText(Colors.COMMAND + "/join " + Colors.CHANNEL + getDisplayName()))));
 		component.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + getDisplayName()));
 		// Don't set mention until fully set up
 		mention = component;

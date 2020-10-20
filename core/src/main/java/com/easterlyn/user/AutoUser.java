@@ -12,6 +12,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
@@ -69,7 +70,7 @@ public class AutoUser extends User {
 		String hover = userData.get("hover");
 		if (hover != null && !hover.isEmpty()) {
 			hover = ChatColor.translateAlternateColorCodes('&', hover);
-			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, StringUtil.toJSON(hover).toArray(new TextComponent[0])));
+			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(StringUtil.toJSON(hover).toArray(new TextComponent[0]))));
 		}
 
 		return component;
