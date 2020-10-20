@@ -83,6 +83,4 @@ public class AutoUser extends User {
 		Bukkit.getConsoleSender().spigot().sendMessage(components);
 	}
 
-	void save() {}
-
 }
