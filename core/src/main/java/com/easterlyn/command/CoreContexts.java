@@ -24,6 +24,7 @@ import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CoreContexts {
 
@@ -64,10 +65,13 @@ public class CoreContexts {
 
 		plugin.getCommandManager().getCommandContexts().registerContext(UUID.class, context -> {
 			String firstArg = context.popFirstArg();
+			if (firstArg == null) {
+				throw new InvalidCommandArgument("UUID required"); // TODO lang
+			}
 			try {
 				return UUID.fromString(firstArg);
 			} catch (IllegalArgumentException e) {
-				throw new InvalidCommandArgument("UUID required"); // TODO lang
+				throw new InvalidCommandArgument("UUID required");
 			}
 			// TODO allow fetching by player after
 		});
@@ -126,7 +130,10 @@ public class CoreContexts {
 				throw new InvalidCommandArgument(CoreLang.NO_CONSOLE);
 			}
 
-			private @NotNull Player getOnline(@NotNull BukkitCommandIssuer issuer, @NotNull String argument) throws InvalidCommandArgument {
+			private @NotNull Player getOnline(@NotNull BukkitCommandIssuer issuer, @Nullable String argument) throws InvalidCommandArgument {
+				if (argument == null) {
+					throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", "null");
+				}
 				Player player = PlayerUtil.matchOnlinePlayer(issuer.getIssuer(), argument);
 				if (player == null) {
 					throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", argument);
@@ -135,7 +142,10 @@ public class CoreContexts {
 			}
 
 			private @NotNull Player getOffline(@NotNull BukkitCommandIssuer issuer,
-					@NotNull String argument) throws InvalidCommandArgument {
+					@Nullable String argument) throws InvalidCommandArgument {
+				if (argument == null) {
+					throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", "null");
+				}
 				Player player;
 				try {
 					player = PlayerUtil.matchPlayer(issuer.getIssuer(), argument, true, plugin);
