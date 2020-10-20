@@ -40,7 +40,7 @@ public class PlayerUtil {
 				}
 				Player player = (Player) notification.getValue();
 				// Save if over 45 days since last login, removes achievements that should not be present.
-				if (!player.isOnline() && player.getLastPlayed() < System.currentTimeMillis() - 3888000000L) {
+				if (player.getLastLogin() < System.currentTimeMillis() - 3888000000L) {
 					player.saveData();
 				}
 			}).build();

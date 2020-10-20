@@ -91,10 +91,10 @@ public class EasterlynCommand extends BaseCommand {
 	@Syntax("[player]")
 	@CommandCompletion("@player")
 	public void ping(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
-		/*if (player.getLastLogin() > System.currentTimeMillis() - 15000) { // Requires Paper
+		if (player.getLastLogin() > System.currentTimeMillis() - 15000) {
 			issuer.sendInfo(MessageKey.of("core.commands.ping.error.small_sample"));
 			return;
-		}*/
+		}
 
 		if (!(player instanceof CraftPlayer)) {
 			issuer.sendInfo(MessageKey.of("core.commands.ping.error.implementation"));

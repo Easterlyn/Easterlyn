@@ -27,7 +27,8 @@ public class PVPKeepInventory implements Listener {
 		if (event.getDamager() instanceof Player) {
 			playerDamage = true;
 		} else if (event.getDamager() instanceof Firework) {
-			playerDamage = true;//((Firework) event.getDamager()).getSpawningEntity() != null;// TODO Paper
+			Firework firework = (Firework) event.getDamager();
+			playerDamage = firework.getSpawningEntity() != null || firework.getShooter() instanceof Player;
 		} else if (event.getDamager() instanceof Projectile) {
 			playerDamage = ((Projectile) event.getDamager()).getShooter() instanceof Player;
 		}
