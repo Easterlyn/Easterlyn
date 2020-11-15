@@ -67,8 +67,13 @@ public class EasterlynDiscord extends JavaPlugin {
 
 		connect();
 
-		Event.register(ReportableEvent.class, event ->
-				postMessage(ChannelType.REPORT, event.getMessage() + (event.hasTrace() ? event.getTrace() : "")), this);
+		Event.register(ReportableEvent.class, event -> {
+			String message = event.getMessage();
+			if (event.hasTrace()) {
+				message += '\n' + event.getTrace();
+			}
+			postMessage(ChannelType.REPORT, message);
+		}, this);
 
 		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
 		if (registration != null) {
