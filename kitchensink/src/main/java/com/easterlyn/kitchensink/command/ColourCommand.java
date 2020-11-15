@@ -34,7 +34,7 @@ public class ColourCommand extends BaseCommand {
 	@Private
 	public void colour(BukkitCommandIssuer issuer) {
 		StringBuilder builder = new StringBuilder();
-		for (int i = 0; i <= 28; ++i) {
+		for (int i = 0; i <= 27; ++i) {
 			char code = Character.forDigit(i, 36);
 			if (code > 'f' && code < 'k' || code > 'o' && code < 'r') {
 				continue;
