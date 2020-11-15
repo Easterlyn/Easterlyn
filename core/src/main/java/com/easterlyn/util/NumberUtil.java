@@ -20,7 +20,6 @@ public class NumberUtil {
 
 	private static final String CHARS = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 	private static final String ZERO = "0";
-	private static final StringBuilder BUILDER = new StringBuilder();
 	private static final Map<String, Integer> ROMAN_NUMERALS = new LinkedHashMap<>();
 	private static final Pattern TIME_PATTERN = Pattern.compile(
 			"$(([0-9]+)y[ears]*)?(([0-9]+)mo[nths]*)?(([0-9]+)w[eks]*)?(([0-9]+)d[ays]*)?(([0-9]+)h[ours]*)?" +
@@ -136,18 +135,12 @@ public class NumberUtil {
 	 * @return the converted String
 	 */
 	public static String romanFromInt(int number) {
-		synchronized (BUILDER) {
-			if (BUILDER.length() > 0) {
-				BUILDER.delete(0, BUILDER.length());
-			}
-			for (Map.Entry<String, Integer> entry : ROMAN_NUMERALS.entrySet()) {
-				for (int matches = number / entry.getValue(); matches > 0; matches--) {
-					BUILDER.append(entry.getKey());
-				}
-				number %= entry.getValue();
-			}
-			return BUILDER.toString();
+		StringBuilder builder = new StringBuilder();
+		for (Map.Entry<String, Integer> entry : ROMAN_NUMERALS.entrySet()) {
+			builder.append(String.valueOf(entry.getKey()).repeat(Math.max(0, number / entry.getValue())));
+			number %= entry.getValue();
 		}
+		return builder.toString();
 	}
 
 	/**
