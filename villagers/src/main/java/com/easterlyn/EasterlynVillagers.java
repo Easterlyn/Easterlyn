@@ -132,6 +132,8 @@ public class EasterlynVillagers extends JavaPlugin {
 		try {
 			adjusted = this.adjustRecipe(input1, input2, recipe.getResult(),
 					recipe.getUses(), recipe.getMaxUses(), recipe.hasExperienceReward(), recipe.getVillagerExperience());
+		} catch (ArithmeticException e) {
+			adjusted = null;
 		} catch (Exception e) {
 			ReportableEvent.call(String.format("Error adjusting trade: %s + %s -> %s", input1, input2, recipe.getResult()), e, 5);
 			e.printStackTrace();
