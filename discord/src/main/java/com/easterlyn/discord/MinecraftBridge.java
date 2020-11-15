@@ -220,6 +220,8 @@ public class MinecraftBridge {
 	}
 
 	private void handleMinecraftChat(UserChatEvent event) {
+		if (event.getUser() instanceof DiscordUser) return;
+
 		StringBuilder builder = new StringBuilder();
 		if (event.isThirdPerson()) {
 			builder.append("* ");
