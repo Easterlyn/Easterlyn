@@ -11,16 +11,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
-import net.minecraft.server.v1_16_R2.BlockPosition;
-import net.minecraft.server.v1_16_R2.IBlockData;
-import net.minecraft.server.v1_16_R2.Item;
-import net.minecraft.server.v1_16_R2.ItemAxe;
-import net.minecraft.server.v1_16_R2.ItemHoe;
-import net.minecraft.server.v1_16_R2.ItemSpade;
-import net.minecraft.server.v1_16_R2.ItemTool;
-import net.minecraft.server.v1_16_R2.TileEntity;
-import net.minecraft.server.v1_16_R2.TileEntityFurnace;
-import net.minecraft.server.v1_16_R2.WorldServer;
+import net.minecraft.server.v1_16_R3.BlockPosition;
+import net.minecraft.server.v1_16_R3.IBlockData;
+import net.minecraft.server.v1_16_R3.Item;
+import net.minecraft.server.v1_16_R3.ItemAxe;
+import net.minecraft.server.v1_16_R3.ItemHoe;
+import net.minecraft.server.v1_16_R3.ItemSpade;
+import net.minecraft.server.v1_16_R3.ItemTool;
+import net.minecraft.server.v1_16_R3.TileEntity;
+import net.minecraft.server.v1_16_R3.TileEntityFurnace;
+import net.minecraft.server.v1_16_R3.WorldServer;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -35,10 +35,10 @@ import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.block.data.type.Observer;
 import org.bukkit.block.data.type.RedstoneRail;
-import org.bukkit.craftbukkit.v1_16_R2.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R2.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R2.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -135,7 +135,7 @@ public class BlockUtil {
 	}
 
 	public static boolean isToolRequired(@NotNull Material blockType) {
-		net.minecraft.server.v1_16_R2.Block block = CraftMagicNumbers.getBlock(blockType);
+		net.minecraft.server.v1_16_R3.Block block = CraftMagicNumbers.getBlock(blockType);
 
 		if (block == null) {
 			return false;
@@ -167,7 +167,7 @@ public class BlockUtil {
 	}
 
 	private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material blockType) {
-		net.minecraft.server.v1_16_R2.Block block = CraftMagicNumbers.getBlock(blockType);
+		net.minecraft.server.v1_16_R3.Block block = CraftMagicNumbers.getBlock(blockType);
 
 		if (block == null) {
 			return false;
