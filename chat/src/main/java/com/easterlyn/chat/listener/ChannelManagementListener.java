@@ -9,6 +9,7 @@ import com.easterlyn.user.AutoUser;
 import com.easterlyn.user.User;
 import com.easterlyn.util.StringUtil;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -27,6 +28,8 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class ChannelManagementListener implements Listener {
 
@@ -106,9 +109,22 @@ public class ChannelManagementListener implements Listener {
 						event.getUser().getDisplayName() + " is new! Please welcome them.");
 			}
 		}
-		event.getUser().getStorage().set(EasterlynChat.USER_CURRENT, EasterlynChat.DEFAULT.getName());
-		event.getUser().getStorage().set(EasterlynChat.USER_CHANNELS, Collections.singletonList(EasterlynChat.DEFAULT.getName()));
-		EasterlynChat.DEFAULT.getMembers().add(event.getUser().getUniqueId());
+
+		addMainChannel(event.getUser(), null);
+	}
+
+	private void addMainChannel(@NotNull User user, @Nullable Collection<String> channels) {
+		Channel current = chat.getChannels().get(user.getStorage().getString(EasterlynChat.USER_CURRENT));
+		if (current == null && (channels == null || channels.isEmpty() || channels.contains(EasterlynChat.DEFAULT.getName()))) {
+			user.getStorage().set(EasterlynChat.USER_CURRENT, EasterlynChat.DEFAULT.getName());
+		}
+
+		if (channels != null && !channels.isEmpty()) {
+			return;
+		}
+
+		user.getStorage().set(EasterlynChat.USER_CHANNELS, Collections.singletonList(EasterlynChat.DEFAULT.getName()));
+		EasterlynChat.DEFAULT.getMembers().add(user.getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -141,6 +157,8 @@ public class ChannelManagementListener implements Listener {
 				user.getStorage().set(EasterlynChat.USER_CURRENT, null);
 			}
 		}
+
+		addMainChannel(user, channels);
 
 		SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm");
 		String time = dateFormat.format(new Date());
