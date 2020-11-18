@@ -23,8 +23,10 @@ import java.util.Set;
 import java.util.function.Function;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import net.md_5.bungee.api.chat.hover.content.Item;
+import net.minecraft.server.v1_16_R3.IRegistry;
 import net.minecraft.server.v1_16_R3.NBTCompressedStreamTools;
 import net.minecraft.server.v1_16_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -518,7 +520,13 @@ public class ItemUtil {
 
 	@NotNull
 	private static HoverEvent getItemHover(@NotNull ItemStack itemStack) {
-		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Text(new BaseComponent[] { new TextComponent(getAsText(itemStack)) }));
+		net.minecraft.server.v1_16_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+		ItemTag tag = null;
+		if (nmsItem.hasTag()) {
+			tag = ItemTag.ofNbt(nmsItem.getTag().toString());
+		}
+		return new HoverEvent(HoverEvent.Action.SHOW_ITEM, new Item(IRegistry.ITEM.getKey(nmsItem.getItem()).toString(),
+				nmsItem.getCount(), tag));
 	}
 
 }
