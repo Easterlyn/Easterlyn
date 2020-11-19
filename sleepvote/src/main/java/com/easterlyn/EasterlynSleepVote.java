@@ -17,7 +17,6 @@ import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.world.TimeSkipEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -47,14 +46,6 @@ public class EasterlynSleepVote extends JavaPlugin {
 					updateBar(event.getFrom());
 					updateBar(event.getPlayer().getWorld());
 				}), this);
-
-		Event.register(TimeSkipEvent.class, event -> getServer().getScheduler().runTask(this, () -> {
-			BukkitTask oldTask = worldTasks.remove(event.getWorld().getName());
-			if (oldTask != null) {
-				oldTask.cancel();
-			}
-			updateBar(event.getWorld());
-		}), this);
 	}
 
 	private void updateBar(World world) {
