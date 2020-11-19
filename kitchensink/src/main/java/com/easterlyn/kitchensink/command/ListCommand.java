@@ -10,13 +10,17 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Syntax;
 import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.user.AutoUser;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -53,6 +57,13 @@ public class ListCommand extends BaseCommand {
 					break;
 				}
 			}
+		}
+
+		if (ThreadLocalRandom.current().nextDouble() < .001) {
+			Map<String, String> easterEgg = new HashMap<>();
+			easterEgg.put("name", "Herobrine");
+			easterEgg.put("color", ChatColor.BLACK.toString());
+			groupedUsers.put(UserRank.MEMBER.getFriendlyName(), new AutoUser(core, easterEgg));
 		}
 
 		issuer.sendInfo(MessageKey.of("sink.module.list.header"), "{value}", String.valueOf(total),

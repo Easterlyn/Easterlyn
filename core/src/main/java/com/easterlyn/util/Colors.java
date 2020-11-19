@@ -84,7 +84,7 @@ public class Colors {
 		return color;
 	}
 
-	public static ChatColor getOrDefault(String colorName, ChatColor defaultColor) {
+	public static ChatColor getOrDefault(@Nullable String colorName, ChatColor defaultColor) {
 		if (colorName == null) {
 			return defaultColor;
 		}
