@@ -23,16 +23,13 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
       - name: Install Paper dependency
-        if: steps.cache.outputs.cache-hit != 'true'
-        env:
-          # Environmental variable for using Paperclip to install to Maven repo instead of executing server
-          paperclip.install: true
+        #if: steps.cache.outputs.cache-hit != 'true' Temporarily removed to ensure paper gets installed
         # TODO extract version so it can be changed in a single place
         run: |
           mkdir ~/paperclip
           cd ~/paperclip
           wget -O paperclip.jar https://papermc.io/api/v1/paper/1.16.4/latest/download
-          java -jar paperclip.jar
+          java -jar -Dpaperclip.install=true paperclip.jar
 
       - name: Build with Maven
         run: |
