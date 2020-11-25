@@ -23,7 +23,7 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
       - name: Install Paper dependency
-        #if: steps.cache.outputs.cache-hit != 'true' Temporarily removed to ensure paper gets installed
+        if: steps.cache.outputs.cache-hit != 'true'
         # TODO extract version so it can be changed in a single place
         run: |
           mkdir ~/paperclip
