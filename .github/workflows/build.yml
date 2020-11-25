@@ -38,9 +38,9 @@ jobs:
       - name: Publish artifacts
         if: github.event_name != 'pull_request_target'
         uses: marvinpinto/action-automatic-releases@v1.1.0
-          with:
-            repo-token: "${{ secrets.GITHUB_TOKEN }}"
-            prerelease: ${{ github.event.name != 'tag' }}
-            files: |
-              ~/target/*.jar
-              !~/target/original-*.jar
+        with:
+          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          prerelease: ${{ github.event.name != 'tag' }}
+          files: |
+            ~/target/*.jar
+            !~/target/original-*.jar
