@@ -44,7 +44,7 @@ jobs:
         if: github.event_name != 'pull_request_target'
         uses: marvinpinto/action-automatic-releases@v1.1.0
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
           prerelease: ${{ github.event.name != 'create' }}
           files: |
             ~/target/*.jar
