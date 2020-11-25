@@ -29,8 +29,8 @@ jobs:
           paperclip.install: true
         # TODO extract version so it can be changed in a single place
         run: |
-          mkdir ~/work
-          cd ~/work
+          mkdir ~/paperclip
+          cd ~/paperclip
           wget -O paperclip.jar https://papermc.io/api/v1/paper/1.16.4/latest/download
           java -jar paperclip.jar
 
