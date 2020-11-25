@@ -1,6 +1,11 @@
 name: Build Easterlyn
 
-on: [push, tag, pull_request_target, workflow_dispatch]
+on:
+  push:
+  create:
+    types: [tag]
+  pull_request_target:
+  workflow_dispatch:
 
 jobs:
   build:
@@ -40,7 +45,7 @@ jobs:
         uses: marvinpinto/action-automatic-releases@v1.1.0
         with:
           repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          prerelease: ${{ github.event.name != 'tag' }}
+          prerelease: ${{ github.event.name != 'create' }}
           files: |
             ~/target/*.jar
             !~/target/original-*.jar
