@@ -43,6 +43,10 @@
                     <groupId>com.mojang</groupId>
                     <artifactId>brigadier</artifactId>
                 </exclusion>
+                <exclusion>
+                    <groupId>io.papermc</groupId>
+                    <artifactId>minecraft-server</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
