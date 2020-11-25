@@ -1,0 +1,40 @@
+name: Build Easterlyn
+
+on: [push, pull_request_target, workflow_dispatch]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Java
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+
+      - name: Cache Maven repo
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+
+      - name: Install Paper dependency
+        if: steps.cache.outputs.cache-hit != 'true'
+        env:
+          # Environmental variable for using Paperclip to install to Maven repo instead of executing server
+          paperclip.install: true
+        # TODO extract version so it can be changed in a single place
+        run: |
+          mkdir ~/work
+          cd ~/work
+          wget -O paperclip.jar https://papermc.io/api/v1/paper/1.16.4/latest/download
+          java -jar paperclip.jar
+
+      - name: Build with Maven
+        run: |
+          mkdir ~/target
+          mvn clean package --file pom.xml -X -Dproject.build.finaldir=~/target -Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2
