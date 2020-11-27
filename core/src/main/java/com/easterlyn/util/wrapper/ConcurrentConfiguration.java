@@ -193,7 +193,7 @@ public class ConcurrentConfiguration implements Configuration {
 	}
 
 	@Override
-	public void set(@NotNull String path, Object value) {
+	public void set(@NotNull String path, @Nullable Object value) {
 		synchronized (lock) {
 			internal.set(path, value);
 			dirty = true;

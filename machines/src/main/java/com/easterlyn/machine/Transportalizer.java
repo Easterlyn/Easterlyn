@@ -345,7 +345,7 @@ public class Transportalizer extends Machine {
 					target.sendMessage("Request declined!");
 				}
 			})) {
-				target.sendMessage(issuer.getDisplayName() + " is requesting to transportalize you!\nUse /accept or /decline to manage the request.");
+				target.sendMessage(issuer.getUniqueId(), issuer.getDisplayName() + " is requesting to transportalize you!\nUse /accept or /decline to manage the request.");
 				return "";
 			}
 			return null;

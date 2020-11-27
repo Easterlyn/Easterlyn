@@ -3,6 +3,7 @@ package com.easterlyn.chat.event;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.event.UserEvent;
+import com.easterlyn.user.AutoUser;
 import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.StringUtil;
@@ -211,7 +212,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 				finalMessage.addExtra(component);
 			}
 
-			user.sendMessage(finalMessage);
+			user.sendMessage(getUser() instanceof AutoUser ? null : getUser().getUniqueId(), finalMessage);
 		});
 
 		Bukkit.getConsoleSender().sendMessage(ChatColor.stripColor(String.format(

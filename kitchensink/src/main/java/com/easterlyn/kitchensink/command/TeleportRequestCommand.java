@@ -93,9 +93,11 @@ public class TeleportRequestCommand extends BaseCommand {
 			}
 		})) {
 			core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.common.issued");
-			core.getLocaleManager().sendMessage(requestedPlayer,
+			String requestMessage = core.getLocaleManager().getValue(
 					to ? "sink.module.tprequest.to.request" : "sink.module.tprequest.pull.request",
+					core.getLocaleManager().getLocale(requestedPlayer),
 					"{value}", issuingPlayer.getName());
+			requested.sendMessage(issuer.getUniqueId(), requestMessage);
 		} else {
 			core.getLocaleManager().sendMessage(issuingPlayer, "sink.module.tprequest.error.popular",
 					"{value}", requestedPlayer.getName());

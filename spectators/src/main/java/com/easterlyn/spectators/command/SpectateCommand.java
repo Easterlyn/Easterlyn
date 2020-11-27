@@ -126,8 +126,12 @@ public class SpectateCommand extends BaseCommand {
 				// TODO same anti-spam ignore?
 			}
 		})) {
-			core.getLocaleManager().sendMessage(targetPlayer, "spectate.request.request",
-					"{value}", player.getName());
+			String message = core.getLocaleManager().getValue("spectate.request.request",
+					core.getLocaleManager().getLocale(targetPlayer), "{value}", player.getName());
+			if (message != null) {
+				target.sendMessage(player.getUniqueId(), message);
+			}
+
 		} else {
 			core.getLocaleManager().sendMessage(player, "sink.module.tprequest.error.popular",
 					"{value}", targetPlayer.getName());

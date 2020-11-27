@@ -188,13 +188,21 @@ public class User implements Group {
 	}
 
 	public void sendMessage(@NotNull String message) {
-		sendMessage(StringUtil.toJSON(message).toArray(new TextComponent[0]));
+		sendMessage(null, message);
+	}
+
+	public void sendMessage(@Nullable UUID sender, @NotNull String message) {
+		sendMessage(sender, StringUtil.toJSON(message).toArray(new TextComponent[0]));
 	}
 
 	public void sendMessage(@NotNull BaseComponent... components) {
+		sendMessage(null, components);
+	}
+
+	public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components) {
 		Player player = getPlayer();
 		if (player != null) {
-			player.spigot().sendMessage(components);
+			player.spigot().sendMessage(sender, components);
 		}
 	}
 
