@@ -1,25 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>Easterlyn</artifactId>
-        <groupId>com.easterlyn</groupId>
-        <version>2.0</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>afk</artifactId>
+  <dependencies>
+    <dependency>
+      <artifactId>core</artifactId>
+      <groupId>com.easterlyn</groupId>
+      <scope>provided</scope>
+      <version>${project.version}</version>
+    </dependency>
+  </dependencies>
 
-    <artifactId>afk</artifactId>
-    <name>EasterlynAFK</name>
-    <description>Manage AFK players.</description>
+  <description>Manage AFK players.</description>
+  <modelVersion>4.0.0</modelVersion>
+  <name>EasterlynAFK</name>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.easterlyn</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+  <parent>
+    <artifactId>Easterlyn</artifactId>
+    <groupId>com.easterlyn</groupId>
+    <version>2.0</version>
+  </parent>
 
 </project>

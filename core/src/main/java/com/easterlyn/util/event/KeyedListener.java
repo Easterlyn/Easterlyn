@@ -10,16 +10,25 @@ import org.jetbrains.annotations.NotNull;
 
 public class KeyedListener<T extends Event> extends RegisteredListener {
 
-	private final String key;
+  private final String key;
 
-	KeyedListener(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer, @NotNull Plugin plugin,
-			@NotNull String key, @NotNull EventPriority priority, boolean ignoreCancelled) {
-		super(new Listener() {}, new ConsumerEventExecutor<>(eventClass, consumer), priority, plugin, ignoreCancelled);
-		this.key = key;
-	}
+  KeyedListener(
+      @NotNull Class<T> eventClass,
+      @NotNull Consumer<T> consumer,
+      @NotNull Plugin plugin,
+      @NotNull String key,
+      @NotNull EventPriority priority,
+      boolean ignoreCancelled) {
+    super(
+        new Listener() {},
+        new ConsumerEventExecutor<>(eventClass, consumer),
+        priority,
+        plugin,
+        ignoreCancelled);
+    this.key = key;
+  }
 
-	public String getKey() {
-		return this.key;
-	}
-
+  public String getKey() {
+    return this.key;
+  }
 }

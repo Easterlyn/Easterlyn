@@ -11,24 +11,23 @@ import org.bukkit.entity.Player;
  */
 public abstract class ProtectionHook {
 
-	private final String pluginName;
+  private final String pluginName;
 
-	ProtectionHook(String pluginName) {
-		this.pluginName = pluginName;
-	}
+  ProtectionHook(String pluginName) {
+    this.pluginName = pluginName;
+  }
 
-	public boolean isHookUsable() {
-		return Bukkit.getPluginManager().isPluginEnabled(pluginName);
-	}
+  public boolean isHookUsable() {
+    return Bukkit.getPluginManager().isPluginEnabled(pluginName);
+  }
 
-	public abstract boolean isProtected(Location location);
+  public abstract boolean isProtected(Location location);
 
-	public abstract boolean canMobsSpawn(Location location);
+  public abstract boolean canMobsSpawn(Location location);
 
-	public abstract boolean canUseButtonsAt(Player player, Location location);
+  public abstract boolean canUseButtonsAt(Player player, Location location);
 
-	public abstract boolean canOpenChestsAt(Player player, Location location);
+  public abstract boolean canOpenChestsAt(Player player, Location location);
 
-	public abstract boolean canBuildAt(Player player, Location location);
-
+  public abstract boolean canBuildAt(Player player, Location location);
 }

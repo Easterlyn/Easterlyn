@@ -5,8 +5,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class EffectPotionJump extends EffectPotion {
 
-	public EffectPotionJump(EasterlynEffects plugin) {
-		super(plugin, PotionEffectType.JUMP);
-	}
-
+  public EffectPotionJump(EasterlynEffects plugin) {
+    super(plugin, PotionEffectType.JUMP);
+  }
 }

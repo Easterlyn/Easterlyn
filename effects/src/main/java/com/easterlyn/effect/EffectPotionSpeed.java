@@ -5,8 +5,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class EffectPotionSpeed extends EffectPotion {
 
-	public EffectPotionSpeed(EasterlynEffects plugin) {
-		super(plugin, PotionEffectType.SPEED);
-	}
-
+  public EffectPotionSpeed(EasterlynEffects plugin) {
+    super(plugin, PotionEffectType.SPEED);
+  }
 }

@@ -56,208 +56,220 @@ import org.jetbrains.annotations.Nullable;
  */
 public class BlockUtil {
 
-	private static final Set<BiFunction<Block, ItemStack, Boolean>> BLOCK_FUNCTIONS = new HashSet<>();
-	private static final Field ITEMTOOL_A;
+  private static final Set<BiFunction<Block, ItemStack, Boolean>> BLOCK_FUNCTIONS = new HashSet<>();
+  private static final Field ITEMTOOL_A;
 
-	static {
-		Field fieldItemToolA;
-		try {
-			fieldItemToolA = ReflectionUtil.getField(ItemTool.class, "a", Set.class);
-		} catch (NoSuchFieldException e) {
-			e.printStackTrace();
-			fieldItemToolA = null;
-		}
+  static {
+    Field fieldItemToolA;
+    try {
+      fieldItemToolA = ReflectionUtil.getField(ItemTool.class, "a", Set.class);
+    } catch (NoSuchFieldException e) {
+      e.printStackTrace();
+      fieldItemToolA = null;
+    }
 
-		ITEMTOOL_A = fieldItemToolA;
-	}
+    ITEMTOOL_A = fieldItemToolA;
+  }
 
-	public static Collection<ItemStack> getDrops(@Nullable ItemStack tool, @NotNull Block block) {
-		if (tool == null) {
-			return block.getDrops();
-		}
+  private BlockUtil() {}
 
-		// Block#getDrops does not properly support silk touch for coral
-		if (tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0 && Tag.CORALS.isTagged(block.getType())) {
-			Material type = block.getType();
-			if (Tag.WALL_CORALS.isTagged(type)) {
-				type = Material.matchMaterial(type.name().replace("WALL_", ""));
-			}
-			if (type != null) {
-				ItemStack itemStack = new ItemStack(type);
-				if (itemStack.getType() != Material.AIR) {
-					return Collections.singleton(new ItemStack(type));
-				}
-			}
-		}
+  public static Collection<ItemStack> getDrops(@Nullable ItemStack tool, @NotNull Block block) {
+    if (tool == null) {
+      return block.getDrops();
+    }
 
-		return block.getDrops(tool);
-	}
+    // Block#getDrops does not properly support silk touch for coral
+    if (tool.getEnchantmentLevel(Enchantment.SILK_TOUCH) > 0
+        && Tag.CORALS.isTagged(block.getType())) {
+      Material type = block.getType();
+      if (Tag.WALL_CORALS.isTagged(type)) {
+        type = Material.matchMaterial(type.name().replace("WALL_", ""));
+      }
+      if (type != null) {
+        ItemStack itemStack = new ItemStack(type);
+        if (itemStack.getType() != Material.AIR) {
+          return Collections.singleton(new ItemStack(type));
+        }
+      }
+    }
 
-	public static int getExp(@Nullable Player player, @Nullable ItemStack tool, @NotNull Block block) {
-		// TODO Block#getExpDrop
-		if (tool != null && tool.containsEnchantment(Enchantment.SILK_TOUCH)
-				&& block.getType() != Material.SPAWNER) {
-			return 0;
-		}
-		if (!isUsableTool(tool, block.getType())) {
-			return 0;
-		}
-		switch (block.getType()) {
-			case COAL_ORE:
-				return ThreadLocalRandom.current().nextInt(3);
-			case DIAMOND_ORE:
-			case EMERALD_ORE:
-				return 3 + ThreadLocalRandom.current().nextInt(5);
-			case LAPIS_ORE:
-			case NETHER_QUARTZ_ORE:
-				return 2 + ThreadLocalRandom.current().nextInt(4);
-			case REDSTONE_ORE:
-				return 1 + ThreadLocalRandom.current().nextInt(5);
-			case SPAWNER:
-				return 15 + ThreadLocalRandom.current().nextInt(29);
-			case FURNACE:
-			case BLAST_FURNACE:
-			case SMOKER:
-				if (!(block.getWorld() instanceof CraftWorld) || !(player instanceof CraftPlayer)) {
-					return 0;
-				}
-				WorldServer worldServer = ((CraftWorld) block.getWorld()).getHandle();
-				TileEntity tileEntity = worldServer.getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
-				if (!(tileEntity instanceof TileEntityFurnace)) {
-					return 0;
-				}
-				// Fire extraction logic using tool as extracted item. N.B. amount < 1 will still drop experience but not call a FurnaceExtractEvent.
-				((TileEntityFurnace) tileEntity).d(((CraftPlayer) player).getHandle(), CraftItemStack.asNMSCopy(tool), 1);
-				return 0;
-			default:
-				return 0;
-		}
-	}
+    return block.getDrops(tool);
+  }
 
-	public static boolean isToolRequired(@NotNull Material blockType) {
-		net.minecraft.server.v1_16_R3.Block block = CraftMagicNumbers.getBlock(blockType);
+  public static int getExp(
+      @Nullable Player player, @Nullable ItemStack tool, @NotNull Block block) {
+    // TODO Block#getExpDrop
+    if (tool != null
+        && tool.containsEnchantment(Enchantment.SILK_TOUCH)
+        && block.getType() != Material.SPAWNER) {
+      return 0;
+    }
+    if (!isUsableTool(tool, block.getType())) {
+      return 0;
+    }
+    switch (block.getType()) {
+      case COAL_ORE:
+        return ThreadLocalRandom.current().nextInt(3);
+      case DIAMOND_ORE:
+      case EMERALD_ORE:
+        return 3 + ThreadLocalRandom.current().nextInt(5);
+      case LAPIS_ORE:
+      case NETHER_QUARTZ_ORE:
+        return 2 + ThreadLocalRandom.current().nextInt(4);
+      case REDSTONE_ORE:
+        return 1 + ThreadLocalRandom.current().nextInt(5);
+      case SPAWNER:
+        return 15 + ThreadLocalRandom.current().nextInt(29);
+      case FURNACE:
+      case BLAST_FURNACE:
+      case SMOKER:
+        if (!(block.getWorld() instanceof CraftWorld) || !(player instanceof CraftPlayer)) {
+          return 0;
+        }
+        WorldServer worldServer = ((CraftWorld) block.getWorld()).getHandle();
+        TileEntity tileEntity =
+            worldServer.getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
+        if (!(tileEntity instanceof TileEntityFurnace)) {
+          return 0;
+        }
+        // Fire extraction logic using tool as extracted item.
+        // N.B. amount < 1 will still drop experience but not call a FurnaceExtractEvent.
+        ((TileEntityFurnace) tileEntity)
+            .d(((CraftPlayer) player).getHandle(), CraftItemStack.asNMSCopy(tool), 1);
+        return 0;
+      default:
+        return 0;
+    }
+  }
 
-		if (block == null) {
-			return false;
-		}
+  public static boolean isToolRequired(@NotNull Material blockType) {
+    net.minecraft.server.v1_16_R3.Block block = CraftMagicNumbers.getBlock(blockType);
 
-		IBlockData data = block.getBlockData();
+    if (block == null) {
+      return false;
+    }
 
-		return !data.getMaterial().isReplaceable() && data.isRequiresSpecialTool();
-	}
+    IBlockData data = block.getBlockData();
 
-	public static boolean isCorrectTool(@Nullable ItemStack tool, @NotNull Material blockType) {
-		Item item;
-		if (tool == null || tool.getType().isAir()
-				|| !((item = CraftMagicNumbers.getItem(tool.getType())) instanceof ItemTool)) {
-			return !isToolRequired(blockType);
-		}
+    return !data.getMaterial().isReplaceable() && data.isRequiresSpecialTool();
+  }
 
-		if (ITEMTOOL_A == null) {
-			return isUsableTool(tool, blockType);
-		}
+  public static boolean isCorrectTool(@Nullable ItemStack tool, @NotNull Material blockType) {
+    Item item;
+    if (tool == null
+        || tool.getType().isAir()
+        || !((item = CraftMagicNumbers.getItem(tool.getType())) instanceof ItemTool)) {
+      return !isToolRequired(blockType);
+    }
 
-		try {
-			Set<?> toolBlocks = (Set<?>) ITEMTOOL_A.get(item);
-			return toolBlocks.contains(CraftMagicNumbers.getBlock(blockType));
-		} catch (IllegalAccessException | ClassCastException e) {
-			ReportableEvent.call("Exception fetching list of blocks breakable by tool!", e, 10);
-			return isUsableTool(tool, blockType);
-		}
-	}
+    if (ITEMTOOL_A == null) {
+      return isUsableTool(tool, blockType);
+    }
 
-	private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material blockType) {
-		net.minecraft.server.v1_16_R3.Block block = CraftMagicNumbers.getBlock(blockType);
+    try {
+      Set<?> toolBlocks = (Set<?>) ITEMTOOL_A.get(item);
+      return toolBlocks.contains(CraftMagicNumbers.getBlock(blockType));
+    } catch (IllegalAccessException | ClassCastException e) {
+      ReportableEvent.call("Exception fetching list of blocks breakable by tool!", e, 10);
+      return isUsableTool(tool, blockType);
+    }
+  }
 
-		if (block == null) {
-			return false;
-		}
+  private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material blockType) {
+    net.minecraft.server.v1_16_R3.Block block = CraftMagicNumbers.getBlock(blockType);
 
-		IBlockData data = block.getBlockData();
+    if (block == null) {
+      return false;
+    }
 
-		if (data.getMaterial().isReplaceable() || !data.isRequiresSpecialTool()) {
-			// Instant break or always breakable
-			return true;
-		}
+    IBlockData data = block.getBlockData();
 
-		return tool != null && tool.getType() != Material.AIR && CraftMagicNumbers.getItem(tool.getType()).canDestroySpecialBlock(data);
-	}
+    if (data.getMaterial().isReplaceable() || !data.isRequiresSpecialTool()) {
+      // Instant break or always breakable
+      return true;
+    }
 
-	public static void addRightClickFunction(@NotNull BiFunction<Block, ItemStack, Boolean> function) {
-		BLOCK_FUNCTIONS.add(function);
-	}
+    return tool != null
+        && tool.getType() != Material.AIR
+        && CraftMagicNumbers.getItem(tool.getType()).canDestroySpecialBlock(data);
+  }
 
-	public static boolean hasRightClickFunction(@NotNull PlayerInteractEvent event) {
+  public static void addRightClickFunction(
+      @NotNull BiFunction<Block, ItemStack, Boolean> function) {
+    BLOCK_FUNCTIONS.add(function);
+  }
 
-		if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) {
-			return false;
-		}
+  public static boolean hasRightClickFunction(@NotNull PlayerInteractEvent event) {
 
-		Block block = event.getClickedBlock();
-		Material blockType = block.getType();
+    if (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getClickedBlock() == null) {
+      return false;
+    }
 
-		if (blockType.isInteractable()) {
-			return true;
-		}
+    Block block = event.getClickedBlock();
+    Material blockType = block.getType();
 
-		ItemStack hand = ItemUtil.getHeldItem(event);
+    if (blockType.isInteractable()) {
+      return true;
+    }
 
-		if (blockType == Material.END_STONE) {
-			// Special case: player is probably attempting to bottle dragon's breath
-			return block.getWorld().getEnvironment() == World.Environment.THE_END
-					&& hand.getType() == Material.GLASS_BOTTLE;
-		}
+    ItemStack hand = ItemUtil.getHeldItem(event);
 
-		Item item = CraftMagicNumbers.getItem(hand.getType());
-		if (item instanceof ItemAxe || item instanceof ItemHoe || item instanceof ItemSpade) {
-			Map<?, ?> blockBlockMap = null;
-			try {
-				blockBlockMap = ReflectionUtil.getFieldValue(item, "a", Map.class);
-			} catch (ReflectiveOperationException e) {
-				ReportableEvent.call("Exception fetching list of blocks modifiable by tool!", e, 10);
-			}
-			if (blockBlockMap != null && blockBlockMap.containsKey(CraftMagicNumbers.getBlock(blockType))) {
-				return true;
-			}
-		}
+    if (blockType == Material.END_STONE) {
+      // Special case: player is probably attempting to bottle dragon's breath
+      return block.getWorld().getEnvironment() == World.Environment.THE_END
+          && hand.getType() == Material.GLASS_BOTTLE;
+    }
 
-		BlockData blockData = block.getBlockData();
-		if (blockData instanceof Bed || blockData instanceof Levelled) {
-			return true;
-		}
+    Item item = CraftMagicNumbers.getItem(hand.getType());
+    if (item instanceof ItemAxe || item instanceof ItemHoe || item instanceof ItemSpade) {
+      Map<?, ?> blockBlockMap = null;
+      try {
+        blockBlockMap = ReflectionUtil.getFieldValue(item, "a", Map.class);
+      } catch (ReflectiveOperationException e) {
+        ReportableEvent.call("Exception fetching list of blocks modifiable by tool!", e, 10);
+      }
+      if (blockBlockMap != null
+          && blockBlockMap.containsKey(CraftMagicNumbers.getBlock(blockType))) {
+        return true;
+      }
+    }
 
-		if (blockData instanceof Powerable) {
-			return !(blockData instanceof Observer || blockData instanceof RedstoneRail);
-		}
+    BlockData blockData = block.getBlockData();
+    if (blockData instanceof Bed || blockData instanceof Levelled) {
+      return true;
+    }
 
-		if (blockData instanceof Waterlogged && (hand.getType() == Material.BUCKET || hand.getType() == Material.WATER_BUCKET)) {
-			return true;
-		}
+    if (blockData instanceof Powerable) {
+      return !(blockData instanceof Observer || blockData instanceof RedstoneRail);
+    }
 
-		BlockState state = block.getState();
-		if (state instanceof InventoryHolder || state instanceof TileState) {
-			return true;
-		}
+    if (blockData instanceof Waterlogged
+        && (hand.getType() == Material.BUCKET || hand.getType() == Material.WATER_BUCKET)) {
+      return true;
+    }
 
-		for (BiFunction<Block, ItemStack, Boolean> function : BLOCK_FUNCTIONS) {
-			if (function.apply(block, hand)) {
-				return true;
-			}
-		}
+    BlockState state = block.getState();
+    if (state instanceof InventoryHolder || state instanceof TileState) {
+      return true;
+    }
 
-		if (hand.getType() == Material.GLASS_BOTTLE) {
-			RayTraceResult rayTraceResult = event.getPlayer().rayTraceBlocks(4, FluidCollisionMode.ALWAYS);
-			if (rayTraceResult == null) {
-				return false;
-			}
-			Block hitBlock = rayTraceResult.getHitBlock();
-			return hitBlock != null && (hitBlock.getType() == Material.WATER || hitBlock.getType() == Material.CAULDRON);
-		}
+    for (BiFunction<Block, ItemStack, Boolean> function : BLOCK_FUNCTIONS) {
+      if (function.apply(block, hand)) {
+        return true;
+      }
+    }
 
-		return false;
+    if (hand.getType() == Material.GLASS_BOTTLE) {
+      RayTraceResult rayTraceResult =
+          event.getPlayer().rayTraceBlocks(4, FluidCollisionMode.ALWAYS);
+      if (rayTraceResult == null) {
+        return false;
+      }
+      Block hitBlock = rayTraceResult.getHitBlock();
+      return hitBlock != null
+          && (hitBlock.getType() == Material.WATER || hitBlock.getType() == Material.CAULDRON);
+    }
 
-	}
-
-	private BlockUtil() {}
-
+    return false;
+  }
 }

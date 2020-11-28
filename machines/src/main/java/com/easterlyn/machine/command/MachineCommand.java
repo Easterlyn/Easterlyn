@@ -15,23 +15,21 @@ import org.bukkit.entity.Player;
 
 public class MachineCommand extends BaseCommand {
 
-	@Dependency
-	private EasterlynMachines plugin;
+  @Dependency private EasterlynMachines plugin;
 
-	@CommandAlias("machine")
-	@Description("Machinations.")
-	@CommandPermission("easterlyn.command.machine")
-	@Syntax("<machine>")
-	@CommandCompletion("@machines")
-	public void getMachine(@Flags(CoreContexts.SELF) Player player, String machineName) {
-		Machine machine = plugin.getByName(machineName);
+  @CommandAlias("machine")
+  @Description("Machinations.")
+  @CommandPermission("easterlyn.command.machine")
+  @Syntax("<machine>")
+  @CommandCompletion("@machines")
+  public void getMachine(@Flags(CoreContexts.SELF) Player player, String machineName) {
+    Machine machine = plugin.getByName(machineName);
 
-		if (machine == null) {
-			player.sendMessage("Invalid machine type!");
-			return;
-		}
+    if (machine == null) {
+      player.sendMessage("Invalid machine type!");
+      return;
+    }
 
-		player.getWorld().dropItem(player.getLocation(), machine.getUniqueDrop()).setPickupDelay(0);
-	}
-
+    player.getWorld().dropItem(player.getLocation(), machine.getUniqueDrop()).setPickupDelay(0);
+  }
 }

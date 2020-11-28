@@ -24,53 +24,56 @@ import org.bukkit.inventory.Recipe;
  */
 public class RecipeWrapper {
 
-	private final Map<EnumSet<Material>, Integer> ingredients;
-	private final org.bukkit.inventory.ItemStack result;
+  private final Map<EnumSet<Material>, Integer> ingredients;
+  private final org.bukkit.inventory.ItemStack result;
 
-	public RecipeWrapper(Recipe recipe) {
-		Preconditions.checkArgument(recipe instanceof Keyed, "%s does not implement Keyed!", recipe.getClass());
-		Keyed keyed = ((Keyed) recipe);
-		Optional<? extends IRecipe<?>> iRecipeOptional = ((CraftServer) Bukkit.getServer()).getServer().getCraftingManager()
-				.getRecipe(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
+  public RecipeWrapper(Recipe recipe) {
+    Preconditions.checkArgument(
+        recipe instanceof Keyed, "%s does not implement Keyed!", recipe.getClass());
+    Keyed keyed = ((Keyed) recipe);
+    Optional<? extends IRecipe<?>> iRecipeOptional =
+        ((CraftServer) Bukkit.getServer())
+            .getServer()
+            .getCraftingManager()
+            .getRecipe(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
 
-		if (iRecipeOptional.isEmpty()) {
-			ingredients = Collections.emptyMap();
-			result = new org.bukkit.inventory.ItemStack(Material.AIR);
-			return;
-		}
+    if (iRecipeOptional.isEmpty()) {
+      ingredients = Collections.emptyMap();
+      result = new org.bukkit.inventory.ItemStack(Material.AIR);
+      return;
+    }
 
-		// TODO handle smithing recipe
+    // TODO handle smithing recipe
 
-		ingredients = new HashMap<>();
+    ingredients = new HashMap<>();
 
-		for (RecipeItemStack ingredient : iRecipeOptional.get().a()) {
-			ingredient.buildChoices();
-			EnumSet<Material> materials = EnumSet.noneOf(Material.class);
-			for (ItemStack itemStack : ingredient.choices) {
-				Material material = CraftMagicNumbers.getMaterial(itemStack.getItem());
-				if (material == null || material.isAir()) {
-					continue;
-				}
+    for (RecipeItemStack ingredient : iRecipeOptional.get().a()) {
+      ingredient.buildChoices();
+      EnumSet<Material> materials = EnumSet.noneOf(Material.class);
+      for (ItemStack itemStack : ingredient.choices) {
+        Material material = CraftMagicNumbers.getMaterial(itemStack.getItem());
+        if (material == null || material.isAir()) {
+          continue;
+        }
 
-				materials.add(material);
-			}
+        materials.add(material);
+      }
 
-			if (materials.isEmpty()) {
-				continue;
-			}
+      if (materials.isEmpty()) {
+        continue;
+      }
 
-			ingredients.compute(materials, (materials1, integer) -> integer == null ? 1 : integer + 1);
-		}
+      ingredients.compute(materials, (materials1, integer) -> integer == null ? 1 : integer + 1);
+    }
 
-		result = recipe.getResult();
-	}
+    result = recipe.getResult();
+  }
 
-	public Map<EnumSet<Material>, Integer> getRecipeIngredients() {
-		return this.ingredients;
-	}
+  public Map<EnumSet<Material>, Integer> getRecipeIngredients() {
+    return this.ingredients;
+  }
 
-	public org.bukkit.inventory.ItemStack getResult() {
-		return this.result;
-	}
-
+  public org.bukkit.inventory.ItemStack getResult() {
+    return this.result;
+  }
 }

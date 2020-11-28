@@ -37,123 +37,139 @@ import org.reflections.Reflections;
  */
 public class EasterlynCore extends JavaPlugin {
 
-	private final LocaleManager localeManager = new LocaleManager(this, "en_us");
-	private final UserManager userManager = new UserManager(this);
-	private final BlockUpdateManager blockUpdateManager = new BlockUpdateManager(this);
-	private final Multimap<Class<? extends Plugin>, BaseCommand> pluginCommands = HashMultimap.create();
-	private EasterlynCommandManager commandManager;
-	private SimpleCommandMap simpleCommandMap;
+  private final LocaleManager localeManager = new LocaleManager(this, "en_us");
+  private final UserManager userManager = new UserManager(this);
+  private final BlockUpdateManager blockUpdateManager = new BlockUpdateManager(this);
+  private final Multimap<Class<? extends Plugin>, BaseCommand> pluginCommands =
+      HashMultimap.create();
+  private EasterlynCommandManager commandManager;
+  private SimpleCommandMap simpleCommandMap;
 
-	@Override
-	public void onEnable() {
-		saveDefaultConfig();
+  @Override
+  public void onEnable() {
+    saveDefaultConfig();
 
-		Colors.load(this);
+    Colors.load(this);
 
-		getServer().getServicesManager().register(EasterlynCore.class, this, this, ServicePriority.Normal);
+    getServer()
+        .getServicesManager()
+        .register(EasterlynCore.class, this, this, ServicePriority.Normal);
 
-		if (commandManager == null) {
-			commandManager = new EasterlynCommandManager(this);
-			//noinspection deprecation
-			commandManager.enableUnstableAPI("help");
-			CoreContexts.register(this);
-			CoreCompletions.register(this);
-			// TODO system for Group resolvers
-		}
+    if (commandManager == null) {
+      commandManager = new EasterlynCommandManager(this);
+      commandManager.enableUnstableAPI("help");
+      commandManager.enableUnstableAPI("brigadier");
+      CoreContexts.register(this);
+      CoreCompletions.register(this);
+      // TODO system for Group resolvers
+    }
 
-		registerCommands(this, getClassLoader(), "com.easterlyn.command");
+    registerCommands(this, getClassLoader(), "com.easterlyn.command");
 
-		// Listener for preventing ruining unique items
-		getServer().getPluginManager().registerEvents(new UniqueListener(), this);
+    // Listener for preventing ruining unique items
+    getServer().getPluginManager().registerEvents(new UniqueListener(), this);
 
-		Event.register(PluginDisableEvent.class, event -> {
-			if (pluginCommands.containsKey(event.getPlugin().getClass())) {
-				pluginCommands.get(event.getPlugin().getClass()).forEach(commandManager::unregisterCommand);
-			}
-		}, this);
+    Event.register(
+        PluginDisableEvent.class,
+        event -> {
+          if (pluginCommands.containsKey(event.getPlugin().getClass())) {
+            pluginCommands
+                .get(event.getPlugin().getClass())
+                .forEach(commandManager::unregisterCommand);
+          }
+        },
+        this);
 
-		Event.register(ReportableEvent.class, event -> {
-			getLogger().warning(event.getMessage());
-			if (event.hasTrace()) {
-				getLogger().warning(event.getTrace());
-			}
-		}, this);
+    Event.register(
+        ReportableEvent.class,
+        event -> {
+          getLogger().warning(event.getMessage());
+          if (event.hasTrace()) {
+            getLogger().warning(event.getTrace());
+          }
+        },
+        this);
 
-		Event.register(PlayerJoinEvent.class,
-				event -> PlayerUtil.removeFromCache(event.getPlayer().getUniqueId()), this, EventPriority.LOW);
+    Event.register(
+        PlayerJoinEvent.class,
+        event -> PlayerUtil.removeFromCache(event.getPlayer().getUniqueId()),
+        this,
+        EventPriority.LOW);
+  }
 
-	}
+  public void registerCommands(Plugin plugin, ClassLoader loader, String packageName) {
+    if (!plugin.equals(this)) {
+      commandManager.registerDependency(plugin.getClass(), plugin);
+    }
+    new Reflections(packageName, loader)
+        .getSubTypesOf(BaseCommand.class).stream()
+            .filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
+            .forEach(
+                clazz -> {
+                  Constructor<? extends BaseCommand> constructor;
+                  BaseCommand command;
+                  try {
+                    constructor = clazz.getConstructor();
+                    command = constructor.newInstance();
+                  } catch (ReflectiveOperationException e) {
+                    getLogger().severe("Unable to register command " + clazz.getName());
+                    e.printStackTrace();
+                    return;
+                  }
+                  commandManager.registerCommand(command, true);
+                  if (!this.equals(plugin)) {
+                    pluginCommands.put(plugin.getClass(), command);
+                  }
+                });
+  }
 
-	public void registerCommands(Plugin plugin, ClassLoader loader, String packageName) {
-		if (!plugin.equals(this)) {
-			commandManager.registerDependency(plugin.getClass(), plugin);
-		}
-		new Reflections(packageName, loader).getSubTypesOf(BaseCommand.class).stream()
-				.filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
-				.forEach(clazz -> {
-					Constructor<? extends BaseCommand> constructor;
-					BaseCommand command;
-					try {
-						constructor = clazz.getConstructor();
-						command = constructor.newInstance();
-					} catch (ReflectiveOperationException e) {
-						getLogger().severe("Unable to register command " + clazz.getName());
-						e.printStackTrace();
-						return;
-					}
-					commandManager.registerCommand(command, true);
-					if (!this.equals(plugin)) {
-						pluginCommands.put(plugin.getClass(), command);
-					}
-				});
-	}
+  @Override
+  public void onDisable() {
+    userManager.clearCache();
+    commandManager.unregisterCommands();
+    blockUpdateManager.forceAllUpdates();
+    simpleCommandMap = null;
+  }
 
-	@Override
-	public void onDisable() {
-		userManager.clearCache();
-		commandManager.unregisterCommands();
-		blockUpdateManager.forceAllUpdates();
-		simpleCommandMap = null;
-	}
+  public @NotNull EasterlynCommandManager getCommandManager() throws IllegalStateException {
+    if (commandManager == null || !this.isEnabled()) {
+      throw new IllegalStateException("Plugin not ready!");
+    }
 
-	@NotNull
-	public EasterlynCommandManager getCommandManager() throws IllegalStateException {
-		if (commandManager == null || !this.isEnabled()) {
-			throw new IllegalStateException("Plugin not ready!");
-		}
+    return commandManager;
+  }
 
-		return commandManager;
-	}
+  public LocaleManager getLocaleManager() {
+    return localeManager;
+  }
 
-	public LocaleManager getLocaleManager() {
-		return localeManager;
-	}
+  public @NotNull UserManager getUserManager() throws IllegalStateException {
+    return userManager;
+  }
 
-	@NotNull
-	public UserManager getUserManager() throws IllegalStateException {
-		return userManager;
-	}
+  public @NotNull BlockUpdateManager getBlockUpdateManager() {
+    return blockUpdateManager;
+  }
 
-	@NotNull
-	public BlockUpdateManager getBlockUpdateManager() {
-		return blockUpdateManager;
-	}
+  public @Nullable SimpleCommandMap getSimpleCommandMap() {
+    if (simpleCommandMap != null) {
+      return simpleCommandMap;
+    }
 
-	@Nullable
-	public SimpleCommandMap getSimpleCommandMap() {
-		if (simpleCommandMap != null) {
-			return simpleCommandMap;
-		}
-
-		try {
-			Method getCommandMap = getServer().getClass().getMethod("getCommandMap");
-			simpleCommandMap = (SimpleCommandMap) getCommandMap.invoke(getServer());
-		} catch (IllegalArgumentException | IllegalAccessException | SecurityException
-				| NoSuchMethodException | InvocationTargetException e) {
-			getLogger().severe("Could not fetch SimpleCommandMap from CraftServer, Easterlyn command will fail to register.");
-			getLogger().severe(StringUtil.getTrace(e));
-		}
-		return simpleCommandMap;
-	}
-
+    try {
+      Method getCommandMap = getServer().getClass().getMethod("getCommandMap");
+      simpleCommandMap = (SimpleCommandMap) getCommandMap.invoke(getServer());
+    } catch (IllegalArgumentException
+        | IllegalAccessException
+        | SecurityException
+        | NoSuchMethodException
+        | InvocationTargetException e) {
+      getLogger()
+          .severe(
+              "Could not fetch SimpleCommandMap from CraftServer, "
+                  + "Easterlyn command will fail to register.");
+      getLogger().severe(StringUtil.getTrace(e));
+    }
+    return simpleCommandMap;
+  }
 }

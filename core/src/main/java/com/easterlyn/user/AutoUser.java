@@ -22,66 +22,68 @@ import org.jetbrains.annotations.Nullable;
 
 public class AutoUser extends User {
 
-	private final Map<String, String> userData;
+  private final Map<String, String> userData;
 
-	public AutoUser(@NotNull EasterlynCore core, @NotNull Map<String, String> userData) {
-		super(core, new UUID(0, 0), new ConcurrentConfiguration(core));
-		this.userData = userData;
-	}
+  public AutoUser(@NotNull EasterlynCore core, @NotNull Map<String, String> userData) {
+    super(core, new UUID(0, 0), new ConcurrentConfiguration(core));
+    this.userData = userData;
+  }
 
-	@Nullable
-	public Player getPlayer() {
-		return null;
-	}
+  public @Nullable Player getPlayer() {
+    return null;
+  }
 
-	@NotNull
-	public String getDisplayName() {
-		return ChatColor.translateAlternateColorCodes('&',
-				GenericUtil.orDefault(userData.get("name"), "Auto User"));
-	}
+  public @NotNull String getDisplayName() {
+    return ChatColor.translateAlternateColorCodes(
+        '&', GenericUtil.orDefault(userData.get("name"), "Auto User"));
+  }
 
-	public @NotNull ChatColor getColor() {
-		return Colors.getOrDefault(userData.get("color"), getRank().getColor());
-	}
+  public @NotNull ChatColor getColor() {
+    return Colors.getOrDefault(userData.get("color"), getRank().getColor());
+  }
 
-	public boolean isOnline() {
-		return false;
-	}
+  public boolean isOnline() {
+    return false;
+  }
 
-	public boolean hasPermission(String permission) {
-		Permission perm = getPlugin().getServer().getPluginManager().getPermission(permission);
-		return perm == null || perm.getDefault() == PermissionDefault.TRUE || perm.getDefault() == PermissionDefault.OP;
-	}
+  public boolean hasPermission(String permission) {
+    Permission perm = getPlugin().getServer().getPluginManager().getPermission(permission);
+    return perm == null
+        || perm.getDefault() == PermissionDefault.TRUE
+        || perm.getDefault() == PermissionDefault.OP;
+  }
 
-	@NotNull
-	public UserRank getRank() {
-		return UserRank.ADMIN;
-	}
+  public @NotNull UserRank getRank() {
+    return UserRank.ADMIN;
+  }
 
-	public TextComponent getMention() {
-		TextComponent component = new TextComponent("@" + getDisplayName());
-		component.setColor(getColor());
+  @Override
+  public TextComponent getMention() {
+    TextComponent component = new TextComponent("@" + getDisplayName());
+    component.setColor(getColor());
 
-		String click = userData.get("click");
-		if (click != null && !click.isEmpty()) {
-			component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click));
-		}
+    String click = userData.get("click");
+    if (click != null && !click.isEmpty()) {
+      component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, click));
+    }
 
-		String hover = userData.get("hover");
-		if (hover != null && !hover.isEmpty()) {
-			hover = ChatColor.translateAlternateColorCodes('&', hover);
-			component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(StringUtil.toJSON(hover).toArray(new TextComponent[0]))));
-		}
+    String hover = userData.get("hover");
+    if (hover != null && !hover.isEmpty()) {
+      hover = ChatColor.translateAlternateColorCodes('&', hover);
+      component.setHoverEvent(
+          new HoverEvent(
+              HoverEvent.Action.SHOW_TEXT,
+              new Text(StringUtil.toJSON(hover).toArray(new TextComponent[0]))));
+    }
 
-		return component;
-	}
+    return component;
+  }
 
-	public void sendMessage(@NotNull String message) {
-		Bukkit.getConsoleSender().sendMessage(message);
-	}
+  public void sendMessage(@NotNull String message) {
+    Bukkit.getConsoleSender().sendMessage(message);
+  }
 
-	public void sendMessage(@NotNull BaseComponent... components) {
-		Bukkit.getConsoleSender().spigot().sendMessage(components);
-	}
-
+  public void sendMessage(@NotNull BaseComponent... components) {
+    Bukkit.getConsoleSender().spigot().sendMessage(components);
+  }
 }

@@ -7,9 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 public interface Group {
 
-	@NotNull
-	Collection<UUID> getMembers();
+  @NotNull
+  Collection<UUID> getMembers();
 
-	TextComponent getMention();
-
+  TextComponent getMention();
 }

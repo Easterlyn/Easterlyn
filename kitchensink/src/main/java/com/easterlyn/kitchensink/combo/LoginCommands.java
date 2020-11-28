@@ -27,72 +27,73 @@ import org.bukkit.event.player.PlayerJoinEvent;
 @CommandPermission("easterlyn.command.onlogin")
 public class LoginCommands extends BaseCommand implements Listener {
 
-	private static final String ONLOGIN = "kitchensink.onlogin";
+  private static final String ONLOGIN = "kitchensink.onlogin";
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void onPlayerJoin(PlayerJoinEvent event) {
-		User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
-		user.getStorage().getStringList(ONLOGIN).forEach(string -> event.getPlayer().chat(string));
-	}
+  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+  public void onPlayerJoin(PlayerJoinEvent event) {
+    User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
+    user.getStorage().getStringList(ONLOGIN).forEach(string -> event.getPlayer().chat(string));
+  }
 
-	@Subcommand("list")
-	@Description("{@@sink.module.onlogin.list.description}")
-	@Syntax("[player]")
-	@CommandCompletion("@player")
-	public void list(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
-		CommandIssuer issuer = getCurrentCommandIssuer();
-		List<String> list = user.getStorage().getStringList(ONLOGIN);
-		if (list.isEmpty()) {
-			issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.none"));
-			return;
-		}
-		for (int i = 0; i < list.size(); ++i) {
-			issuer.sendMessage((i + 1) + ": " + list.get(i));
-		}
-	}
+  @Subcommand("list")
+  @Description("{@@sink.module.onlogin.list.description}")
+  @Syntax("[player]")
+  @CommandCompletion("@player")
+  public void list(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+    CommandIssuer issuer = getCurrentCommandIssuer();
+    List<String> list = user.getStorage().getStringList(ONLOGIN);
+    if (list.isEmpty()) {
+      issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.none"));
+      return;
+    }
+    for (int i = 0; i < list.size(); ++i) {
+      issuer.sendMessage((i + 1) + ": " + list.get(i));
+    }
+  }
 
-	@Subcommand("add")
-	@Description("{@@sink.module.onlogin.add.description}")
-	@Syntax("</command parameters>")
-	@CommandCompletion("@player")
-	public void add(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, String command) {
-		CommandIssuer issuer = getCurrentCommandIssuer();
-		List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
-		if (!issuer.hasPermission("easterlyn.command.onlogin.more") && list.size() >= 2 || list.size() >= 5) {
-			issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.capped"));
-			return;
-		}
-		if (command == null || command.length() < 2 || command.charAt(0) != '/'
-				|| command.matches("/(\\w+:)?me .*")) {
-			issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.not_command"));
-			return;
-		}
-		list.add(command);
-		user.getStorage().set(ONLOGIN, list);
-		issuer.sendInfo(MessageKey.of("sink.module.onlogin.add.success"), "{value}", command);
-	}
+  @Subcommand("add")
+  @Description("{@@sink.module.onlogin.add.description}")
+  @Syntax("</command parameters>")
+  @CommandCompletion("@player")
+  public void add(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, String command) {
+    CommandIssuer issuer = getCurrentCommandIssuer();
+    List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
+    if (!issuer.hasPermission("easterlyn.command.onlogin.more") && list.size() >= 2
+        || list.size() >= 5) {
+      issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.capped"));
+      return;
+    }
+    if (command == null
+        || command.length() < 2
+        || command.charAt(0) != '/'
+        || command.matches("/(\\w+:)?me .*")) {
+      issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.not_command"));
+      return;
+    }
+    list.add(command);
+    user.getStorage().set(ONLOGIN, list);
+    issuer.sendInfo(MessageKey.of("sink.module.onlogin.add.success"), "{value}", command);
+  }
 
-	@Subcommand("remove")
-	@Description("{@@sink.module.onlogin.remove.description}")
-	@Syntax("<index>")
-	@CommandCompletion("@player @integer")
-	public void remove(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, int commandIndex) {
-		CommandIssuer issuer = getCurrentCommandIssuer();
-		List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
-		if (list.size() == 0) {
-			issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.none"));
-			return;
-		}
-		if (commandIndex < 1 || commandIndex > list.size()) {
-			issuer.sendInfo(CoreLang.NUMBER_WITHIN, "{min}", "1", "max", String.valueOf(list.size()));
-			return;
-		}
-		String command = list.remove(commandIndex - 1);
-		user.getStorage().set(ONLOGIN, list);
-		issuer.sendInfo(MessageKey.of("sink.module.onlogin.remove.success"), "{value}", command);
-	}
-
+  @Subcommand("remove")
+  @Description("{@@sink.module.onlogin.remove.description}")
+  @Syntax("<index>")
+  @CommandCompletion("@player @integer")
+  public void remove(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, int commandIndex) {
+    CommandIssuer issuer = getCurrentCommandIssuer();
+    List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
+    if (list.size() == 0) {
+      issuer.sendInfo(MessageKey.of("sink.module.onlogin.error.none"));
+      return;
+    }
+    if (commandIndex < 1 || commandIndex > list.size()) {
+      issuer.sendInfo(CoreLang.NUMBER_WITHIN, "{min}", "1", "max", String.valueOf(list.size()));
+      return;
+    }
+    String command = list.remove(commandIndex - 1);
+    user.getStorage().set(ONLOGIN, list);
+    issuer.sendInfo(MessageKey.of("sink.module.onlogin.remove.success"), "{value}", command);
+  }
 }

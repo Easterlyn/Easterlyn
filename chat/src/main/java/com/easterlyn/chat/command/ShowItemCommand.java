@@ -18,28 +18,36 @@ import org.bukkit.inventory.ItemStack;
 
 public class ShowItemCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@CommandAlias("show|me show")
-	@Description("{@@chat.commands.me.show.description}")
-	@CommandPermission("easterlyn.command.show")
-	@Syntax("[#channel]")
-	@CommandCompletion("@channelsListening")
-	public void showItem(@Flags(CoreContexts.SELF) User sender, @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel) {
-		Player player = sender.getPlayer();
-		if (player == null) {
-			core.getLocaleManager().sendMessage(getCurrentCommandIssuer().getIssuer(), "chat.commands.me.show.error.no_player");
-			return;
-		}
+  @CommandAlias("show|me show")
+  @Description("{@@chat.commands.me.show.description}")
+  @CommandPermission("easterlyn.command.show")
+  @Syntax("[#channel]")
+  @CommandCompletion("@channelsListening")
+  public void showItem(
+      @Flags(CoreContexts.SELF) User sender,
+      @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel) {
+    Player player = sender.getPlayer();
+    if (player == null) {
+      core.getLocaleManager()
+          .sendMessage(
+              getCurrentCommandIssuer().getIssuer(), "chat.commands.me.show.error.no_player");
+      return;
+    }
 
-		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand.getItemMeta() == null || (!hand.getItemMeta().hasDisplayName() && hand.getEnchantments().isEmpty())) {
-			core.getLocaleManager().sendMessage(player, "chat.commands.me.show.error.not_special");
-			return;
-		}
+    ItemStack hand = player.getInventory().getItemInMainHand();
+    if (hand.getItemMeta() == null
+        || (!hand.getItemMeta().hasDisplayName() && hand.getEnchantments().isEmpty())) {
+      core.getLocaleManager().sendMessage(player, "chat.commands.me.show.error.not_special");
+      return;
+    }
 
-		new UserChatEvent(sender, channel, "shows off {ITEM:" + player.getInventory().getHeldItemSlot() + "}", true).send();
-	}
-
+    new UserChatEvent(
+            sender,
+            channel,
+            "shows off {ITEM:" + player.getInventory().getHeldItemSlot() + "}",
+            true)
+        .send();
+  }
 }

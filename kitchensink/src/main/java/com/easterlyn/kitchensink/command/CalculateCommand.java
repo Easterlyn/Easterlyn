@@ -14,33 +14,32 @@ import java.util.UUID;
 
 public class CalculateCommand extends BaseCommand {
 
-	// TODO reintroduce chat-based option and fun responses
+  // TODO reintroduce chat-based option and fun responses
 
-	private final HashMap<UUID, Double> lastValue = new HashMap<>();
+  private final HashMap<UUID, Double> lastValue = new HashMap<>();
 
-	@CommandAlias("calculate|calc|halc")
-	@Description("{@@sink.module.calculate}")
-	@CommandPermission("easterlyn.command.calculate")
-	@Syntax("[equation]")
-	@CommandCompletion("")
-	public void calculate(BukkitCommandIssuer issuer, String input) {
-		input = input.toLowerCase().replace('x', '*');
-		if (this.lastValue.containsKey(issuer.getUniqueId())) {
-			input = input.replace("ans", String.valueOf(this.lastValue.get(issuer.getUniqueId())));
-		}
-		try {
-			double ans = Expression.compile(input).evaluate();
-			lastValue.put(issuer.getUniqueId(), ans);
-			String answer;
-			if (ans == (int) ans) {
-				answer = String.valueOf((int) ans);
-			} else {
-				answer = String.format("%s", ans);
-			}
-			issuer.sendMessage(input + " = " + answer);
-		} catch (Exception e) {
-			issuer.sendInfo(MessageKey.of("sink.module.calculate.error"));
-		}
-	}
-
+  @CommandAlias("calculate|calc|halc")
+  @Description("{@@sink.module.calculate}")
+  @CommandPermission("easterlyn.command.calculate")
+  @Syntax("[equation]")
+  @CommandCompletion("")
+  public void calculate(BukkitCommandIssuer issuer, String input) {
+    input = input.toLowerCase().replace('x', '*');
+    if (this.lastValue.containsKey(issuer.getUniqueId())) {
+      input = input.replace("ans", String.valueOf(this.lastValue.get(issuer.getUniqueId())));
+    }
+    try {
+      double ans = Expression.compile(input).evaluate();
+      lastValue.put(issuer.getUniqueId(), ans);
+      String answer;
+      if (ans == (int) ans) {
+        answer = String.valueOf((int) ans);
+      } else {
+        answer = String.format("%s", ans);
+      }
+      issuer.sendMessage(input + " = " + answer);
+    } catch (Exception e) {
+      issuer.sendInfo(MessageKey.of("sink.module.calculate.error"));
+    }
+  }
 }

@@ -22,39 +22,43 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EffectPullNearbyItems extends Effect {
 
-	public EffectPullNearbyItems(EasterlynEffects plugin) {
-		super(plugin, "Vacuum", EquipmentSlots.TOOL, 300, 3, 3);
-	}
+  public EffectPullNearbyItems(EasterlynEffects plugin) {
+    super(plugin, "Vacuum", EquipmentSlots.TOOL, 300, 3, 3);
+  }
 
-	@Override
-	public void applyEffect(@NotNull LivingEntity entity, int level, Event event) {
-		final double radius = level * 1.5;
-		final UUID uuid = entity.getUniqueId();
-		new BukkitRunnable() {
-			@Override
-			public void run() {
-				Player player = Bukkit.getPlayer(uuid);
-				if (player == null) {
-					// Logged out
-					return;
-				}
+  @Override
+  public void applyEffect(@NotNull LivingEntity entity, int level, Event event) {
+    final double radius = level * 1.5;
+    final UUID uuid = entity.getUniqueId();
+    new BukkitRunnable() {
+      @Override
+      public void run() {
+        Player player = Bukkit.getPlayer(uuid);
+        if (player == null) {
+          // Logged out
+          return;
+        }
 
-				for (Entity near : player.getNearbyEntities(radius, radius, radius)) {
-					if (!(near instanceof Item)) {
-						continue;
-					}
-					near.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, near.getLocation(), 1);
-					near.teleport(player);
-					if (!(event instanceof IndirectBreakEvent)) {
-						player.playSound(near.getLocation(), Sound.ENTITY_ENDER_DRAGON_FLAP, SoundCategory.BLOCKS, 0.1F, 1.5F);
-					}
-					Item item = (Item) near;
-					if (item.getPickupDelay() < 1000) {
-						item.setPickupDelay(0);
-					}
-				}
-			}
-		}.runTask(getPlugin());
-	}
-
+        for (Entity near : player.getNearbyEntities(radius, radius, radius)) {
+          if (!(near instanceof Item)) {
+            continue;
+          }
+          near.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE, near.getLocation(), 1);
+          near.teleport(player);
+          if (!(event instanceof IndirectBreakEvent)) {
+            player.playSound(
+                near.getLocation(),
+                Sound.ENTITY_ENDER_DRAGON_FLAP,
+                SoundCategory.BLOCKS,
+                0.1F,
+                1.5F);
+          }
+          Item item = (Item) near;
+          if (item.getPickupDelay() < 1000) {
+            item.setPickupDelay(0);
+          }
+        }
+      }
+    }.runTask(getPlugin());
+  }
 }

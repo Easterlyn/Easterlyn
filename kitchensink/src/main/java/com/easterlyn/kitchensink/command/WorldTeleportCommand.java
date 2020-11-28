@@ -15,20 +15,26 @@ import org.bukkit.entity.Player;
 
 public class WorldTeleportCommand extends BaseCommand {
 
-	@CommandAlias("wtp")
-	@Description("{@@sink.module.wtp.description}")
-	@CommandPermission("easterlyn.command.wtp")
-	@Syntax("<target> <world> <x> <y> <z> [pitch] [yaw]")
-	@CommandCompletion("@player @world @decimal @decimal @decimal @decimal @decimal")
-	public void teleport(@Flags(CoreContexts.ONLINE) Player player, World world, double x, double y, double z, @Optional Float pitch, @Optional Float yaw) {
-		Location location = new Location(world, x, y, z);
-		if (pitch != null) {
-			location.setPitch(pitch);
-		}
-		if (yaw != null) {
-			location.setYaw(yaw);
-		}
-		player.teleport(location);
-	}
-
+  @CommandAlias("wtp")
+  @Description("{@@sink.module.wtp.description}")
+  @CommandPermission("easterlyn.command.wtp")
+  @Syntax("<target> <world> <x> <y> <z> [pitch] [yaw]")
+  @CommandCompletion("@player @world @decimal @decimal @decimal @decimal @decimal")
+  public void teleport(
+      @Flags(CoreContexts.ONLINE) Player player,
+      World world,
+      double x,
+      double y,
+      double z,
+      @Optional Float pitch,
+      @Optional Float yaw) {
+    Location location = new Location(world, x, y, z);
+    if (pitch != null) {
+      location.setPitch(pitch);
+    }
+    if (yaw != null) {
+      location.setYaw(yaw);
+    }
+    player.teleport(location);
+  }
 }

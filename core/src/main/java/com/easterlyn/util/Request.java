@@ -2,20 +2,20 @@ package com.easterlyn.util;
 
 public abstract class Request {
 
-	private final long expiry;
+  private final long expiry;
 
-	public Request() {
-		this.expiry = System.currentTimeMillis() + 60000L;
-	}
+  public Request() {
+    this.expiry = System.currentTimeMillis() + 60000L;
+  }
 
-	public abstract void accept();
+  public abstract void accept();
 
-	public abstract void decline();
+  public abstract void decline();
 
-	public long getExpiry() {
-		return expiry;
-	}
+  public long getExpiry() {
+    return expiry;
+  }
 
-	// TODO cancel option - need both command and events.
+  // TODO cancel option - need both command and events.
 
 }

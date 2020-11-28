@@ -6,20 +6,19 @@ import org.bukkit.inventory.ItemStack;
 
 public class Button {
 
-	private ItemStack item;
-	private Consumer<InventoryClickEvent> consumer;
+  private final ItemStack item;
+  private final Consumer<InventoryClickEvent> consumer;
 
-	public Button(ItemStack item, Consumer<InventoryClickEvent> consumer) {
-		this.item = item;
-		this.consumer = consumer;
-	}
+  public Button(ItemStack item, Consumer<InventoryClickEvent> consumer) {
+    this.item = item;
+    this.consumer = consumer;
+  }
 
-	public ItemStack getItem(){
-		return item;
-	}
+  public ItemStack getItem() {
+    return item;
+  }
 
-	public Consumer<InventoryClickEvent> getConsumer(){
-		return consumer;
-	}
-
+  public Consumer<InventoryClickEvent> getConsumer() {
+    return consumer;
+  }
 }

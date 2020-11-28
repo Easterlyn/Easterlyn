@@ -17,43 +17,43 @@ import org.bukkit.entity.Player;
 
 public class HealCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@CommandAlias("heal")
-	@Description("{@@sink.module.heal.description}")
-	@CommandPermission("easterlyn.command.heal.self")
-	@CommandCompletion("@player")
-	@Syntax("[player]")
-	public void heal(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
-		AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
-		CommandIssuer issuer = getCurrentCommandIssuer();
-		if (attribute == null) {
-			core.getLocaleManager().sendMessage(issuer.getIssuer(), "sink.module.heal.attribute_missing");
-			return;
-		}
-		player.setHealth(attribute.getValue());
-		core.getLocaleManager().sendMessage(player, "sink.module.heal.success.target");
-		if (!issuer.getUniqueId().equals(player.getUniqueId())) {
-			core.getLocaleManager().sendMessage(issuer.getIssuer(), "sink.module.heal.success.other",
-					"{target}", player.getName());
-		}
-	}
+  @CommandAlias("heal")
+  @Description("{@@sink.module.heal.description}")
+  @CommandPermission("easterlyn.command.heal.self")
+  @CommandCompletion("@player")
+  @Syntax("[player]")
+  public void heal(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
+    AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
+    CommandIssuer issuer = getCurrentCommandIssuer();
+    if (attribute == null) {
+      core.getLocaleManager().sendMessage(issuer.getIssuer(), "sink.module.heal.attribute_missing");
+      return;
+    }
+    player.setHealth(attribute.getValue());
+    core.getLocaleManager().sendMessage(player, "sink.module.heal.success.target");
+    if (!issuer.getUniqueId().equals(player.getUniqueId())) {
+      core.getLocaleManager()
+          .sendMessage(
+              issuer.getIssuer(), "sink.module.heal.success.other", "{target}", player.getName());
+    }
+  }
 
-	@CommandAlias("feed")
-	@Description("{@@sink.module.feed.description}")
-	@CommandPermission("easterlyn.command.feed.self")
-	@CommandCompletion("@player")
-	@Syntax("[player]")
-	public void feed(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
-		CommandIssuer issuer = getCurrentCommandIssuer();
-		player.setFoodLevel(20);
-		player.setSaturation(20);
-		core.getLocaleManager().sendMessage(player, "sink.module.feed.success.target");
-		if (!issuer.getUniqueId().equals(player.getUniqueId())) {
-			core.getLocaleManager().sendMessage(issuer.getIssuer(), "sink.module.feed.success.other",
-					"{target}", player.getName());
-		}
-	}
-
+  @CommandAlias("feed")
+  @Description("{@@sink.module.feed.description}")
+  @CommandPermission("easterlyn.command.feed.self")
+  @CommandCompletion("@player")
+  @Syntax("[player]")
+  public void feed(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
+    player.setFoodLevel(20);
+    player.setSaturation(20);
+    core.getLocaleManager().sendMessage(player, "sink.module.feed.success.target");
+    CommandIssuer issuer = getCurrentCommandIssuer();
+    if (!issuer.getUniqueId().equals(player.getUniqueId())) {
+      core.getLocaleManager()
+          .sendMessage(
+              issuer.getIssuer(), "sink.module.feed.success.other", "{target}", player.getName());
+    }
+  }
 }

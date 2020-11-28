@@ -23,33 +23,35 @@ import org.bukkit.inventory.ItemStack;
 
 public class ItemInformationCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
-	@Dependency
-	EasterlynCaptchas captchas;
+  @Dependency EasterlynCore core;
+  @Dependency EasterlynCaptchas captchas;
 
-	@CommandAlias("iteminfo")
-	@Description("{@@sink.module.iteminfo.description}")
-	@CommandPermission("easterlyn.command.iteminfo")
-	@Syntax("")
-	@CommandCompletion("")
-	public void itemInfo(@Flags(CoreContexts.SELF) Player player) {
-		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand.getType() == Material.AIR) {
-			core.getLocaleManager().sendMessage(player, "core.common.no_item");
-			return;
-		}
+  @CommandAlias("iteminfo")
+  @Description("{@@sink.module.iteminfo.description}")
+  @CommandPermission("easterlyn.command.iteminfo")
+  @Syntax("")
+  @CommandCompletion("")
+  public void itemInfo(@Flags(CoreContexts.SELF) Player player) {
+    ItemStack hand = player.getInventory().getItemInMainHand();
+    if (hand.getType() == Material.AIR) {
+      core.getLocaleManager().sendMessage(player, "core.common.no_item");
+      return;
+    }
 
-		BaseComponent component = ItemUtil.getItemComponent(hand);
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, ItemUtil.getAsText(hand)));
-		component = new TextComponent(component, new TextComponent(": "), new TextComponent(hand.toString().replace(ChatColor.COLOR_CHAR, '&')));
-		player.spigot().sendMessage(component);
-		player.sendMessage("Hash: " + captchas.calculateHashForItem(hand));
-		try {
-			player.sendMessage("Mana: " + EconomyUtil.getWorth(hand));
-		} catch (ArithmeticException e) {
-			player.sendMessage("Mana: Too expensive!");
-		}
-	}
-
+    BaseComponent component = ItemUtil.getItemComponent(hand);
+    component.setClickEvent(
+        new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, ItemUtil.getAsText(hand)));
+    component =
+        new TextComponent(
+            component,
+            new TextComponent(": "),
+            new TextComponent(hand.toString().replace(ChatColor.COLOR_CHAR, '&')));
+    player.spigot().sendMessage(component);
+    player.sendMessage("Hash: " + captchas.calculateHashForItem(hand));
+    try {
+      player.sendMessage("Mana: " + EconomyUtil.getWorth(hand));
+    } catch (ArithmeticException e) {
+      player.sendMessage("Mana: Too expensive!");
+    }
+  }
 }

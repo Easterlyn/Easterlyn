@@ -12,45 +12,35 @@ import org.jetbrains.annotations.NotNull;
  */
 public class PlayerNameChangeEvent extends Event {
 
-	private static final HandlerList HANDLER_LIST = new HandlerList();
+  private static final HandlerList HANDLER_LIST = new HandlerList();
+  private @NotNull final String from;
+  private @NotNull final String to;
+  private @NotNull final Player player;
 
-	@NotNull
-	private Player player;
-	@NotNull
-	private final String from;
-	@NotNull
-	private final String to;
+  public PlayerNameChangeEvent(@NotNull Player player, @NotNull String from, @NotNull String to) {
+    this.player = player;
+    this.from = from;
+    this.to = to;
+  }
 
-	public PlayerNameChangeEvent(@NotNull Player player, @NotNull String from, @NotNull String to) {
-		this.player = player;
-		this.from = from;
-		this.to = to;
-	}
+  public @NotNull static HandlerList getHandlerList() {
+    return HANDLER_LIST;
+  }
 
-	@NotNull
-	public Player getPlayer() {
-		return player;
-	}
+  public @NotNull Player getPlayer() {
+    return player;
+  }
 
-	@NotNull
-	public String getFrom() {
-		return from;
-	}
+  public @NotNull String getFrom() {
+    return from;
+  }
 
-	@NotNull
-	public String getTo() {
-		return to;
-	}
+  public @NotNull String getTo() {
+    return to;
+  }
 
-	@NotNull
-	@Override
-	public HandlerList getHandlers() {
-		return HANDLER_LIST;
-	}
-
-	@NotNull
-	public static HandlerList getHandlerList() {
-		return HANDLER_LIST;
-	}
-
+  @Override
+  public @NotNull HandlerList getHandlers() {
+    return HANDLER_LIST;
+  }
 }

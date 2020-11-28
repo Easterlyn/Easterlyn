@@ -22,45 +22,43 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 public class EffectCommand extends BaseCommand {
 
-	@Dependency
-	private EasterlynEffects effects;
+  @Dependency private EasterlynEffects effects;
 
-	@CommandAlias("effects|fx")
-	@Description("{@@effects.commands.effect.description}")
-	@CommandPermission("easterlyn.command.effects")
-	@Syntax("<effect> <level>")
-	@CommandCompletion("@effect @integer")
-	public void applyEffect(@Flags(CoreContexts.SELF) Player player, String effectName, int level) {
-		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand.getType() == Material.AIR) {
-			getCurrentCommandIssuer().sendInfo(MessageKey.of("core.common.no_item"));
-			return;
-		}
+  @CommandAlias("effects|fx")
+  @Description("{@@effects.commands.effect.description}")
+  @CommandPermission("easterlyn.command.effects")
+  @Syntax("<effect> <level>")
+  @CommandCompletion("@effect @integer")
+  public void applyEffect(@Flags(CoreContexts.SELF) Player player, String effectName, int level) {
+    ItemStack hand = player.getInventory().getItemInMainHand();
+    if (hand.getType() == Material.AIR) {
+      getCurrentCommandIssuer().sendInfo(MessageKey.of("core.common.no_item"));
+      return;
+    }
 
-		ItemMeta meta = hand.getItemMeta();
+    ItemMeta meta = hand.getItemMeta();
 
-		if (meta == null) {
-			getCurrentCommandIssuer().sendInfo(MessageKey.of("core.common.no_item"));
-			return;
-		}
+    if (meta == null) {
+      getCurrentCommandIssuer().sendInfo(MessageKey.of("core.common.no_item"));
+      return;
+    }
 
-		String loreString = ChatColor.GRAY + effectName + ' ' + NumberUtil.romanFromInt(level);
+    String loreString = ChatColor.GRAY + effectName + ' ' + NumberUtil.romanFromInt(level);
 
-		if (effects.getEffectFromLore(loreString, true) == null) {
-			getCurrentCommandIssuer().sendInfo(MessageKey.of("effects.commands.effect.invalid"),
-					"{value}", effectName);
-			return;
-		}
+    if (effects.getEffectFromLore(loreString, true) == null) {
+      getCurrentCommandIssuer()
+          .sendInfo(MessageKey.of("effects.commands.effect.invalid"), "{value}", effectName);
+      return;
+    }
 
-		List<String> lore = meta.getLore();
-		if (lore == null) {
-			lore = new ArrayList<>();
-		}
+    List<String> lore = meta.getLore();
+    if (lore == null) {
+      lore = new ArrayList<>();
+    }
 
-		meta.setLore(effects.organizeEffectLore(lore, true, true, false, loreString));
-		hand.setItemMeta(meta);
-		getCurrentCommandIssuer().sendInfo(MessageKey.of("effects.commands.effect.success"),
-				"{value}", loreString);
-	}
-
+    meta.setLore(effects.organizeEffectLore(lore, true, true, false, loreString));
+    hand.setItemMeta(meta);
+    getCurrentCommandIssuer()
+        .sendInfo(MessageKey.of("effects.commands.effect.success"), "{value}", loreString);
+  }
 }

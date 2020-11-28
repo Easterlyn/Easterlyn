@@ -5,13 +5,12 @@ import org.jetbrains.annotations.Nullable;
 
 public interface BlockQuoteMatcher {
 
-	char getQuoteChar();
+  char getQuoteChar();
 
-	default boolean allowAdditionalParsing() {
-		return true;
-	}
+  default boolean allowAdditionalParsing() {
+    return true;
+  }
 
-	@Nullable
-	BlockQuote findQuote(@NotNull String message, int start);
-
+  @Nullable
+  BlockQuote findQuote(@NotNull String message, int start);
 }

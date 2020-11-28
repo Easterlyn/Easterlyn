@@ -20,65 +20,71 @@ import org.jetbrains.annotations.NotNull;
 
 public class InventoryUtil {
 
-	public static void updateWindowSlot(Player player, int slot) {
-		if (!(player instanceof CraftPlayer)) {
-			return;
-		}
-		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
-		nmsPlayer.playerConnection.sendPacket(
-				new PacketPlayOutSetSlot(nmsPlayer.activeContainer.windowId, slot,
-						nmsPlayer.activeContainer.getSlot(slot).getItem()));
-	}
+  public static void updateWindowSlot(Player player, int slot) {
+    if (!(player instanceof CraftPlayer)) {
+      return;
+    }
+    EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
+    nmsPlayer.playerConnection.sendPacket(
+        new PacketPlayOutSetSlot(
+            nmsPlayer.activeContainer.windowId,
+            slot,
+            nmsPlayer.activeContainer.getSlot(slot).getItem()));
+  }
 
-	public static void changeWindowName(Player player, String name) {
-		CraftPlayer craftPlayer = (CraftPlayer) player;
-		EntityPlayer entityPlayer = craftPlayer.getHandle();
+  public static void changeWindowName(Player player, String name) {
+    CraftPlayer craftPlayer = (CraftPlayer) player;
+    EntityPlayer entityPlayer = craftPlayer.getHandle();
 
-		if (entityPlayer.playerConnection == null) {
-			return;
-		}
+    if (entityPlayer.playerConnection == null) {
+      return;
+    }
 
-		entityPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindow(entityPlayer.activeContainer.windowId,
-				entityPlayer.activeContainer.getType(), new ChatMessage(name)));
-		entityPlayer.updateInventory(entityPlayer.activeContainer);
+    entityPlayer.playerConnection.sendPacket(
+        new PacketPlayOutOpenWindow(
+            entityPlayer.activeContainer.windowId,
+            entityPlayer.activeContainer.getType(),
+            new ChatMessage(name)));
+    entityPlayer.updateInventory(entityPlayer.activeContainer);
+  }
 
-	}
+  public static void updateVillagerTrades(Player player, MerchantRecipe... recipes) {
+    if (recipes == null || recipes.length == 0) {
+      return;
+    }
+    updateVillagerTrades(player, Arrays.asList(recipes));
+  }
 
-	public static void updateVillagerTrades(Player player, MerchantRecipe... recipes) {
-		if (recipes == null || recipes.length == 0) {
-			return;
-		}
-		updateVillagerTrades(player, Arrays.asList(recipes));
-	}
+  public static void updateVillagerTrades(
+      @NotNull Player player, @NotNull Collection<MerchantRecipe> recipes) {
+    if (recipes.size() == 0) {
+      // Setting result in a villager inventory with recipes doesn't play nice clientside.
+      // To make life easier, if there are no recipes, don't send the trade recipe packet.
+      return;
+    }
 
-	public static void updateVillagerTrades(@NotNull Player player, @NotNull Collection<MerchantRecipe> recipes) {
-		if (recipes.size() == 0) {
-			// Setting result in a villager inventory with recipes doesn't play nice clientside.
-			// To make life easier, if there are no recipes, don't send the trade recipe packet.
-			return;
-		}
+    EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
-		EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
+    if (nmsPlayer.activeContainer.getBukkitView().getType() != InventoryType.MERCHANT) {
+      return;
+    }
 
-		if (nmsPlayer.activeContainer.getBukkitView().getType() != InventoryType.MERCHANT) {
-			return;
-		}
+    MerchantRecipeList list = new MerchantRecipeList();
+    for (org.bukkit.inventory.MerchantRecipe recipe : recipes) {
+      // The client can handle having empty results for recipes but will crash when clicking result.
+      if (recipe.getResult().getType() == Material.AIR) {
+        continue;
+      }
+      List<ItemStack> ingredients = recipe.getIngredients();
+      if (ingredients.size() < 1) {
+        continue;
+      }
+      list.add(CraftMerchantRecipe.fromBukkit(recipe).toMinecraft());
+    }
 
-		MerchantRecipeList list = new MerchantRecipeList();
-		for (org.bukkit.inventory.MerchantRecipe recipe : recipes) {
-			// The client can handle having empty results for recipes, but will crash upon removing the result.
-			if (recipe.getResult().getType() == Material.AIR) {
-				continue;
-			}
-			List<ItemStack> ingredients = recipe.getIngredients();
-			if (ingredients.size() < 1) {
-				continue;
-			}
-			list.add(CraftMerchantRecipe.fromBukkit(recipe).toMinecraft());
-		}
-
-		nmsPlayer.playerConnection.sendPacket(new PacketPlayOutOpenWindowMerchant(nmsPlayer.activeContainer.windowId, list, 5, 0, false, false));
-		player.updateInventory();
-	}
-
+    nmsPlayer.playerConnection.sendPacket(
+        new PacketPlayOutOpenWindowMerchant(
+            nmsPlayer.activeContainer.windowId, list, 5, 0, false, false));
+    player.updateInventory();
+  }
 }

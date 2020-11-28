@@ -12,25 +12,25 @@ import org.bukkit.inventory.ItemStack;
 
 public class CartContainerCrasher implements Listener {
 
-	@EventHandler(priority = EventPriority.LOW)
-	public void onVehicleBlockCollision(VehicleBlockCollisionEvent event) {
-		if (event.getVehicle().getType() != EntityType.MINECART || !event.getVehicle().isValid()) {
-			return;
-		}
+  @EventHandler(priority = EventPriority.LOW)
+  public void onVehicleBlockCollision(VehicleBlockCollisionEvent event) {
+    if (event.getVehicle().getType() != EntityType.MINECART || !event.getVehicle().isValid()) {
+      return;
+    }
 
-		if (event.getBlock().getType() == Material.DISPENSER || event.getBlock().getType() == Material.DROPPER) {
-			BlockState blockState = event.getBlock().getState();
-			if (!(blockState instanceof Container)) {
-				return;
-			}
-			Container container = (Container) blockState;
-			if (container.getInventory().firstEmpty() == -1) {
-				return;
-			}
-			container.getInventory().addItem(new ItemStack(Material.MINECART));
-			event.getVehicle().eject();
-			event.getVehicle().remove();
-		}
-	}
-
+    if (event.getBlock().getType() == Material.DISPENSER
+        || event.getBlock().getType() == Material.DROPPER) {
+      BlockState blockState = event.getBlock().getState();
+      if (!(blockState instanceof Container)) {
+        return;
+      }
+      Container container = (Container) blockState;
+      if (container.getInventory().firstEmpty() == -1) {
+        return;
+      }
+      container.getInventory().addItem(new ItemStack(Material.MINECART));
+      event.getVehicle().eject();
+      event.getVehicle().remove();
+    }
+  }
 }

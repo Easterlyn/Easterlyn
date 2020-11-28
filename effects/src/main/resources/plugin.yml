@@ -5,4 +5,4 @@ version: ${project.version}-${timestamp}
 author: Jikoo
 description: ${project.description}
 api-version: ${bukkit-api-version}
-depend: [EasterlynCore]
+depend: [ EasterlynCore ]

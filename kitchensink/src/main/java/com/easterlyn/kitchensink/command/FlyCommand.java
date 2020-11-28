@@ -18,39 +18,52 @@ import org.bukkit.entity.Player;
 
 public class FlyCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@CommandAlias("fly")
-	@Description("{@@sink.module.fly.description}")
-	@CommandPermission("easterlyn.command.fly.self")
-	@CommandCompletion("@player @boolean")
-	@Syntax("[player] [true|false]")
-	public void fly(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player, @Default("toggle") @Single String flightString) {
+  @CommandAlias("fly")
+  @Description("{@@sink.module.fly.description}")
+  @CommandPermission("easterlyn.command.fly.self")
+  @CommandCompletion("@player @boolean")
+  @Syntax("[player] [true|false]")
+  public void fly(
+      @Flags(CoreContexts.ONLINE_WITH_PERM) Player player,
+      @Default("toggle") @Single String flightString) {
 
-		Boolean flight = StringUtil.asBoolean(flightString);
-		if (flight == null) {
-			flight = !player.getAllowFlight();
-		}
+    Boolean flight = StringUtil.asBoolean(flightString);
+    if (flight == null) {
+      flight = !player.getAllowFlight();
+    }
 
-		String valuePath = flight ? "core.common.on" : "core.common.off";
-		flightString = core.getLocaleManager().getValue(valuePath, core.getLocaleManager().getLocale(player));
-		if (flight != player.getAllowFlight()) {
-			player.setAllowFlight(flight);
-			core.getLocaleManager().sendMessage(player, "sink.module.fly.message",
-					"{value}", flightString == null ? "null" : flightString);
-		}
+    String valuePath = flight ? "core.common.on" : "core.common.off";
+    flightString =
+        core.getLocaleManager().getValue(valuePath, core.getLocaleManager().getLocale(player));
+    if (flight != player.getAllowFlight()) {
+      player.setAllowFlight(flight);
+      core.getLocaleManager()
+          .sendMessage(
+              player,
+              "sink.module.fly.message",
+              "{value}",
+              flightString == null ? "null" : flightString);
+    }
 
-		CommandIssuer issuer = getCurrentCommandIssuer();
-		if (issuer.getUniqueId().equals(player.getUniqueId())) {
-			return;
-		}
+    CommandIssuer issuer = getCurrentCommandIssuer();
+    if (issuer.getUniqueId().equals(player.getUniqueId())) {
+      return;
+    }
 
-		valuePath = flight ? "core.common.on" : "core.common.off";
-		flightString = core.getLocaleManager().getValue(valuePath, core.getLocaleManager().getLocale(issuer.getIssuer()));
-		flightString += core.getLocaleManager().getValue("", core.getLocaleManager().getLocale(issuer.getIssuer()),
-				"{target}", player.getName());
-		core.getLocaleManager().sendMessage(issuer.getIssuer(), "sink.module.fly.message", "{value}", flightString);
-	}
-
+    valuePath = flight ? "core.common.on" : "core.common.off";
+    flightString =
+        core.getLocaleManager()
+            .getValue(valuePath, core.getLocaleManager().getLocale(issuer.getIssuer()));
+    flightString +=
+        core.getLocaleManager()
+            .getValue(
+                "",
+                core.getLocaleManager().getLocale(issuer.getIssuer()),
+                "{target}",
+                player.getName());
+    core.getLocaleManager()
+        .sendMessage(issuer.getIssuer(), "sink.module.fly.message", "{value}", flightString);
+  }
 }

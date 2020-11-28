@@ -14,13 +14,15 @@ import com.easterlyn.user.User;
 
 public class MeCommand extends BaseCommand {
 
-	@CommandAlias("me")
-	@Description("{@@chat.commands.me.description}")
-	@CommandPermission("easterlyn.command.me")
-	@Syntax("[#channel] <action>")
-	@CommandCompletion("")
-	public void me(@Flags(CoreContexts.SELF) User sender, @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel, String args) {
-		new UserChatEvent(sender, channel, args, true).send();
-	}
-
+  @CommandAlias("me")
+  @Description("{@@chat.commands.me.description}")
+  @CommandPermission("easterlyn.command.me")
+  @Syntax("[#channel] <action>")
+  @CommandCompletion("")
+  public void me(
+      @Flags(CoreContexts.SELF) User sender,
+      @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel,
+      String args) {
+    new UserChatEvent(sender, channel, args, true).send();
+  }
 }

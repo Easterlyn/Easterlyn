@@ -12,17 +12,14 @@ import org.jetbrains.annotations.NotNull;
  */
 public abstract class UserEvent extends Event {
 
-	@NotNull
-	private User user;
+  private @NotNull final User user;
 
-	public UserEvent(@NotNull User user) {
-		super(!Bukkit.isPrimaryThread());
-		this.user = user;
-	}
+  public UserEvent(@NotNull User user) {
+    super(!Bukkit.isPrimaryThread());
+    this.user = user;
+  }
 
-	@NotNull
-	public User getUser() {
-		return user;
-	}
-
+  public @NotNull User getUser() {
+    return user;
+  }
 }

@@ -41,245 +41,292 @@ import org.reflections.Reflections;
 
 public class EasterlynEffects extends JavaPlugin {
 
-	private Map<String, Effect> effects;
-	private final Pattern effectPattern = Pattern.compile("^\\" + ChatColor.COLOR_CHAR + "7(.*) ([IVXLCDM]+)$");
-	private final Map<EquipmentSlot, Function<EntityEquipment, ItemStack>> equipmentSlotMap = new HashMap<>();
+  private final Pattern effectPattern =
+      Pattern.compile("^\\" + ChatColor.COLOR_CHAR + "7(.*) ([IVXLCDM]+)$");
+  private final Map<EquipmentSlot, Function<EntityEquipment, ItemStack>> equipmentSlotMap =
+      new HashMap<>();
+  private Map<String, Effect> effects;
 
-	@Override
-	public void onEnable() {
-		effects = new HashMap<>();
+  @Override
+  public void onEnable() {
+    effects = new HashMap<>();
 
-		equipmentSlotMap.put(EquipmentSlot.CHEST, EntityEquipment::getChestplate);
-		equipmentSlotMap.put(EquipmentSlot.FEET, EntityEquipment::getBoots);
-		equipmentSlotMap.put(EquipmentSlot.HAND, EntityEquipment::getItemInMainHand);
-		equipmentSlotMap.put(EquipmentSlot.HEAD, EntityEquipment::getHelmet);
-		equipmentSlotMap.put(EquipmentSlot.LEGS, EntityEquipment::getItemInOffHand);
-		equipmentSlotMap.put(EquipmentSlot.OFF_HAND, EntityEquipment::getItemInOffHand);
+    equipmentSlotMap.put(EquipmentSlot.CHEST, EntityEquipment::getChestplate);
+    equipmentSlotMap.put(EquipmentSlot.FEET, EntityEquipment::getBoots);
+    equipmentSlotMap.put(EquipmentSlot.HAND, EntityEquipment::getItemInMainHand);
+    equipmentSlotMap.put(EquipmentSlot.HEAD, EntityEquipment::getHelmet);
+    equipmentSlotMap.put(EquipmentSlot.LEGS, EntityEquipment::getItemInOffHand);
+    equipmentSlotMap.put(EquipmentSlot.OFF_HAND, EntityEquipment::getItemInOffHand);
 
-		// TODO green thumb, autotorch, pshoooot
-		Reflections reflections = new Reflections("com.easterlyn.effect", getClassLoader());
-		Set<Class<? extends Effect>> allEffects = reflections.getSubTypesOf(Effect.class);
-		for (Class<? extends Effect> effect : allEffects) {
-			if (Modifier.isAbstract(effect.getModifiers())) {
-				continue;
-			}
-			try {
-				Constructor<? extends Effect> constructor = effect.getConstructor(this.getClass());
-				Effect instance = constructor.newInstance(this);
-				effects.put(instance.getName(), instance);
-			} catch (IllegalAccessException | IllegalArgumentException | SecurityException
-					| InstantiationException | InvocationTargetException | NoSuchMethodException e) {
-				e.printStackTrace();
-			}
-		}
+    // TODO green thumb, autotorch, pshoooot
+    Reflections reflections = new Reflections("com.easterlyn.effect", getClassLoader());
+    Set<Class<? extends Effect>> allEffects = reflections.getSubTypesOf(Effect.class);
+    for (Class<? extends Effect> effect : allEffects) {
+      if (Modifier.isAbstract(effect.getModifiers())) {
+        continue;
+      }
+      try {
+        Constructor<? extends Effect> constructor = effect.getConstructor(this.getClass());
+        Effect instance = constructor.newInstance(this);
+        effects.put(instance.getName(), instance);
+      } catch (IllegalAccessException
+          | IllegalArgumentException
+          | SecurityException
+          | InstantiationException
+          | InvocationTargetException
+          | NoSuchMethodException e) {
+        e.printStackTrace();
+      }
+    }
 
-		// TODO event per effect, Effect#tick?
-		// Register events for effects
-		Event.register(BlockBreakEvent.class, event -> applyEffects(event.getPlayer(), event), this);
-		Event.register(FurnaceExtractEvent.class, event -> applyEffects(event.getPlayer(), event), this);
-		Event.register(EntityDamageEvent.class, event -> {
-			if (event.getEntity() instanceof LivingEntity) {
-				applyEffects((LivingEntity) event.getEntity(), event);
-			}
-			if (event instanceof EntityDamageByEntityEvent && ((EntityDamageByEntityEvent) event).getDamager() instanceof LivingEntity) {
-				applyEffects((LivingEntity) ((EntityDamageByEntityEvent) event).getDamager(), event);
-			}
-		}, this);
-		Event.register(PlayerInteractEvent.class, event ->
-				applyEffects(event.getPlayer(), event), this, EventPriority.NORMAL, false);
-		Event.register(PlayerChangedWorldEvent.class, event -> applyEffects(event.getPlayer(), event), this);
+    // TODO event per effect, Effect#tick?
+    // Register events for effects
+    Event.register(BlockBreakEvent.class, event -> applyEffects(event.getPlayer(), event), this);
+    Event.register(
+        FurnaceExtractEvent.class, event -> applyEffects(event.getPlayer(), event), this);
+    Event.register(
+        EntityDamageEvent.class,
+        event -> {
+          if (event.getEntity() instanceof LivingEntity) {
+            applyEffects((LivingEntity) event.getEntity(), event);
+          }
+          if (event instanceof EntityDamageByEntityEvent
+              && ((EntityDamageByEntityEvent) event).getDamager() instanceof LivingEntity) {
+            applyEffects((LivingEntity) ((EntityDamageByEntityEvent) event).getDamager(), event);
+          }
+        },
+        this);
+    Event.register(
+        PlayerInteractEvent.class,
+        event -> applyEffects(event.getPlayer(), event),
+        this,
+        EventPriority.NORMAL,
+        false);
+    Event.register(
+        PlayerChangedWorldEvent.class, event -> applyEffects(event.getPlayer(), event), this);
 
-		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-		if (registration != null) {
-			register(registration.getProvider());
-		}
+    RegisteredServiceProvider<EasterlynCore> registration =
+        getServer().getServicesManager().getRegistration(EasterlynCore.class);
+    if (registration != null) {
+      register(registration.getProvider());
+    }
 
-		Event.register(PluginEnableEvent.class, event -> {
-			if (event.getPlugin() instanceof EasterlynCore) {
-				register((EasterlynCore) event.getPlugin());
-			}
-		}, this);
+    Event.register(
+        PluginEnableEvent.class,
+        event -> {
+          if (event.getPlugin() instanceof EasterlynCore) {
+            register((EasterlynCore) event.getPlugin());
+          }
+        },
+        this);
 
-		getServer().getScheduler().runTaskTimer(this, () -> {
-			for (Player player : getServer().getOnlinePlayers()) {
-				applyEffects(player, null);
-			}
-		}, 20L, 20L);
+    getServer()
+        .getScheduler()
+        .runTaskTimer(
+            this,
+            () -> {
+              for (Player player : getServer().getOnlinePlayers()) {
+                applyEffects(player, null);
+              }
+            },
+            20L,
+            20L);
+  }
 
-	}
+  @Override
+  public void onDisable() {
+    // Clear effects so worth modifier will be empty
+    effects.clear();
+  }
 
-	@Override
-	public void onDisable() {
-		// Clear effects so worth modifier will be empty
-		effects.clear();
-	}
+  private void register(@NotNull EasterlynCore plugin) {
+    plugin
+        .getCommandManager()
+        .getCommandCompletions()
+        .registerStaticCompletion(
+            "effect",
+            () -> effects.values().stream().map(Effect::getName).collect(Collectors.toSet()));
+    plugin.getCommandManager().getCommandCompletions().setDefaultCompletion("effect", Effect.class);
 
-	private void register(@NotNull EasterlynCore plugin) {
-		plugin.getCommandManager().getCommandCompletions().registerStaticCompletion("effect",
-				() -> effects.values().stream().map(Effect::getName).collect(Collectors.toSet()));
-		plugin.getCommandManager().getCommandCompletions().setDefaultCompletion("effect", Effect.class);
+    plugin.registerCommands(this, getClassLoader(), "com.easterlyn.effect.command");
 
-		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.effect.command");
+    EconomyUtil.addWorthModifier(
+        itemStack ->
+            getEffects(true, itemStack).keySet().stream()
+                .mapToDouble(Effect::getCost)
+                .sum()); // TODO add to enchanting table and ignore
+    plugin.getLocaleManager().addLocaleSupplier(this);
+  }
 
-		EconomyUtil.addWorthModifier(itemStack -> getEffects(true, itemStack).keySet().stream()
-				.mapToDouble(Effect::getCost).sum()); // TODO add to enchanting table and ignore
-		plugin.getLocaleManager().addLocaleSupplier(this);
-	}
+  /**
+   * Gets all Effects and corresponding levels on the provided ItemStack(s).
+   *
+   * @param bypass whether or not the maximum level for an effect can be bypassed
+   * @param items the item(s) to get effects from
+   * @return the Effects and corresponding levels
+   */
+  private @NotNull Map<Effect, Integer> getEffects(boolean bypass, ItemStack... items) {
+    Map<Effect, Integer> applicableEffects = new HashMap<>();
+    for (ItemStack item : items) {
+      if (item == null
+          || item.getType() == Material.AIR
+          || !item.hasItemMeta()
+          || item.getItemMeta().getLore() == null) {
+        continue;
+      }
+      for (String lore : item.getItemMeta().getLore()) {
+        Pair<Effect, Integer> pair = getEffectFromLore(lore, false);
+        if (pair == null) {
+          continue;
+        }
+        int level = pair.getRight();
+        if (applicableEffects.containsKey(pair.getLeft())) {
+          level += applicableEffects.get(pair.getLeft());
+        }
+        if (!bypass && level > pair.getLeft().getMaxLevel()) {
+          level = pair.getLeft().getMaxTotalLevel();
+        }
+        applicableEffects.put(pair.getLeft(), level);
+      }
+    }
+    return applicableEffects;
+  }
 
-	/**
-	 * Gets all Effects and corresponding levels on the provided ItemStack(s).
-	 *
-	 * @param bypass whether or not the maximum level for an effect can be bypassed
-	 * @param items the item(s) to get effects from
-	 * @return the Effects and corresponding levels
-	 */
-	@NotNull
-	private Map<Effect, Integer> getEffects(boolean bypass, ItemStack... items) {
-		Map<Effect, Integer> applicableEffects = new HashMap<>();
-		for (ItemStack item : items) {
-			if (item == null || item.getType() == Material.AIR || !item.hasItemMeta()
-					|| item.getItemMeta().getLore() == null) {
-				continue;
-			}
-			for (String lore : item.getItemMeta().getLore()) {
-				Pair<Effect, Integer> pair = getEffectFromLore(lore, false);
-				if (pair == null) {
-					continue;
-				}
-				int level = pair.getRight();
-				if (applicableEffects.containsKey(pair.getLeft())) {
-					level += applicableEffects.get(pair.getLeft());
-				}
-				if (!bypass && level > pair.getLeft().getMaxLevel()) {
-					level = pair.getLeft().getMaxTotalLevel();
-				}
-				applicableEffects.put(pair.getLeft(), level);
-			}
-		}
-		return applicableEffects;
-	}
+  /**
+   * Applies all effects to the given LivingEntity.
+   *
+   * @param entity the LivingEntity
+   */
+  private void applyEffects(@NotNull LivingEntity entity, @Nullable org.bukkit.event.Event event) {
+    EntityEquipment equipment = entity.getEquipment();
+    if (equipment == null) {
+      return;
+    }
+    Map<Effect, Integer> effects = new HashMap<>();
+    equipmentSlotMap.forEach(
+        (equipmentSlot, equipmentSlotFunction) ->
+            getEffects(false, equipmentSlotFunction.apply(equipment))
+                .forEach(
+                    (effect, level) -> {
+                      if (!effect.getTarget().apply(equipmentSlot)) {
+                        return;
+                      }
+                      effects.compute(
+                          effect,
+                          (value, current) -> {
+                            if (current == null) {
+                              current = level;
+                            } else {
+                              current += level;
+                            }
+                            return current > effect.getMaxTotalLevel()
+                                ? effect.getMaxTotalLevel()
+                                : current;
+                          });
+                    }));
+    effects.forEach((effect, level) -> effect.applyEffect(entity, level, event));
+  }
 
-	/**
-	 * Applies all effects to the given LivingEntity.
-	 *
-	 * @param entity the LivingEntity
-	 */
-	private void applyEffects(@NotNull LivingEntity entity, @Nullable org.bukkit.event.Event event) {
-		EntityEquipment equipment = entity.getEquipment();
-		if (equipment == null) {
-			return;
-		}
-		Map<Effect, Integer> effects = new HashMap<>();
-		equipmentSlotMap.forEach((equipmentSlot, equipmentSlotFunction) ->
-				getEffects(false, equipmentSlotFunction.apply(equipment)).forEach((effect, level) -> {
-					if (!effect.getTarget().apply(equipmentSlot)) {
-						return;
-					}
-					effects.compute(effect, (value, current) -> {
-						if (current == null) {
-							current = level;
-						} else {
-							current += level;
-						}
-						return current > effect.getMaxTotalLevel() ? effect.getMaxTotalLevel() : current;
-					});
-				}));
-		effects.forEach((effect, level) -> effect.applyEffect(entity, level, event));
-	}
+  /**
+   * Organize and correct Effects in ItemStack lore.
+   *
+   * @param lore the List of lore containing Effects
+   * @param ignoreCase whether lore matching should ignore case
+   * @param overwrite whether any duplicate Effects in toAdd should be ignored
+   * @param cap whether Effect levels should be capped to the maximum
+   * @param toAdd additional Strings to be merged with the lore
+   * @return the organized lore
+   */
+  public @NotNull List<String> organizeEffectLore(
+      @NotNull List<String> lore,
+      boolean ignoreCase,
+      boolean overwrite,
+      boolean cap,
+      String... toAdd) {
+    ArrayList<String> oldLore = new ArrayList<>(lore);
+    HashMap<Effect, Integer> applicableEffects = new HashMap<>();
+    Iterator<String> iterator = oldLore.iterator();
+    while (iterator.hasNext()) {
+      Pair<Effect, Integer> pair = getEffectFromLore(iterator.next(), false);
+      if (pair == null) {
+        continue;
+      }
+      iterator.remove();
+      if (applicableEffects.containsKey(pair.getLeft())) {
+        applicableEffects.put(
+            pair.getLeft(), applicableEffects.get(pair.getLeft()) + pair.getRight());
+        continue;
+      }
+      applicableEffects.put(pair.getLeft(), pair.getRight());
+    }
 
-	/**
-	 * Organize and correct Effects in ItemStack lore.
-	 *
-	 * @param lore the List of lore containing Effects
-	 * @param ignoreCase whether lore matching should ignore case
-	 * @param overwrite whether any duplicate Effects in toAdd should be ignored
-	 * @param cap whether Effect levels should be capped to the maximum
-	 * @param toAdd additional Strings to be merged with the lore
-	 *
-	 * @return the organized lore
-	 */
-	@NotNull
-	public List<String> organizeEffectLore(@NotNull List<String> lore, boolean ignoreCase,
-			boolean overwrite, boolean cap, String... toAdd) {
-		ArrayList<String> oldLore = new ArrayList<>(lore);
-		HashMap<Effect, Integer> applicableEffects = new HashMap<>();
-		Iterator<String> iterator = oldLore.iterator();
-		while (iterator.hasNext()) {
-			Pair<Effect, Integer> pair = getEffectFromLore(iterator.next(), false);
-			if (pair == null) {
-				continue;
-			}
-			iterator.remove();
-			if (applicableEffects.containsKey(pair.getLeft())) {
-				applicableEffects.put(pair.getLeft(), applicableEffects.get(pair.getLeft()) + pair.getRight());
-				continue;
-			}
-			applicableEffects.put(pair.getLeft(), pair.getRight());
-		}
+    for (String string : toAdd) {
+      Pair<Effect, Integer> pair = getEffectFromLore(string, ignoreCase);
+      if (pair == null) {
+        oldLore.add(string);
+        continue;
+      }
+      if (!overwrite && applicableEffects.containsKey(pair.getLeft())) {
+        applicableEffects.put(
+            pair.getLeft(), applicableEffects.get(pair.getLeft()) + pair.getRight());
+        continue;
+      }
+      applicableEffects.put(pair.getLeft(), pair.getRight());
+    }
 
-		for (String string : toAdd) {
-			Pair<Effect, Integer> pair = getEffectFromLore(string, ignoreCase);
-			if (pair == null) {
-				oldLore.add(string);
-				continue;
-			}
-			if (!overwrite && applicableEffects.containsKey(pair.getLeft())) {
-				applicableEffects.put(pair.getLeft(), applicableEffects.get(pair.getLeft()) + pair.getRight());
-				continue;
-			}
-			applicableEffects.put(pair.getLeft(), pair.getRight());
-		}
+    ArrayList<String> newLore = new ArrayList<>();
+    for (Map.Entry<Effect, Integer> entry : applicableEffects.entrySet()) {
+      if (entry.getValue() < 1) {
+        continue;
+      }
+      if (cap) {
+        entry.setValue(Math.min(entry.getKey().getMaxLevel(), entry.getValue()));
+      }
+      newLore.add(
+          ChatColor.GRAY
+              + entry.getKey().getName()
+              + ' '
+              + NumberUtil.romanFromInt(entry.getValue()));
+    }
+    newLore.addAll(oldLore);
 
-		ArrayList<String> newLore = new ArrayList<>();
-		for (Map.Entry<Effect, Integer> entry : applicableEffects.entrySet()) {
-			if (entry.getValue() < 1) {
-				continue;
-			}
-			if (cap) {
-				entry.setValue(Math.min(entry.getKey().getMaxLevel(), entry.getValue()));
-			}
-			newLore.add(ChatColor.GRAY + entry.getKey().getName() + ' ' + NumberUtil.romanFromInt(entry.getValue()));
-		}
-		newLore.addAll(oldLore);
+    return newLore;
+  }
 
-		return newLore;
-	}
-
-	/**
-	 * Gets the Effect and level represented by a String in an ItemStack's lore.
-	 *
-	 * @param lore the String
-	 * @param ignoreCase if case should be ignored when matching Effect
-	 */
-	@Nullable
-	public Pair<Effect, Integer> getEffectFromLore(@NotNull String lore, boolean ignoreCase) {
-		Matcher match = effectPattern.matcher(lore);
-		if (!match.find()) {
-			return null;
-		}
-		lore = ChatColor.stripColor(match.group(1));
-		Effect effect = null;
-		if (effects.containsKey(lore)) {
-			effect = effects.get(lore);
-		} else {
-			if (!ignoreCase) {
-				return null;
-			}
-			for (Map.Entry<String, Effect> entry : effects.entrySet()) {
-				if (entry.getKey().equalsIgnoreCase(lore)) {
-					effect = entry.getValue();
-					break;
-				}
-			}
-			if (effect == null) {
-				return null;
-			}
-		}
-		try {
-			return new Pair<>(effect, NumberUtil.intFromRoman(match.group(2)));
-		} catch (NumberFormatException e) {
-			return null;
-		}
-	}
-
+  /**
+   * Gets the Effect and level represented by a String in an ItemStack's lore.
+   *
+   * @param lore the String
+   * @param ignoreCase if case should be ignored when matching Effect
+   */
+  public @Nullable Pair<Effect, Integer> getEffectFromLore(
+      @NotNull String lore, boolean ignoreCase) {
+    Matcher match = effectPattern.matcher(lore);
+    if (!match.find()) {
+      return null;
+    }
+    lore = ChatColor.stripColor(match.group(1));
+    Effect effect = null;
+    if (effects.containsKey(lore)) {
+      effect = effects.get(lore);
+    } else {
+      if (!ignoreCase) {
+        return null;
+      }
+      for (Map.Entry<String, Effect> entry : effects.entrySet()) {
+        if (entry.getKey().equalsIgnoreCase(lore)) {
+          effect = entry.getValue();
+          break;
+        }
+      }
+      if (effect == null) {
+        return null;
+      }
+    }
+    try {
+      return new Pair<>(effect, NumberUtil.intFromRoman(match.group(2)));
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
 }

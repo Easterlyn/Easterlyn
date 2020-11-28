@@ -24,50 +24,54 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class AetherCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@Dependency
-	EasterlynChat chat;
+  @Dependency EasterlynChat chat;
 
-	@CommandAlias("aether")
-	@Description("{@@chat.commands.aether.description}")
-	@CommandPermission("easterlyn.command.aether")
-	@Syntax("<name> <message content>")
-	@CommandCompletion("")
-	public void aether(BukkitCommandIssuer issuer, @Single String name, String text) {
-		Map<String, String> userData = new HashMap<>();
-		userData.put("name", name);
-		userData.put("color", issuer.isPlayer() ? core.getUserManager().getUser(issuer.getUniqueId()).getColor().getName() : Colors.RANK_HEAD_ADMIN.getName());
-		Channel channel = chat.getChannels().get("aether");
-		if (channel == null) {
-			ReportableEvent.call("Channel #aether not set up when executing /aether!");
-			return;
-		}
-		// TODO async
-		new UserChatEvent(new AetherUser(userData), channel, text).send(EasterlynChat.DEFAULT.getMembers());
-	}
+  @CommandAlias("aether")
+  @Description("{@@chat.commands.aether.description}")
+  @CommandPermission("easterlyn.command.aether")
+  @Syntax("<name> <message content>")
+  @CommandCompletion("")
+  public void aether(BukkitCommandIssuer issuer, @Single String name, String text) {
+    Map<String, String> userData = new HashMap<>();
+    userData.put("name", name);
+    userData.put(
+        "color",
+        issuer.isPlayer()
+            ? core.getUserManager().getUser(issuer.getUniqueId()).getColor().getName()
+            : Colors.RANK_HEAD_ADMIN.getName());
+    Channel channel = chat.getChannels().get("aether");
+    if (channel == null) {
+      ReportableEvent.call("Channel #aether not set up when executing /aether!");
+      return;
+    }
+    // TODO async
+    new UserChatEvent(new AetherUser(userData), channel, text)
+        .send(EasterlynChat.DEFAULT.getMembers());
+  }
 
-	class AetherUser extends AutoUser {
-		AetherUser(Map<String, String> userData) {
-			super(core, userData);
-		}
+  class AetherUser extends AutoUser {
 
-		@Override
-		public TextComponent getMention() {
-			TextComponent component = new TextComponent("@" + getDisplayName());
-			component.setColor(getColor());
-			component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
+    AetherUser(Map<String, String> userData) {
+      super(core, userData);
+    }
 
-			TextComponent line = new TextComponent("#main");
-			line.setColor(Colors.CHANNEL);
-			TextComponent extra = new TextComponent("on Discord");
-			extra.setColor(ChatColor.WHITE);
-			line.addExtra(extra);
-			line.addExtra(extra);
-			component.addExtra(line);
-			return component;
-		}
-	}
+    @Override
+    public TextComponent getMention() {
+      TextComponent component = new TextComponent("@" + getDisplayName());
+      component.setColor(getColor());
+      component.setClickEvent(
+          new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
 
+      TextComponent line = new TextComponent("#main");
+      line.setColor(Colors.CHANNEL);
+      TextComponent extra = new TextComponent("on Discord");
+      extra.setColor(ChatColor.WHITE);
+      line.addExtra(extra);
+      line.addExtra(extra);
+      component.addExtra(line);
+      return component;
+    }
+  }
 }

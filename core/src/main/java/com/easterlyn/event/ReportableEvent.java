@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Event used for reporting internal issues.
@@ -13,50 +14,52 @@ import org.jetbrains.annotations.NotNull;
  */
 public class ReportableEvent extends Event {
 
-	private static final HandlerList HANDLER_LIST = new HandlerList();
+  private static final HandlerList HANDLER_LIST = new HandlerList();
 
-	private final String message;
-	private final String trace;
+  private final String message;
+  private final String trace;
 
-	private ReportableEvent(String message, String trace) {
-		this.message = message;
-		this.trace = trace;
-	}
+  private ReportableEvent(String message, @Nullable String trace) {
+    this.message = message;
+    this.trace = trace;
+  }
 
-	public String getMessage() {
-		return message;
-	}
+  public @NotNull static HandlerList getHandlerList() {
+    return HANDLER_LIST;
+  }
 
-	public boolean hasTrace() {
-		return trace != null;
-	}
+  public static void call(String message) {
+    call(message, 0);
+  }
 
-	public String getTrace() {
-		return trace;
-	}
+  public static void call(String message, int traceDepth) {
+    call(message, traceDepth > 0 ? new Throwable().fillInStackTrace() : null, traceDepth);
+  }
 
-	@NotNull
-	@Override
-	public HandlerList getHandlers() {
-		return HANDLER_LIST;
-	}
+  public static void call(String message, @Nullable Throwable throwable, int traceDepth) {
+    Bukkit.getPluginManager()
+        .callEvent(
+            new ReportableEvent(
+                message,
+                traceDepth > 0 && throwable != null
+                    ? StringUtil.getTrace(throwable, traceDepth)
+                    : null));
+  }
 
-	@NotNull
-	public static HandlerList getHandlerList() {
-		return HANDLER_LIST;
-	}
+  public String getMessage() {
+    return message;
+  }
 
-	public static void call(String message) {
-		call(message, 0);
-	}
+  public boolean hasTrace() {
+    return trace != null;
+  }
 
-	public static void call(String message, int traceDepth) {
-		call(message, traceDepth > 0 ? new Throwable().fillInStackTrace() : null, traceDepth);
-	}
+  public @Nullable String getTrace() {
+    return trace;
+  }
 
-	public static void call(String message, Throwable throwable, int traceDepth) {
-		Bukkit.getPluginManager().callEvent(new ReportableEvent(message,
-				traceDepth > 0 && throwable != null ? StringUtil.getTrace(throwable, traceDepth) : null));
-	}
-
+  @Override
+  public @NotNull HandlerList getHandlers() {
+    return HANDLER_LIST;
+  }
 }

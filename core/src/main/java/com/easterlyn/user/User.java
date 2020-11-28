@@ -42,269 +42,273 @@ import org.jetbrains.annotations.Nullable;
  */
 public class User implements Group {
 
-	private final EasterlynCore plugin;
-	private final UUID uuid;
-	private final ConcurrentConfiguration storage;
-	private final Map<String, Object> tempStore;
+  private final EasterlynCore plugin;
+  private final UUID uuid;
+  private final ConcurrentConfiguration storage;
+  private final Map<String, Object> tempStore;
 
-	User(@NotNull EasterlynCore plugin, @NotNull UUID uuid, @NotNull ConcurrentConfiguration storage) {
-		this.plugin = plugin;
-		this.uuid = uuid;
-		this.storage = storage;
-		tempStore = new ConcurrentHashMap<>();
-	}
+  User(
+      @NotNull EasterlynCore plugin, @NotNull UUID uuid, @NotNull ConcurrentConfiguration storage) {
+    this.plugin = plugin;
+    this.uuid = uuid;
+    this.storage = storage;
+    tempStore = new ConcurrentHashMap<>();
+  }
 
-	protected User(User user) {
-		plugin = user.plugin;
-		uuid = user.uuid;
-		storage = user.storage;
-		tempStore = user.tempStore;
-	}
+  protected User(User user) {
+    plugin = user.plugin;
+    uuid = user.uuid;
+    storage = user.storage;
+    tempStore = user.tempStore;
+  }
 
-	@NotNull
-	public UUID getUniqueId() {
-		return uuid;
-	}
+  static @NotNull User load(@NotNull EasterlynCore plugin, @NotNull final UUID uuid) {
+    PluginManager pluginManager = plugin.getServer().getPluginManager();
+    File file =
+        new File(
+            plugin.getDataFolder().getPath() + File.separatorChar + "users",
+            uuid.toString() + ".yml");
+    ConcurrentConfiguration storage = ConcurrentConfiguration.load(plugin, file);
+    if (file.exists()) {
+      User user = new User(plugin, uuid, storage);
+      Player player = user.getPlayer();
 
-	@Override
-	@NotNull
-	public Collection<UUID> getMembers() {
-		return Collections.singleton(getUniqueId());
-	}
+      if (player != null && player.getAddress() != null) {
+        storage.set("ip", player.getAddress().getHostString());
+        String previousName = storage.getString("name");
+        if (previousName != null && !previousName.equals(player.getName())) {
+          storage.set("previousName", previousName);
+          storage.set("name", player.getName());
+          pluginManager.callEvent(
+              new PlayerNameChangeEvent(player, previousName, player.getName()));
+        }
+      }
 
-	@Nullable
-	public Player getPlayer() {
-		try {
-			return PlayerUtil.getPlayer(plugin, getUniqueId());
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-			return null;
-		}
-	}
+      return user;
+    }
 
-	@NotNull
-	public String getDisplayName() {
-		return GenericUtil.orDefault(getStorage().getString("displayName"),
-				GenericUtil.orDefault(GenericUtil.functionAs(Player.class, getPlayer(), Player::getDisplayName),
-						getUniqueId().toString()));
-	}
+    Player player = Bukkit.getPlayer(uuid);
 
-	@NotNull
-	public ChatColor getColor() {
-		return Colors.getOrDefault(getStorage().getString("color"), getRank().getColor());
-	}
+    User user = new User(plugin, uuid, new ConcurrentConfiguration(plugin));
+    if (player != null) {
+      user.getStorage().set("name", player.getName());
+      if (player.getAddress() != null) {
+        user.getStorage().set("ip", player.getAddress().getHostString());
+      }
 
-	public void setColor(@NotNull ChatColor color) {
-		if (color == ChatColor.RESET) {
-			getStorage().set("color", null);
-			return;
-		}
-		if (color == ChatColor.BOLD || color == ChatColor.UNDERLINE || color == ChatColor.ITALIC
-				|| color == ChatColor.STRIKETHROUGH || color == ChatColor.MAGIC) {
-			throw new IllegalArgumentException("Color must be a color, not a format code!");
-		}
-		getStorage().set("color", color.getName());
-	}
+      pluginManager.callEvent(new UserCreationEvent(user));
+    }
 
-	public boolean isOnline() {
-		return plugin.getServer().getPlayer(getUniqueId()) != null;
-	}
+    return user;
+  }
 
-	public boolean hasPermission(String permission) {
-		if (isOnline()) {
-			Player player = getPlayer();
-			if (player != null) {
-				return player.hasPermission(permission);
-			}
-		}
-		return PermissionUtil.hasPermission(getUniqueId(), permission);
-	}
+  public @NotNull UUID getUniqueId() {
+    return uuid;
+  }
 
-	@NotNull
-	public UserRank getRank() {
-		UserRank[] userRanks = UserRank.values();
-		for (int i = userRanks.length - 1; i > 0; --i) {
-			if (hasPermission(userRanks[i].getPermission())) {
-				return userRanks[i];
-			}
-		}
-		return UserRank.MEMBER;
-	}
+  @Override
+  public @NotNull Collection<UUID> getMembers() {
+    return Collections.singleton(getUniqueId());
+  }
 
-	@NotNull
-	protected Pattern getMentionPattern() {
-		Object storedPattern = getTemporaryStorage().get("mentionPattern");
-		if (storedPattern instanceof Pattern) {
-			return (Pattern) storedPattern;
-		}
-		StringBuilder builder = new StringBuilder("^@?(");
-		OfflinePlayer player = Bukkit.getOfflinePlayer(getUniqueId());
-		if (player.getName() != null) {
-			builder.append(player.getName()).append('|');
-			Player online = player.isOnline() ? player.getPlayer() : null;
-			if (online != null && !online.getDisplayName().isEmpty() && !online.getDisplayName().equals(player.getName())) {
-				builder.append("\\Q").append(online.getDisplayName()).append("\\E|");
-			}
-		}
-		builder.append(getUniqueId()).append(")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}]])?$");
-		Pattern pattern = Pattern.compile(builder.toString(), Pattern.CASE_INSENSITIVE);
-		getTemporaryStorage().put("mentionPattern", pattern);
-		return pattern;
-	}
+  public @Nullable Player getPlayer() {
+    try {
+      return PlayerUtil.getPlayer(plugin, getUniqueId());
+    } catch (IllegalAccessException e) {
+      e.printStackTrace();
+      return null;
+    }
+  }
 
-	@Override
-	public TextComponent getMention() {
-		TextComponent component = new TextComponent("@" + getDisplayName());
-		component.setColor(getColor());
-		OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getUniqueId());
-		component.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND,
-				(offlinePlayer.isOnline() ? "/msg " : "/mail send ") + (offlinePlayer.getName() != null ? offlinePlayer.getName() : getUniqueId())));
+  public @NotNull String getDisplayName() {
+    return GenericUtil.orDefault(
+        getStorage().getString("displayName"),
+        GenericUtil.orDefault(
+            GenericUtil.functionAs(Player.class, getPlayer(), Player::getDisplayName),
+            getUniqueId().toString()));
+  }
 
-		List<TextComponent> hovers = new ArrayList<>();
-		TextComponent line = new TextComponent(getDisplayName());
-		line.setColor(getColor());
-		if (offlinePlayer.getName() != null && !offlinePlayer.getName().equals(line.getText())) {
-			TextComponent realName = new TextComponent(" (" + offlinePlayer.getName() + ")");
-			realName.setColor(net.md_5.bungee.api.ChatColor.WHITE);
-			line.addExtra(realName);
-		}
-		TextComponent extra = new TextComponent(" - ");
-		extra.setColor(net.md_5.bungee.api.ChatColor.WHITE);
-		line.addExtra(extra);
-		extra = new TextComponent("Click to message!");
-		extra.setColor(Colors.COMMAND);
-		line.addExtra(extra);
-		hovers.add(line);
+  public @NotNull ChatColor getColor() {
+    return Colors.getOrDefault(getStorage().getString("color"), getRank().getColor());
+  }
 
-		UserRank rank = getRank();
-		line = new TextComponent("\n" + rank.getFriendlyName());
-		line.setColor(rank.getColor());
-		hovers.add(line);
-		// TODO class and affinity
-		// TODO could cache in temp store, but needs to be deleted on perm change (login/command)
+  public void setColor(@NotNull ChatColor color) {
+    if (color == ChatColor.RESET) {
+      getStorage().set("color", null);
+      return;
+    }
+    if (color == ChatColor.BOLD
+        || color == ChatColor.UNDERLINE
+        || color == ChatColor.ITALIC
+        || color == ChatColor.STRIKETHROUGH
+        || color == ChatColor.MAGIC) {
+      throw new IllegalArgumentException("Color must be a color, not a format code!");
+    }
+    getStorage().set("color", color.getName());
+  }
 
-		component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hovers.toArray(new TextComponent[0]))));
-		return component;
-	}
+  public boolean isOnline() {
+    return plugin.getServer().getPlayer(getUniqueId()) != null;
+  }
 
-	public void sendMessage(@NotNull String message) {
-		sendMessage(null, message);
-	}
+  public boolean hasPermission(String permission) {
+    if (isOnline()) {
+      Player player = getPlayer();
+      if (player != null) {
+        return player.hasPermission(permission);
+      }
+    }
+    return PermissionUtil.hasPermission(getUniqueId(), permission);
+  }
 
-	public void sendMessage(@Nullable UUID sender, @NotNull String message) {
-		sendMessage(sender, StringUtil.toJSON(message).toArray(new TextComponent[0]));
-	}
+  public @NotNull UserRank getRank() {
+    UserRank[] userRanks = UserRank.values();
+    for (int i = userRanks.length - 1; i > 0; --i) {
+      if (hasPermission(userRanks[i].getPermission())) {
+        return userRanks[i];
+      }
+    }
+    return UserRank.MEMBER;
+  }
 
-	public void sendMessage(@NotNull BaseComponent... components) {
-		sendMessage(null, components);
-	}
+  protected @NotNull Pattern getMentionPattern() {
+    Object storedPattern = getTemporaryStorage().get("mentionPattern");
+    if (storedPattern instanceof Pattern) {
+      return (Pattern) storedPattern;
+    }
+    StringBuilder builder = new StringBuilder("^@?(");
+    OfflinePlayer player = Bukkit.getOfflinePlayer(getUniqueId());
+    if (player.getName() != null) {
+      builder.append(player.getName()).append('|');
+      Player online = player.isOnline() ? player.getPlayer() : null;
+      if (online != null
+          && !online.getDisplayName().isEmpty()
+          && !online.getDisplayName().equals(player.getName())) {
+        builder.append("\\Q").append(online.getDisplayName()).append("\\E|");
+      }
+    }
+    builder.append(getUniqueId()).append(")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}]])?$");
+    Pattern pattern = Pattern.compile(builder.toString(), Pattern.CASE_INSENSITIVE);
+    getTemporaryStorage().put("mentionPattern", pattern);
+    return pattern;
+  }
 
-	public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components) {
-		Player player = getPlayer();
-		if (player != null) {
-			player.spigot().sendMessage(sender, components);
-		}
-	}
+  @Override
+  public TextComponent getMention() {
+    TextComponent component = new TextComponent("@" + getDisplayName());
+    component.setColor(getColor());
+    OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getUniqueId());
+    component.setClickEvent(
+        new ClickEvent(
+            ClickEvent.Action.SUGGEST_COMMAND,
+            (offlinePlayer.isOnline() ? "/msg " : "/mail send ")
+                + (offlinePlayer.getName() != null ? offlinePlayer.getName() : getUniqueId())));
 
-	@NotNull
-	public ConcurrentConfiguration getStorage() {
-		return storage;
-	}
+    TextComponent line = new TextComponent(getDisplayName());
+    line.setColor(getColor());
+    if (offlinePlayer.getName() != null && !offlinePlayer.getName().equals(line.getText())) {
+      TextComponent realName = new TextComponent(" (" + offlinePlayer.getName() + ")");
+      realName.setColor(net.md_5.bungee.api.ChatColor.WHITE);
+      line.addExtra(realName);
+    }
+    TextComponent extra = new TextComponent(" - ");
+    extra.setColor(net.md_5.bungee.api.ChatColor.WHITE);
+    line.addExtra(extra);
+    extra = new TextComponent("Click to message!");
+    extra.setColor(Colors.COMMAND);
+    line.addExtra(extra);
+    List<TextComponent> hovers = new ArrayList<>();
+    hovers.add(line);
 
-	@NotNull
-	public Map<String, Object> getTemporaryStorage() {
-		return tempStore;
-	}
+    UserRank rank = getRank();
+    line = new TextComponent("\n" + rank.getFriendlyName());
+    line.setColor(rank.getColor());
+    hovers.add(line);
+    // TODO class and affinity
+    // TODO could cache in temp store, but needs to be deleted on perm change (login/command)
 
-	/**
-	 * Gets and clears the pending request, if any.
-	 *
-	 * @return the Request or null if not present
-	 */
-	@Nullable
-	public Request pollPendingRequest() {
-		Object stored = tempStore.remove("core.request");
-		if (!(stored instanceof Request)) {
-			return null;
-		}
-		Request request = (Request) stored;
-		return request.getExpiry() > System.currentTimeMillis() ? request : null;
-	}
+    component.setHoverEvent(
+        new HoverEvent(
+            HoverEvent.Action.SHOW_TEXT, new Text(hovers.toArray(new TextComponent[0]))));
+    return component;
+  }
 
-	/**
-	 * Sets a user's pending request if nothing is currently pending.
-	 *
-	 * @param request the Request
-	 * @return true if the Request was successfully added
-	 */
-	public boolean setPendingRequest(@NotNull Request request) {
-		Object stored = tempStore.get("core.request");
-		if (stored instanceof Request && ((Request) stored).getExpiry() > System.currentTimeMillis()) {
-			return false;
-		}
-		tempStore.put("core.request", request);
-		return true;
-	}
+  public void sendMessage(@NotNull String message) {
+    sendMessage(null, message);
+  }
 
-	/**
-	 * The String representation of the Player's total time in game.
-	 *
-	 * @return the Player's time in game
-	 */
-	@NotNull
-	private String getTimePlayed() {
-		Player player = getPlayer();
-		if (player == null) {
-			return "0 days, 00:00";
-		}
-		int time = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60;
-		int days = time / (24 * 60);
-		time -= days * 24 * 60;
-		int hours = time / (60);
-		time -= hours * 60;
-		DecimalFormat decimalFormat = new DecimalFormat("00");
-		return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
-	}
+  public void sendMessage(@Nullable UUID sender, @NotNull String message) {
+    sendMessage(sender, StringUtil.toJSON(message).toArray(new TextComponent[0]));
+  }
 
-	public EasterlynCore getPlugin() {
-		return plugin;
-	}
+  public void sendMessage(@NotNull BaseComponent... components) {
+    sendMessage(null, components);
+  }
 
-	@NotNull
-	static User load(@NotNull EasterlynCore plugin, @NotNull final UUID uuid) {
-		PluginManager pluginManager = plugin.getServer().getPluginManager();
-		File file = new File(plugin.getDataFolder().getPath() + File.separatorChar + "users", uuid.toString() + ".yml");
-		ConcurrentConfiguration storage = ConcurrentConfiguration.load(plugin, file);
-		if (file.exists()) {
-			User user = new User(plugin, uuid, storage);
-			Player player = user.getPlayer();
+  public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components) {
+    Player player = getPlayer();
+    if (player != null) {
+      player.spigot().sendMessage(sender, components);
+    }
+  }
 
-			if (player != null && player.getAddress() != null) {
-				storage.set("ip", player.getAddress().getHostString());
-				String previousName = storage.getString("name");
-				if (previousName != null && !previousName.equals(player.getName())) {
-					storage.set("previousName", previousName);
-					storage.set("name", player.getName());
-					pluginManager.callEvent(new PlayerNameChangeEvent(player, previousName, player.getName()));
-				}
-			}
+  public @NotNull ConcurrentConfiguration getStorage() {
+    return storage;
+  }
 
-			return user;
-		}
+  public @NotNull Map<String, Object> getTemporaryStorage() {
+    return tempStore;
+  }
 
-		Player player = Bukkit.getPlayer(uuid);
+  /**
+   * Gets and clears the pending request, if any.
+   *
+   * @return the Request or null if not present
+   */
+  public @Nullable Request pollPendingRequest() {
+    Object stored = tempStore.remove("core.request");
+    if (!(stored instanceof Request)) {
+      return null;
+    }
+    Request request = (Request) stored;
+    return request.getExpiry() > System.currentTimeMillis() ? request : null;
+  }
 
-		User user = new User(plugin, uuid, new ConcurrentConfiguration(plugin));
-		if (player != null) {
-			user.getStorage().set("name", player.getName());
-			if (player.getAddress() != null) {
-				user.getStorage().set("ip", player.getAddress().getHostString());
-			}
+  /**
+   * Sets a user's pending request if nothing is currently pending.
+   *
+   * @param request the Request
+   * @return true if the Request was successfully added
+   */
+  public boolean setPendingRequest(@NotNull Request request) {
+    Object stored = tempStore.get("core.request");
+    if (stored instanceof Request && ((Request) stored).getExpiry() > System.currentTimeMillis()) {
+      return false;
+    }
+    tempStore.put("core.request", request);
+    return true;
+  }
 
-			pluginManager.callEvent(new UserCreationEvent(user));
-		}
+  /**
+   * The String representation of the Player's total time in game.
+   *
+   * @return the Player's time in game
+   */
+  private @NotNull String getTimePlayed() {
+    Player player = getPlayer();
+    if (player == null) {
+      return "0 days, 00:00";
+    }
+    int time = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60;
+    int days = time / (24 * 60);
+    time -= days * 24 * 60;
+    int hours = time / (60);
+    time -= hours * 60;
+    DecimalFormat decimalFormat = new DecimalFormat("00");
+    return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
+  }
 
-		return user;
-	}
-
+  public EasterlynCore getPlugin() {
+    return plugin;
+  }
 }

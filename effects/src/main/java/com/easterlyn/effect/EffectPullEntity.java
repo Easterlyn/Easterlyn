@@ -14,21 +14,26 @@ import org.jetbrains.annotations.NotNull;
  */
 public class EffectPullEntity extends Effect {
 
-	public EffectPullEntity(EasterlynEffects plugin) {
-		super(plugin, "Pull", EquipmentSlots.TOOL, 200, 2, 2);
-	}
+  public EffectPullEntity(EasterlynEffects plugin) {
+    super(plugin, "Pull", EquipmentSlots.TOOL, 200, 2, 2);
+  }
 
-	@Override
-	public void applyEffect(@NotNull LivingEntity entity, int level, Event event) {
-		if (!(event instanceof EntityDamageByEntityEvent)) {
-			return;
-		}
-		EntityDamageByEntityEvent dmgEvent = (EntityDamageByEntityEvent) event;
-		Entity damaged = dmgEvent.getEntity();
-		if (!(damaged instanceof LivingEntity)) {
-			return;
-		}
-		damaged.setVelocity(entity.getLocation().toVector().subtract(damaged.getLocation().toVector()).normalize().multiply(level * 0.35));
-	}
-
+  @Override
+  public void applyEffect(@NotNull LivingEntity entity, int level, Event event) {
+    if (!(event instanceof EntityDamageByEntityEvent)) {
+      return;
+    }
+    EntityDamageByEntityEvent dmgEvent = (EntityDamageByEntityEvent) event;
+    Entity damaged = dmgEvent.getEntity();
+    if (!(damaged instanceof LivingEntity)) {
+      return;
+    }
+    damaged.setVelocity(
+        entity
+            .getLocation()
+            .toVector()
+            .subtract(damaged.getLocation().toVector())
+            .normalize()
+            .multiply(level * 0.35));
+  }
 }

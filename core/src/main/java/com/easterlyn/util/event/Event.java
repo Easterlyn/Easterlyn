@@ -16,61 +16,87 @@ import org.jetbrains.annotations.NotNull;
  */
 public class Event {
 
-	public static <T extends org.bukkit.event.Event> void register(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer, @NotNull Plugin plugin) {
-		register(eventClass, consumer, plugin, EventPriority.NORMAL);
-	}
+  private Event() {}
 
-	public static <T extends org.bukkit.event.Event> void register(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer, @NotNull Plugin plugin,
-			@NotNull EventPriority priority) {
-		register(eventClass, consumer, plugin, priority, true);
-	}
+  public static <T extends org.bukkit.event.Event> void register(
+      @NotNull Class<T> eventClass, @NotNull Consumer<T> consumer, @NotNull Plugin plugin) {
+    register(eventClass, consumer, plugin, EventPriority.NORMAL);
+  }
 
-	public static <T extends org.bukkit.event.Event> void register(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer,
-			@NotNull Plugin plugin, @NotNull EventPriority priority, boolean ignoreCancelled) {
-		HandlerList handlerList;
-		try {
-			Method getHandlers = eventClass.getMethod("getHandlerList");
-			Object handlerListObj = getHandlers.invoke(null);
-			handlerList = (HandlerList) handlerListObj;
-		} catch (Exception e) {
-			// Re-throw exception, shouldn't occur unless we do something dumb.
-			throw new RuntimeException(e);
-		}
-		handlerList.register(new RegisteredListener(new Listener() {},
-				new ConsumerEventExecutor<>(eventClass, consumer), priority, plugin, ignoreCancelled));
-	}
+  public static <T extends org.bukkit.event.Event> void register(
+      @NotNull Class<T> eventClass,
+      @NotNull Consumer<T> consumer,
+      @NotNull Plugin plugin,
+      @NotNull EventPriority priority) {
+    register(eventClass, consumer, plugin, priority, true);
+  }
 
-	public static <T extends org.bukkit.event.Event> void register(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer,
-			@NotNull Plugin plugin, @NotNull String key) {
-		register(eventClass, consumer, plugin, key, EventPriority.NORMAL);
-	}
+  public static <T extends org.bukkit.event.Event> void register(
+      @NotNull Class<T> eventClass,
+      @NotNull Consumer<T> consumer,
+      @NotNull Plugin plugin,
+      @NotNull EventPriority priority,
+      boolean ignoreCancelled) {
+    HandlerList handlerList;
+    try {
+      Method getHandlers = eventClass.getMethod("getHandlerList");
+      Object handlerListObj = getHandlers.invoke(null);
+      handlerList = (HandlerList) handlerListObj;
+    } catch (Exception e) {
+      // Re-throw exception, shouldn't occur unless we do something dumb.
+      throw new RuntimeException(e);
+    }
+    handlerList.register(
+        new RegisteredListener(
+            new Listener() {},
+            new ConsumerEventExecutor<>(eventClass, consumer),
+            priority,
+            plugin,
+            ignoreCancelled));
+  }
 
-	public static <T extends org.bukkit.event.Event> void register(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer,
-			@NotNull Plugin plugin, @NotNull String key, @NotNull EventPriority priority) {
-		register(eventClass, consumer, plugin, key, priority, true);
-	}
+  public static <T extends org.bukkit.event.Event> void register(
+      @NotNull Class<T> eventClass,
+      @NotNull Consumer<T> consumer,
+      @NotNull Plugin plugin,
+      @NotNull String key) {
+    register(eventClass, consumer, plugin, key, EventPriority.NORMAL);
+  }
 
-	public static <T extends org.bukkit.event.Event> void register(@NotNull Class<T> eventClass, @NotNull Consumer<T> consumer,
-			@NotNull Plugin plugin, @NotNull String key, @NotNull EventPriority priority, boolean ignoreCancelled) {
-		HandlerList handlerList;
-		try {
-			Method getHandlers = eventClass.getMethod("getHandlers");
-			Object handlerListObj = getHandlers.invoke(null);
-			handlerList = (HandlerList) handlerListObj;
-		} catch (Exception e) {
-			// Re-throw exception, shouldn't occur unless we do something dumb.
-			throw new RuntimeException(e);
-		}
+  public static <T extends org.bukkit.event.Event> void register(
+      @NotNull Class<T> eventClass,
+      @NotNull Consumer<T> consumer,
+      @NotNull Plugin plugin,
+      @NotNull String key,
+      @NotNull EventPriority priority) {
+    register(eventClass, consumer, plugin, key, priority, true);
+  }
 
-		for (RegisteredListener registeredListener : handlerList.getRegisteredListeners()) {
-			if (registeredListener instanceof KeyedListener && ((KeyedListener<?>) registeredListener).getKey().equals(key)) {
-				return;
-			}
-		}
+  public static <T extends org.bukkit.event.Event> void register(
+      @NotNull Class<T> eventClass,
+      @NotNull Consumer<T> consumer,
+      @NotNull Plugin plugin,
+      @NotNull String key,
+      @NotNull EventPriority priority,
+      boolean ignoreCancelled) {
+    HandlerList handlerList;
+    try {
+      Method getHandlers = eventClass.getMethod("getHandlers");
+      Object handlerListObj = getHandlers.invoke(null);
+      handlerList = (HandlerList) handlerListObj;
+    } catch (Exception e) {
+      // Re-throw exception, shouldn't occur unless we do something dumb.
+      throw new RuntimeException(e);
+    }
 
-		handlerList.register(new KeyedListener<>(eventClass, consumer, plugin, key, priority, ignoreCancelled));
-	}
+    for (RegisteredListener registeredListener : handlerList.getRegisteredListeners()) {
+      if (registeredListener instanceof KeyedListener
+          && ((KeyedListener<?>) registeredListener).getKey().equals(key)) {
+        return;
+      }
+    }
 
-	private Event() {}
-
+    handlerList.register(
+        new KeyedListener<>(eventClass, consumer, plugin, key, priority, ignoreCancelled));
+  }
 }

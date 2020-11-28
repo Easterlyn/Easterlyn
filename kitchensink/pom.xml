@@ -1,51 +1,51 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <parent>
-        <artifactId>Easterlyn</artifactId>
-        <groupId>com.easterlyn</groupId>
-        <version>2.0</version>
-    </parent>
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>kitchensink</artifactId>
+  <dependencies>
+    <dependency>
+      <artifactId>core</artifactId>
+      <groupId>com.easterlyn</groupId>
+      <scope>provided</scope>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>captchas</artifactId>
+      <groupId>com.easterlyn</groupId>
+      <scope>provided</scope>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <artifactId>worldedit-core</artifactId>
+      <groupId>com.sk89q.worldedit</groupId>
+      <scope>provided</scope>
+      <version>7.2.0</version>
+    </dependency>
+    <dependency>
+      <artifactId>brigadier</artifactId>
+      <groupId>com.mojang</groupId>
+      <scope>provided</scope>
+      <version>1.0.500</version>
+    </dependency>
+  </dependencies>
 
-    <artifactId>kitchensink</artifactId>
-    <name>EasterlynKitchenSink</name>
-    <description>Some say we don't need all this stuff. They're probably correct.</description>
+  <description>Some say we don't need all this stuff. They're probably correct.</description>
+  <modelVersion>4.0.0</modelVersion>
+  <name>EasterlynKitchenSink</name>
 
-    <repositories>
-        <repository>
-            <id>minecraft-libraries</id>
-            <name>Minecraft Libraries</name>
-            <url>https://libraries.minecraft.net</url>
-        </repository>
-    </repositories>
+  <parent>
+    <artifactId>Easterlyn</artifactId>
+    <groupId>com.easterlyn</groupId>
+    <version>2.0</version>
+  </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>com.easterlyn</groupId>
-            <artifactId>core</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.easterlyn</groupId>
-            <artifactId>captchas</artifactId>
-            <version>${project.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sk89q.worldedit</groupId>
-            <artifactId>worldedit-core</artifactId>
-            <version>7.2.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.mojang</groupId>
-            <artifactId>brigadier</artifactId>
-            <version>1.0.500</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
+  <repositories>
+    <repository>
+      <id>minecraft-libraries</id>
+      <name>Minecraft Libraries</name>
+      <url>https://libraries.minecraft.net</url>
+    </repository>
+  </repositories>
 
 </project>

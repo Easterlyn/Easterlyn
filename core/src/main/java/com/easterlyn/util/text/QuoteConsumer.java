@@ -8,18 +8,17 @@ import org.jetbrains.annotations.Nullable;
 
 public interface QuoteConsumer {
 
-	Iterable<Pattern> getPatterns();
+  Iterable<Pattern> getPatterns();
 
-	default @Nullable Supplier<Matcher> handleQuote(String quote) {
-		for (Pattern pattern : getPatterns()) {
-			Matcher matcher = pattern.matcher(quote);
-			if (matcher.matches()) {
-				return () -> matcher;
-			}
-		}
-		return null;
-	}
+  default @Nullable Supplier<Matcher> handleQuote(String quote) {
+    for (Pattern pattern : getPatterns()) {
+      Matcher matcher = pattern.matcher(quote);
+      if (matcher.matches()) {
+        return () -> matcher;
+      }
+    }
+    return null;
+  }
 
-	void addComponents(@NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier);
-
+  void addComponents(@NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier);
 }

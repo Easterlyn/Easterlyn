@@ -14,18 +14,19 @@ import org.bukkit.entity.Player;
 
 public class TeleportHereCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@CommandAlias("tphere")
-	@Description("{@@sink.module.tphere.description}")
-	@Syntax("<target>")
-	@CommandCompletion("@player")
-	@CommandPermission("easterlyn.command.tphere")
-	public void teleportHere(@Flags(CoreContexts.SELF) Player issuer, @Flags(CoreContexts.ONLINE) Player target) {
-		target.teleport(issuer);
-		core.getLocaleManager().sendMessage(target, "sink.module.tphere.target", "{value}", issuer.getName());
-		core.getLocaleManager().sendMessage(issuer, "sink.module.tphere.other", "{value}", target.getName());
-	}
-
+  @CommandAlias("tphere")
+  @Description("{@@sink.module.tphere.description}")
+  @Syntax("<target>")
+  @CommandCompletion("@player")
+  @CommandPermission("easterlyn.command.tphere")
+  public void teleportHere(
+      @Flags(CoreContexts.SELF) Player issuer, @Flags(CoreContexts.ONLINE) Player target) {
+    target.teleport(issuer);
+    core.getLocaleManager()
+        .sendMessage(target, "sink.module.tphere.target", "{value}", issuer.getName());
+    core.getLocaleManager()
+        .sendMessage(issuer, "sink.module.tphere.other", "{value}", target.getName());
+  }
 }

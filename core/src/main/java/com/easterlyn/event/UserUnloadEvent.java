@@ -11,21 +11,18 @@ import org.jetbrains.annotations.NotNull;
  */
 public class UserUnloadEvent extends UserEvent {
 
-	private static final HandlerList HANDLER_LIST = new HandlerList();
+  private static final HandlerList HANDLER_LIST = new HandlerList();
 
-	public UserUnloadEvent(@NotNull User user) {
-		super(user);
-	}
+  public UserUnloadEvent(@NotNull User user) {
+    super(user);
+  }
 
-	@NotNull
-	@Override
-	public HandlerList getHandlers() {
-		return HANDLER_LIST;
-	}
+  public @NotNull static HandlerList getHandlerList() {
+    return HANDLER_LIST;
+  }
 
-	@NotNull
-	public static HandlerList getHandlerList() {
-		return HANDLER_LIST;
-	}
-
+  @Override
+  public @NotNull HandlerList getHandlers() {
+    return HANDLER_LIST;
+  }
 }

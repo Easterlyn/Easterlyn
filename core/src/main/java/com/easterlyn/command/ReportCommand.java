@@ -17,31 +17,37 @@ import org.bukkit.Location;
 @CommandPermission("easterlyn.command.report")
 public class ReportCommand extends BaseCommand {
 
-	@Default
-	@Private
-	@Syntax("<descriptive details>")
-	public void report(BukkitCommandIssuer issuer, String args) {
-		if (args.indexOf(' ') == -1) {
-			issuer.sendInfo(MessageKey.of("core.commands.report.error.length"));
-			return;
-		}
+  @Default
+  @Private
+  @Syntax("<descriptive details>")
+  public void report(BukkitCommandIssuer issuer, String args) {
+    if (args.indexOf(' ') == -1) {
+      issuer.sendInfo(MessageKey.of("core.commands.report.error.length"));
+      return;
+    }
 
-		String message = "Report by " + issuer.getIssuer().getName();
-		if (issuer.isPlayer()) {
-			Location location = issuer.getPlayer().getLocation();
-			message += String.format(" - /wtp @p %s %.2f %.2f %.2f %.2f %.2f", location.getWorld().getName(),
-					location.getX(), location.getY(), location.getZ(), location.getPitch(), location.getYaw());
-		}
-		message += '\n' + args;
+    String message = "Report by " + issuer.getIssuer().getName();
+    if (issuer.isPlayer()) {
+      Location location = issuer.getPlayer().getLocation();
+      message +=
+          String.format(
+              " - /wtp @p %s %.2f %.2f %.2f %.2f %.2f",
+              location.getWorld().getName(),
+              location.getX(),
+              location.getY(),
+              location.getZ(),
+              location.getPitch(),
+              location.getYaw());
+    }
+    message += '\n' + args;
 
-		if (ReportableEvent.getHandlerList().getRegisteredListeners().length <= 1) {
-			// Default report logging listener doesn't count
-			issuer.sendInfo(MessageKey.of("core.commands.report.error.no_handlers"));
-		} else {
-			issuer.sendInfo(MessageKey.of("core.commands.report.success"));
-		}
+    if (ReportableEvent.getHandlerList().getRegisteredListeners().length <= 1) {
+      // Default report logging listener doesn't count
+      issuer.sendInfo(MessageKey.of("core.commands.report.error.no_handlers"));
+    } else {
+      issuer.sendInfo(MessageKey.of("core.commands.report.success"));
+    }
 
-		ReportableEvent.call(message);
-	}
-
+    ReportableEvent.call(message);
+  }
 }

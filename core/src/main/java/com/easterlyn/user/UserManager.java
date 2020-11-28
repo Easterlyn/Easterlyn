@@ -29,102 +29,119 @@ import org.jetbrains.annotations.Nullable;
  */
 public class UserManager {
 
-	private final LoadingCache<UUID, User> userCache;
+  private final LoadingCache<UUID, User> userCache;
 
-	public UserManager(EasterlynCore plugin) {
-		this.userCache = CacheBuilder.newBuilder()
-				.expireAfterAccess(30L, TimeUnit.MINUTES)
-				.removalListener(notification -> {
-			User user = (User) notification.getValue();
-			plugin.getServer().getPluginManager().callEvent(new UserUnloadEvent(user));
-			PermissionUtil.releasePermissionData(user.getUniqueId());
-		}).build(new CacheLoader<>() {
-			@Override
-			public User load(@NotNull final UUID uuid) {
-				User user = User.load(plugin, uuid);
-				plugin.getServer().getPluginManager().callEvent(new UserLoadEvent(user));
-				return user;
-			}
-		});
+  public UserManager(EasterlynCore plugin) {
+    this.userCache =
+        CacheBuilder.newBuilder()
+            .expireAfterAccess(30L, TimeUnit.MINUTES)
+            .removalListener(
+                notification -> {
+                  User user = (User) notification.getValue();
+                  plugin.getServer().getPluginManager().callEvent(new UserUnloadEvent(user));
+                  PermissionUtil.releasePermissionData(user.getUniqueId());
+                })
+            .build(
+                new CacheLoader<>() {
+                  @Override
+                  public User load(@NotNull final UUID uuid) {
+                    User user = User.load(plugin, uuid);
+                    plugin.getServer().getPluginManager().callEvent(new UserLoadEvent(user));
+                    return user;
+                  }
+                });
 
-		Event.register(AsyncPlayerPreLoginEvent.class, event -> {
-			if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-				getUser(event.getUniqueId());
-			}
-		}, plugin);
+    Event.register(
+        AsyncPlayerPreLoginEvent.class,
+        event -> {
+          if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
+            getUser(event.getUniqueId());
+          }
+        },
+        plugin);
 
-		Event.register(PlayerQuitEvent.class, event ->
-				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-					User user = userCache.getIfPresent(event.getPlayer().getUniqueId());
-					if (user != null) {
-						// Keep permissions loaded if userdata is still loaded
-						PermissionUtil.loadPermissionData(event.getPlayer().getUniqueId());
-					}
-				}), plugin);
+    Event.register(
+        PlayerQuitEvent.class,
+        event ->
+            plugin
+                .getServer()
+                .getScheduler()
+                .runTaskAsynchronously(
+                    plugin,
+                    () -> {
+                      User user = userCache.getIfPresent(event.getPlayer().getUniqueId());
+                      if (user != null) {
+                        // Keep permissions loaded if userdata is still loaded
+                        PermissionUtil.loadPermissionData(event.getPlayer().getUniqueId());
+                      }
+                    }),
+        plugin);
 
-		StringUtil.addQuoteConsumer(new QuoteConsumer() {
-			@Override
-			public Iterable<Pattern> getPatterns() {
-				return userCache.asMap().keySet().stream().map(UserManager.this::getUser)
-						.map(User::getMentionPattern).collect(Collectors.toSet());
-			}
+    StringUtil.addQuoteConsumer(
+        new QuoteConsumer() {
+          @Override
+          public Iterable<Pattern> getPatterns() {
+            return userCache.asMap().keySet().stream()
+                .map(UserManager.this::getUser)
+                .map(User::getMentionPattern)
+                .collect(Collectors.toSet());
+          }
 
-			@Override
-			public @Nullable Supplier<Matcher> handleQuote(String quote) {
-				for (User loaded : userCache.asMap().values()) {
-					Pattern mentionPattern = loaded.getMentionPattern();
-					Matcher matcher = mentionPattern.matcher(quote);
-					if (!matcher.find()) {
-						continue;
-					}
-					return new UserMatcher() {
-						@Override
-						public User getUser() {
-							return loaded;
-						}
+          @Override
+          public @Nullable Supplier<Matcher> handleQuote(String quote) {
+            for (User loaded : userCache.asMap().values()) {
+              Pattern mentionPattern = loaded.getMentionPattern();
+              Matcher matcher = mentionPattern.matcher(quote);
+              if (!matcher.find()) {
+                continue;
+              }
+              return new UserMatcher() {
+                @Override
+                public User getUser() {
+                  return loaded;
+                }
 
-						@Override
-						public Matcher get() {
-							return matcher;
-						}
-					};
-				}
-				return null;
-			}
+                @Override
+                public Matcher get() {
+                  return matcher;
+                }
+              };
+            }
+            return null;
+          }
 
-			@Override
-			public void addComponents(@NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
-				if (!(matcherSupplier instanceof UserMatcher)) {
-					components.addText(matcherSupplier.get().group());
-					return;
-				}
+          @Override
+          public void addComponents(
+              @NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
+            if (!(matcherSupplier instanceof UserMatcher)) {
+              components.addText(matcherSupplier.get().group());
+              return;
+            }
 
-				Matcher matcher = matcherSupplier.get();
-				User user = ((UserMatcher) matcherSupplier).getUser();
+            Matcher matcher = matcherSupplier.get();
+            User user = ((UserMatcher) matcherSupplier).getUser();
 
-				components.addComponent(user.getMention());
-				if (matcher.group(2) != null && !matcher.group(2).isEmpty()) {
-					components.addText(matcher.group(2));
-				}
-			}
-		});
-	}
+            components.addComponent(user.getMention());
+            if (matcher.group(2) != null && !matcher.group(2).isEmpty()) {
+              components.addText(matcher.group(2));
+            }
+          }
+        });
+  }
 
-	private interface UserMatcher extends Supplier<Matcher> {
+  public User getUser(UUID uuid) {
+    return userCache.getUnchecked(uuid);
+  }
 
-		User getUser();
+  public void clearCache() {
+    userCache.invalidateAll();
+    userCache.cleanUp();
+  }
 
-	}
+  // TODO getUser(CommandSender)
 
-	public User getUser(UUID uuid) {
-		return userCache.getUnchecked(uuid);
-	}
+  private interface UserMatcher extends Supplier<Matcher> {
 
-	// TODO getUser(CommandSender)
-
-	public void clearCache() {
-		userCache.invalidateAll();
-		userCache.cleanUp();
-	}
-
+    User getUser();
+  }
 }

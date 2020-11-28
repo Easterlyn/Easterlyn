@@ -21,31 +21,32 @@ import org.bukkit.inventory.ItemStack;
 @CommandPermission("easterlyn.command.more")
 public class MoreCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@Default
-	@Private
-	public void more(@Flags(CoreContexts.SELF) Player player) {
-		more(player, 0);
-	}
+  @Default
+  @Private
+  public void more(@Flags(CoreContexts.SELF) Player player) {
+    more(player, 0);
+  }
 
-	@CommandAlias("more")
-	@Description("{@@sink.module.more.description}")
-	@Syntax("[count]")
-	@CommandCompletion("@integer")
-	public void more(@Flags(CoreContexts.SELF) Player player, int count) {
-		ItemStack hand = player.getInventory().getItemInMainHand();
-		if (hand.getType() == Material.AIR) {
-			showSyntax(getCurrentCommandIssuer(), getLastCommandOperationContext().getRegisteredCommand());
-			return;
-		}
-		if (count < 1 || hand.getAmount() + count > 64) {
-			hand.setAmount(64);
-		} else {
-			hand.setAmount(hand.getAmount() + count);
-		}
-		core.getLocaleManager().sendMessage(player, "sink.module.more.success", "{value}", String.valueOf(hand.getAmount()));
-	}
-
+  @CommandAlias("more")
+  @Description("{@@sink.module.more.description}")
+  @Syntax("[count]")
+  @CommandCompletion("@integer")
+  public void more(@Flags(CoreContexts.SELF) Player player, int count) {
+    ItemStack hand = player.getInventory().getItemInMainHand();
+    if (hand.getType() == Material.AIR) {
+      showSyntax(
+          getCurrentCommandIssuer(), getLastCommandOperationContext().getRegisteredCommand());
+      return;
+    }
+    if (count < 1 || hand.getAmount() + count > 64) {
+      hand.setAmount(64);
+    } else {
+      hand.setAmount(hand.getAmount() + count);
+    }
+    core.getLocaleManager()
+        .sendMessage(
+            player, "sink.module.more.success", "{value}", String.valueOf(hand.getAmount()));
+  }
 }

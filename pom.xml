@@ -1,191 +1,193 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <artifactId>Easterlyn</artifactId>
 
-    <groupId>com.easterlyn</groupId>
-    <artifactId>Easterlyn</artifactId>
-    <packaging>pom</packaging>
-    <version>2.0</version>
+  <build>
 
-    <properties>
-        <bukkit-api-version>1.15</bukkit-api-version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.testSourceDirectory>${project.basedir}/test/java</project.build.testSourceDirectory>
-        <project.build.testResourceDirectory>${project.basedir}/test/resources</project.build.testResourceDirectory>
-    </properties>
+    <finalName>${project.name}</finalName>
 
-    <repositories>
-        <repository>
-            <id>md_5</id>
-            <url>http://repo.md-5.net/content/groups/public/</url>
-        </repository>
-        <repository>
-            <id>aikar</id>
-            <url>https://repo.aikar.co/content/groups/aikar/</url>
-        </repository>
-        <repository>
-            <id>destroystokyo-repo</id>
-            <url>https://repo.destroystokyo.com/repository/maven-public//</url>
-        </repository>
-    </repositories>
+    <plugins>
+      <plugin>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <locale>en_US</locale>
+              <name>timestamp</name>
+              <pattern>MM/dd/yyyy@HH:mm</pattern>
+              <timeZone>America/New_York</timeZone>
+            </configuration>
+            <goals>
+              <goal>timestamp-property</goal>
+            </goals>
+            <id>timestamp-property</id>
+          </execution>
+        </executions>
+        <groupId>org.codehaus.mojo</groupId>
+        <version>3.2.0</version>
+      </plugin>
 
-    <dependencies>
-        <dependency>
-            <groupId>net.md-5</groupId>
-            <artifactId>bungeecord-chat</artifactId>
-            <version>1.16-R0.3</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Module core uses server jar, also needs to specify API for dependency resolution order. -->
-        <!--suppress MavenDuplicateDependenciesInspection -->
-        <dependency>
-            <groupId>com.destroystokyo.paper</groupId>
-            <artifactId>paper-api</artifactId>
-            <version>1.16.4-R0.1-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>co.aikar</groupId>
-            <artifactId>acf-paper</artifactId>
-            <version>0.5.0-SNAPSHOT</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains</groupId>
-            <artifactId>annotations</artifactId>
-            <version>20.1.0</version>
-            <scope>provided</scope>
-        </dependency>
-        <!-- Tests -->
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.1</version>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+      <plugin>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.2.4</version>
+      </plugin>
 
-    <modules>
-        <module>core</module>
-        <module>chat</module> <!-- depends: core -->
-        <module>afk</module> <!-- depends: core, chat -->
-        <module>captchas</module> <!-- depends: core -->
-        <module>discord</module> <!-- depends: core, chat -->
-        <module>effects</module> <!-- depends: core -->
-        <module>kitchensink</module> <!-- depends: core, captcha -->
-        <module>machines</module> <!-- depends: core, captcha -->
-        <module>sleepvote</module> <!-- depends: core -->
-        <module>spectators</module> <!-- depends: core -->
-        <module>villagers</module> <!-- depends: core -->
-        <module>netherportals</module> <!-- depends: core -->
-    </modules>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>11</source>
+          <target>11</target>
+          <!--<forceJavacCompilerUse>true</forceJavacCompilerUse>-->
+        </configuration>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.8.1</version>
+      </plugin>
 
-    <build>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+        <version>3.0.0-M5</version>
+      </plugin>
 
-        <finalName>${project.name}</finalName>
+      <plugin>
+        <artifactId>copy-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <configuration>
+              <resources>
+                <resource>
+                  <directory>${project.build.directory}</directory>
+                  <excludes>
+                    <exclude>original-*.jar</exclude>
+                  </excludes>
+                  <id>copy</id>
+                  <includes>
+                    <include>*.jar</include>
+                  </includes>
+                  <paths>
+                    <path>
+                      <from>${project.build.directory}</from>
+                      <!--
+                       ~ Property should be defined in build command, i.e.:
+                       ~ mvn clean package -Dproject.build.finaldir=/minecraft/testserver/plugins/
+                      -->
+                      <!--suppress UnresolvedMavenProperty -->
+                      <to>${project.build.finaldir}</to>
+                    </path>
+                  </paths>
+                  <replaceExisting>true</replaceExisting>
+                  <workOnFullPath>true</workOnFullPath>
+                </resource>
+              </resources>
+            </configuration>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <phase>package</phase>
+          </execution>
+        </executions>
+        <groupId>ch.mfrey.maven.plugin</groupId>
+        <version>1.0.0</version>
+      </plugin>
+    </plugins>
 
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+  <dependencies>
+    <dependency>
+      <artifactId>bungeecord-chat</artifactId>
+      <groupId>net.md-5</groupId>
+      <scope>provided</scope>
+      <version>1.16-R0.3</version>
+    </dependency>
+    <!-- Module core uses server jar, also needs to specify API for dependency resolution order. -->
+    <!--suppress MavenDuplicateDependenciesInspection -->
+    <dependency>
+      <artifactId>paper-api</artifactId>
+      <groupId>com.destroystokyo.paper</groupId>
+      <scope>provided</scope>
+      <version>1.16.4-R0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <artifactId>acf-paper</artifactId>
+      <groupId>co.aikar</groupId>
+      <scope>provided</scope>
+      <version>0.5.0-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <artifactId>annotations</artifactId>
+      <groupId>org.jetbrains</groupId>
+      <scope>provided</scope>
+      <version>20.1.0</version>
+    </dependency>
+    <!-- Tests -->
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
+      <scope>test</scope>
+      <version>4.13.1</version>
+    </dependency>
+  </dependencies>
+  <groupId>com.easterlyn</groupId>
+  <modelVersion>4.0.0</modelVersion>
 
-        <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>build-helper-maven-plugin</artifactId>
-                <version>3.2.0</version>
-                <executions>
-                    <execution>
-                        <id>timestamp-property</id>
-                        <goals>
-                            <goal>timestamp-property</goal>
-                        </goals>
-                        <configuration>
-                            <name>timestamp</name>
-                            <pattern>MM/dd/yyyy@HH:mm</pattern>
-                            <locale>en_US</locale>
-                            <timeZone>America/New_York</timeZone>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
+  <modules>
+    <module>core</module>
+    <module>chat</module> <!-- depends: core -->
+    <module>afk</module> <!-- depends: core, chat -->
+    <module>captchas</module> <!-- depends: core -->
+    <module>discord</module> <!-- depends: core, chat -->
+    <module>effects</module> <!-- depends: core -->
+    <module>kitchensink</module> <!-- depends: core, captcha -->
+    <module>machines</module> <!-- depends: core, captcha -->
+    <module>sleepvote</module> <!-- depends: core -->
+    <module>spectators</module> <!-- depends: core -->
+    <module>villagers</module> <!-- depends: core -->
+    <module>netherportals</module> <!-- depends: core -->
+  </modules>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>shade</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
+  <packaging>pom</packaging>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <source>11</source>
-                    <target>11</target>
-                    <!--<forceJavacCompilerUse>true</forceJavacCompilerUse>-->
-                </configuration>
-            </plugin>
+  <properties>
+    <bukkit-api-version>1.15</bukkit-api-version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.build.testResourceDirectory>${project.basedir}/test/resources
+    </project.build.testResourceDirectory>
+    <project.build.testSourceDirectory>${project.basedir}/test/java
+    </project.build.testSourceDirectory>
+  </properties>
 
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.0.0-M5</version>
-            </plugin>
+  <repositories>
+    <repository>
+      <id>md_5</id>
+      <url>http://repo.md-5.net/content/groups/public/</url>
+    </repository>
+    <repository>
+      <id>aikar</id>
+      <url>https://repo.aikar.co/content/groups/aikar/</url>
+    </repository>
+    <repository>
+      <id>destroystokyo-repo</id>
+      <url>https://repo.destroystokyo.com/repository/maven-public//</url>
+    </repository>
+  </repositories>
 
-            <plugin>
-                <groupId>ch.mfrey.maven.plugin</groupId>
-                <artifactId>copy-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <executions>
-                    <execution>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <resources>
-                                <resource>
-                                    <id>copy</id>
-                                    <directory>${project.build.directory}</directory>
-                                    <workOnFullPath>true</workOnFullPath>
-                                    <replaceExisting>true</replaceExisting>
-                                    <includes>
-                                        <include>*.jar</include>
-                                    </includes>
-                                    <excludes>
-                                        <exclude>original-*.jar</exclude>
-                                    </excludes>
-                                    <paths>
-                                        <path>
-                                            <from>${project.build.directory}</from>
-                                            <!--
-                                             ~ Property should be defined in build command, i.e.:
-                                             ~ mvn clean package -Dproject.build.finaldir=/minecraft/testserver/plugins/
-                                            -->
-                                            <!--suppress UnresolvedMavenProperty -->
-                                            <to>${project.build.finaldir}</to>
-                                        </path>
-                                    </paths>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-        </plugins>
-    </build>
+  <version>2.0</version>
 
 </project>

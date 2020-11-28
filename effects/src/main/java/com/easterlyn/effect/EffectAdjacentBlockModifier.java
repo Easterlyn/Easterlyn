@@ -20,37 +20,42 @@ import org.jetbrains.annotations.Nullable;
  */
 public abstract class EffectAdjacentBlockModifier extends Effect {
 
-	private final BlockFace[] faces;
+  private final BlockFace[] faces;
 
-	public EffectAdjacentBlockModifier(EasterlynEffects plugin, String name, int cost) {
-		super(plugin, name, EquipmentSlots.TOOL, cost, 1, 1);
-		this.faces = new BlockFace[] { BlockFace.UP, BlockFace.DOWN, BlockFace.NORTH, BlockFace.SOUTH,
-				BlockFace.EAST, BlockFace.WEST };
+  public EffectAdjacentBlockModifier(EasterlynEffects plugin, String name, int cost) {
+    super(plugin, name, EquipmentSlots.TOOL, cost, 1, 1);
+    this.faces =
+        new BlockFace[] {
+          BlockFace.UP,
+          BlockFace.DOWN,
+          BlockFace.NORTH,
+          BlockFace.SOUTH,
+          BlockFace.EAST,
+          BlockFace.WEST
+        };
+  }
 
+  @Override
+  public void applyEffect(@NotNull LivingEntity entity, int level, @Nullable Event event) {
+    if (!(event instanceof BlockBreakEvent)) {
+      return;
+    }
+    RegisteredServiceProvider<EasterlynCore> registration =
+        getPlugin().getServer().getServicesManager().getRegistration(EasterlynCore.class);
+    if (registration == null) {
+      return;
+    }
+    BlockUpdateManager budManager = registration.getProvider().getBlockUpdateManager();
+    BlockBreakEvent breakEvent = (BlockBreakEvent) event;
+    Player player = breakEvent.getPlayer();
+    int currentCount = 0;
+    for (BlockFace face : faces) {
+      Block relative = breakEvent.getBlock().getRelative(face);
+      if (handleAdjacentBlock(player, relative, currentCount)) {
+        budManager.queueBlock(relative);
+      }
+    }
+  }
 
-	}
-
-	@Override
-	public void applyEffect(@NotNull LivingEntity entity, int level, @Nullable Event event) {
-		if (!(event instanceof BlockBreakEvent)) {
-			return;
-		}
-		RegisteredServiceProvider<EasterlynCore> registration = getPlugin().getServer().getServicesManager().getRegistration(EasterlynCore.class);
-		if (registration == null) {
-			return;
-		}
-		BlockUpdateManager budManager = registration.getProvider().getBlockUpdateManager();
-		BlockBreakEvent breakEvent = (BlockBreakEvent) event;
-		Player player = breakEvent.getPlayer();
-		int currentCount = 0;
-		for (BlockFace face : faces) {
-			Block relative = breakEvent.getBlock().getRelative(face);
-			if (handleAdjacentBlock(player, relative, currentCount)) {
-				budManager.queueBlock(relative);
-			}
-		}
-	}
-
-	protected abstract boolean handleAdjacentBlock(Player player, Block block, int currentCount);
-
+  protected abstract boolean handleAdjacentBlock(Player player, Block block, int currentCount);
 }

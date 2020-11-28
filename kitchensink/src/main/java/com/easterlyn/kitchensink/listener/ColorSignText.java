@@ -7,16 +7,15 @@ import org.bukkit.event.block.SignChangeEvent;
 
 public class ColorSignText implements Listener {
 
-	@EventHandler(ignoreCancelled = true)
-	public void onSignChange(SignChangeEvent event) {
-		String[] lines = event.getLines();
-		for (int i = 0; i < lines.length; i++) {
-			String line = lines[i];
-			if (line == null || line.isEmpty()) {
-				continue;
-			}
-			event.setLine(i, ChatColor.translateAlternateColorCodes('&', line));
-		}
-	}
-
+  @EventHandler(ignoreCancelled = true)
+  public void onSignChange(SignChangeEvent event) {
+    String[] lines = event.getLines();
+    for (int i = 0; i < lines.length; i++) {
+      String line = lines[i];
+      if (line == null || line.isEmpty()) {
+        continue;
+      }
+      event.setLine(i, ChatColor.translateAlternateColorCodes('&', line));
+    }
+  }
 }

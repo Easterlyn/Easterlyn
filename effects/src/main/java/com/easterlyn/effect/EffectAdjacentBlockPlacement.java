@@ -18,23 +18,25 @@ import org.bukkit.inventory.ItemStack;
  */
 public abstract class EffectAdjacentBlockPlacement extends EffectAdjacentBlockModifier {
 
-	EffectAdjacentBlockPlacement(EasterlynEffects plugin, String name, int cost) {
-		super(plugin, name, cost);
-	}
+  EffectAdjacentBlockPlacement(EasterlynEffects plugin, String name, int cost) {
+    super(plugin, name, cost);
+  }
 
-	boolean handleBlockSet(Player player, Block block, Material toMaterial) {
-		// Capture state and change block - prevents certain plugins assuming block being placed is of the replaced material
-		BlockState state = block.getState();
-		block.setType(toMaterial, false);
-		BlockPlaceEvent event = new BlockPlaceEvent(block, state, block, new ItemStack(toMaterial), player, true, EquipmentSlot.HAND);
-		Bukkit.getServer().getPluginManager().callEvent(event);
-		if (event.isCancelled()) {
-			// Revert block changes if cancelled
-			state.update(true, false);
-			return false;
-		}
-		block.getState().update(false);
-		return true;
-	}
-
+  boolean handleBlockSet(Player player, Block block, Material toMaterial) {
+    // Capture state and change block - prevents certain plugins assuming block being placed is of
+    // the replaced material.
+    BlockState state = block.getState();
+    block.setType(toMaterial, false);
+    BlockPlaceEvent event =
+        new BlockPlaceEvent(
+            block, state, block, new ItemStack(toMaterial), player, true, EquipmentSlot.HAND);
+    Bukkit.getServer().getPluginManager().callEvent(event);
+    if (event.isCancelled()) {
+      // Revert block changes if cancelled
+      state.update(true, false);
+      return false;
+    }
+    block.getState().update(false);
+    return true;
+  }
 }

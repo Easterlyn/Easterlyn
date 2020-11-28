@@ -32,128 +32,130 @@ import org.jetbrains.annotations.NotNull;
 
 public class EasterlynKitchenSink extends JavaPlugin {
 
-	private final List<BaseCommand> extraCommands = new ArrayList<>();
+  private final List<BaseCommand> extraCommands = new ArrayList<>();
 
-	@Override
-	public void onEnable() {
+  @Override
+  public void onEnable() {
 
-		saveDefaultConfig();
+    saveDefaultConfig();
 
-		/* TODO
-		 *  - CommandRedirect? probably unnecessary, replacing essentials
-		 *    - PlayerCommandPreprocessEvent
-		 *  - PlayerListHeaderFooterWelcome
-		 *  - IPCache
-		 *    - Used for seen
-		 *    - ServerListPingEvent -> replace "Player"
-		 *  - /worth
-		 */
+    /* TODO
+     *  - CommandRedirect? probably unnecessary, replacing essentials
+     *    - PlayerCommandPreprocessEvent
+     *  - PlayerListHeaderFooterWelcome
+     *  - IPCache
+     *    - Used for seen
+     *    - ServerListPingEvent -> replace "Player"
+     *  - /worth
+     */
 
-		// Feature: Command for returning to last location teleported (unnaturally) from.
-		BackCommand backCommand = new BackCommand();
-		getServer().getPluginManager().registerEvents(backCommand, this);
-		extraCommands.add(backCommand);
+    // Feature: Command for returning to last location teleported (unnaturally) from.
+    BackCommand backCommand = new BackCommand();
+    getServer().getPluginManager().registerEvents(backCommand, this);
+    extraCommands.add(backCommand);
 
-		// Feature: Bans
-		BanCommand banCommand = new BanCommand();
-		getServer().getPluginManager().registerEvents(banCommand, this);
-		extraCommands.add(banCommand);
+    // Feature: Bans
+    BanCommand banCommand = new BanCommand();
+    getServer().getPluginManager().registerEvents(banCommand, this);
+    extraCommands.add(banCommand);
 
-		// Feature: Command for teleporting to last death location.
-		DeathPointCommand deathCommand = new DeathPointCommand();
-		getServer().getPluginManager().registerEvents(deathCommand, this);
-		extraCommands.add(deathCommand);
+    // Feature: Command for teleporting to last death location.
+    DeathPointCommand deathCommand = new DeathPointCommand();
+    getServer().getPluginManager().registerEvents(deathCommand, this);
+    extraCommands.add(deathCommand);
 
-		// Feature: Temporary carts for official server rails. No clogging, no running low.
-		FreeCarts freeCarts = new FreeCarts(this);
-		getServer().getPluginManager().registerEvents(freeCarts, this);
-		extraCommands.add(freeCarts);
+    // Feature: Temporary carts for official server rails. No clogging, no running low.
+    FreeCarts freeCarts = new FreeCarts(this);
+    getServer().getPluginManager().registerEvents(freeCarts, this);
+    extraCommands.add(freeCarts);
 
-		// Feature: Configurable commands run on login.
-		LoginCommands loginCommands = new LoginCommands();
-		getServer().getPluginManager().registerEvents(loginCommands, this);
-		extraCommands.add(loginCommands);
+    // Feature: Configurable commands run on login.
+    LoginCommands loginCommands = new LoginCommands();
+    getServer().getPluginManager().registerEvents(loginCommands, this);
+    extraCommands.add(loginCommands);
 
-		// Feature: Meteorites. Who doesn't love 'em? Most people, that's who.
-		Meteors meteors = new Meteors(this);
-		getServer().getPluginManager().registerEvents(meteors, this);
-		extraCommands.add(meteors);
+    // Feature: Meteorites. Who doesn't love 'em? Most people, that's who.
+    Meteors meteors = new Meteors(this);
+    getServer().getPluginManager().registerEvents(meteors, this);
+    extraCommands.add(meteors);
 
-		// Feature: Bottle experience by right clicking with an empty bottle.
-		getServer().getPluginManager().registerEvents(new BottleExperience(), this);
+    // Feature: Bottle experience by right clicking with an empty bottle.
+    getServer().getPluginManager().registerEvents(new BottleExperience(), this);
 
-		// Feature: Allow color codes on signs via &
-		getServer().getPluginManager().registerEvents(new ColorSignText(), this);
+    // Feature: Allow color codes on signs via &
+    getServer().getPluginManager().registerEvents(new ColorSignText(), this);
 
-		// Feature: Insert carts into dispensers/droppers when crashed into.
-		getServer().getPluginManager().registerEvents(new CartContainerCrasher(), this);
+    // Feature: Insert carts into dispensers/droppers when crashed into.
+    getServer().getPluginManager().registerEvents(new CartContainerCrasher(), this);
 
-		// Feature: Send player their coordinates when they die.
-		getServer().getPluginManager().registerEvents(new DeathCoordinates(), this);
+    // Feature: Send player their coordinates when they die.
+    getServer().getPluginManager().registerEvents(new DeathCoordinates(), this);
 
-		// Feature: Items dropped on death cannot be damaged.
-		getServer().getPluginManager().registerEvents(new DeathDropProtection(this), this);
+    // Feature: Items dropped on death cannot be damaged.
+    getServer().getPluginManager().registerEvents(new DeathDropProtection(this), this);
 
-		// Feature: Fortune works on shears
-		getServer().getPluginManager().registerEvents(new FortuneShears(), this);
+    // Feature: Fortune works on shears
+    getServer().getPluginManager().registerEvents(new FortuneShears(), this);
 
-		// Feature: Killer rabbit has a 1/1000 chance to spawn
-		getServer().getPluginManager().registerEvents(new KillerRabbit(), this);
+    // Feature: Killer rabbit has a 1/1000 chance to spawn
+    getServer().getPluginManager().registerEvents(new KillerRabbit(), this);
 
-		// Feature: Permission is required to use prefixes in commands.
-		getServer().getPluginManager().registerEvents(new NoCommandPrefix(), this);
+    // Feature: Permission is required to use prefixes in commands.
+    getServer().getPluginManager().registerEvents(new NoCommandPrefix(), this);
 
-		// Feature: Entities killed by creative players or cramming do not drop loot or exp.
-		getServer().getPluginManager().registerEvents(new NoCreativeCrammingDrops(), this);
+    // Feature: Entities killed by creative players or cramming do not drop loot or exp.
+    getServer().getPluginManager().registerEvents(new NoCreativeCrammingDrops(), this);
 
-		// Feature: Prevent players joining with illegal names
-		getServer().getPluginManager().registerEvents(new NoIllegalName(), this);
+    // Feature: Prevent players joining with illegal names
+    getServer().getPluginManager().registerEvents(new NoIllegalName(), this);
 
-		// Feature: Dropped items cannot be harmed by any entities other than the Wither.
-		getServer().getPluginManager().registerEvents(new OnlyWitherKillsItems(), this);
+    // Feature: Dropped items cannot be harmed by any entities other than the Wither.
+    getServer().getPluginManager().registerEvents(new OnlyWitherKillsItems(), this);
 
-		// Feature: Keep inventory when dying in PVP, drop a max of 30 exp.
-		getServer().getPluginManager().registerEvents(new PVPKeepInventory(), this);
+    // Feature: Keep inventory when dying in PVP, drop a max of 30 exp.
+    getServer().getPluginManager().registerEvents(new PVPKeepInventory(), this);
 
-		// Feature: Restrict and clean NBT on items spawned and used in creative.
-		getServer().getPluginManager().registerEvents(new RestrictCreativeItems(), this);
+    // Feature: Restrict and clean NBT on items spawned and used in creative.
+    getServer().getPluginManager().registerEvents(new RestrictCreativeItems(), this);
 
-		// Fact: Withers are awesome.
-		getServer().getPluginManager().registerEvents(new WitherFacts(), this);
+    // Fact: Withers are awesome.
+    getServer().getPluginManager().registerEvents(new WitherFacts(), this);
 
-		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-		if (registration != null) {
-			register(registration.getProvider());
-		}
+    RegisteredServiceProvider<EasterlynCore> registration =
+        getServer().getServicesManager().getRegistration(EasterlynCore.class);
+    if (registration != null) {
+      register(registration.getProvider());
+    }
 
-		Event.register(PluginEnableEvent.class,
-				pluginEnableEvent -> {
-					if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
-						register((EasterlynCore) pluginEnableEvent.getPlugin());
-					}
-				}, this);
-	}
+    Event.register(
+        PluginEnableEvent.class,
+        pluginEnableEvent -> {
+          if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
+            register((EasterlynCore) pluginEnableEvent.getPlugin());
+          }
+        },
+        this);
+  }
 
-	@Override
-	public void onDisable() {
-		RegisteredServiceProvider<EasterlynCore> easterlynProvider = Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-		if (easterlynProvider == null) {
-			return;
-		}
+  @Override
+  public void onDisable() {
+    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
+        Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
+    if (easterlynProvider == null) {
+      return;
+    }
 
-		EasterlynCore plugin = easterlynProvider.getProvider();
+    EasterlynCore plugin = easterlynProvider.getProvider();
 
-		extraCommands.forEach(command -> plugin.getCommandManager().unregisterCommand(command));
-	}
+    extraCommands.forEach(command -> plugin.getCommandManager().unregisterCommand(command));
+  }
 
-	private void register(@NotNull EasterlynCore plugin) {
+  private void register(@NotNull EasterlynCore plugin) {
 
-		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.kitchensink.command");
+    plugin.registerCommands(this, getClassLoader(), "com.easterlyn.kitchensink.command");
 
-		extraCommands.forEach(command -> plugin.getCommandManager().registerCommand(command));
+    extraCommands.forEach(command -> plugin.getCommandManager().registerCommand(command));
 
-		plugin.getLocaleManager().addLocaleSupplier(this);
-
-	}
-
+    plugin.getLocaleManager().addLocaleSupplier(this);
+  }
 }

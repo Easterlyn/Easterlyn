@@ -40,272 +40,321 @@ import reactor.core.publisher.Mono;
 
 public class EasterlynDiscord extends JavaPlugin {
 
-	private final Map<ChannelType, Pair<StringBuffer, Long>> messageQueue = new ConcurrentHashMap<>();
-	private ConcurrentConfiguration datastore;
-	private LoadingCache<Object, Object> pendingAuthentications;
-	private GatewayDiscordClient client;
+  private final Map<ChannelType, Pair<StringBuffer, Long>> messageQueue = new ConcurrentHashMap<>();
+  private ConcurrentConfiguration datastore;
+  private LoadingCache<Object, Object> pendingAuthentications;
+  private GatewayDiscordClient client;
 
-	@Override
-	public void onEnable() {
-		saveDefaultConfig();
-		datastore = ConcurrentConfiguration.load(this, new File(getDataFolder(), "datastore.yml"));
-		pendingAuthentications = CacheBuilder.newBuilder()
-				.expireAfterWrite(5, TimeUnit.MINUTES).build(new CacheLoader<>() {
-					@Override
-					public Object load(@NotNull Object key) {
-						if (!(key instanceof UUID)) {
-							throw new IllegalArgumentException("Key must be a UUID");
-						}
-						String code;
-						do {
-							code = generateCode();
-						} while (pendingAuthentications.getIfPresent(code) != null);
-						pendingAuthentications.put(code, key);
-						return code;
-					}
-				});
+  private static String generateCode() {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < 6; i++) {
+      String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+      sb.append(chars.charAt(ThreadLocalRandom.current().nextInt(chars.length())));
+    }
+    return sb.toString();
+  }
 
-		connect();
+  @Override
+  public void onEnable() {
+    saveDefaultConfig();
+    datastore = ConcurrentConfiguration.load(this, new File(getDataFolder(), "datastore.yml"));
+    pendingAuthentications =
+        CacheBuilder.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES)
+            .build(
+                new CacheLoader<>() {
+                  @Override
+                  public Object load(@NotNull Object key) {
+                    if (!(key instanceof UUID)) {
+                      throw new IllegalArgumentException("Key must be a UUID");
+                    }
+                    String code;
+                    do {
+                      code = generateCode();
+                    } while (pendingAuthentications.getIfPresent(code) != null);
+                    pendingAuthentications.put(code, key);
+                    return code;
+                  }
+                });
 
-		Event.register(ReportableEvent.class, event -> {
-			String message = event.getMessage();
-			if (event.hasTrace()) {
-				message += '\n' + event.getTrace();
-			}
-			postMessage(ChannelType.REPORT, message);
-		}, this);
+    connect();
 
-		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-		if (registration != null) {
-			register(registration.getProvider());
-		}
+    Event.register(
+        ReportableEvent.class,
+        event -> {
+          String message = event.getMessage();
+          if (event.hasTrace()) {
+            message += '\n' + event.getTrace();
+          }
+          postMessage(ChannelType.REPORT, message);
+        },
+        this);
 
-		Event.register(PluginEnableEvent.class, event -> {
-			if (event.getPlugin() instanceof EasterlynCore) {
-				register((EasterlynCore) event.getPlugin());
-			}
-		}, this);
-	}
+    RegisteredServiceProvider<EasterlynCore> registration =
+        getServer().getServicesManager().getRegistration(EasterlynCore.class);
+    if (registration != null) {
+      register(registration.getProvider());
+    }
 
-	private void connect() {
-		String token = getConfig().getString("token");
-		if (token == null || token.isEmpty()) {
-			getLogger().warning("No token provided! Nothing to do.");
-			return;
-		}
+    Event.register(
+        PluginEnableEvent.class,
+        event -> {
+          if (event.getPlugin() instanceof EasterlynCore) {
+            register((EasterlynCore) event.getPlugin());
+          }
+        },
+        this);
+  }
 
-		getServer().getScheduler().runTaskAsynchronously(this, () -> {
-			DiscordClient client = DiscordClientBuilder.create(token).build();
-			client.login().doOnSuccess(gatewayClient -> {
-				this.client = gatewayClient;
-				new MinecraftBridge(this, gatewayClient).setup();
-				gatewayClient.updatePresence(Presence.online(Activity.playing("play.easterlyn.com"))).subscribe();
-			}).subscribe();
-		});
-	}
+  private void connect() {
+    String token = getConfig().getString("token");
+    if (token == null || token.isEmpty()) {
+      getLogger().warning("No token provided! Nothing to do.");
+      return;
+    }
 
-	private void register(EasterlynCore plugin) {
-		plugin.registerCommands(this, getClassLoader(), "com.easterlyn.discord.command");
-		plugin.getLocaleManager().addLocaleSupplier(this);
-	}
+    getServer()
+        .getScheduler()
+        .runTaskAsynchronously(
+            this,
+            () -> {
+              DiscordClient client = DiscordClientBuilder.create(token).build();
+              client
+                  .login()
+                  .doOnSuccess(
+                      gatewayClient -> {
+                        this.client = gatewayClient;
+                        new MinecraftBridge(this, gatewayClient).setup();
+                        gatewayClient
+                            .updatePresence(Presence.online(Activity.playing("play.easterlyn.com")))
+                            .subscribe();
+                      })
+                  .subscribe();
+            });
+  }
 
-	public String getCommandPrefix() {
-		return "/";
-	}
+  private void register(EasterlynCore plugin) {
+    plugin.registerCommands(this, getClassLoader(), "com.easterlyn.discord.command");
+    plugin.getLocaleManager().addLocaleSupplier(this);
+  }
 
-	public boolean isChannelType(Snowflake channelID, ChannelType type) {
-		ConfigurationSection guildSection = this.getConfig().getConfigurationSection("guilds");
-		if (guildSection == null) {
-			return false;
-		}
+  public String getCommandPrefix() {
+    return "/";
+  }
 
-		String channelIdString = channelID.asString();
-		for (String guildIDString : guildSection.getKeys(false)) {
-			if (channelIdString.equals(guildSection.getString(guildIDString + ".channels." + type.getPath()))) {
-				return true;
-			}
-		}
+  public boolean isChannelType(Snowflake channelID, ChannelType type) {
+    ConfigurationSection guildSection = this.getConfig().getConfigurationSection("guilds");
+    if (guildSection == null) {
+      return false;
+    }
 
-		return false;
-	}
+    String channelIdString = channelID.asString();
+    for (String guildIDString : guildSection.getKeys(false)) {
+      if (channelIdString.equals(
+          guildSection.getString(guildIDString + ".channels." + type.getPath()))) {
+        return true;
+      }
+    }
 
-	public Collection<GuildMessageChannel> getChannelIDs(ChannelType type) {
-		if (Bukkit.isPrimaryThread()) {
-			throw new IllegalStateException("Don't demand information from Discord on the main thread.");
-		}
-		Collection<GuildMessageChannel> collection = Collections.newSetFromMap(new ConcurrentHashMap<>());
-		if (!this.isEnabled() || client == null) {
-			return collection;
-		}
-		ConfigurationSection guildSection = this.getConfig().getConfigurationSection("guilds");
-		if (guildSection == null) {
-			return collection;
-		}
+    return false;
+  }
 
-		Phaser phaser = new Phaser(1);
-		for (String guildIDString : guildSection.getKeys(false)) {
-			// Parse guild ID
-			Snowflake guildID;
-			try {
-				guildID = Snowflake.of(guildIDString);
-			} catch (NumberFormatException e) {
-				continue;
-			}
+  public Collection<GuildMessageChannel> getChannelIDs(ChannelType type) {
+    if (Bukkit.isPrimaryThread()) {
+      throw new IllegalStateException("Don't demand information from Discord on the main thread.");
+    }
+    Collection<GuildMessageChannel> collection =
+        Collections.newSetFromMap(new ConcurrentHashMap<>());
+    if (!this.isEnabled() || client == null) {
+      return collection;
+    }
+    ConfigurationSection guildSection = this.getConfig().getConfigurationSection("guilds");
+    if (guildSection == null) {
+      return collection;
+    }
 
-			String channelIdString = guildSection.getString(guildIDString + ".channels." + type.getPath());
-			if (channelIdString == null) {
-				continue;
-			}
-			Snowflake channelID;
-			try {
-				channelID = Snowflake.of(channelIdString);
-			} catch (NumberFormatException e) {
-				continue;
-			}
+    Phaser phaser = new Phaser(1);
+    for (String guildIDString : guildSection.getKeys(false)) {
+      // Parse guild ID
+      Snowflake guildID;
+      try {
+        guildID = Snowflake.of(guildIDString);
+      } catch (NumberFormatException e) {
+        continue;
+      }
 
-			phaser.register();
-			client.getGuildById(guildID)
-					.flatMap(guild -> guild.getChannelById(channelID).cast(GuildMessageChannel.class)
-							.doOnSuccess(collection::add)).doOnError(Throwable::printStackTrace)
-					.doOnTerminate(phaser::arriveAndDeregister).subscribe();
-		}
+      String channelIdString =
+          guildSection.getString(guildIDString + ".channels." + type.getPath());
+      if (channelIdString == null) {
+        continue;
+      }
+      Snowflake channelID;
+      try {
+        channelID = Snowflake.of(channelIdString);
+      } catch (NumberFormatException e) {
+        continue;
+      }
 
-		phaser.arriveAndAwaitAdvance();
-		return collection;
-	}
+      phaser.register();
+      client
+          .getGuildById(guildID)
+          .flatMap(
+              guild ->
+                  guild
+                      .getChannelById(channelID)
+                      .cast(GuildMessageChannel.class)
+                      .doOnSuccess(collection::add))
+          .doOnError(Throwable::printStackTrace)
+          .doOnTerminate(phaser::arriveAndDeregister)
+          .subscribe();
+    }
 
-	public @Nullable DiscordUser getUser(@NotNull Snowflake id) throws IllegalStateException {
-		String uuidString = datastore.getString("link." + id.asString());
-		if (uuidString == null) {
-			return null;
-		}
-		return getUser(UUID.fromString(uuidString));
-	}
+    phaser.arriveAndAwaitAdvance();
+    return collection;
+  }
 
-	public @NotNull DiscordUser getUser(@NotNull UUID uuid) throws IllegalStateException {
-		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-		if (registration == null) {
-			throw new IllegalStateException("EasterlynCore not enabled!");
-		}
-		return new DiscordUser(registration.getProvider().getUserManager().getUser(uuid));
-	}
+  public @Nullable DiscordUser getUser(@NotNull Snowflake id) throws IllegalStateException {
+    String uuidString = datastore.getString("link." + id.asString());
+    if (uuidString == null) {
+      return null;
+    }
+    return getUser(UUID.fromString(uuidString));
+  }
 
-	public @NotNull String getPendingLink(@NotNull UUID uuid) {
-		return (String) pendingAuthentications.getUnchecked(uuid);
-	}
+  public @NotNull DiscordUser getUser(@NotNull UUID uuid) throws IllegalStateException {
+    RegisteredServiceProvider<EasterlynCore> registration =
+        getServer().getServicesManager().getRegistration(EasterlynCore.class);
+    if (registration == null) {
+      throw new IllegalStateException("EasterlynCore not enabled!");
+    }
+    return new DiscordUser(registration.getProvider().getUserManager().getUser(uuid));
+  }
 
-	public @Nullable UUID getPendingLink(@NotNull String code) {
-		return (UUID) pendingAuthentications.getIfPresent(code);
-	}
+  public @NotNull String getPendingLink(@NotNull UUID uuid) {
+    return (String) pendingAuthentications.getUnchecked(uuid);
+  }
 
-	public @NotNull Mono<Snowflake> getFirstMemberSnowflake(@NotNull String string) {
-		try {
-			return Mono.justOrEmpty(Snowflake.of(string));
-		} catch (NumberFormatException ignored) {}
+  public @Nullable UUID getPendingLink(@NotNull String code) {
+    return (UUID) pendingAuthentications.getIfPresent(code);
+  }
 
-		String id = string.toLowerCase();
+  public @NotNull Mono<Snowflake> getFirstMemberSnowflake(@NotNull String string) {
+    try {
+      return Mono.justOrEmpty(Snowflake.of(string));
+    } catch (NumberFormatException ignored) {
+      // Not a snowflake, fall through to name matching.
+    }
 
-		return client.getGuilds().flatMap(Guild::getMembers)
-				.skipUntil(member -> member.getDisplayName().toLowerCase().startsWith(id) || member.getTag().toLowerCase().startsWith(id))
-				.next().map(Member::getId);
-	}
+    String id = string.toLowerCase();
 
-	public void addLink(@NotNull UUID uuid, @NotNull Snowflake snowflake) {
-		Object linkCode = pendingAuthentications.getIfPresent(uuid);
-		if (linkCode != null) {
-			pendingAuthentications.invalidate(uuid);
-			pendingAuthentications.invalidate(linkCode);
-		}
+    return client
+        .getGuilds()
+        .flatMap(Guild::getMembers)
+        .skipUntil(
+            member ->
+                member.getDisplayName().toLowerCase().startsWith(id)
+                    || member.getTag().toLowerCase().startsWith(id))
+        .next()
+        .map(Member::getId);
+  }
 
-		datastore.set("link." + snowflake.asString(), uuid.toString());
-	}
+  public void addLink(@NotNull UUID uuid, @NotNull Snowflake snowflake) {
+    Object linkCode = pendingAuthentications.getIfPresent(uuid);
+    if (linkCode != null) {
+      pendingAuthentications.invalidate(uuid);
+      pendingAuthentications.invalidate(linkCode);
+    }
 
-	public void postMessage(ChannelType channelType, String message) {
-		if (client == null) {
-			// TODO handle client not connected
-			return;
-		}
+    datastore.set("link." + snowflake.asString(), uuid.toString());
+  }
 
-		if (getServer().isPrimaryThread()) {
-			getServer().getScheduler().runTaskAsynchronously(this, () -> postMessage(channelType, message));
-			return;
-		}
+  public void postMessage(ChannelType channelType, String message) {
+    if (client == null) {
+      // TODO handle client not connected
+      return;
+    }
 
-		if (channelType == ChannelType.MAIN) {
-			postMessage(ChannelType.LOG, message);
-		}
+    if (getServer().isPrimaryThread()) {
+      getServer()
+          .getScheduler()
+          .runTaskAsynchronously(this, () -> postMessage(channelType, message));
+      return;
+    }
 
-		if (channelType.getAggregateTime() > 0) {
-			Pair<StringBuffer, Long> aggregateData = messageQueue.get(channelType);
-			if (aggregateData == null) {
-				aggregateData = new Pair<>(new StringBuffer(), 0L);
-				messageQueue.put(channelType, aggregateData);
-			}
+    if (channelType == ChannelType.MAIN) {
+      postMessage(ChannelType.LOG, message);
+    }
 
-			// Max message length is 2000. Cap aggregation to 1900 to be safe.
-			if (aggregateData.getLeft().length() + message.length() + 1 > 1900) {
-				directPostMessage(channelType, aggregateData.getLeft().toString());
-				aggregateData.getLeft().delete(0, aggregateData.getLeft().length());
-			}
+    if (channelType.getAggregateTime() > 0) {
+      Pair<StringBuffer, Long> aggregateData = messageQueue.get(channelType);
+      if (aggregateData == null) {
+        aggregateData = new Pair<>(new StringBuffer(), 0L);
+        messageQueue.put(channelType, aggregateData);
+      }
 
-			if (aggregateData.getLeft().length() > 0) {
-				aggregateData.getLeft().append('\n');
-			}
-			aggregateData.getLeft().append(message);
+      // Max message length is 2000. Cap aggregation to 1900 to be safe.
+      if (aggregateData.getLeft().length() + message.length() + 1 > 1900) {
+        directPostMessage(channelType, aggregateData.getLeft().toString());
+        aggregateData.getLeft().delete(0, aggregateData.getLeft().length());
+      }
 
-			if (aggregateData.getRight() <= System.currentTimeMillis()) {
-				// Typing status while aggregating
-				getChannelIDs(channelType).forEach(channel ->
-						channel.typeUntil(Mono.delay(Duration.ofMillis(channelType.getAggregateTime()))).subscribe());
+      if (aggregateData.getLeft().length() > 0) {
+        aggregateData.getLeft().append('\n');
+      }
+      aggregateData.getLeft().append(message);
 
-				aggregateData.setRight(System.currentTimeMillis() + channelType.getAggregateTime());
-				Pair<StringBuffer, Long> data = aggregateData;
-				getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
-					directPostMessage(channelType, data.getLeft().toString());
-					data.getLeft().delete(0, data.getLeft().length());
-				}, channelType.getAggregateTime() / 20);
-			}
+      if (aggregateData.getRight() <= System.currentTimeMillis()) {
+        // Typing status while aggregating
+        getChannelIDs(channelType)
+            .forEach(
+                channel ->
+                    channel
+                        .typeUntil(Mono.delay(Duration.ofMillis(channelType.getAggregateTime())))
+                        .subscribe());
 
-			return;
-		}
+        aggregateData.setRight(System.currentTimeMillis() + channelType.getAggregateTime());
+        Pair<StringBuffer, Long> data = aggregateData;
+        getServer()
+            .getScheduler()
+            .runTaskLaterAsynchronously(
+                this,
+                () -> {
+                  directPostMessage(channelType, data.getLeft().toString());
+                  data.getLeft().delete(0, data.getLeft().length());
+                },
+                channelType.getAggregateTime() / 20);
+      }
 
-		directPostMessage(channelType, message);
-	}
+      return;
+    }
 
-	private void directPostMessage(ChannelType channelType, String message) {
-		if (client == null) {
-			// TODO handle client not connected
-			return;
-		}
+    directPostMessage(channelType, message);
+  }
 
-		while (message.length() > 1900) {
-			String search = message.substring(0, 1900);
-			int index = search.lastIndexOf('\n');
-			if (index > -1) {
-				directPostMessage(channelType, message.substring(0, index));
-				// Ignore newline.
-				message = message.substring(index + 1);
-				continue;
-			}
-			directPostMessage(channelType, message.substring(0, 1900));
-			message = message.substring(1900);
-		}
+  private void directPostMessage(ChannelType channelType, String message) {
+    if (client == null) {
+      // TODO handle client not connected
+      return;
+    }
 
-		String finalMessage = message.trim();
-		if (finalMessage.isEmpty()) {
-			return;
-		}
+    while (message.length() > 1900) {
+      String search = message.substring(0, 1900);
+      int index = search.lastIndexOf('\n');
+      if (index > -1) {
+        directPostMessage(channelType, message.substring(0, index));
+        // Ignore newline.
+        message = message.substring(index + 1);
+        continue;
+      }
+      directPostMessage(channelType, message.substring(0, 1900));
+      message = message.substring(1900);
+    }
 
-		getChannelIDs(channelType).forEach(channel -> channel.createMessage(finalMessage).subscribe());
-	}
+    String finalMessage = message.trim();
+    if (finalMessage.isEmpty()) {
+      return;
+    }
 
-	private static String generateCode() {
-		StringBuilder sb = new StringBuilder();
-		for (int i = 0; i < 6; i++) {
-			String chars = "123456789ABCDEFGHIJKLMNPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-			sb.append(chars.charAt(ThreadLocalRandom.current().nextInt(chars.length())));
-		}
-		return sb.toString();
-	}
-
+    getChannelIDs(channelType).forEach(channel -> channel.createMessage(finalMessage).subscribe());
+  }
 }

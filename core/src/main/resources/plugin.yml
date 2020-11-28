@@ -5,5 +5,5 @@ version: ${project.version}-${timestamp}
 author: Jikoo
 description: ${project.description}
 api-version: ${bukkit-api-version}
-depend: [LuckPerms]
-softdepend: [GriefPrevention, WorldGuard]
+depend: [ LuckPerms ]
+softdepend: [ GriefPrevention, WorldGuard ]

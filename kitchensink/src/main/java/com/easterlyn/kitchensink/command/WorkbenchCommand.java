@@ -12,13 +12,12 @@ import org.bukkit.entity.Player;
 
 public class WorkbenchCommand extends BaseCommand {
 
-	@CommandAlias("workbench|craft")
-	@Description("{@@sink.module.workbench.description}")
-	@Syntax("/workbench")
-	@CommandCompletion("@none")
-	@CommandPermission("easterlyn.command.workbench")
-	public void workbench(@Flags(CoreContexts.SELF) Player player) {
-		player.openWorkbench(player.getLocation(), true);
-	}
-
+  @CommandAlias("workbench|craft")
+  @Description("{@@sink.module.workbench.description}")
+  @Syntax("/workbench")
+  @CommandCompletion("@none")
+  @CommandPermission("easterlyn.command.workbench")
+  public void workbench(@Flags(CoreContexts.SELF) Player player) {
+    player.openWorkbench(player.getLocation(), true);
+  }
 }

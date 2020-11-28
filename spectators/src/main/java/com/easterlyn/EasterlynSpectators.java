@@ -23,170 +23,210 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public class EasterlynSpectators extends JavaPlugin {
 
-	public static final String USER_SPECTATE_RETURN = "spectate.return";
-	public static final String USER_SPECTATE_COOLDOWN = "spectate.cooldown";
-	public static final String USER_SPECTPA = "spectate.tpa";
+  public static final String USER_SPECTATE_RETURN = "spectate.return";
+  public static final String USER_SPECTATE_COOLDOWN = "spectate.cooldown";
+  public static final String USER_SPECTPA = "spectate.tpa";
 
-	@Override
-	public void onEnable() {
-		PermissionUtil.addParent("easterlyn.spectators.unrestricted", UserRank.STAFF.getPermission());
-		PermissionUtil.addParent("easterlyn.spectators.nightvision", UserRank.MODERATOR.getPermission());
+  @Override
+  public void onEnable() {
+    PermissionUtil.addParent("easterlyn.spectators.unrestricted", UserRank.STAFF.getPermission());
+    PermissionUtil.addParent(
+        "easterlyn.spectators.nightvision", UserRank.MODERATOR.getPermission());
 
-		Event.register(BlockBreakEvent.class, event -> {
-			if (event.getPlayer().hasPermission("easterlyn.spectators.unrestricted")) {
-				return;
-			}
+    Event.register(
+        BlockBreakEvent.class,
+        event -> {
+          if (event.getPlayer().hasPermission("easterlyn.spectators.unrestricted")) {
+            return;
+          }
 
-			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (registration == null) {
-				return;
-			}
+          RegisteredServiceProvider<EasterlynCore> registration =
+              getServer().getServicesManager().getRegistration(EasterlynCore.class);
+          if (registration == null) {
+            return;
+          }
 
-			User user = registration.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
-			long spectatore = user.getStorage().getLong(USER_SPECTATE_COOLDOWN, 0);
+          User user =
+              registration.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+          long spectatore = user.getStorage().getLong(USER_SPECTATE_COOLDOWN, 0);
 
-			if (spectatore < System.currentTimeMillis()) {
-				return;
-			}
+          if (spectatore < System.currentTimeMillis()) {
+            return;
+          }
 
-			for (BlockFace face : new BlockFace[] { BlockFace.NORTH, BlockFace.EAST,
-					BlockFace.SOUTH, BlockFace.WEST, BlockFace.UP, BlockFace.SELF, BlockFace.DOWN }) {
-				Block block = event.getBlock().getRelative(face);
-				if (block.getType() == Material.NETHER_QUARTZ_ORE) {
-					block.setType(Material.NETHERRACK);
-				}
-				if (block.getType().name().endsWith("_ORE")) {
-					block.setType(Material.STONE);
-				}
-			}
-		}, this, EventPriority.LOW);
+          for (BlockFace face :
+              new BlockFace[] {
+                BlockFace.NORTH,
+                BlockFace.EAST,
+                BlockFace.SOUTH,
+                BlockFace.WEST,
+                BlockFace.UP,
+                BlockFace.SELF,
+                BlockFace.DOWN
+              }) {
+            Block block = event.getBlock().getRelative(face);
+            if (block.getType() == Material.NETHER_QUARTZ_ORE) {
+              block.setType(Material.NETHERRACK);
+            }
+            if (block.getType().name().endsWith("_ORE")) {
+              block.setType(Material.STONE);
+            }
+          }
+        },
+        this,
+        EventPriority.LOW);
 
-		Event.register(PlayerQuitEvent.class, event -> {
-			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (registration == null) {
-				return;
-			}
+    Event.register(
+        PlayerQuitEvent.class,
+        event -> {
+          RegisteredServiceProvider<EasterlynCore> registration =
+              getServer().getServicesManager().getRegistration(EasterlynCore.class);
+          if (registration == null) {
+            return;
+          }
 
-			Player player = event.getPlayer();
-			if (player.getGameMode() != GameMode.SPECTATOR) {
-				return;
-			}
+          Player player = event.getPlayer();
+          if (player.getGameMode() != GameMode.SPECTATOR) {
+            return;
+          }
 
-			User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
-			Location spectateReturn = user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
-			if (spectateReturn == null) {
-				return;
-			}
+          User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
+          Location spectateReturn =
+              user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
+          if (spectateReturn == null) {
+            return;
+          }
 
-			player.teleport(spectateReturn);
-		}, this);
+          player.teleport(spectateReturn);
+        },
+        this);
 
-		Event.register(PlayerJoinEvent.class, event -> {
-			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (registration == null) {
-				return;
-			}
+    Event.register(
+        PlayerJoinEvent.class,
+        event -> {
+          RegisteredServiceProvider<EasterlynCore> registration =
+              getServer().getServicesManager().getRegistration(EasterlynCore.class);
+          if (registration == null) {
+            return;
+          }
 
-			Player player = event.getPlayer();
-			User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
-			Location spectateReturn = user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
+          Player player = event.getPlayer();
+          User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
+          Location spectateReturn =
+              user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
 
-			if (spectateReturn == null) {
-				return;
-			}
+          if (spectateReturn == null) {
+            return;
+          }
 
-			user.getStorage().set(USER_SPECTATE_RETURN, null);
-			user.getStorage().set(USER_SPECTATE_COOLDOWN, System.currentTimeMillis() + 480000L);
-			player.teleport(spectateReturn);
+          user.getStorage().set(USER_SPECTATE_RETURN, null);
+          user.getStorage().set(USER_SPECTATE_COOLDOWN, System.currentTimeMillis() + 480000L);
+          player.teleport(spectateReturn);
 
-			if (player.getGameMode() == GameMode.SPECTATOR) {
-				player.setGameMode(GameMode.SURVIVAL);
-			}
-		}, this);
+          if (player.getGameMode() == GameMode.SPECTATOR) {
+            player.setGameMode(GameMode.SURVIVAL);
+          }
+        },
+        this);
 
-		Event.register(PlayerTeleportEvent.class, event -> {
-			if (event.getCause() != PlayerTeleportEvent.TeleportCause.SPECTATE) {
-				return;
-			}
+    Event.register(
+        PlayerTeleportEvent.class,
+        event -> {
+          if (event.getCause() != PlayerTeleportEvent.TeleportCause.SPECTATE) {
+            return;
+          }
 
-			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (registration == null) {
-				return;
-			}
+          RegisteredServiceProvider<EasterlynCore> registration =
+              getServer().getServicesManager().getRegistration(EasterlynCore.class);
+          if (registration == null) {
+            return;
+          }
 
-			Player player = event.getPlayer();
-			User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
+          Player player = event.getPlayer();
+          User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
 
-			// Don't block request-based teleportation
-			if (user.getStorage().getBoolean(USER_SPECTPA)) {
-				return;
-			}
+          // Don't block request-based teleportation
+          if (user.getStorage().getBoolean(USER_SPECTPA)) {
+            return;
+          }
 
-			Location spectateReturn = user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
+          Location spectateReturn =
+              user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
 
-			if (spectateReturn != null) {
-				event.setCancelled(true);
-				player.sendMessage("Spectating via hotbar is currently disabled. Please use `/spectpa`!");
-			}
-		}, this);
+          if (spectateReturn != null) {
+            event.setCancelled(true);
+            player.sendMessage(
+                "Spectating via hotbar is currently disabled. Please use `/spectpa`!");
+          }
+        },
+        this);
 
-		Event.register(PlayerGameModeChangeEvent.class, event -> {
-			RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-			if (registration == null) {
-				return;
-			}
+    Event.register(
+        PlayerGameModeChangeEvent.class,
+        event -> {
+          RegisteredServiceProvider<EasterlynCore> registration =
+              getServer().getServicesManager().getRegistration(EasterlynCore.class);
+          if (registration == null) {
+            return;
+          }
 
-			Player player = event.getPlayer();
-			if (player.getGameMode() != GameMode.SPECTATOR) {
-				return;
-			}
+          Player player = event.getPlayer();
+          if (player.getGameMode() != GameMode.SPECTATOR) {
+            return;
+          }
 
-			User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
-			Location spectateReturn = user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
-			if (spectateReturn != null) {
-				event.setCancelled(true);
-			}
-		}, this);
+          User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
+          Location spectateReturn =
+              user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
+          if (spectateReturn != null) {
+            event.setCancelled(true);
+          }
+        },
+        this);
 
-		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-		if (registration != null) {
-			register(registration.getProvider());
-		}
+    RegisteredServiceProvider<EasterlynCore> registration =
+        getServer().getServicesManager().getRegistration(EasterlynCore.class);
+    if (registration != null) {
+      register(registration.getProvider());
+    }
 
-		Event.register(PluginEnableEvent.class, pluginEnableEvent -> {
-			if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
-				register((EasterlynCore) pluginEnableEvent.getPlugin());
-			}
-		}, this);
-	}
+    Event.register(
+        PluginEnableEvent.class,
+        pluginEnableEvent -> {
+          if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
+            register((EasterlynCore) pluginEnableEvent.getPlugin());
+          }
+        },
+        this);
+  }
 
-	private void register(EasterlynCore plugin) {
-		plugin.registerCommands(this, this.getClassLoader(), "com.easterlyn.spectators.command");
-	}
+  private void register(EasterlynCore plugin) {
+    plugin.registerCommands(this, this.getClassLoader(), "com.easterlyn.spectators.command");
+  }
 
-	@Override
-	public void onDisable() {
-		RegisteredServiceProvider<EasterlynCore> registration = getServer().getServicesManager().getRegistration(EasterlynCore.class);
-		if (registration == null) {
-			return;
-		}
+  @Override
+  public void onDisable() {
+    RegisteredServiceProvider<EasterlynCore> registration =
+        getServer().getServicesManager().getRegistration(EasterlynCore.class);
+    if (registration == null) {
+      return;
+    }
 
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			if (player.getGameMode() != GameMode.SPECTATOR) {
-				continue;
-			}
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (player.getGameMode() != GameMode.SPECTATOR) {
+        continue;
+      }
 
-			User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
-			Location spectateReturn = user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
-			if (spectateReturn == null) {
-				continue;
-			}
-			user.getStorage().set(USER_SPECTATE_RETURN, null);
-			player.teleport(spectateReturn);
-			player.setGameMode(GameMode.SURVIVAL);
-			user.getStorage().set(USER_SPECTATE_COOLDOWN, System.currentTimeMillis() + 480000L);
-		}
-
-	}
-
+      User user = registration.getProvider().getUserManager().getUser(player.getUniqueId());
+      Location spectateReturn =
+          user.getStorage().getSerializable(USER_SPECTATE_RETURN, Location.class);
+      if (spectateReturn == null) {
+        continue;
+      }
+      user.getStorage().set(USER_SPECTATE_RETURN, null);
+      player.teleport(spectateReturn);
+      player.setGameMode(GameMode.SURVIVAL);
+      user.getStorage().set(USER_SPECTATE_COOLDOWN, System.currentTimeMillis() + 480000L);
+    }
+  }
 }

@@ -22,60 +22,68 @@ import org.bukkit.entity.Player;
 @CommandPermission("easterlyn.command.gamemode.self")
 public class GamemodeCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@CommandAlias("0|surv|survival")
-	@Description("Set game mode to survival!")
-	@Syntax("[player]")
-	@CommandCompletion("@player")
-	public void survival(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
-		setGameMode(issuer, GameMode.SURVIVAL, target);
-	}
+  @CommandAlias("0|surv|survival")
+  @Description("Set game mode to survival!")
+  @Syntax("[player]")
+  @CommandCompletion("@player")
+  public void survival(
+      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
+    setGameMode(issuer, GameMode.SURVIVAL, target);
+  }
 
-	@CommandAlias("1|creative")
-	@Description("Set game mode to creative!")
-	@Syntax("[player]")
-	@CommandCompletion("@player")
-	public void creative(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
-		setGameMode(issuer, GameMode.CREATIVE, target);
-	}
+  @CommandAlias("1|creative")
+  @Description("Set game mode to creative!")
+  @Syntax("[player]")
+  @CommandCompletion("@player")
+  public void creative(
+      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
+    setGameMode(issuer, GameMode.CREATIVE, target);
+  }
 
-	@CommandAlias("2|adventure")
-	@Description("Set game mode to adventure!")
-	@Syntax("[player]")
-	@CommandCompletion("@player")
-	public void adventure(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
-		setGameMode(issuer, GameMode.ADVENTURE, target);
-	}
+  @CommandAlias("2|adventure")
+  @Description("Set game mode to adventure!")
+  @Syntax("[player]")
+  @CommandCompletion("@player")
+  public void adventure(
+      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
+    setGameMode(issuer, GameMode.ADVENTURE, target);
+  }
 
-	@CommandAlias("3|spectator")
-	@Description("Set game mode to spectator!")
-	@Syntax("[player]")
-	@CommandCompletion("@player")
-	public void spectator(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
-		setGameMode(issuer, GameMode.SPECTATOR, target);
-	}
+  @CommandAlias("3|spectator")
+  @Description("Set game mode to spectator!")
+  @Syntax("[player]")
+  @CommandCompletion("@player")
+  public void spectator(
+      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
+    setGameMode(issuer, GameMode.SPECTATOR, target);
+  }
 
-	private void setGameMode(BukkitCommandIssuer issuer, GameMode gameMode, Player target) {
-		if (target.getGameMode() != gameMode) {
-			target.setGameMode(gameMode);
-		}
+  private void setGameMode(BukkitCommandIssuer issuer, GameMode gameMode, Player target) {
+    if (target.getGameMode() != gameMode) {
+      target.setGameMode(gameMode);
+    }
 
-		if (target.getGameMode() != gameMode) {
-			core.getLocaleManager().sendMessage(issuer.getIssuer(), "sink.module.gamemode.prevented");
-			return;
-		}
+    if (target.getGameMode() != gameMode) {
+      core.getLocaleManager().sendMessage(issuer.getIssuer(), "sink.module.gamemode.prevented");
+      return;
+    }
 
-		String gameModeName = StringUtil.getFriendlyName(gameMode);
-		if (!target.hasPermission("easterlyn.command.gamemode")) {
-			core.getLocaleManager().sendMessage(target, "sink.module.gamemode.success",
-					"{value}", gameModeName);
-		}
+    String gameModeName = StringUtil.getFriendlyName(gameMode);
+    if (!target.hasPermission("easterlyn.command.gamemode")) {
+      core.getLocaleManager()
+          .sendMessage(target, "sink.module.gamemode.success", "{value}", gameModeName);
+    }
 
-		Bukkit.broadcast(ChatColor.GRAY + "[" + issuer.getIssuer().getName() + "] Set " + target.getName()
-						+ "'s game mode to " + gameModeName,
-				"easterlyn.command.gamemode");
-
-	}
+    Bukkit.broadcast(
+        ChatColor.GRAY
+            + "["
+            + issuer.getIssuer().getName()
+            + "] Set "
+            + target.getName()
+            + "'s game mode to "
+            + gameModeName,
+        "easterlyn.command.gamemode");
+  }
 }

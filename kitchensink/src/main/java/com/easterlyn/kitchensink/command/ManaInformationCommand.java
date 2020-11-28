@@ -17,34 +17,35 @@ import org.bukkit.command.ConsoleCommandSender;
 
 public class ManaInformationCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@CommandAlias("manadump")
-	@Description("Dump all mana costs to a file.")
-	@CommandPermission("easterlyn.command.manainformation")
-	@Syntax("")
-	@CommandCompletion("")
-	public void manaInformation(ConsoleCommandSender issuer) {
-		StringBuilder sb = new StringBuilder();
-		for (Material material : Material.values()) {
-			if (!material.isItem()) {
-				continue;
-			}
+  @CommandAlias("manadump")
+  @Description("Dump all mana costs to a file.")
+  @CommandPermission("easterlyn.command.manainformation")
+  @Syntax("")
+  @CommandCompletion("")
+  public void manaInformation(ConsoleCommandSender issuer) {
+    StringBuilder sb = new StringBuilder();
+    for (Material material : Material.values()) {
+      if (!material.isItem()) {
+        continue;
+      }
 
-			sb.append(material.name()).append(": ").append(EconomyUtil.getMappings().get(material)).append('\n');
-		}
+      sb.append(material.name())
+          .append(": ")
+          .append(EconomyUtil.getMappings().get(material))
+          .append('\n');
+    }
 
-		File file = new File(core.getDataFolder(), "mana.txt");
+    File file = new File(core.getDataFolder(), "mana.txt");
 
-		try (FileWriter writer = new FileWriter(file)) {
-			writer.write(sb.toString());
-		} catch (IOException e) {
-			e.printStackTrace();
-			return;
-		}
+    try (FileWriter writer = new FileWriter(file)) {
+      writer.write(sb.toString());
+    } catch (IOException e) {
+      e.printStackTrace();
+      return;
+    }
 
-		issuer.sendMessage("Report written to " + file.getPath());
-	}
-
+    issuer.sendMessage("Report written to " + file.getPath());
+  }
 }

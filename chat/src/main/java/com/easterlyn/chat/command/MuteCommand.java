@@ -19,39 +19,48 @@ import org.bukkit.entity.Player;
 
 public class MuteCommand extends BaseCommand {
 
-	@Dependency
-	EasterlynCore core;
+  @Dependency EasterlynCore core;
 
-	@CommandAlias("mute")
-	@Description("{@@chat.commands.mute.description}")
-	@CommandPermission("easterlyn.command.mute")
-	@CommandCompletion("@player")
-	@Syntax("<player>")
-	public void mute(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) User target) {
-		mute(issuer, target, new Date(Long.MAX_VALUE));
-	}
+  @CommandAlias("mute")
+  @Description("{@@chat.commands.mute.description}")
+  @CommandPermission("easterlyn.command.mute")
+  @CommandCompletion("@player")
+  @Syntax("<player>")
+  public void mute(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) User target) {
+    mute(issuer, target, new Date(Long.MAX_VALUE));
+  }
 
-	@CommandAlias("mute")
-	@Description("{@@chat.commands.mute.description}")
-	@CommandPermission("easterlyn.command.mute")
-	@CommandCompletion("@player @date")
-	@Syntax("<player> <duration>")
-	public void mute(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) User target, Date date) {
-		target.getStorage().set(EasterlynChat.USER_MUTE, date.getTime());
+  @CommandAlias("mute")
+  @Description("{@@chat.commands.mute.description}")
+  @CommandPermission("easterlyn.command.mute")
+  @CommandCompletion("@player @date")
+  @Syntax("<player> <duration>")
+  public void mute(
+      BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) User target, Date date) {
+    target.getStorage().set(EasterlynChat.USER_MUTE, date.getTime());
 
-		boolean isInfinite = date.getTime() == Long.MAX_VALUE;
-		String dateString = new SimpleDateFormat("HH:mm 'on' dd MMM yyyy").format(date);
+    boolean isInfinite = date.getTime() == Long.MAX_VALUE;
+    String dateString = new SimpleDateFormat("HH:mm 'on' dd MMM yyyy").format(date);
 
-		core.getLocaleManager().sendMessage(issuer.getIssuer(),
-				isInfinite ? "chat.commands.mute.issuer.indefinite" : "chat.commands.mute.issuer.duration",
-				"{time}", dateString);
+    core.getLocaleManager()
+        .sendMessage(
+            issuer.getIssuer(),
+            isInfinite
+                ? "chat.commands.mute.issuer.indefinite"
+                : "chat.commands.mute.issuer.duration",
+            "{time}",
+            dateString);
 
-		Player player = target.getPlayer();
-		if (player != null) {
-			core.getLocaleManager().sendMessage(player,
-					isInfinite ? "chat.commands.mute.target.indefinite" : "chat.commands.mute.target.duration",
-					"{time}", dateString);
-		}
-	}
-
+    Player player = target.getPlayer();
+    if (player != null) {
+      core.getLocaleManager()
+          .sendMessage(
+              player,
+              isInfinite
+                  ? "chat.commands.mute.target.indefinite"
+                  : "chat.commands.mute.target.duration",
+              "{time}",
+              dateString);
+    }
+  }
 }
