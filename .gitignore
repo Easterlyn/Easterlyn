@@ -25,7 +25,6 @@ testenv/
 bin/
 tmp/
 *.pydevproject
-*.tmp
 *.bak
 *.swp
 *~.nib

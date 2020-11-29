@@ -9,7 +9,6 @@ import java.util.Map;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -116,155 +115,125 @@ public class SimpleUI implements InventoryHolder {
 
     if (contents.length == 54) {
       // First page button
-      navigation.put(
-          45,
-          ((Supplier<Button>)
-                  () -> {
-                    int maxPage = (int) Math.ceil(getHighestButton() / 45D);
-                    ItemStack itemStack;
-                    Consumer<InventoryClickEvent> consumer;
-                    if (startIndex > 0) {
-                      itemStack = new ItemStack(Material.SPECTRAL_ARROW);
-                      consumer =
-                          event -> {
-                            startIndex = 0;
-                            draw(event.getView().getTopInventory());
-                          };
-                    } else {
-                      itemStack = new ItemStack(Material.BARRIER);
-                      consumer = event -> {};
-                    }
-                    GenericUtil.consumeAs(
-                        ItemMeta.class,
-                        itemStack.getItemMeta(),
-                        itemMeta -> {
-                          itemMeta.setDisplayName(ChatColor.WHITE + "First Page");
-                          itemMeta.setLore(
-                              Collections.singletonList(ChatColor.GOLD + "  1/" + maxPage));
-                          itemStack.setItemMeta(itemMeta);
-                        });
-                    return new Button(itemStack, consumer);
-                  })
-              .get());
+      navigation.put(45, getFirstPage());
+
       // Previous page button
-      navigation.put(
-          46,
-          ((Supplier<Button>)
-                  () -> {
-                    int maxPage = (int) Math.ceil(getHighestButton() / 45D);
-                    ItemStack itemStack;
-                    if (startIndex > 0) {
-                      itemStack = new ItemStack(Material.ARROW);
-                      GenericUtil.consumeAs(
-                          ItemMeta.class,
-                          itemStack.getItemMeta(),
-                          itemMeta -> {
-                            itemMeta.setDisplayName(ChatColor.WHITE + "Previous Page");
-                            itemMeta.setLore(
-                                Collections.singletonList(
-                                    ChatColor.GOLD + "  " + (startIndex / 45) + '/' + maxPage));
-                            itemStack.setItemMeta(itemMeta);
-                          });
-                      return new Button(
-                          itemStack,
-                          event -> {
-                            startIndex -= 45;
-                            draw(event.getView().getTopInventory());
-                          });
-                    } else {
-                      itemStack = new ItemStack(Material.BARRIER);
-                      GenericUtil.consumeAs(
-                          ItemMeta.class,
-                          itemStack.getItemMeta(),
-                          itemMeta -> {
-                            itemMeta.setDisplayName(ChatColor.WHITE + "First Page");
-                            itemMeta.setLore(
-                                Collections.singletonList(ChatColor.GOLD + "  1/" + maxPage));
-                            itemStack.setItemMeta(itemMeta);
-                          });
-                      return new Button(itemStack, event -> {});
-                    }
-                  })
-              .get());
+      navigation.put(46, getPreviousPage());
+
       // Next page button
-      navigation.put(
-          52,
-          ((Supplier<Button>)
-                  () -> {
-                    int highestCurrentButton = startIndex + 44;
-                    int highestRequiredButton = getHighestButton();
-                    int maxPage = (int) Math.ceil(highestRequiredButton / 45D);
-                    ItemStack itemStack;
-                    if (highestCurrentButton < highestRequiredButton) {
-                      itemStack = new ItemStack(Material.ARROW);
-                      GenericUtil.consumeAs(
-                          ItemMeta.class,
-                          itemStack.getItemMeta(),
-                          itemMeta -> {
-                            itemMeta.setDisplayName(ChatColor.WHITE + "Next Page");
-                            itemMeta.setLore(
-                                Collections.singletonList(
-                                    ChatColor.GOLD + "  " + (startIndex / 45 + 2) + '/' + maxPage));
-                            itemStack.setItemMeta(itemMeta);
-                          });
-                      return new Button(
-                          itemStack,
-                          event -> {
-                            startIndex += 45;
-                            draw(event.getView().getTopInventory());
-                          });
-                    } else {
-                      itemStack = new ItemStack(Material.BARRIER);
-                      GenericUtil.consumeAs(
-                          ItemMeta.class,
-                          itemStack.getItemMeta(),
-                          itemMeta -> {
-                            itemMeta.setDisplayName(ChatColor.WHITE + "Last Page");
-                            itemMeta.setLore(
-                                Collections.singletonList(
-                                    ChatColor.GOLD + "  " + maxPage + '/' + maxPage));
-                            itemStack.setItemMeta(itemMeta);
-                          });
-                      return new Button(itemStack, event -> {});
-                    }
-                  })
-              .get());
+      navigation.put(52, getNextPage());
+
       // Last page button
-      navigation.put(
-          53,
-          ((Supplier<Button>)
-                  () -> {
-                    int maxPage = (int) Math.ceil(getHighestButton() / 45D);
-                    ItemStack itemStack;
-                    Consumer<InventoryClickEvent> consumer;
-                    if (startIndex > 0) {
-                      itemStack = new ItemStack(Material.SPECTRAL_ARROW);
-                      consumer =
-                          event -> {
-                            startIndex = 45 * maxPage - 45;
-                            draw(event.getView().getTopInventory());
-                          };
-                    } else {
-                      itemStack = new ItemStack(Material.BARRIER);
-                      consumer = event -> {};
-                    }
-                    GenericUtil.consumeAs(
-                        ItemMeta.class,
-                        itemStack.getItemMeta(),
-                        itemMeta -> {
-                          itemMeta.setDisplayName(ChatColor.WHITE + "Last Page");
-                          itemMeta.setLore(
-                              Collections.singletonList(
-                                  ChatColor.GOLD + "  " + maxPage + '/' + maxPage));
-                          itemStack.setItemMeta(itemMeta);
-                        });
-                    return new Button(itemStack, consumer);
-                  })
-              .get());
+      navigation.put(53, getLastPage());
 
       navigation.forEach((slot, button) -> contents[slot] = button.getItem());
     }
 
     inventory.setContents(contents);
+  }
+
+  private @NotNull Button getFirstPage() {
+    int maxPage = (int) Math.ceil(getHighestButton() / 45D);
+    ItemStack itemStack;
+    Consumer<InventoryClickEvent> consumer;
+    if (startIndex > 0) {
+      itemStack = new ItemStack(Material.SPECTRAL_ARROW);
+      consumer = event -> {
+        startIndex = 0;
+        draw(event.getView().getTopInventory());
+      };
+    } else {
+      itemStack = new ItemStack(Material.BARRIER);
+      consumer = event -> {
+      };
+    }
+    GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+      itemMeta.setDisplayName(ChatColor.WHITE + "First Page");
+      itemMeta.setLore(Collections.singletonList(ChatColor.GOLD + "  1/" + maxPage));
+      itemStack.setItemMeta(itemMeta);
+    });
+    return new Button(itemStack, consumer);
+  }
+
+  private @NotNull Button getPreviousPage() {
+    int maxPage = (int) Math.ceil(getHighestButton() / 45D);
+    ItemStack itemStack;
+    if (startIndex > 0) {
+      itemStack = new ItemStack(Material.ARROW);
+      GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+        itemMeta.setDisplayName(ChatColor.WHITE + "Previous Page");
+        itemMeta.setLore(Collections
+            .singletonList(ChatColor.GOLD + "  " + (startIndex / 45) + '/' + maxPage));
+        itemStack.setItemMeta(itemMeta);
+      });
+      return new Button(itemStack, event -> {
+        startIndex -= 45;
+        draw(event.getView().getTopInventory());
+      });
+    }
+
+    // Already on first page, no-op button
+    itemStack = new ItemStack(Material.BARRIER);
+    GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+      itemMeta.setDisplayName(ChatColor.WHITE + "First Page");
+      itemMeta.setLore(Collections.singletonList(ChatColor.GOLD + "  1/" + maxPage));
+      itemStack.setItemMeta(itemMeta);
+    });
+    return new Button(itemStack, event -> {
+    });
+  }
+
+  private @NotNull Button getNextPage() {
+    int highestCurrentButton = startIndex + 44;
+    int highestRequiredButton = getHighestButton();
+    int maxPage = (int) Math.ceil(highestRequiredButton / 45D);
+    ItemStack itemStack;
+    if (highestCurrentButton < highestRequiredButton) {
+      itemStack = new ItemStack(Material.ARROW);
+      GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+        itemMeta.setDisplayName(ChatColor.WHITE + "Next Page");
+        itemMeta.setLore(Collections
+            .singletonList(ChatColor.GOLD + "  " + (startIndex / 45 + 2) + '/' + maxPage));
+        itemStack.setItemMeta(itemMeta);
+      });
+      return new Button(itemStack, event -> {
+        startIndex += 45;
+        draw(event.getView().getTopInventory());
+      });
+    }
+
+    // Already on last page, no-op button
+    itemStack = new ItemStack(Material.BARRIER);
+    GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+      itemMeta.setDisplayName(ChatColor.WHITE + "Last Page");
+      itemMeta.setLore(Collections.singletonList(ChatColor.GOLD + "  " + maxPage + '/' + maxPage));
+      itemStack.setItemMeta(itemMeta);
+    });
+    return new Button(itemStack, event -> {
+    });
+  }
+
+  private @NotNull Button getLastPage() {
+    int maxPage = (int) Math.ceil(getHighestButton() / 45D);
+    ItemStack itemStack;
+    Consumer<InventoryClickEvent> consumer;
+    if (startIndex > 0) {
+      itemStack = new ItemStack(Material.SPECTRAL_ARROW);
+      consumer = event -> {
+        startIndex = 45 * maxPage - 45;
+        draw(event.getView().getTopInventory());
+      };
+    } else {
+      itemStack = new ItemStack(Material.BARRIER);
+      consumer = event -> {
+      };
+    }
+    GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+      itemMeta.setDisplayName(ChatColor.WHITE + "Last Page");
+      itemMeta.setLore(
+          Collections.singletonList(ChatColor.GOLD + "  " + maxPage + '/' + maxPage));
+      itemStack.setItemMeta(itemMeta);
+    });
+    return new Button(itemStack, consumer);
   }
 }
