@@ -23,6 +23,10 @@
           <artifactId>minecraft-server</artifactId>
           <groupId>io.papermc</groupId>
         </exclusion>
+        <exclusion>
+          <groupId>com.destroystokyo.paper</groupId>
+          <artifactId>paper-mojangapi</artifactId>
+        </exclusion>
       </exclusions>
       <groupId>com.destroystokyo.paper</groupId>
       <scope>provided</scope>
