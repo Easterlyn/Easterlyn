@@ -74,7 +74,7 @@
       <artifactId>GriefPrevention</artifactId>
       <groupId>com.github.TechFortress</groupId>
       <scope>provided</scope>
-      <version>16.16.0</version>
+      <version>16.17.0</version>
     </dependency>
   </dependencies>
 
