@@ -81,7 +81,7 @@ public class Event {
       boolean ignoreCancelled) {
     HandlerList handlerList;
     try {
-      Method getHandlers = eventClass.getMethod("getHandlers");
+      Method getHandlers = eventClass.getMethod("getHandlerList");
       Object handlerListObj = getHandlers.invoke(null);
       handlerList = (HandlerList) handlerListObj;
     } catch (Exception e) {
