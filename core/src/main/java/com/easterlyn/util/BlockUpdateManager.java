@@ -15,6 +15,7 @@ import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Manager for queuing block updates to prevent redundant or excessive block updates.
@@ -26,7 +27,7 @@ public class BlockUpdateManager {
   private final EasterlynCore plugin;
   private final Map<Block, Block> pending;
   private final BlockFace[] adjacent;
-  private BukkitTask queueDrain;
+  private @Nullable BukkitTask queueDrain;
 
   public BlockUpdateManager(EasterlynCore plugin) {
     this.plugin = plugin;

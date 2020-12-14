@@ -133,8 +133,8 @@ public class ChannelManagementListener implements Listener {
   }
 
   private void addMainChannel(@NotNull User user, @Nullable Collection<String> channels) {
-    Channel current =
-        chat.getChannels().get(user.getStorage().getString(EasterlynChat.USER_CURRENT));
+    String channelName = user.getStorage().getString(EasterlynChat.USER_CURRENT);
+    Channel current = channelName == null ? null : chat.getChannels().get(channelName);
     if (current == null
         && (channels == null
             || channels.isEmpty()

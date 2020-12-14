@@ -124,13 +124,17 @@ public class StringUtil {
     QUOTE_CONSUMERS.add(consumer);
   }
 
-  public static Collection<TextComponent> toJSON(String message) {
+  public static Collection<TextComponent> toJSON(@Nullable String message) {
     return toJSON(message, Collections.emptyList());
   }
 
   // TODO appears to not be parsing colors correctly
   public static Collection<TextComponent> toJSON(
-      String message, Collection<QuoteConsumer> additionalHandlers) {
+      @Nullable String message, Collection<QuoteConsumer> additionalHandlers) {
+    if (message == null) {
+      return Collections.emptyList();
+    }
+
     ParsedText parsedText = new ParsedText();
     StringBuilder builder = new StringBuilder();
     Collection<QuoteConsumer> consumers =
