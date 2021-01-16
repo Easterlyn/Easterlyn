@@ -10,7 +10,7 @@ jobs:
       - name: Wait for build success
         uses: fountainhead/action-wait-for-check@v1.0.0
         id: wait-for-build
-        if: github.actor == 'dependabot[bot]
+        if: github.actor == 'dependabot[bot]'
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           checkName: build
