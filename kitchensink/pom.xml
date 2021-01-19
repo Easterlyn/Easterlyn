@@ -20,7 +20,7 @@
       <artifactId>worldedit-core</artifactId>
       <groupId>com.sk89q.worldedit</groupId>
       <scope>provided</scope>
-      <version>7.2.1</version>
+      <version>7.2.2</version>
     </dependency>
     <dependency>
       <artifactId>brigadier</artifactId>
