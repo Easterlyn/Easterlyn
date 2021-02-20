@@ -2,10 +2,9 @@ package com.easterlyn.machine;
 
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynMachines;
-import com.easterlyn.util.CoordinateUtil;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.Shape;
-import com.easterlyn.util.wrapper.BlockMap;
+import com.github.jikoo.planarwrappers.container.BlockMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -104,7 +103,7 @@ public abstract class Machine {
    * @return the Location
    */
   public @NotNull Location getKey(@NotNull ConfigurationSection storage) {
-    return CoordinateUtil.locFromPath(Objects.requireNonNull(storage.getCurrentPath()));
+    return EasterlynMachines.locFromPath(Objects.requireNonNull(storage.getCurrentPath()));
   }
 
   /**

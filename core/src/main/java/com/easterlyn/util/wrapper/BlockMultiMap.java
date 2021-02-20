@@ -1,5 +1,6 @@
 package com.easterlyn.util.wrapper;
 
+import com.github.jikoo.planarwrappers.container.BlockMap;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;

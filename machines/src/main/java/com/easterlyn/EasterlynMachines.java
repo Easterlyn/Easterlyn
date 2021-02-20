@@ -3,13 +3,13 @@ package com.easterlyn;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.machine.Machine;
 import com.easterlyn.util.BlockUtil;
-import com.easterlyn.util.CoordinateUtil;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.event.Event;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.tuple.Pair;
-import com.easterlyn.util.wrapper.BlockMap;
 import com.easterlyn.util.wrapper.BlockMultiMap;
+import com.github.jikoo.planarwrappers.container.BlockMap;
+import com.github.jikoo.planarwrappers.util.Coords;
 import com.nitnelave.CreeperHeal.config.CreeperConfig;
 import com.nitnelave.CreeperHeal.events.CHBlockHealEvent;
 import java.lang.reflect.Constructor;
@@ -28,6 +28,7 @@ import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.GameMode;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -358,9 +359,7 @@ public class EasterlynMachines extends JavaPlugin {
         .forEach(
             entry -> {
               ConfigurationSection section =
-                  getConfig()
-                      .getConfigurationSection(
-                          CoordinateUtil.pathFromLoc(entry.getKey().getLocation()));
+                  getConfig().getConfigurationSection(pathFromLoc(entry.getKey().getLocation()));
               if (section == null) {
                 return;
               }
@@ -435,7 +434,7 @@ public class EasterlynMachines extends JavaPlugin {
             key -> {
               ConfigurationSection section =
                   getConfig()
-                      .getConfigurationSection(CoordinateUtil.pathFromLoc(key.getLocation()));
+                      .getConfigurationSection(pathFromLoc(key.getLocation()));
               if (section == null) {
                 return;
               }
@@ -481,7 +480,7 @@ public class EasterlynMachines extends JavaPlugin {
     }
 
     ConfigurationSection section =
-        getConfig().getConfigurationSection(CoordinateUtil.pathFromLoc(key.getLocation()));
+        getConfig().getConfigurationSection(pathFromLoc(key.getLocation()));
 
     if (section == null) {
       throw new IllegalStateException("No ConfigurationSection available for stored key block!");
@@ -535,7 +534,7 @@ public class EasterlynMachines extends JavaPlugin {
       blocks.forEach(blocksToKeys::remove);
     }
 
-    getConfig().set(CoordinateUtil.pathFromLoc(key.getLocation()), null);
+    getConfig().set(pathFromLoc(key.getLocation()), null);
   }
 
   /**
@@ -556,7 +555,7 @@ public class EasterlynMachines extends JavaPlugin {
       return null;
     }
     ConfigurationSection section =
-        getConfig().createSection(CoordinateUtil.pathFromLoc(key.getLocation()));
+        getConfig().createSection(pathFromLoc(key.getLocation()));
     section.set("type", machine.getName().toLowerCase());
     section.set("owner", owner.toString());
     section.set("direction", direction.name());
@@ -591,7 +590,7 @@ public class EasterlynMachines extends JavaPlugin {
     }
 
     if (key == null) {
-      key = CoordinateUtil.locFromPath(storage.getCurrentPath()).getBlock();
+      key = locFromPath(storage.getCurrentPath()).getBlock();
     }
 
     if (getConfig().getStringList("+disabled-worlds+").contains(key.getWorld().getName())) {
@@ -711,8 +710,7 @@ public class EasterlynMachines extends JavaPlugin {
               section =
                   getConfig()
                       .getConfigurationSection(
-                          CoordinateUtil.pathFromLoc(
-                              event.getView().getTopInventory().getLocation()));
+                          pathFromLoc(event.getView().getTopInventory().getLocation()));
             }
           } else {
             return;
@@ -745,5 +743,52 @@ public class EasterlynMachines extends JavaPlugin {
       return getMachine(inventory.getLocation().getBlock());
     }
     return null;
+  }
+
+  /**
+   * Creates a configuration-friendly path from a location.
+   *
+   * @param location the Location
+   * @return the path created
+   */
+  public static String pathFromLoc(Location location) {
+    if (location.getWorld() == null) {
+      throw new IllegalArgumentException("Cannot get location path with null world!");
+    }
+    int blockX = location.getBlockX();
+    int blockZ = location.getBlockZ();
+    return location.getWorld().getName()
+        + '.'
+        + Coords.blockToChunk(blockX)
+        + '_'
+        + Coords.blockToChunk(blockZ)
+        + '.'
+        + blockX
+        + '_'
+        + location.getBlockY()
+        + '_'
+        + blockZ;
+  }
+
+  /**
+   * Gets a location from a configuration-friendly path.
+   *
+   * @param string the path
+   * @return the Location created
+   */
+  public static Location locFromPath(String string) {
+    String[] pathSplit = string.split("\\.");
+    if (pathSplit.length < 3) {
+      throw new IllegalArgumentException("Invalid location path: " + string);
+    }
+    String[] xyz = pathSplit[2].split("_");
+    if (xyz.length < 3) {
+      throw new IllegalArgumentException("Invalid location path: " + string);
+    }
+    return new Location(
+        Bukkit.getWorld(pathSplit[0]),
+        Integer.parseInt(xyz[0]),
+        Integer.parseInt(xyz[1]),
+        Integer.parseInt(xyz[2]));
   }
 }

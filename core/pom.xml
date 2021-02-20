@@ -39,6 +39,12 @@
       <version>0.5.0-SNAPSHOT</version>
     </dependency>
     <dependency>
+      <groupId>com.github.jikoo</groupId>
+      <artifactId>planarwrappers</artifactId>
+      <scope>compile</scope>
+      <version>1714b1350b</version>
+    </dependency>
+    <dependency>
       <artifactId>reflections</artifactId>
       <groupId>org.reflections</groupId>
       <scope>compile</scope>
@@ -102,5 +108,23 @@
       <url>https://maven.enginehub.org/repo/</url>
     </repository>
   </repositories>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.2.4</version>
+        <configuration>
+          <relocations>
+            <relocation>
+              <pattern>com.github.jikoo.planarwrappers</pattern>
+              <shadedPattern>com.easterlyn.planarwrappers</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
 
 </project>
