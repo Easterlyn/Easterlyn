@@ -1,7 +1,7 @@
 package com.easterlyn.util.inventory;
 
 import com.easterlyn.util.GenericUtil;
-import com.easterlyn.util.event.Event;
+import com.github.jikoo.planarwrappers.event.Event;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;

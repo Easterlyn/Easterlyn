@@ -4,7 +4,7 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynMachines;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.Shape;
-import com.github.jikoo.planarwrappers.container.BlockMap;
+import com.github.jikoo.planarwrappers.collections.BlockMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;

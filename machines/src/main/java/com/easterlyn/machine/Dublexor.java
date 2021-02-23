@@ -11,7 +11,7 @@ import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.Shape;
 import com.easterlyn.util.inventory.InventoryUtil;
 import com.easterlyn.util.inventory.ItemUtil;
-import com.easterlyn.util.tuple.Pair;
+import com.github.jikoo.planarwrappers.tuple.Pair;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;

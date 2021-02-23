@@ -1,6 +1,6 @@
 package com.easterlyn;
 
-import com.easterlyn.util.event.Event;
+import com.github.jikoo.planarwrappers.event.Event;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;

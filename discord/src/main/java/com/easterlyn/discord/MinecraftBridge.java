@@ -4,7 +4,7 @@ import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.event.UserChatEvent;
-import com.easterlyn.util.event.Event;
+import com.github.jikoo.planarwrappers.event.Event;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import discord4j.common.util.Snowflake;

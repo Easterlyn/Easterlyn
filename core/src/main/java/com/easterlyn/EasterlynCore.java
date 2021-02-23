@@ -12,7 +12,7 @@ import com.easterlyn.util.Colors;
 import com.easterlyn.util.LocaleManager;
 import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.StringUtil;
-import com.easterlyn.util.event.Event;
+import com.github.jikoo.planarwrappers.event.Event;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Multimap;
 import java.lang.reflect.Constructor;

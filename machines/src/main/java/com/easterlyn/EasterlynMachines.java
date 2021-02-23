@@ -4,11 +4,11 @@ import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.machine.Machine;
 import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.Direction;
-import com.easterlyn.util.event.Event;
 import com.easterlyn.util.inventory.ItemUtil;
-import com.easterlyn.util.tuple.Pair;
-import com.easterlyn.util.wrapper.BlockMultiMap;
-import com.github.jikoo.planarwrappers.container.BlockMap;
+import com.github.jikoo.planarwrappers.collections.BlockMap;
+import com.github.jikoo.planarwrappers.collections.BlockMultimap;
+import com.github.jikoo.planarwrappers.event.Event;
+import com.github.jikoo.planarwrappers.tuple.Pair;
 import com.github.jikoo.planarwrappers.util.Coords;
 import com.nitnelave.CreeperHeal.config.CreeperConfig;
 import com.nitnelave.CreeperHeal.events.CHBlockHealEvent;
@@ -77,7 +77,7 @@ import org.reflections.Reflections;
 public class EasterlynMachines extends JavaPlugin {
 
   private final BlockMap<Block> blocksToKeys = new BlockMap<>();
-  private final BlockMultiMap<Block> keysToBlocks = new BlockMultiMap<>();
+  private final BlockMultimap<Block> keysToBlocks = new BlockMultimap<>();
   private final Map<String, Machine> nameRegistry = new HashMap<>();
   private final Map<ItemStack, Machine> iconRegistry = new HashMap<>();
   private final BlockMap<Boolean> exploded = new BlockMap<>();

@@ -3,7 +3,7 @@ package com.easterlyn;
 import com.easterlyn.netherportals.listener.TeleportListener;
 import com.easterlyn.util.Direction;
 import com.easterlyn.util.Shape;
-import com.easterlyn.util.event.Event;
+import com.github.jikoo.planarwrappers.event.Event;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;

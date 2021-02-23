@@ -169,16 +169,24 @@ public class ConcurrentConfiguration implements Configuration {
   }
 
   @Override
-  public Configuration getRoot() {
+  public @Nullable Configuration getRoot() {
     synchronized (lock) {
-      return new ConcurrentConfiguration(plugin, file, lock, internal.getRoot());
+      Configuration root = internal.getRoot();
+      if (root == null) {
+        return null;
+      }
+      return new ConcurrentConfiguration(plugin, file, lock, root);
     }
   }
 
   @Override
-  public ConfigurationSection getParent() {
+  public @Nullable ConfigurationSection getParent() {
     synchronized (lock) {
-      return new ConcurrentConfiguration(plugin, file, lock, internal.getParent());
+      ConfigurationSection parent = internal.getParent();
+      if (parent == null) {
+        return null;
+      }
+      return new ConcurrentConfiguration(plugin, file, lock, parent);
     }
   }
 
@@ -418,32 +426,32 @@ public class ConcurrentConfiguration implements Configuration {
   }
 
   @Override
-  public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass) {
+  public <T> T getObject(@NotNull String s, @NotNull Class<T> clazz) {
     synchronized (lock) {
-      return internal.getObject(s, aClass);
+      return internal.getObject(s, clazz);
     }
   }
 
   @Override
-  public <T> T getObject(@NotNull String s, @NotNull Class<T> aClass, T t) {
+  public <T> T getObject(@NotNull String s, @NotNull Class<T> clazz, T t) {
     synchronized (lock) {
-      return internal.getObject(s, aClass, t);
-    }
-  }
-
-  @Override
-  public <T extends ConfigurationSerializable> T getSerializable(
-      @NotNull String s, @NotNull Class<T> aClass) {
-    synchronized (lock) {
-      return internal.getSerializable(s, aClass);
+      return internal.getObject(s, clazz, t);
     }
   }
 
   @Override
   public <T extends ConfigurationSerializable> T getSerializable(
-      @NotNull String s, @NotNull Class<T> aClass, T t) {
+      @NotNull String s, @NotNull Class<T> clazz) {
     synchronized (lock) {
-      return internal.getSerializable(s, aClass, t);
+      return internal.getSerializable(s, clazz);
+    }
+  }
+
+  @Override
+  public <T extends ConfigurationSerializable> T getSerializable(
+      @NotNull String s, @NotNull Class<T> clazz, T t) {
+    synchronized (lock) {
+      return internal.getSerializable(s, clazz, t);
     }
   }
 
@@ -553,10 +561,13 @@ public class ConcurrentConfiguration implements Configuration {
   }
 
   @Override
-  public ConfigurationSection getConfigurationSection(@NotNull String path) {
+  public @Nullable ConfigurationSection getConfigurationSection(@NotNull String path) {
     synchronized (lock) {
-      return new ConcurrentConfiguration(
-          plugin, file, lock, internal.getConfigurationSection(path));
+      ConfigurationSection configurationSection = internal.getConfigurationSection(path);
+      if (configurationSection == null) {
+        return null;
+      }
+      return new ConcurrentConfiguration(plugin, file, lock, configurationSection);
     }
   }
 
@@ -568,9 +579,13 @@ public class ConcurrentConfiguration implements Configuration {
   }
 
   @Override
-  public ConfigurationSection getDefaultSection() {
+  public @Nullable ConfigurationSection getDefaultSection() {
     synchronized (lock) {
-      return new ConcurrentConfiguration(plugin, file, lock, internal.getDefaultSection());
+      ConfigurationSection defaultSection = internal.getDefaultSection();
+      if (defaultSection == null) {
+        return null;
+      }
+      return new ConcurrentConfiguration(plugin, file, lock, defaultSection);
     }
   }
 

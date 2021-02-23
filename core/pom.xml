@@ -42,7 +42,7 @@
       <groupId>com.github.jikoo</groupId>
       <artifactId>planarwrappers</artifactId>
       <scope>compile</scope>
-      <version>1714b1350b</version>
+      <version>43ddcf69c8</version>
     </dependency>
     <dependency>
       <artifactId>reflections</artifactId>

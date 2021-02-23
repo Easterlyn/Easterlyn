@@ -3,7 +3,7 @@ package com.easterlyn;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.PermissionUtil;
-import com.easterlyn.util.event.Event;
+import com.github.jikoo.planarwrappers.event.Event;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;

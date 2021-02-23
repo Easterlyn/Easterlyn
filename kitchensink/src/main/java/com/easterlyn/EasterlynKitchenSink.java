@@ -21,7 +21,7 @@ import com.easterlyn.kitchensink.listener.OnlyWitherKillsItems;
 import com.easterlyn.kitchensink.listener.PVPKeepInventory;
 import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
 import com.easterlyn.kitchensink.listener.WitherFacts;
-import com.easterlyn.util.event.Event;
+import com.github.jikoo.planarwrappers.event.Event;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
