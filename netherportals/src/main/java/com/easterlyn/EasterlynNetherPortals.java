@@ -1,9 +1,11 @@
 package com.easterlyn;
 
 import com.easterlyn.netherportals.listener.TeleportListener;
-import com.easterlyn.util.Direction;
-import com.easterlyn.util.Shape;
 import com.github.jikoo.planarwrappers.event.Event;
+import com.github.jikoo.planarwrappers.world.Direction;
+import com.github.jikoo.planarwrappers.world.OrientableTransformer;
+import com.github.jikoo.planarwrappers.world.Shape;
+import com.github.jikoo.planarwrappers.world.TransformableBlockData;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -280,81 +282,80 @@ public class EasterlynNetherPortals extends JavaPlugin {
   private @NotNull Shape getNetherPortal() {
     Shape shape = new Shape();
 
-    Shape.MaterialDataValue value = new Shape.MaterialDataValue(Material.OBSIDIAN);
+    TransformableBlockData value = new TransformableBlockData(Material.OBSIDIAN);
 
     // Platform
-    shape.setVectorData(new Vector(-2, -1, 1), value);
-    shape.setVectorData(new Vector(-1, -1, 1), value);
-    shape.setVectorData(new Vector(0, -1, 1), value);
-    shape.setVectorData(new Vector(1, -1, 1), value);
-    shape.setVectorData(new Vector(-2, -1, -1), value);
-    shape.setVectorData(new Vector(-1, -1, -1), value);
-    shape.setVectorData(new Vector(0, -1, -1), value);
-    shape.setVectorData(new Vector(1, -1, -1), value);
+    shape.set(-2, -1, 1, value);
+    shape.set(-1, -1, 1, value);
+    shape.set(0, -1, 1, value);
+    shape.set(1, -1, 1, value);
+    shape.set(-2, -1, -1, value);
+    shape.set(-1, -1, -1, value);
+    shape.set(0, -1, -1, value);
+    shape.set(1, -1, -1, value);
 
     // Frame
-    shape.setVectorData(new Vector(-2, -1, 0), value);
-    shape.setVectorData(new Vector(-1, -1, 0), value);
-    shape.setVectorData(new Vector(0, -1, 0), value);
-    shape.setVectorData(new Vector(1, -1, 0), value);
-    shape.setVectorData(new Vector(-2, 0, 0), value);
-    shape.setVectorData(new Vector(1, 0, 0), value);
-    shape.setVectorData(new Vector(-2, 1, 0), value);
-    shape.setVectorData(new Vector(1, 1, 0), value);
-    shape.setVectorData(new Vector(-2, 2, 0), value);
-    shape.setVectorData(new Vector(1, 2, 0), value);
-    shape.setVectorData(new Vector(-2, 3, 0), value);
-    shape.setVectorData(new Vector(-1, 3, 0), value);
-    shape.setVectorData(new Vector(0, 3, 0), value);
-    shape.setVectorData(new Vector(1, 3, 0), value);
+    shape.set(-2, -1, 0, value);
+    shape.set(-1, -1, 0, value);
+    shape.set(0, -1, 0, value);
+    shape.set(1, -1, 0, value);
+    shape.set(-2, 0, 0, value);
+    shape.set(1, 0, 0, value);
+    shape.set(-2, 1, 0, value);
+    shape.set(1, 1, 0, value);
+    shape.set(-2, 2, 0, value);
+    shape.set(1, 2, 0, value);
+    shape.set(-2, 3, 0, value);
+    shape.set(-1, 3, 0, value);
+    shape.set(0, 3, 0, value);
+    shape.set(1, 3, 0, value);
 
-    value = new Shape.MaterialDataValue(Material.AIR);
+    value = new TransformableBlockData(Material.AIR);
 
     // Surrounding air
-    shape.setVectorData(new Vector(-2, 0, 1), value);
-    shape.setVectorData(new Vector(-1, 0, 1), value);
-    shape.setVectorData(new Vector(0, 0, 1), value);
-    shape.setVectorData(new Vector(1, 0, 1), value);
-    shape.setVectorData(new Vector(-2, 0, -1), value);
-    shape.setVectorData(new Vector(-1, 0, -1), value);
-    shape.setVectorData(new Vector(0, 0, -1), value);
-    shape.setVectorData(new Vector(1, 0, -1), value);
-    shape.setVectorData(new Vector(-2, 1, 1), value);
-    shape.setVectorData(new Vector(-1, 1, 1), value);
-    shape.setVectorData(new Vector(0, 1, 1), value);
-    shape.setVectorData(new Vector(1, 1, 1), value);
-    shape.setVectorData(new Vector(-2, 1, -1), value);
-    shape.setVectorData(new Vector(-1, 1, -1), value);
-    shape.setVectorData(new Vector(0, 1, -1), value);
-    shape.setVectorData(new Vector(1, 1, -1), value);
-    shape.setVectorData(new Vector(-2, 2, 1), value);
-    shape.setVectorData(new Vector(-1, 2, 1), value);
-    shape.setVectorData(new Vector(0, 2, 1), value);
-    shape.setVectorData(new Vector(1, 2, 1), value);
-    shape.setVectorData(new Vector(-2, 2, -1), value);
-    shape.setVectorData(new Vector(-1, 2, -1), value);
-    shape.setVectorData(new Vector(0, 2, -1), value);
-    shape.setVectorData(new Vector(1, 2, -1), value);
-    shape.setVectorData(new Vector(-2, 3, 1), value);
-    shape.setVectorData(new Vector(-1, 3, 1), value);
-    shape.setVectorData(new Vector(0, 3, 1), value);
-    shape.setVectorData(new Vector(1, 3, 1), value);
-    shape.setVectorData(new Vector(-2, 3, -1), value);
-    shape.setVectorData(new Vector(-1, 3, -1), value);
-    shape.setVectorData(new Vector(0, 3, -1), value);
-    shape.setVectorData(new Vector(1, 3, -1), value);
+    shape.set(-2, 0, 1, value);
+    shape.set(-1, 0, 1, value);
+    shape.set(0, 0, 1, value);
+    shape.set(1, 0, 1, value);
+    shape.set(-2, 0, -1, value);
+    shape.set(-1, 0, -1, value);
+    shape.set(0, 0, -1, value);
+    shape.set(1, 0, -1, value);
+    shape.set(-2, 1, 1, value);
+    shape.set(-1, 1, 1, value);
+    shape.set(0, 1, 1, value);
+    shape.set(1, 1, 1, value);
+    shape.set(-2, 1, -1, value);
+    shape.set(-1, 1, -1, value);
+    shape.set(0, 1, -1, value);
+    shape.set(1, 1, -1, value);
+    shape.set(-2, 2, 1, value);
+    shape.set(-1, 2, 1, value);
+    shape.set(0, 2, 1, value);
+    shape.set(1, 2, 1, value);
+    shape.set(-2, 2, -1, value);
+    shape.set(-1, 2, -1, value);
+    shape.set(0, 2, -1, value);
+    shape.set(1, 2, -1, value);
+    shape.set(-2, 3, 1, value);
+    shape.set(-1, 3, 1, value);
+    shape.set(0, 3, 1, value);
+    shape.set(1, 3, 1, value);
+    shape.set(-2, 3, -1, value);
+    shape.set(-1, 3, -1, value);
+    shape.set(0, 3, -1, value);
+    shape.set(1, 3, -1, value);
 
-    value =
-        new Shape.MaterialDataValue(Material.NETHER_PORTAL)
-            .withBlockData(Orientable.class, Direction.WEST);
+    value = new TransformableBlockData(Material.NETHER_PORTAL)
+        .withTransformer(new OrientableTransformer(Direction.WEST));
 
     // Portal
-    shape.setVectorData(new Vector(-1, 0, 0), value);
-    shape.setVectorData(new Vector(0, 0, 0), value);
-    shape.setVectorData(new Vector(-1, 1, 0), value);
-    shape.setVectorData(new Vector(0, 1, 0), value);
-    shape.setVectorData(new Vector(-1, 2, 0), value);
-    shape.setVectorData(new Vector(0, 2, 0), value);
+    shape.set(-1, 0, 0, value);
+    shape.set(0, 0, 0, value);
+    shape.set(-1, 1, 0, value);
+    shape.set(0, 1, 0, value);
+    shape.set(-1, 2, 0, value);
+    shape.set(0, 2, 0, value);
 
     return shape;
   }

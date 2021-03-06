@@ -1,6 +1,6 @@
 package com.easterlyn.kitchensink.listener;
 
-import com.easterlyn.util.GenericUtil;
+import com.github.jikoo.planarwrappers.util.Generics;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,7 +20,7 @@ public class WitherFacts implements Listener {
 
   public WitherFacts() {
     this.facts = new ItemStack(Material.WRITTEN_BOOK);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         BookMeta.class,
         facts.getItemMeta(),
         bookMeta -> {

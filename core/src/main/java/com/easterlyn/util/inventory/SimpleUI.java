@@ -1,7 +1,7 @@
 package com.easterlyn.util.inventory;
 
-import com.easterlyn.util.GenericUtil;
 import com.github.jikoo.planarwrappers.event.Event;
+import com.github.jikoo.planarwrappers.util.Generics;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -147,7 +147,7 @@ public class SimpleUI implements InventoryHolder {
       consumer = event -> {
       };
     }
-    GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+    Generics.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
       itemMeta.setDisplayName(ChatColor.WHITE + "First Page");
       itemMeta.setLore(Collections.singletonList(ChatColor.GOLD + "  1/" + maxPage));
       itemStack.setItemMeta(itemMeta);
@@ -160,7 +160,7 @@ public class SimpleUI implements InventoryHolder {
     ItemStack itemStack;
     if (startIndex > 0) {
       itemStack = new ItemStack(Material.ARROW);
-      GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+      Generics.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
         itemMeta.setDisplayName(ChatColor.WHITE + "Previous Page");
         itemMeta.setLore(Collections
             .singletonList(ChatColor.GOLD + "  " + (startIndex / 45) + '/' + maxPage));
@@ -174,7 +174,7 @@ public class SimpleUI implements InventoryHolder {
 
     // Already on first page, no-op button
     itemStack = new ItemStack(Material.BARRIER);
-    GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+    Generics.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
       itemMeta.setDisplayName(ChatColor.WHITE + "First Page");
       itemMeta.setLore(Collections.singletonList(ChatColor.GOLD + "  1/" + maxPage));
       itemStack.setItemMeta(itemMeta);
@@ -190,7 +190,7 @@ public class SimpleUI implements InventoryHolder {
     ItemStack itemStack;
     if (highestCurrentButton < highestRequiredButton) {
       itemStack = new ItemStack(Material.ARROW);
-      GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+      Generics.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
         itemMeta.setDisplayName(ChatColor.WHITE + "Next Page");
         itemMeta.setLore(Collections
             .singletonList(ChatColor.GOLD + "  " + (startIndex / 45 + 2) + '/' + maxPage));
@@ -204,7 +204,7 @@ public class SimpleUI implements InventoryHolder {
 
     // Already on last page, no-op button
     itemStack = new ItemStack(Material.BARRIER);
-    GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+    Generics.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
       itemMeta.setDisplayName(ChatColor.WHITE + "Last Page");
       itemMeta.setLore(Collections.singletonList(ChatColor.GOLD + "  " + maxPage + '/' + maxPage));
       itemStack.setItemMeta(itemMeta);
@@ -228,7 +228,7 @@ public class SimpleUI implements InventoryHolder {
       consumer = event -> {
       };
     }
-    GenericUtil.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
+    Generics.consumeAs(ItemMeta.class, itemStack.getItemMeta(), itemMeta -> {
       itemMeta.setDisplayName(ChatColor.WHITE + "Last Page");
       itemMeta.setLore(
           Collections.singletonList(ChatColor.GOLD + "  " + maxPage + '/' + maxPage));

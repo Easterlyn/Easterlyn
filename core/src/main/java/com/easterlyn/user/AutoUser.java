@@ -2,9 +2,9 @@ package com.easterlyn.user;
 
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.util.Colors;
-import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
+import com.github.jikoo.planarwrappers.util.Generics;
 import java.util.Map;
 import java.util.UUID;
 import net.md_5.bungee.api.ChatColor;
@@ -35,7 +35,7 @@ public class AutoUser extends User {
 
   public @NotNull String getDisplayName() {
     return ChatColor.translateAlternateColorCodes(
-        '&', GenericUtil.orDefault(userData.get("name"), "Auto User"));
+        '&', Generics.orDefault(userData.get("name"), "Auto User"));
   }
 
   public @NotNull ChatColor getColor() {

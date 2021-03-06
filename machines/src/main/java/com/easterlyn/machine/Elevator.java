@@ -1,11 +1,11 @@
 package com.easterlyn.machine;
 
 import com.easterlyn.EasterlynMachines;
-import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.ProtectionUtil;
-import com.easterlyn.util.Shape;
 import com.easterlyn.util.inventory.Button;
 import com.easterlyn.util.inventory.SimpleUI;
+import com.github.jikoo.planarwrappers.util.Generics;
+import com.github.jikoo.planarwrappers.world.Shape;
 import java.util.Arrays;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -25,7 +25,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.permissions.PermissionAttachment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -40,11 +39,11 @@ public class Elevator extends Machine {
   public Elevator(EasterlynMachines machines) {
     super(machines, new Shape(), "Elevator");
 
-    getShape().setVectorData(new Vector(0, 0, 0), Material.PURPUR_PILLAR);
-    getShape().setVectorData(new Vector(0, 1, 0), Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
+    getShape().set(0, 0, 0, Material.PURPUR_PILLAR);
+    getShape().set(0, 1, 0, Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
 
     drop = new ItemStack(Material.HEAVY_WEIGHTED_PRESSURE_PLATE);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         drop.getItemMeta(),
         itemMeta -> {
@@ -129,7 +128,7 @@ public class Elevator extends Machine {
   private @NotNull Inventory getInventory(@NotNull ConfigurationSection storage) {
     SimpleUI ui = new SimpleUI(getMachines(), "Densificator Configuration");
     ItemStack itemStack1 = new ItemStack(Material.RED_WOOL);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         itemStack1.getItemMeta(),
         itemMeta -> {
@@ -151,7 +150,7 @@ public class Elevator extends Machine {
             }));
     ItemStack itemStack2 = new ItemStack(Material.ELYTRA);
     itemStack2.setAmount(getCurrentBoost(storage));
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         itemStack2.getItemMeta(),
         itemMeta -> {
@@ -164,7 +163,7 @@ public class Elevator extends Machine {
         });
     ui.setButton(4, new Button(itemStack2, event -> {}));
     ItemStack itemStack3 = new ItemStack(Material.LIME_WOOL);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         itemStack3.getItemMeta(),
         itemMeta -> {

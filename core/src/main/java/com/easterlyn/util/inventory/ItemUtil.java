@@ -1,8 +1,8 @@
 package com.easterlyn.util.inventory;
 
-import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.StringUtil;
+import com.github.jikoo.planarwrappers.util.Generics;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
 import java.io.BufferedOutputStream;
@@ -245,14 +245,14 @@ public class ItemUtil {
     }
 
     // Banners
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         BannerMeta.class,
         originalMeta,
         cleanedMeta,
         (oldMeta, newMeta) -> newMeta.setPatterns(oldMeta.getPatterns()));
 
     // Book and quill/Written books
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         BookMeta.class,
         originalMeta,
         cleanedMeta,
@@ -269,7 +269,7 @@ public class ItemUtil {
         });
 
     // Durability
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         Damageable.class,
         originalMeta,
         cleanedMeta,
@@ -279,14 +279,14 @@ public class ItemUtil {
                     Math.min(oldMeta.getDamage(), originalItem.getType().getMaxDurability()), 0)));
 
     // Single effect fireworks
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         FireworkEffectMeta.class,
         originalMeta,
         cleanedMeta,
         (oldMeta, newMeta) -> newMeta.setEffect(oldMeta.getEffect()));
 
     // Fireworks/Firework stars
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         FireworkMeta.class,
         originalMeta,
         cleanedMeta,
@@ -296,14 +296,14 @@ public class ItemUtil {
         });
 
     // Leather armor color
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         LeatherArmorMeta.class,
         originalMeta,
         cleanedMeta,
         (oldMeta, newMeta) -> newMeta.setColor(oldMeta.getColor()));
 
     // Enchanted books
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         EnchantmentStorageMeta.class,
         originalMeta,
         cleanedMeta,
@@ -314,7 +314,7 @@ public class ItemUtil {
                     (enchantment, level) -> newMeta.addStoredEnchant(enchantment, level, true)));
 
     // Maps
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         MapMeta.class,
         originalMeta,
         cleanedMeta,
@@ -326,7 +326,7 @@ public class ItemUtil {
         });
 
     // Potions
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         PotionMeta.class,
         originalMeta,
         cleanedMeta,
@@ -347,7 +347,7 @@ public class ItemUtil {
     // Repairable would preserve anvil tags on tools, we'll avoid that
 
     // Skulls
-    GenericUtil.biConsumeAs(
+    Generics.unaryBiConsumeAs(
         SkullMeta.class,
         originalMeta,
         cleanedMeta,

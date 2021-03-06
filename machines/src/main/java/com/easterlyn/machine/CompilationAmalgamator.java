@@ -2,11 +2,13 @@ package com.easterlyn.machine;
 
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.EasterlynMachines;
-import com.easterlyn.util.Direction;
-import com.easterlyn.util.GenericUtil;
-import com.easterlyn.util.Shape;
 import com.easterlyn.util.inventory.InventoryUtil;
 import com.easterlyn.util.inventory.ItemUtil;
+import com.github.jikoo.planarwrappers.util.Generics;
+import com.github.jikoo.planarwrappers.world.Direction;
+import com.github.jikoo.planarwrappers.world.DirectionalTransformer;
+import com.github.jikoo.planarwrappers.world.Shape;
+import com.github.jikoo.planarwrappers.world.TransformableBlockData;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
@@ -19,7 +21,6 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
-import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -50,18 +51,18 @@ public class CompilationAmalgamator extends Machine {
 
   public CompilationAmalgamator(EasterlynMachines machines) {
     super(machines, new Shape(), "Compilation Amalgamator");
+
     Shape shape = getShape();
-    shape.setVectorData(
-        new Vector(0, 0, 0),
-        new Shape.MaterialDataValue(Material.DROPPER)
-            .withBlockData(Directional.class, Direction.SOUTH));
-    shape.setVectorData(
-        new Vector(0, 0, 1),
-        new Shape.MaterialDataValue(Material.HOPPER)
-            .withBlockData(Directional.class, Direction.SOUTH));
+    DirectionalTransformer directionalSouth = new DirectionalTransformer(Direction.SOUTH);
+
+    TransformableBlockData transformable = new TransformableBlockData(Material.DROPPER);
+    shape.set(0, 0, 0, transformable.withTransformer(directionalSouth));
+
+    transformable = new TransformableBlockData(Material.HOPPER);
+    shape.set(0, 0, 1, transformable.withTransformer(directionalSouth));
 
     drop = new ItemStack(Material.DROPPER);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         drop.getItemMeta(),
         itemMeta -> {
@@ -164,10 +165,12 @@ public class CompilationAmalgamator extends Machine {
     }.runTask(getMachines());
   }
 
-  private void update(Inventory inventory, Inventory captchaInv, ConfigurationSection storage) {
+  private void update(
+      Inventory inventory,
+      @Nullable Inventory captchaInv,
+      ConfigurationSection storage) {
     ItemStack captchaTarget = null;
     for (ItemStack item : inventory.getContents()) {
-      //noinspection ConstantConditions
       if (item == null || item.getType() == Material.AIR) {
         continue;
       }
@@ -200,9 +203,9 @@ public class CompilationAmalgamator extends Machine {
           inventory
               .getLocation()
               .add(
-                  Shape.getRelativeVector(
-                      this.getDirection(storage).getRelativeDirection(Direction.NORTH),
-                      new Vector(0, 0, 1)));
+                  this.getDirection(storage)
+                      .getRelativeDirection(Direction.NORTH)
+                      .getRelativeVector(new Vector(0, 0, 1)));
       BlockState blockState = captchaStorage.getBlock().getState();
 
       if (!(blockState instanceof InventoryHolder)) {
@@ -255,7 +258,6 @@ public class CompilationAmalgamator extends Machine {
       Function<ItemStack, Boolean> func, Inventory inventory, ConfigurationSection storage) {
     Location key = getKey(storage);
     for (ItemStack item : inventory.getContents()) {
-      //noinspection ConstantConditions
       if (item == null || item.getType() == Material.AIR || func.apply(item)) {
         continue;
       }
@@ -273,7 +275,7 @@ public class CompilationAmalgamator extends Machine {
     Direction facing = this.getDirection(storage).getRelativeDirection(Direction.SOUTH);
 
     BlockState blockState =
-        key.clone().add(Shape.getRelativeVector(facing, new Vector(0, 0, 1))).getBlock().getState();
+        key.clone().add(facing.getRelativeVector(new Vector(0, 0, 1))).getBlock().getState();
     if (blockState instanceof InventoryHolder) {
       // MACHINES InventoryMoveItemEvent
       if (((InventoryHolder) blockState).getInventory().addItem(item).size() == 0) {
@@ -282,7 +284,7 @@ public class CompilationAmalgamator extends Machine {
     }
 
     // Center block location
-    key.add(Shape.getRelativeVector(facing, new Vector(0.5D, 0.5D, 1.5D)));
+    key.add(facing.getRelativeVector(new Vector(0.5D, 0.5D, 1.5D)));
     BlockFace face = facing.toBlockFace();
 
     // See net.minecraft.server.DispenseBehaviorItem

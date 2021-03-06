@@ -12,7 +12,7 @@ import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.util.GenericUtil;
+import com.github.jikoo.planarwrappers.util.Generics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -74,7 +74,7 @@ public class LoreCommand extends BaseCommand {
       }
     }
 
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         SkullMeta.class,
         hand.getItemMeta(),
         skullMeta -> {
@@ -106,7 +106,7 @@ public class LoreCommand extends BaseCommand {
       return;
     }
     String author = args == null ? null : ChatColor.translateAlternateColorCodes('&', args);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         BookMeta.class,
         hand.getItemMeta(),
         bookMeta -> {
@@ -137,7 +137,7 @@ public class LoreCommand extends BaseCommand {
       return;
     }
     String title = args == null ? null : ChatColor.translateAlternateColorCodes('&', args);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         BookMeta.class,
         hand.getItemMeta(),
         bookMeta -> {
@@ -164,7 +164,7 @@ public class LoreCommand extends BaseCommand {
     }
 
     String name = args == null ? null : ChatColor.translateAlternateColorCodes('&', args);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         hand.getItemMeta(),
         bookMeta -> {
@@ -221,7 +221,7 @@ public class LoreCommand extends BaseCommand {
       return;
     }
 
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         hand.getItemMeta(),
         meta ->
@@ -249,7 +249,7 @@ public class LoreCommand extends BaseCommand {
     }
 
     String loreLine = ChatColor.translateAlternateColorCodes('&', text);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         hand.getItemMeta(),
         meta -> {
@@ -276,7 +276,7 @@ public class LoreCommand extends BaseCommand {
       return;
     }
 
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         hand.getItemMeta(),
         meta ->
@@ -303,7 +303,7 @@ public class LoreCommand extends BaseCommand {
       return;
     }
 
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         hand.getItemMeta(),
         meta ->

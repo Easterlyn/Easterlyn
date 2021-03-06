@@ -1,7 +1,7 @@
 package com.easterlyn.kitchensink.listener;
 
 import com.easterlyn.event.ReportableEvent;
-import com.easterlyn.util.GenericUtil;
+import com.github.jikoo.planarwrappers.util.Generics;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -51,7 +51,7 @@ public class FortuneShears implements Listener {
 
   private @Nullable ItemStack getDrop(Entity entity) {
     if (entity instanceof Sheep) {
-      DyeColor color = GenericUtil.orDefault(((Sheep) entity).getColor(), DyeColor.WHITE);
+      DyeColor color = Generics.orDefault(((Sheep) entity).getColor(), DyeColor.WHITE);
       Material material = Material.matchMaterial(color.name() + "_WOOL");
       if (material != null) {
         return new ItemStack(material);

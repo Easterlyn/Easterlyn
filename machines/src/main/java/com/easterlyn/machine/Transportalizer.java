@@ -3,12 +3,17 @@ package com.easterlyn.machine;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynMachines;
 import com.easterlyn.user.User;
-import com.easterlyn.util.Direction;
-import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.HologramUtil;
 import com.easterlyn.util.ProtectionUtil;
 import com.easterlyn.util.Request;
-import com.easterlyn.util.Shape;
+import com.github.jikoo.planarwrappers.util.Generics;
+import com.github.jikoo.planarwrappers.world.Direction;
+import com.github.jikoo.planarwrappers.world.DirectionalTransformer;
+import com.github.jikoo.planarwrappers.world.OrientableTransformer;
+import com.github.jikoo.planarwrappers.world.Shape;
+import com.github.jikoo.planarwrappers.world.TransformableBlockData;
+import org.bukkit.Axis;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.GameMode;
@@ -23,7 +28,8 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.Bisected;
-import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.Bisected.Half;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Orientable;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.ArmorStand;
@@ -65,50 +71,46 @@ public class Transportalizer extends Machine {
   public Transportalizer(EasterlynMachines machines) {
     super(machines, new Shape(), "Transportalizer");
     Shape shape = getShape();
-    shape.setVectorData(
-        new Vector(0, 0, 0),
-        new Shape.MaterialDataValue(Material.HOPPER)
-            .withBlockData(Directional.class, Direction.NORTH));
-    Shape.MaterialDataValue m = new Shape.MaterialDataValue(Material.QUARTZ_BLOCK);
-    shape.setVectorData(new Vector(-1, 0, 0), m);
-    shape.setVectorData(new Vector(1, 0, 0), m);
-    m = new Shape.MaterialDataValue(Material.CHISELED_QUARTZ_BLOCK);
-    shape.setVectorData(new Vector(-1, 0, 1), m);
-    shape.setVectorData(new Vector(1, 0, 1), m);
-    shape.setVectorData(new Vector(-1, 2, 1), m);
-    shape.setVectorData(new Vector(1, 2, 1), m);
-    shape.setVectorData(
-        new Vector(0, 2, 1),
-        new Shape.MaterialDataValue(Material.QUARTZ_PILLAR)
-            .withBlockData(Orientable.class, Direction.WEST));
-    shape.setVectorData(
-        new Vector(0, 0, 1),
-        new Shape.MaterialDataValue(Material.QUARTZ_STAIRS)
-            .withBlockData(Bisected.class, Direction.UP)
-            .withBlockData(Directional.class, Direction.NORTH));
-    shape.setVectorData(new Vector(0, 1, 1), Material.WHITE_STAINED_GLASS);
-    m =
-        new Shape.MaterialDataValue(Material.STONE_BUTTON)
-            .withBlockData(Directional.class, Direction.SOUTH);
-    shape.setVectorData(new Vector(-1, 2, 0), m);
-    shape.setVectorData(new Vector(1, 2, 0), m);
-    m =
-        new Shape.MaterialDataValue(Material.QUARTZ_STAIRS)
-            .withBlockData(Directional.class, Direction.NORTH);
-    shape.setVectorData(new Vector(-1, 0, -1), m);
-    shape.setVectorData(new Vector(0, 0, -1), m);
-    shape.setVectorData(new Vector(1, 0, -1), m);
-    m =
-        new Shape.MaterialDataValue(Material.QUARTZ_PILLAR)
-            .withBlockData(Orientable.class, Direction.UP);
-    shape.setVectorData(new Vector(-1, 1, 1), m);
-    shape.setVectorData(new Vector(1, 1, 1), m);
-    shape.setVectorData(new Vector(-1, 1, 0), Material.RED_CARPET);
-    shape.setVectorData(new Vector(0, 1, 0), Material.GRAY_CARPET);
-    shape.setVectorData(new Vector(1, 1, 0), Material.LIME_CARPET);
+    DirectionalTransformer directionalNorth = new DirectionalTransformer(Direction.NORTH);
+    TransformableBlockData transformable = new TransformableBlockData(Material.HOPPER)
+        .withTransformer(directionalNorth);
+    shape.set(0, 0, 0, transformable);
+    Material material = Material.QUARTZ_BLOCK;
+    shape.set(-1, 0, 0, material);
+    shape.set(1, 0, 0, material);
+    material = Material.CHISELED_QUARTZ_BLOCK;
+    shape.set(-1, 0, 1, material);
+    shape.set(1, 0, 1, material);
+    shape.set(-1, 2, 1, material);
+    shape.set(1, 2, 1, material);
+    transformable = new TransformableBlockData(Material.QUARTZ_PILLAR)
+        .withTransformer(new OrientableTransformer(Direction.WEST));
+    shape.set(0, 2, 1, transformable);
+    BlockData blockData = Bukkit.createBlockData(Material.QUARTZ_STAIRS);
+    Generics.consumeAs(Bisected.class, blockData, bisected -> bisected.setHalf(Half.TOP));
+    transformable =  new TransformableBlockData(blockData).withTransformer(directionalNorth);
+    shape.set(0, 0, 1, transformable);
+    shape.set(0, 1, 1, Material.WHITE_STAINED_GLASS);
+    transformable = new TransformableBlockData(Material.STONE_BUTTON)
+        .withTransformer(new DirectionalTransformer(Direction.SOUTH));
+    shape.set(-1, 2, 0, transformable);
+    shape.set(1, 2, 0, transformable);
+    transformable = new TransformableBlockData(Material.QUARTZ_STAIRS)
+        .withTransformer(directionalNorth);
+    shape.set(-1, 0, -1, transformable);
+    shape.set(0, 0, -1, transformable);
+    shape.set(1, 0, -1, transformable);
+    blockData = Bukkit.createBlockData(Material.QUARTZ_PILLAR);
+    Generics.consumeAs(Orientable.class, blockData, orientable -> orientable.setAxis(Axis.Y));
+    transformable = new TransformableBlockData(blockData);
+    shape.set(-1, 1, 1, transformable);
+    shape.set(1, 1, 1, transformable);
+    shape.set(-1, 1, 0, Material.RED_CARPET);
+    shape.set(0, 1, 0, Material.GRAY_CARPET);
+    shape.set(1, 1, 0, Material.LIME_CARPET);
 
     drop = new ItemStack(Material.CHEST);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         drop.getItemMeta(),
         itemMeta -> {
@@ -139,8 +141,7 @@ public class Transportalizer extends Machine {
   }
 
   private Location getHoloLocation(ConfigurationSection storage) {
-    return getKey(storage)
-        .add(Shape.getRelativeVector(getDirection(storage), new Vector(0.5, 1.1, 1.5)));
+    return getKey(storage).add(getDirection(storage).getRelativeVector(new Vector(0.5, 1.1, 1.5)));
   }
 
   private void setFuel(ConfigurationSection storage, long fuel) {
@@ -167,7 +168,9 @@ public class Transportalizer extends Machine {
     ItemStack inserted = event.getItem().getItemStack();
     Location key = getKey(storage);
     if (hasValue(inserted.getType())) {
-      setFuel(storage, getFuel(storage) + getValue(inserted.getType()) * inserted.getAmount());
+      setFuel(
+          storage,
+          getFuel(storage) + (long) getValue(inserted.getType()) * inserted.getAmount());
       if (key.getWorld() != null) {
         key.getWorld().playSound(key, Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
       }
@@ -177,9 +180,8 @@ public class Transportalizer extends Machine {
           .getItem()
           .teleport(
               key.add(
-                  Shape.getRelativeVector(
-                      getDirection(storage).getRelativeDirection(Direction.NORTH),
-                      new Vector(0.5, 0.5, -1.5))));
+                  getDirection(storage).getRelativeDirection(Direction.NORTH)
+                      .getRelativeVector(new Vector(0.5, 0.5, -1.5))));
     }
     event.setCancelled(true);
   }

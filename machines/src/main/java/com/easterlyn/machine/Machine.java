@@ -2,9 +2,9 @@ package com.easterlyn.machine;
 
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynMachines;
-import com.easterlyn.util.Direction;
-import com.easterlyn.util.Shape;
 import com.github.jikoo.planarwrappers.collections.BlockMap;
+import com.github.jikoo.planarwrappers.world.Direction;
+import com.github.jikoo.planarwrappers.world.Shape;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
@@ -14,6 +14,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.block.BlockBreakEvent;
@@ -156,8 +157,8 @@ public abstract class Machine {
    */
   private void assemble(
       @NotNull Block key, @NotNull Direction direction, @NotNull ConfigurationSection storage) {
-    Map<Block, Shape.MaterialDataValue> buildData = shape.getBuildLocations(key, direction);
-    for (Entry<Block, Shape.MaterialDataValue> entry : buildData.entrySet()) {
+    Map<Block, BlockData> buildData = shape.getBuildLocations(key, direction);
+    for (Entry<Block, BlockData> entry : buildData.entrySet()) {
       if (key.equals(entry.getKey())) {
         // Key cannot be set instantly, it must be set on a delay
         // A cancelled BlockPlaceEvent results in the block being restored to its previous state.
@@ -166,7 +167,7 @@ public abstract class Machine {
         assembleKeyLater(key, entry.getValue());
         continue;
       }
-      entry.getValue().build(entry.getKey());
+      entry.getKey().setBlockData(entry.getValue());
     }
   }
 
@@ -177,16 +178,16 @@ public abstract class Machine {
    * is accessed (generally manually).
    *
    * @param key the key Location of the Machine
-   * @param data the MaterialData the key is supposed to be set to
+   * @param data the BlockData the key is supposed to be set to
    */
-  private void assembleKeyLater(@NotNull Block key, @NotNull Shape.MaterialDataValue data) {
+  private void assembleKeyLater(@NotNull Block key, @NotNull BlockData data) {
     new BukkitRunnable() {
       @Override
       public void run() {
         if (!getMachines().isMachine(key)) {
           return;
         }
-        data.build(key);
+        key.setBlockData(data);
       }
     }.runTask(getMachines());
   }

@@ -1,13 +1,15 @@
 package com.easterlyn.machine;
 
 import com.easterlyn.EasterlynMachines;
-import com.easterlyn.util.Direction;
-import com.easterlyn.util.GenericUtil;
-import com.easterlyn.util.Shape;
 import com.easterlyn.util.inventory.Button;
 import com.easterlyn.util.inventory.InventoryUtil;
 import com.easterlyn.util.inventory.SimpleUI;
 import com.easterlyn.util.wrapper.RecipeWrapper;
+import com.github.jikoo.planarwrappers.util.Generics;
+import com.github.jikoo.planarwrappers.world.Direction;
+import com.github.jikoo.planarwrappers.world.DirectionalTransformer;
+import com.github.jikoo.planarwrappers.world.Shape;
+import com.github.jikoo.planarwrappers.world.TransformableBlockData;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -31,6 +33,7 @@ import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
@@ -126,19 +129,22 @@ public class Densificator extends Machine {
   public Densificator(EasterlynMachines machines) {
     super(machines, new Shape(), "Densificator");
 
-    getShape()
-        .setVectorData(
-            new Vector(0, 0, 0),
-            new Shape.MaterialDataValue(Material.DROPPER)
-                .withBlockData(Directional.class, Direction.SOUTH));
-    getShape()
-        .setVectorData(
-            new Vector(0, 1, 0),
-            new Shape.MaterialDataValue(Material.PISTON)
-                .withBlockData(Directional.class, Direction.DOWN));
+    Shape shape = getShape();
+
+    TransformableBlockData transformable = new TransformableBlockData(Material.DROPPER)
+        .withTransformer(new DirectionalTransformer(Direction.SOUTH));
+    shape.set(0, 0, 0, transformable);
+
+    BlockData blockData = Bukkit.createBlockData(Material.PISTON);
+    Generics.consumeAs(
+        Directional.class,
+        blockData,
+        directional -> directional.setFacing(BlockFace.DOWN));
+    transformable = new TransformableBlockData(blockData);
+    shape.set(0, 1, 0, transformable);
 
     this.drop = new ItemStack(Material.PISTON);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         drop.getItemMeta(),
         itemMeta -> {
@@ -330,7 +336,7 @@ public class Densificator extends Machine {
     Direction facing = this.getDirection(storage).getRelativeDirection(Direction.SOUTH);
 
     BlockState blockState =
-        key.clone().add(Shape.getRelativeVector(facing, new Vector(0, 0, 1))).getBlock().getState();
+        key.clone().add(facing.getRelativeVector(new Vector(0, 0, 1))).getBlock().getState();
     if (blockState instanceof InventoryHolder) {
       // TODO InventoryMoveItemEvent? Currently prevents instant chaining.
       if (((InventoryHolder) blockState).getInventory().addItem(item).size() == 0) {
@@ -339,7 +345,7 @@ public class Densificator extends Machine {
     }
 
     // Center block location
-    key.add(Shape.getRelativeVector(facing, new Vector(0.5D, 0.5D, 1.5D)));
+    key.add(facing.getRelativeVector(new Vector(0.5D, 0.5D, 1.5D)));
     BlockFace face = facing.toBlockFace();
 
     // See net.minecraft.server.DispenseBehaviorItem
@@ -367,7 +373,7 @@ public class Densificator extends Machine {
   private @NotNull Inventory getInventory(@NotNull ConfigurationSection storage) {
     SimpleUI ui = new SimpleUI(getMachines(), "Densificator Configuration");
     ItemStack itemStack1 = new ItemStack(Material.RED_WOOL);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         itemStack1.getItemMeta(),
         itemMeta -> {
@@ -388,7 +394,7 @@ public class Densificator extends Machine {
               ui.draw(event.getView().getTopInventory());
             }));
     ItemStack itemStack2 = new ItemStack(Material.CRAFTING_TABLE);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         itemStack2.getItemMeta(),
         itemMeta -> {
@@ -400,7 +406,7 @@ public class Densificator extends Machine {
         });
     ui.setButton(4, new Button(itemStack2, event -> {}));
     ItemStack itemStack3 = new ItemStack(Material.LIME_WOOL);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         itemStack3.getItemMeta(),
         itemMeta -> {

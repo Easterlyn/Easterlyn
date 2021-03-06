@@ -3,15 +3,17 @@ package com.easterlyn.machine;
 import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.EasterlynMachines;
 import com.easterlyn.event.ReportableEvent;
-import com.easterlyn.util.Direction;
 import com.easterlyn.util.EconomyUtil;
 import com.easterlyn.util.ExperienceUtil;
-import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.NumberUtil;
-import com.easterlyn.util.Shape;
 import com.easterlyn.util.inventory.InventoryUtil;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.github.jikoo.planarwrappers.tuple.Pair;
+import com.github.jikoo.planarwrappers.util.Generics;
+import com.github.jikoo.planarwrappers.world.Direction;
+import com.github.jikoo.planarwrappers.world.DirectionalTransformer;
+import com.github.jikoo.planarwrappers.world.Shape;
+import com.github.jikoo.planarwrappers.world.TransformableBlockData;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -22,7 +24,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
-import org.bukkit.block.data.Directional;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -39,7 +40,6 @@ import org.bukkit.inventory.RecipeChoice;
 import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -60,34 +60,31 @@ public class Dublexor extends Machine {
 
     Shape shape = getShape();
 
-    shape.setVectorData(new Vector(0, 0, 0), Material.GLASS);
+    shape.set(0, 0, 0, Material.GLASS);
 
-    shape.setVectorData(new Vector(0, 1, 0), Material.ENCHANTING_TABLE);
-    shape.setVectorData(
-        new Vector(0, 0, -1),
-        new Shape.MaterialDataValue(Material.QUARTZ_STAIRS)
-            .withBlockData(Directional.class, Direction.NORTH));
-    shape.setVectorData(
-        new Vector(1, 0, 0),
-        new Shape.MaterialDataValue(Material.QUARTZ_STAIRS)
-            .withBlockData(Directional.class, Direction.WEST));
-    shape.setVectorData(
-        new Vector(-1, 0, 0),
-        new Shape.MaterialDataValue(Material.QUARTZ_STAIRS)
-            .withBlockData(Directional.class, Direction.EAST));
-    shape.setVectorData(
-        new Vector(0, 0, 1),
-        new Shape.MaterialDataValue(Material.QUARTZ_STAIRS)
-            .withBlockData(Directional.class, Direction.SOUTH));
+    shape.set(0, 1, 0, Material.ENCHANTING_TABLE);
 
-    Shape.MaterialDataValue m = new Shape.MaterialDataValue(Material.QUARTZ_SLAB);
-    shape.setVectorData(new Vector(1, 0, -1), m);
-    shape.setVectorData(new Vector(-1, 0, -1), m);
-    shape.setVectorData(new Vector(1, 0, 1), m);
-    shape.setVectorData(new Vector(-1, 0, 1), m);
+    TransformableBlockData transformable = new TransformableBlockData(Material.QUARTZ_STAIRS)
+        .withTransformer(new DirectionalTransformer(Direction.NORTH));
+    shape.set(0, 0, -1, transformable);
+    transformable = new TransformableBlockData(Material.QUARTZ_STAIRS)
+        .withTransformer(new DirectionalTransformer(Direction.WEST));
+    shape.set(1, 0, 0, transformable);
+    transformable = new TransformableBlockData(Material.QUARTZ_STAIRS)
+        .withTransformer(new DirectionalTransformer(Direction.EAST));
+    shape.set(-1, 0, 0, transformable);
+    transformable = new TransformableBlockData(Material.QUARTZ_STAIRS)
+        .withTransformer(new DirectionalTransformer(Direction.SOUTH));
+    shape.set(0, 0, 1, transformable);
+
+    transformable = new TransformableBlockData(Material.QUARTZ_SLAB);
+    shape.set(1, 0, -1, transformable);
+    shape.set(-1, 0, -1, transformable);
+    shape.set(1, 0, 1, transformable);
+    shape.set(-1, 0, 1, transformable);
 
     drop = new ItemStack(Material.ENCHANTING_TABLE);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         drop.getItemMeta(),
         itemMeta -> {
@@ -96,7 +93,7 @@ public class Dublexor extends Machine {
         });
 
     barrier = new ItemStack(Material.BARRIER);
-    GenericUtil.consumeAs(
+    Generics.consumeAs(
         ItemMeta.class,
         barrier.getItemMeta(),
         itemMeta -> {
@@ -125,7 +122,7 @@ public class Dublexor extends Machine {
   private static @NotNull MerchantRecipe getExampleRecipe() {
     if (exampleRecipe == null) {
       ItemStack input = new ItemStack(Material.DIRT, 64);
-      GenericUtil.consumeAs(
+      Generics.consumeAs(
           ItemMeta.class,
           input.getItemMeta(),
           itemMeta -> {
@@ -136,7 +133,7 @@ public class Dublexor extends Machine {
           });
 
       ItemStack cost = new ItemStack(Material.EXPERIENCE_BOTTLE);
-      GenericUtil.consumeAs(
+      Generics.consumeAs(
           ItemMeta.class,
           cost.getItemMeta(),
           itemMeta -> {
@@ -149,7 +146,7 @@ public class Dublexor extends Machine {
             cost.setItemMeta(itemMeta);
           });
       ItemStack result = new ItemStack(Material.DIRT, 64);
-      GenericUtil.consumeAs(
+      Generics.consumeAs(
           ItemMeta.class,
           cost.getItemMeta(),
           itemMeta -> {
@@ -331,7 +328,7 @@ public class Dublexor extends Machine {
               }
 
               ItemStack expCost = new ItemStack(Material.EXPERIENCE_BOTTLE);
-              GenericUtil.consumeAs(
+              Generics.consumeAs(
                   ItemMeta.class,
                   expCost.getItemMeta(),
                   itemMeta -> {
@@ -387,7 +384,7 @@ public class Dublexor extends Machine {
                 lore.add(ChatColor.GOLD + "Creative exp bypass engaged.");
               }
 
-              GenericUtil.consumeAs(
+              Generics.consumeAs(
                   ItemMeta.class,
                   expCost.getItemMeta(),
                   itemMeta -> {

@@ -4,13 +4,13 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.PlayerNameChangeEvent;
 import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.util.Colors;
-import com.easterlyn.util.GenericUtil;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.Request;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.command.Group;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
+import com.github.jikoo.planarwrappers.util.Generics;
 import java.io.File;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -121,10 +121,10 @@ public class User implements Group {
   }
 
   public @NotNull String getDisplayName() {
-    return GenericUtil.orDefault(
+    return Generics.orDefault(
         getStorage().getString("displayName"),
-        GenericUtil.orDefault(
-            GenericUtil.functionAs(Player.class, getPlayer(), Player::getDisplayName),
+        Generics.orDefault(
+            Generics.functionAs(Player.class, getPlayer(), Player::getDisplayName),
             getUniqueId().toString()));
   }
 
