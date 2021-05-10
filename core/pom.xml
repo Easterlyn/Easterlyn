@@ -55,7 +55,7 @@
       <artifactId>javassist</artifactId>
       <groupId>org.javassist</groupId>
       <scope>compile</scope>
-      <version>3.27.0-GA</version>
+      <version>3.28.0-GA</version>
     </dependency>
     <!-- Plugin dependencies -->
     <dependency>
