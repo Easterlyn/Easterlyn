@@ -151,7 +151,7 @@
       <artifactId>annotations</artifactId>
       <groupId>org.jetbrains</groupId>
       <scope>provided</scope>
-      <version>21.0.0</version>
+      <version>21.0.1</version>
     </dependency>
     <!-- Tests -->
     <dependency>
