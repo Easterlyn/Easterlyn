@@ -167,16 +167,13 @@
   <modules>
     <module>core</module>
     <module>chat</module> <!-- depends: core -->
-    <module>afk</module> <!-- depends: core, chat -->
     <module>captchas</module> <!-- depends: core -->
     <module>discord</module> <!-- depends: core, chat -->
     <module>effects</module> <!-- depends: core -->
     <module>kitchensink</module> <!-- depends: core, captcha -->
     <module>machines</module> <!-- depends: core, captcha -->
-    <module>sleepvote</module> <!-- depends: core -->
     <module>spectators</module> <!-- depends: core -->
     <module>villagers</module> <!-- depends: core -->
-    <module>netherportals</module> <!-- depends: core -->
   </modules>
 
   <packaging>pom</packaging>
