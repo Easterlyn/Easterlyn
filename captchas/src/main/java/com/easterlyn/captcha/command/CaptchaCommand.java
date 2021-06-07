@@ -30,30 +30,6 @@ public class CaptchaCommand extends BaseCommand {
     PermissionUtil.addParent("easterlyn.command.baptcha.free", UserRank.MODERATOR.getPermission());
   }
 
-  @CommandAlias("captcha add")
-  @Description("{@@captcha.commands.captcha.add.description}")
-  @CommandPermission("easterlyn.command.captcha.add")
-  @Syntax("<hash>")
-  @CommandCompletion("")
-  public void add(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
-    if (!hash.matches("[0-9A-Za-z]{8,}")) {
-      getCurrentCommandIssuer()
-          .sendInfo(MessageKey.of("captcha.commands.captcha.add.requirements"));
-      return;
-    }
-
-    ItemStack item = player.getInventory().getItemInMainHand();
-    if (item.getType() == Material.AIR) {
-      getCurrentCommandIssuer().sendInfo(MessageKey.of("core.common.no_item"));
-      return;
-    }
-    if (captcha.addCustomHash(hash, item)) {
-      getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.add.success"));
-    } else {
-      getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.add.in_use"));
-    }
-  }
-
   @Subcommand("captcha get")
   @Description("{@@captcha.commands.captcha.get.description}")
   @CommandPermission("easterlyn.command.captcha.get")

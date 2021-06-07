@@ -4,6 +4,7 @@ import com.easterlyn.discord.ChannelType;
 import com.easterlyn.discord.DiscordUser;
 import com.easterlyn.discord.MinecraftBridge;
 import com.easterlyn.event.ReportableEvent;
+import com.easterlyn.plugin.EasterlynPlugin;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import com.github.jikoo.planarwrappers.event.Event;
 import com.github.jikoo.planarwrappers.tuple.Pair;
@@ -31,14 +32,12 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
 
-public class EasterlynDiscord extends JavaPlugin {
+public class EasterlynDiscord extends EasterlynPlugin {
 
   private final Map<ChannelType, Pair<StringBuffer, Long>> messageQueue = new ConcurrentHashMap<>();
   private ConcurrentConfiguration datastore;
@@ -55,7 +54,7 @@ public class EasterlynDiscord extends JavaPlugin {
   }
 
   @Override
-  public void onEnable() {
+  protected void enable() {
     saveDefaultConfig();
     datastore = ConcurrentConfiguration.load(this, new File(getDataFolder(), "datastore.yml"));
     pendingAuthentications =
@@ -89,21 +88,6 @@ public class EasterlynDiscord extends JavaPlugin {
           postMessage(ChannelType.REPORT, message);
         },
         this);
-
-    RegisteredServiceProvider<EasterlynCore> registration =
-        getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (registration != null) {
-      register(registration.getProvider());
-    }
-
-    Event.register(
-        PluginEnableEvent.class,
-        event -> {
-          if (event.getPlugin() instanceof EasterlynCore) {
-            register((EasterlynCore) event.getPlugin());
-          }
-        },
-        this);
   }
 
   private void connect() {
@@ -133,7 +117,8 @@ public class EasterlynDiscord extends JavaPlugin {
             });
   }
 
-  private void register(EasterlynCore plugin) {
+  @Override
+  protected void register(EasterlynCore plugin) {
     plugin.registerCommands(this, getClassLoader(), "com.easterlyn.discord.command");
     plugin.getLocaleManager().addLocaleSupplier(this);
   }

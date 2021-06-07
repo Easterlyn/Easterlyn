@@ -28,7 +28,7 @@ public class CaptchaListener implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void handleCaptcha(InventoryClickEvent event) {
+  private void handleCaptcha(InventoryClickEvent event) {
     boolean hotbar = false;
     switch (event.getClick()) {
       case NUMBER_KEY:
@@ -66,8 +66,7 @@ public class CaptchaListener implements Listener {
       toCaptcha = event.getCursor();
     }
 
-    if (blankCaptcha == null
-        || toCaptcha == null
+    if (toCaptcha == null
         || !EasterlynCaptchas.isBlankCaptcha(blankCaptcha)
         || captcha.canNotCaptcha(toCaptcha)
         || EasterlynCaptchas.isBlankCaptcha(toCaptcha)) {
@@ -115,7 +114,7 @@ public class CaptchaListener implements Listener {
   }
 
   @EventHandler(priority = EventPriority.HIGH)
-  public void onPlayerInteract(PlayerInteractEvent event) {
+  private void onPlayerInteract(PlayerInteractEvent event) {
     if (event.getAction() != Action.RIGHT_CLICK_AIR
         && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
       return;
@@ -152,7 +151,7 @@ public class CaptchaListener implements Listener {
   }
 
   @EventHandler
-  public void onPrepareItemCraft(PrepareItemCraftEvent event) {
+  private void onPrepareItemCraft(PrepareItemCraftEvent event) {
     if (event.getRecipe() instanceof Keyed
         && ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.RECIPE_KEY)) {
       for (ItemStack itemStack : event.getInventory().getMatrix()) {
@@ -171,7 +170,7 @@ public class CaptchaListener implements Listener {
   }
 
   @EventHandler
-  public void onItemCraft(CraftItemEvent event) {
+  private void onItemCraft(CraftItemEvent event) {
     if (event.getRecipe() instanceof Keyed
         && ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.RECIPE_KEY)) {
       for (ItemStack itemStack : event.getInventory().getMatrix()) {
@@ -190,7 +189,7 @@ public class CaptchaListener implements Listener {
   }
 
   @EventHandler
-  public void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
+  private void onPrepareItemEnchant(PrepareItemEnchantEvent event) {
     if (EasterlynCaptchas.isCaptcha(event.getItem())) {
       event.setCancelled(true);
     }
