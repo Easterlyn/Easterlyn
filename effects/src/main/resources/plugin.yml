@@ -6,3 +6,7 @@ author: Jikoo
 description: ${project.description}
 api-version: ${bukkit-api-version}
 depend: [ EasterlynCore ]
+# N.B. Reflections library requires Javassist library
+libraries:
+  - org.javassist:javassist:${javassist.version}
+  - org.reflections:reflections:${reflections.version}

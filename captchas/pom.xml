@@ -5,10 +5,20 @@
   <artifactId>captchas</artifactId>
   <dependencies>
     <dependency>
+      <artifactId>paper-api</artifactId>
+      <groupId>com.destroystokyo.paper</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>planarwrappers</artifactId>
+      <groupId>com.github.jikoo</groupId>
+    </dependency>
+    <dependency>
       <artifactId>core</artifactId>
       <groupId>com.easterlyn</groupId>
-      <scope>provided</scope>
-      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
     </dependency>
   </dependencies>
 

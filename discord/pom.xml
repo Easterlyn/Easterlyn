@@ -31,22 +31,29 @@
 
   <dependencies>
     <dependency>
+      <artifactId>paper-api</artifactId>
+      <groupId>com.destroystokyo.paper</groupId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.jikoo</groupId>
+      <artifactId>planarwrappers</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>core</artifactId>
       <groupId>com.easterlyn</groupId>
-      <scope>provided</scope>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <artifactId>chat</artifactId>
       <groupId>com.easterlyn</groupId>
-      <scope>provided</scope>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <artifactId>discord4j-core</artifactId>
       <groupId>com.discord4j</groupId>
       <scope>compile</scope>
-      <version>3.1.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
     </dependency>
   </dependencies>
   <description>Bridge Discord and Minecraft.</description>

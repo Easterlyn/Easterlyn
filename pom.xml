@@ -126,41 +126,148 @@
     </resources>
   </build>
 
-  <dependencies>
-    <dependency>
-      <artifactId>bungeecord-chat</artifactId>
-      <groupId>net.md-5</groupId>
-      <scope>provided</scope>
-      <version>1.16-R0.4</version>
-    </dependency>
-    <!-- Module core uses server jar, also needs to specify API for dependency resolution order. -->
-    <!--suppress MavenDuplicateDependenciesInspection -->
-    <dependency>
-      <artifactId>paper-api</artifactId>
-      <groupId>com.destroystokyo.paper</groupId>
-      <scope>provided</scope>
-      <version>1.16.5-R0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <artifactId>acf-paper</artifactId>
-      <groupId>co.aikar</groupId>
-      <scope>provided</scope>
-      <version>0.5.0-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <artifactId>annotations</artifactId>
-      <groupId>org.jetbrains</groupId>
-      <scope>provided</scope>
-      <version>21.0.1</version>
-    </dependency>
-    <!-- Tests -->
-    <dependency>
-      <artifactId>junit</artifactId>
-      <groupId>junit</groupId>
-      <scope>test</scope>
-      <version>4.13.2</version>
-    </dependency>
-  </dependencies>
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <artifactId>bungeecord-chat</artifactId>
+        <groupId>net.md-5</groupId>
+        <scope>provided</scope>
+        <version>1.16-R0.4</version>
+      </dependency>
+      <!-- Module core uses server jar, also needs to specify API for dependency resolution order. -->
+      <!--suppress MavenDuplicateDependenciesInspection -->
+      <dependency>
+        <artifactId>paper-api</artifactId>
+        <groupId>com.destroystokyo.paper</groupId>
+        <scope>provided</scope>
+        <version>${spigot.version}${spigot.revision}</version>
+      </dependency>
+      <dependency>
+        <artifactId>brigadier</artifactId>
+        <groupId>com.mojang</groupId>
+        <scope>provided</scope>
+        <version>1.0.500</version>
+      </dependency>
+      <dependency>
+        <artifactId>paper</artifactId>
+        <exclusions>
+          <exclusion>
+            <artifactId>brigadier</artifactId>
+            <groupId>com.mojang</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>minecraft-server</artifactId>
+            <groupId>io.papermc</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.destroystokyo.paper</groupId>
+            <artifactId>paper-mojangapi</artifactId>
+          </exclusion>
+        </exclusions>
+        <groupId>com.destroystokyo.paper</groupId>
+        <scope>provided</scope>
+        <version>${spigot.version}${spigot.revision}</version>
+      </dependency>
+      <dependency>
+        <artifactId>acf-paper</artifactId>
+        <groupId>co.aikar</groupId>
+        <scope>provided</scope>
+        <version>0.5.0-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <artifactId>annotations</artifactId>
+        <groupId>org.jetbrains</groupId>
+        <scope>provided</scope>
+        <version>21.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>com.github.jikoo</groupId>
+        <artifactId>planarwrappers</artifactId>
+        <scope>provided</scope>
+        <version>2.2.1</version>
+      </dependency>
+      <dependency>
+        <artifactId>discord4j-core</artifactId>
+        <groupId>com.discord4j</groupId>
+        <scope>provided</scope>
+        <version>3.1.5</version>
+      </dependency>
+      <dependency>
+        <artifactId>reflections</artifactId>
+        <groupId>org.reflections</groupId>
+        <scope>test</scope>
+        <version>${reflections.version}</version>
+      </dependency>
+      <!-- Plugin dependencies -->
+      <dependency>
+        <artifactId>api</artifactId>
+        <groupId>net.luckperms</groupId>
+        <scope>provided</scope>
+        <version>5.3</version>
+      </dependency>
+      <dependency>
+        <artifactId>CreeperHeal</artifactId>
+        <groupId>com.github.nitnelave</groupId>
+        <scope>provided</scope>
+        <version>f0388aa524</version>
+      </dependency>
+      <dependency>
+        <artifactId>worldedit-core</artifactId>
+        <groupId>com.sk89q.worldedit</groupId>
+        <scope>provided</scope>
+        <version>7.2.5</version>
+      </dependency>
+      <dependency>
+        <artifactId>worldguard-bukkit</artifactId>
+        <exclusions>
+          <exclusion>
+            <artifactId>commandbook</artifactId>
+            <groupId>com.sk89q</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>paper-api</artifactId>
+            <groupId>com.destroystokyo.paper</groupId>
+          </exclusion>
+        </exclusions>
+        <groupId>com.sk89q.worldguard</groupId>
+        <scope>provided</scope>
+        <version>7.0.5</version>
+      </dependency>
+      <dependency>
+        <artifactId>GriefPrevention</artifactId>
+        <groupId>com.github.TechFortress</groupId>
+        <scope>provided</scope>
+        <version>16.17.1</version>
+      </dependency>
+      <!-- Tests -->
+      <dependency>
+        <artifactId>junit</artifactId>
+        <groupId>junit</groupId>
+        <scope>test</scope>
+        <version>4.13.2</version>
+      </dependency>
+      <!-- Modules -->
+      <dependency>
+        <artifactId>core</artifactId>
+        <groupId>com.easterlyn</groupId>
+        <scope>provided</scope>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>chat</artifactId>
+        <groupId>com.easterlyn</groupId>
+        <scope>provided</scope>
+        <version>${project.version}</version>
+      </dependency>
+      <dependency>
+        <artifactId>captchas</artifactId>
+        <groupId>com.easterlyn</groupId>
+        <scope>provided</scope>
+        <version>${project.version}</version>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
   <groupId>com.easterlyn</groupId>
   <modelVersion>4.0.0</modelVersion>
 
@@ -179,7 +286,11 @@
   <packaging>pom</packaging>
 
   <properties>
-    <bukkit-api-version>1.15</bukkit-api-version>
+    <bukkit-api-version>1.16</bukkit-api-version>
+    <spigot.version>1.16.5</spigot.version>
+    <spigot.revision>-R0.1-SNAPSHOT</spigot.revision>
+    <javassist.version>3.28.0-GA</javassist.version>
+    <reflections.version>0.9.12</reflections.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.testResourceDirectory>${project.basedir}/test/resources
     </project.build.testResourceDirectory>
@@ -199,6 +310,14 @@
     <repository>
       <id>destroystokyo-repo</id>
       <url>https://repo.destroystokyo.com/repository/maven-public//</url>
+    </repository>
+    <repository>
+      <id>jitpack.io</id>
+      <url>https://jitpack.io</url>
+    </repository>
+    <repository>
+      <id>sk89q-repo</id>
+      <url>https://maven.enginehub.org/repo/</url>
     </repository>
   </repositories>
 

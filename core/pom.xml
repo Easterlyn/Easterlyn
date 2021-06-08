@@ -5,86 +5,41 @@
   <artifactId>core</artifactId>
   <dependencies>
     <!-- API needs to override server when resolving dependencies -->
-    <!--suppress MavenDuplicateDependenciesInspection -->
     <dependency>
       <artifactId>paper-api</artifactId>
       <groupId>com.destroystokyo.paper</groupId>
-      <scope>provided</scope>
-      <version>1.16.4-R0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>paper</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>brigadier</artifactId>
-          <groupId>com.mojang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>minecraft-server</artifactId>
-          <groupId>io.papermc</groupId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.destroystokyo.paper</groupId>
-          <artifactId>paper-mojangapi</artifactId>
-        </exclusion>
-      </exclusions>
       <groupId>com.destroystokyo.paper</groupId>
-      <scope>provided</scope>
-      <version>1.16.4-R0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <artifactId>acf-paper</artifactId>
       <groupId>co.aikar</groupId>
       <scope>compile</scope>
-      <version>0.5.0-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>com.github.jikoo</groupId>
       <artifactId>planarwrappers</artifactId>
       <scope>compile</scope>
-      <version>2.2.1</version>
     </dependency>
     <dependency>
       <artifactId>reflections</artifactId>
       <groupId>org.reflections</groupId>
-      <scope>compile</scope>
-      <version>0.9.12</version>
-    </dependency>
-    <dependency>
-      <!-- Required by Reflections -->
-      <artifactId>javassist</artifactId>
-      <groupId>org.javassist</groupId>
-      <scope>compile</scope>
-      <version>3.28.0-GA</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Plugin dependencies -->
     <dependency>
       <artifactId>api</artifactId>
       <groupId>net.luckperms</groupId>
-      <scope>provided</scope>
-      <version>5.3</version>
     </dependency>
     <dependency>
       <artifactId>worldguard-bukkit</artifactId>
-      <exclusions>
-        <exclusion>
-          <artifactId>commandbook</artifactId>
-          <groupId>com.sk89q</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>paper-api</artifactId>
-          <groupId>com.destroystokyo.paper</groupId>
-        </exclusion>
-      </exclusions>
       <groupId>com.sk89q.worldguard</groupId>
-      <scope>provided</scope>
-      <version>7.0.5</version>
     </dependency>
     <dependency>
       <artifactId>GriefPrevention</artifactId>
       <groupId>com.github.TechFortress</groupId>
-      <scope>provided</scope>
-      <version>16.17.1</version>
     </dependency>
   </dependencies>
 
@@ -97,17 +52,6 @@
     <groupId>com.easterlyn</groupId>
     <version>2.0</version>
   </parent>
-
-  <repositories>
-    <repository>
-      <id>jitpack.io</id>
-      <url>https://jitpack.io</url>
-    </repository>
-    <repository>
-      <id>sk89q-repo</id>
-      <url>https://maven.enginehub.org/repo/</url>
-    </repository>
-  </repositories>
 
   <build>
     <plugins>

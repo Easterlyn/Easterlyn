@@ -32,7 +32,7 @@ jobs:
         run: |
           mkdir ~/paperclip
           cd ~/paperclip
-          wget -O paperclip.jar https://papermc.io/api/v1/paper/1.16.4/latest/download
+          wget -O paperclip.jar https://papermc.io/api/v1/paper/1.16.5/latest/download
           java -jar -Dpaperclip.install=true paperclip.jar
 
       - name: Build with Maven

@@ -5,28 +5,32 @@
   <artifactId>kitchensink</artifactId>
   <dependencies>
     <dependency>
+      <artifactId>paper-api</artifactId>
+      <groupId>com.destroystokyo.paper</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>planarwrappers</artifactId>
+      <groupId>com.github.jikoo</groupId>
+    </dependency>
+    <dependency>
       <artifactId>core</artifactId>
       <groupId>com.easterlyn</groupId>
-      <scope>provided</scope>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <artifactId>captchas</artifactId>
       <groupId>com.easterlyn</groupId>
-      <scope>provided</scope>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <artifactId>worldedit-core</artifactId>
       <groupId>com.sk89q.worldedit</groupId>
-      <scope>provided</scope>
-      <version>7.2.5</version>
     </dependency>
     <dependency>
       <artifactId>brigadier</artifactId>
       <groupId>com.mojang</groupId>
-      <scope>provided</scope>
-      <version>1.0.500</version>
+    </dependency>
+    <dependency>
+      <groupId>org.reflections</groupId>
+      <artifactId>reflections</artifactId>
     </dependency>
   </dependencies>
 
