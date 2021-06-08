@@ -28,7 +28,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -54,7 +53,9 @@ import org.jetbrains.annotations.Nullable;
 public class EasterlynCaptchas extends EasterlynPlugin {
 
   public static final String RECIPE_KEY = ItemUtil.UNIQUE_KEYED_PREFIX + "captcha_uncraft";
-  private static final String HASH_PREFIX = ChatColor.LIGHT_PURPLE.toString();
+  public static final NamespacedKey KEY_SKIP_CONVERT =
+      Objects.requireNonNull(
+          StringConverters.toNamespacedKey("captcha:skip_convert"));
   private static final NamespacedKey KEY_BLANK =
       Objects.requireNonNull(
           StringConverters.toNamespacedKey("captcha:blank"));
@@ -426,7 +427,6 @@ public class EasterlynCaptchas extends EasterlynPlugin {
    * @return the number of captchacards affected
    */
   public int convert(@NotNull Player player) {
-    // TODO SKIP_CONVERT nbt tag
     int conversions = 0;
     AbstractSequentialList<Integer> depthAmounts = new LinkedList<>();
     for (int i = 0; i < player.getInventory().getSize(); i++) {
@@ -437,6 +437,10 @@ public class EasterlynCaptchas extends EasterlynPlugin {
 
       ItemMeta baseMeta = baseItem.getItemMeta();
       if (baseMeta == null) {
+        continue;
+      }
+
+      if (baseMeta.getPersistentDataContainer().has(KEY_SKIP_CONVERT, PersistentDataType.BYTE)) {
         continue;
       }
 

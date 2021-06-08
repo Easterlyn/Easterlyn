@@ -21,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.persistence.PersistentDataType;
 
 public class CaptchaCommand extends BaseCommand {
 
@@ -28,6 +29,26 @@ public class CaptchaCommand extends BaseCommand {
 
   public CaptchaCommand() {
     PermissionUtil.addParent("easterlyn.command.baptcha.free", UserRank.MODERATOR.getPermission());
+  }
+
+  @CommandAlias("captcha unique")
+  @Description("{@@captcha.commands.captcha.unique.description}")
+  @CommandPermission("easterlyn.command.captcha.unique")
+  @Syntax("")
+  @CommandCompletion("")
+  public void add(@Flags(CoreContexts.SELF) Player player) {
+    ItemStack item = player.getInventory().getItemInMainHand();
+    if (!EasterlynCaptchas.isUsedCaptcha(item)) {
+      getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.unique.no_captcha"));
+      return;
+    }
+    item.editMeta(itemMeta ->
+        itemMeta.getPersistentDataContainer().set(
+            EasterlynCaptchas.KEY_SKIP_CONVERT,
+            PersistentDataType.BYTE,
+            (byte) 0));
+    player.getInventory().setItemInMainHand(item);
+    getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.unique.success"));
   }
 
   @Subcommand("captcha get")
@@ -46,7 +67,7 @@ public class CaptchaCommand extends BaseCommand {
   }
 
   @CommandAlias("baptcha|captcha batch")
-  @Description("")
+  @Description("{@@captcha.commands.captcha.batch.description}")
   @CommandPermission("easterlyn.command.captcha.batch")
   @Syntax("")
   @CommandCompletion("@permission:value=easterlyn.command.baptcha.free,complete=free")

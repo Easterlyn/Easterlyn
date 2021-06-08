@@ -1,11 +1,10 @@
 captcha:
   commands:
     captcha:
-      add:
-        description: '{color:normal.a}Add a custom captcha hash.'
-        requirements: '{color:bad.a}Hashes must be 8+ alphanumeric characters!'
-        success: '{color:normal.a}Added new hash!'
-        in_use: '{color:bad.a}Hash already exists! If you REALLY want it, manually move files.'
+      unique:
+        description: '{color:normal.a}Mark a captcha to not be converted.'
+        no_captcha: '{color:bad.a}Please hold a used captcha!'
+        success: '{color:normal.a}Added NBT tag to item in hand!'
       get:
         description: '{color:normal.a}Get a captcha by hash.'
         invalid: '{color:bad.a}Hash is not in use!'
