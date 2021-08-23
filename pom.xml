@@ -215,7 +215,7 @@
         <artifactId>worldedit-core</artifactId>
         <groupId>com.sk89q.worldedit</groupId>
         <scope>provided</scope>
-        <version>7.2.5</version>
+        <version>7.2.6</version>
       </dependency>
       <dependency>
         <artifactId>worldguard-bukkit</artifactId>
