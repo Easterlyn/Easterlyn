@@ -14,6 +14,7 @@ import com.easterlyn.chat.listener.ChannelManagementListener;
 import com.easterlyn.chat.listener.MuteListener;
 import com.easterlyn.command.CoreLang;
 import com.easterlyn.event.ReportableEvent;
+import com.easterlyn.plugin.EasterlynPlugin;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
@@ -21,7 +22,6 @@ import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.text.ParsedText;
 import com.easterlyn.util.text.StaticQuoteConsumer;
-import com.github.jikoo.planarwrappers.event.Event;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.Collections;
@@ -43,10 +43,8 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.permissions.PermissionDefault;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,7 +53,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-public class EasterlynChat extends JavaPlugin {
+public class EasterlynChat extends EasterlynPlugin {
 
   public static final Channel DEFAULT =
       new Channel("main", UUID.fromString("902b498d-9909-4e78-b401-b7c4f2b1ab4c"));
@@ -68,22 +66,7 @@ public class EasterlynChat extends JavaPlugin {
   private final Map<String, Channel> channels = new ConcurrentHashMap<>();
 
   @Override
-  public void onEnable() {
-    RegisteredServiceProvider<EasterlynCore> registration =
-        getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (registration != null) {
-      register(registration.getProvider());
-    }
-
-    Event.register(
-        PluginEnableEvent.class,
-        event -> {
-          if (event.getPlugin() instanceof EasterlynCore) {
-            register((EasterlynCore) event.getPlugin());
-          }
-        },
-        this);
-
+  protected void enable() {
     // Permission to use >greentext.
     PermissionUtil.getOrCreate("easterlyn.chat.greentext", PermissionDefault.TRUE);
     // Permission to bypass all chat filtering.
@@ -141,6 +124,7 @@ public class EasterlynChat extends JavaPlugin {
     //  - anti-spam listener
     //  - log signs to #sign
     //  - Add permission for translating & codes in chat
+    //  - Allow overrides for channel hover
 
   }
 
@@ -219,7 +203,8 @@ public class EasterlynChat extends JavaPlugin {
     return true;
   }
 
-  private void register(EasterlynCore plugin) {
+  @Override
+  protected void register(EasterlynCore plugin) {
     StringUtil.addQuoteConsumer(
         new StaticQuoteConsumer(CHANNEL_PATTERN) {
           @Override
@@ -302,15 +287,7 @@ public class EasterlynChat extends JavaPlugin {
 
           User user;
           if (context.getIssuer().isPlayer()) {
-            RegisteredServiceProvider<EasterlynCore> registration =
-                getServer().getServicesManager().getRegistration(EasterlynCore.class);
-            user =
-                registration != null
-                    ? registration
-                        .getProvider()
-                        .getUserManager()
-                        .getUser(context.getIssuer().getUniqueId())
-                    : null;
+            user = getCore().getUserManager().getUser(context.getIssuer().getUniqueId());
           } else {
             user = null;
           }
