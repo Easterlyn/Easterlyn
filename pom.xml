@@ -210,6 +210,24 @@
         <groupId>com.github.nitnelave</groupId>
         <scope>provided</scope>
         <version>f0388aa524</version>
+        <exclusions>
+          <exclusion>
+            <groupId>com.garbagemule.MobArena</groupId>
+            <artifactId>MobArena</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.griefcraft.lwc</groupId>
+            <artifactId>LWCPlugin</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.massivecraft.mcore</groupId>
+            <artifactId>MCore</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>com.massivecraft.factions</groupId>
+            <artifactId>Factions</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <artifactId>worldedit-core</artifactId>
