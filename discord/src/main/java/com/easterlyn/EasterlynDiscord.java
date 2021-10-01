@@ -18,8 +18,8 @@ import discord4j.core.GatewayDiscordClient;
 import discord4j.core.object.entity.Guild;
 import discord4j.core.object.entity.Member;
 import discord4j.core.object.entity.channel.GuildMessageChannel;
-import discord4j.core.object.presence.Activity;
-import discord4j.core.object.presence.Presence;
+import discord4j.core.object.presence.ClientActivity;
+import discord4j.core.object.presence.ClientPresence;
 import java.io.File;
 import java.time.Duration;
 import java.util.Collection;
@@ -110,7 +110,9 @@ public class EasterlynDiscord extends EasterlynPlugin {
                         this.client = gatewayClient;
                         new MinecraftBridge(this, gatewayClient).setup();
                         gatewayClient
-                            .updatePresence(Presence.online(Activity.playing("play.easterlyn.com")))
+                            .updatePresence(ClientPresence.online(ClientActivity.playing(
+                                getConfig().getString("playing", "totally offline"))))
+
                             .subscribe();
                       })
                   .subscribe();

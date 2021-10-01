@@ -1,4 +1,5 @@
 token: ''
+playing: 'n/a'
 guilds:
   '0123456789':
     channels:
