@@ -308,7 +308,7 @@
     <spigot.version>1.16.5</spigot.version>
     <spigot.revision>-R0.1-SNAPSHOT</spigot.revision>
     <javassist.version>3.28.0-GA</javassist.version>
-    <reflections.version>0.10.1</reflections.version>
+    <reflections.version>0.10.2</reflections.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.build.testResourceDirectory>${project.basedir}/test/resources
     </project.build.testResourceDirectory>
