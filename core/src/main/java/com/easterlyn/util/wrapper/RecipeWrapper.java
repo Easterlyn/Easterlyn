@@ -6,15 +6,14 @@ import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import net.minecraft.server.v1_16_R3.IRecipe;
-import net.minecraft.server.v1_16_R3.ItemStack;
-import net.minecraft.server.v1_16_R3.MinecraftKey;
-import net.minecraft.server.v1_16_R3.RecipeItemStack;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.crafting.Ingredient;
 import org.bukkit.Bukkit;
 import org.bukkit.Keyed;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_18_R1.util.CraftMagicNumbers;
 import org.bukkit.inventory.Recipe;
 
 /**
@@ -31,13 +30,13 @@ public class RecipeWrapper {
     Preconditions.checkArgument(
         recipe instanceof Keyed, "%s does not implement Keyed!", recipe.getClass());
     Keyed keyed = ((Keyed) recipe);
-    Optional<? extends IRecipe<?>> iRecipeOptional =
+    Optional<? extends net.minecraft.world.item.crafting.Recipe<?>> recipeOptional =
         ((CraftServer) Bukkit.getServer())
             .getServer()
-            .getCraftingManager()
-            .getRecipe(new MinecraftKey(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
+            .getRecipeManager()
+            .byKey(new ResourceLocation(keyed.getKey().getNamespace(), keyed.getKey().getKey()));
 
-    if (iRecipeOptional.isEmpty()) {
+    if (recipeOptional.isEmpty()) {
       ingredients = Collections.emptyMap();
       result = new org.bukkit.inventory.ItemStack(Material.AIR);
       return;
@@ -47,10 +46,14 @@ public class RecipeWrapper {
 
     ingredients = new HashMap<>();
 
-    for (RecipeItemStack ingredient : iRecipeOptional.get().a()) {
-      ingredient.buildChoices();
+    for (Ingredient ingredient : recipeOptional.get().getIngredients()) {
+      ingredient.dissolve();
+      if (ingredient.itemStacks == null) {
+        continue;
+      }
+
       EnumSet<Material> materials = EnumSet.noneOf(Material.class);
-      for (ItemStack itemStack : ingredient.choices) {
+      for (ItemStack itemStack : ingredient.itemStacks) {
         Material material = CraftMagicNumbers.getMaterial(itemStack.getItem());
         if (material == null || material.isAir()) {
           continue;

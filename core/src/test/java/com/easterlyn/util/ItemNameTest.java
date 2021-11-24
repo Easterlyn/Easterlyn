@@ -88,7 +88,7 @@ public class ItemNameTest {
       }
     }
     if (!missing.isEmpty()) {
-      fail("Missing material data for " + missing.toString() + " in items.csv");
+      fail("Missing material data for " + missing + " in items.csv");
     }
   }
 }

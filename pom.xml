@@ -55,18 +55,24 @@
             </execution>
           </executions>
           <groupId>org.apache.maven.plugins</groupId>
-          <version>3.2.4</version>
+          <version>3.3.0-SNAPSHOT</version>
         </plugin>
 
         <plugin>
           <artifactId>maven-compiler-plugin</artifactId>
           <configuration>
-            <source>11</source>
-            <target>11</target>
+            <source>17</source>
+            <target>17</target>
             <!--<forceJavacCompilerUse>true</forceJavacCompilerUse>-->
           </configuration>
           <groupId>org.apache.maven.plugins</groupId>
           <version>3.8.1</version>
+        </plugin>
+
+        <plugin>
+          <groupId>net.md-5</groupId>
+          <artifactId>specialsource-maven-plugin</artifactId>
+          <version>1.2.2</version>
         </plugin>
 
         <plugin>
@@ -138,9 +144,9 @@
       <!--suppress MavenDuplicateDependenciesInspection -->
       <dependency>
         <artifactId>paper-api</artifactId>
-        <groupId>com.destroystokyo.paper</groupId>
+        <groupId>io.papermc.paper</groupId>
         <scope>provided</scope>
-        <version>${spigot.version}${spigot.revision}</version>
+        <version>1.17.1-R0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <artifactId>brigadier</artifactId>
@@ -148,6 +154,20 @@
         <scope>provided</scope>
         <version>1.0.500</version>
       </dependency>
+      <dependency>
+        <artifactId>spigot-api</artifactId>
+        <groupId>org.spigotmc</groupId>
+        <scope>provided</scope>
+        <version>${spigot.version}${spigot.revision}</version>
+      </dependency>
+      <dependency>
+        <artifactId>spigot</artifactId>
+        <classifier>remapped-mojang</classifier>
+        <groupId>org.spigotmc</groupId>
+        <scope>provided</scope>
+        <version>${spigot.version}${spigot.revision}</version>
+      </dependency>
+      <!--
       <dependency>
         <artifactId>paper</artifactId>
         <exclusions>
@@ -164,10 +184,11 @@
             <artifactId>paper-mojangapi</artifactId>
           </exclusion>
         </exclusions>
-        <groupId>com.destroystokyo.paper</groupId>
+        <groupId>io.papermc.paper</groupId>
         <scope>provided</scope>
         <version>${spigot.version}${spigot.revision}</version>
       </dependency>
+      -->
       <dependency>
         <artifactId>acf-paper</artifactId>
         <groupId>co.aikar</groupId>
@@ -303,10 +324,17 @@
 
   <packaging>pom</packaging>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>maven-snapshots</id>
+      <url>https://repository.apache.org/content/repositories/snapshots/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
   <properties>
-    <bukkit-api-version>1.16</bukkit-api-version>
-    <spigot.version>1.16.5</spigot.version>
-    <spigot.revision>-R0.1-SNAPSHOT</spigot.revision>
+    <bukkit-api-version>1.18</bukkit-api-version>
+    <spigot.version>1.18</spigot.version>
+    <spigot.revision>-pre5-R0.1-SNAPSHOT</spigot.revision>
     <javassist.version>3.28.0-GA</javassist.version>
     <reflections.version>0.10.2</reflections.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

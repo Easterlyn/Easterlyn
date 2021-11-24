@@ -3,15 +3,15 @@ package com.easterlyn.util.inventory;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import net.minecraft.server.v1_16_R3.ChatMessage;
-import net.minecraft.server.v1_16_R3.EntityPlayer;
-import net.minecraft.server.v1_16_R3.MerchantRecipeList;
-import net.minecraft.server.v1_16_R3.PacketPlayOutOpenWindow;
-import net.minecraft.server.v1_16_R3.PacketPlayOutOpenWindowMerchant;
-import net.minecraft.server.v1_16_R3.PacketPlayOutSetSlot;
+import net.minecraft.network.chat.TextComponent;
+import net.minecraft.network.protocol.game.ClientboundContainerSetSlotPacket;
+import net.minecraft.network.protocol.game.ClientboundMerchantOffersPacket;
+import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.item.trading.MerchantOffers;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftMerchantRecipe;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftMerchantRecipe;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
@@ -24,28 +24,29 @@ public class InventoryUtil {
     if (!(player instanceof CraftPlayer)) {
       return;
     }
-    EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
-    nmsPlayer.playerConnection.sendPacket(
-        new PacketPlayOutSetSlot(
-            nmsPlayer.activeContainer.windowId,
+    ServerPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
+    nmsPlayer.connection.send(
+        new ClientboundContainerSetSlotPacket(
+            nmsPlayer.containerMenu.containerId,
+            nmsPlayer.containerMenu.incrementStateId(),
             slot,
-            nmsPlayer.activeContainer.getSlot(slot).getItem()));
+            nmsPlayer.containerMenu.getSlot(slot).getItem()));
   }
 
   public static void changeWindowName(Player player, String name) {
     CraftPlayer craftPlayer = (CraftPlayer) player;
-    EntityPlayer entityPlayer = craftPlayer.getHandle();
+    ServerPlayer entityPlayer = craftPlayer.getHandle();
 
-    if (entityPlayer.playerConnection == null) {
+    if (entityPlayer.connection == null) {
       return;
     }
 
-    entityPlayer.playerConnection.sendPacket(
-        new PacketPlayOutOpenWindow(
-            entityPlayer.activeContainer.windowId,
-            entityPlayer.activeContainer.getType(),
-            new ChatMessage(name)));
-    entityPlayer.updateInventory(entityPlayer.activeContainer);
+    entityPlayer.connection.send(
+        new ClientboundOpenScreenPacket(
+            entityPlayer.containerMenu.containerId,
+            entityPlayer.containerMenu.getType(),
+            new TextComponent(name)));
+    entityPlayer.initMenu(entityPlayer.containerMenu);
   }
 
   public static void updateVillagerTrades(Player player, MerchantRecipe... recipes) {
@@ -63,13 +64,13 @@ public class InventoryUtil {
       return;
     }
 
-    EntityPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
+    ServerPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
 
-    if (nmsPlayer.activeContainer.getBukkitView().getType() != InventoryType.MERCHANT) {
+    if (nmsPlayer.containerMenu.getBukkitView().getType() != InventoryType.MERCHANT) {
       return;
     }
 
-    MerchantRecipeList list = new MerchantRecipeList();
+    MerchantOffers list = new MerchantOffers();
     for (org.bukkit.inventory.MerchantRecipe recipe : recipes) {
       // The client can handle having empty results for recipes but will crash when clicking result.
       if (recipe.getResult().getType() == Material.AIR) {
@@ -82,9 +83,9 @@ public class InventoryUtil {
       list.add(CraftMerchantRecipe.fromBukkit(recipe).toMinecraft());
     }
 
-    nmsPlayer.playerConnection.sendPacket(
-        new PacketPlayOutOpenWindowMerchant(
-            nmsPlayer.activeContainer.windowId, list, 5, 0, false, false));
+    nmsPlayer.connection.send(
+        new ClientboundMerchantOffersPacket(
+            nmsPlayer.containerMenu.containerId, list, 5, 0, false, false));
     player.updateInventory();
   }
 }

@@ -9,16 +9,15 @@ import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import net.minecraft.server.v1_16_R3.EntityPlayer;
-import net.minecraft.server.v1_16_R3.MinecraftServer;
-import net.minecraft.server.v1_16_R3.PlayerInteractManager;
-import net.minecraft.server.v1_16_R3.World;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_16_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -131,19 +130,25 @@ public class PlayerUtil {
       // Player has not logged in.
       return null;
     }
-    MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
-    WorldServer worldServer = server.getWorldServer(World.OVERWORLD);
 
-    if (worldServer == null) {
+    // Create a profile and entity to load the player data
+    // See net.minecraft.server.PlayerList#attemptLogin
+    GameProfile profile = new GameProfile(offlinePlayer.getUniqueId(),
+        offlinePlayer.getName() != null
+            ? offlinePlayer.getName()
+            : offlinePlayer.getUniqueId().toString());
+    MinecraftServer server = ((CraftServer) Bukkit.getServer()).getServer();
+    ServerLevel serverLevel = server.getLevel(Level.OVERWORLD);
+
+    if (serverLevel == null) {
       return null;
     }
 
-    EntityPlayer nmsPlayer =
-        new EntityPlayer(
+    ServerPlayer nmsPlayer =
+        new ServerPlayer(
             server,
-            worldServer,
-            new GameProfile(uuid, offlinePlayer.getName()),
-            new PlayerInteractManager(worldServer));
+            serverLevel,
+            new GameProfile(uuid, offlinePlayer.getName()));
     // TODO: swap to OpenInv to prevent overwriting mounts?
 
     CraftPlayer player = nmsPlayer.getBukkitEntity();

@@ -4,14 +4,14 @@ import com.easterlyn.EasterlynCore;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import net.minecraft.server.v1_16_R3.BlockPosition;
-import net.minecraft.server.v1_16_R3.IBlockData;
-import net.minecraft.server.v1_16_R3.World;
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.state.BlockState;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.block.data.CraftBlockData;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.block.data.CraftBlockData;
+import org.bukkit.craftbukkit.v1_18_R1.util.CraftMagicNumbers;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
@@ -71,43 +71,42 @@ public class BlockUpdateManager {
     // and certain other edge cases also will not trigger updates.
     // Instead, we manually force an update using NMS.
 
-    BlockPosition position1 = new BlockPosition(updated.getX(), updated.getY(), updated.getZ());
-    BlockPosition position2 =
-        new BlockPosition(triggering.getX(), triggering.getY(), triggering.getZ());
-    World nmsWorld = ((CraftWorld) updated.getWorld()).getHandle();
+    BlockPos position1 = new BlockPos(updated.getX(), updated.getY(), updated.getZ());
+    BlockPos position2 =
+        new BlockPos(triggering.getX(), triggering.getY(), triggering.getZ());
+    Level nmsWorld = ((CraftWorld) updated.getWorld()).getHandle();
 
     if (position1.equals(position2)) {
       // Primary affected block, update comparators, observers, etc.
-      IBlockData blockData = nmsWorld.getType(position1);
+      BlockState blockData = nmsWorld.getBlockState(position1);
 
-      // See Chunk#setType
+      // See Chunk#setBlockState
       blockData.onPlace(nmsWorld, position1, blockData, false);
 
-      // See World#notifyAndUpdatePhysics
-      if (blockData.isComplexRedstone()) {
-        nmsWorld.updateAdjacentComparators(position1, blockData.getBlock());
+      // See Level#notifyAndUpdatePhysics
+      if (blockData.hasAnalogOutputSignal()) {
+        nmsWorld.updateNeighbourForOutputSignal(position1, blockData.getBlock());
       }
 
       int j = 3 & -2;
-      // oldBlock.b(nmsWorld, position1, j); // TODO necessary?
       CraftWorld world = nmsWorld.getWorld();
       if (world != null) {
         BlockPhysicsEvent event =
             new BlockPhysicsEvent(
                 world.getBlockAt(position1.getX(), position1.getY(), position1.getZ()),
                 CraftBlockData.fromData(blockData));
-        nmsWorld.getServer().getPluginManager().callEvent(event);
+        nmsWorld.getCraftServer().getPluginManager().callEvent(event);
         if (event.isCancelled()) {
           return;
         }
       }
 
-      blockData.a(nmsWorld, position1, j);
-      blockData.b(nmsWorld, position1, j);
+      blockData.updateNeighbourShapes(nmsWorld, position1, j);
+      blockData.updateIndirectNeighbourShapes(nmsWorld, position1, j);
     }
 
     // See World#applyPhysics
-    nmsWorld.a(position1, CraftMagicNumbers.getBlock(updated.getType()), position2);
+    nmsWorld.neighborChanged(position1, CraftMagicNumbers.getBlock(updated.getType()), position2);
   }
 
   private class QueueDrainRunnable extends BukkitRunnable {

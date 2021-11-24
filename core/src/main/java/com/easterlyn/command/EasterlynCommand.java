@@ -23,7 +23,7 @@ import com.easterlyn.util.Colors;
 import org.bukkit.command.Command;
 import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 /**
@@ -113,17 +113,16 @@ public class EasterlynCommand extends BaseCommand {
       return;
     }
 
-    if (!(player instanceof CraftPlayer)) {
+    if (!(player instanceof CraftPlayer obcPlayer)) {
       issuer.sendInfo(MessageKey.of("core.commands.ping.error.implementation"));
       return;
     }
 
-    CraftPlayer obcPlayer = (CraftPlayer) player;
     issuer.sendInfo(
         MessageKey.of("core.commands.ping.message"),
         "{player}",
         player.getName(),
         "{value}",
-        String.valueOf(obcPlayer.getHandle().ping));
+        String.valueOf(obcPlayer.getHandle().latency));
   }
 }

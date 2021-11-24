@@ -11,16 +11,16 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiFunction;
-import net.minecraft.server.v1_16_R3.BlockPosition;
-import net.minecraft.server.v1_16_R3.IBlockData;
-import net.minecraft.server.v1_16_R3.Item;
-import net.minecraft.server.v1_16_R3.ItemAxe;
-import net.minecraft.server.v1_16_R3.ItemHoe;
-import net.minecraft.server.v1_16_R3.ItemSpade;
-import net.minecraft.server.v1_16_R3.ItemTool;
-import net.minecraft.server.v1_16_R3.TileEntity;
-import net.minecraft.server.v1_16_R3.TileEntityFurnace;
-import net.minecraft.server.v1_16_R3.WorldServer;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.item.AxeItem;
+import net.minecraft.world.item.DiggerItem;
+import net.minecraft.world.item.HoeItem;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ShovelItem;
+import net.minecraft.world.item.TieredItem;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.Tag;
@@ -35,10 +35,10 @@ import org.bukkit.block.data.Waterlogged;
 import org.bukkit.block.data.type.Bed;
 import org.bukkit.block.data.type.Observer;
 import org.bukkit.block.data.type.RedstoneRail;
-import org.bukkit.craftbukkit.v1_16_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_16_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_16_R3.util.CraftMagicNumbers;
+import org.bukkit.craftbukkit.v1_18_R1.CraftWorld;
+import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R1.util.CraftMagicNumbers;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.Action;
@@ -62,7 +62,7 @@ public class BlockUtil {
   static {
     Field fieldItemToolA;
     try {
-      fieldItemToolA = ReflectionUtil.getField(ItemTool.class, "a", Set.class);
+      fieldItemToolA = ReflectionUtil.getField(TieredItem.class, "a", Set.class);
     } catch (NoSuchFieldException e) {
       e.printStackTrace();
       fieldItemToolA = null;
@@ -126,16 +126,20 @@ public class BlockUtil {
         if (!(block.getWorld() instanceof CraftWorld) || !(player instanceof CraftPlayer)) {
           return 0;
         }
-        WorldServer worldServer = ((CraftWorld) block.getWorld()).getHandle();
-        TileEntity tileEntity =
-            worldServer.getTileEntity(new BlockPosition(block.getX(), block.getY(), block.getZ()));
-        if (!(tileEntity instanceof TileEntityFurnace)) {
+        ServerLevel serverLevel = ((CraftWorld) block.getWorld()).getHandle();
+        BlockPos blockPos = new BlockPos(block.getX(), block.getY(), block.getZ());
+        BlockEntity tileEntity =
+            serverLevel.getBlockEntity(blockPos);
+        if (!(tileEntity instanceof AbstractFurnaceBlockEntity)) {
           return 0;
         }
         // Fire extraction logic using tool as extracted item.
         // N.B. amount < 1 will still drop experience but not call a FurnaceExtractEvent.
-        ((TileEntityFurnace) tileEntity)
-            .d(((CraftPlayer) player).getHandle(), CraftItemStack.asNMSCopy(tool), 1);
+        ((AbstractFurnaceBlockEntity) tileEntity)
+            .awardUsedRecipesAndPopExperience(
+                ((CraftPlayer) player).getHandle(),
+                CraftItemStack.asNMSCopy(tool),
+                1);
         return 0;
       default:
         return 0;
@@ -143,22 +147,22 @@ public class BlockUtil {
   }
 
   public static boolean isToolRequired(@NotNull Material blockType) {
-    net.minecraft.server.v1_16_R3.Block block = CraftMagicNumbers.getBlock(blockType);
+    net.minecraft.world.level.block.Block block = CraftMagicNumbers.getBlock(blockType);
 
     if (block == null) {
       return false;
     }
 
-    IBlockData data = block.getBlockData();
+    net.minecraft.world.level.block.state.BlockState data = block.defaultBlockState();
 
-    return !data.getMaterial().isReplaceable() && data.isRequiresSpecialTool();
+    return !data.getMaterial().isReplaceable() && data.requiresCorrectToolForDrops();
   }
 
   public static boolean isCorrectTool(@Nullable ItemStack tool, @NotNull Material blockType) {
     Item item;
     if (tool == null
         || tool.getType().isAir()
-        || !((item = CraftMagicNumbers.getItem(tool.getType())) instanceof ItemTool)) {
+        || !((item = CraftMagicNumbers.getItem(tool.getType())) instanceof DiggerItem)) {
       return !isToolRequired(blockType);
     }
 
@@ -176,22 +180,22 @@ public class BlockUtil {
   }
 
   private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material blockType) {
-    net.minecraft.server.v1_16_R3.Block block = CraftMagicNumbers.getBlock(blockType);
+    net.minecraft.world.level.block.Block block = CraftMagicNumbers.getBlock(blockType);
 
     if (block == null) {
       return false;
     }
 
-    IBlockData data = block.getBlockData();
+    net.minecraft.world.level.block.state.BlockState data = block.defaultBlockState();
 
-    if (data.getMaterial().isReplaceable() || !data.isRequiresSpecialTool()) {
+    if (data.getMaterial().isReplaceable() || !data.requiresCorrectToolForDrops()) {
       // Instant break or always breakable
       return true;
     }
 
     return tool != null
         && tool.getType() != Material.AIR
-        && CraftMagicNumbers.getItem(tool.getType()).canDestroySpecialBlock(data);
+        && CraftMagicNumbers.getItem(tool.getType()).isCorrectToolForDrops(data);
   }
 
   public static void addRightClickFunction(
@@ -221,7 +225,7 @@ public class BlockUtil {
     }
 
     Item item = CraftMagicNumbers.getItem(hand.getType());
-    if (item instanceof ItemAxe || item instanceof ItemHoe || item instanceof ItemSpade) {
+    if (item instanceof AxeItem || item instanceof HoeItem || item instanceof ShovelItem) {
       Map<?, ?> blockBlockMap = null;
       try {
         blockBlockMap = ReflectionUtil.getFieldValue(item, "a", Map.class);

@@ -17,6 +17,9 @@ ACACIA_WOOD,Acacia Wood
 ACTIVATOR_RAIL,Activator Rail
 AIR,Air
 ALLIUM,Allium
+AMETHYST_BLOCK,Block of Amethyst
+AMETHYST_CLUSTER,Amethyst Cluster
+AMETHYST_SHARD,Amethyst Shard
 ANCIENT_DEBRIS,Ancient Debris
 ANDESITE,Andesite
 ANDESITE_SLAB,Andesite Slab
@@ -28,6 +31,10 @@ ARMOR_STAND,Armor Stand
 ARROW,Arrow
 ATTACHED_MELON_STEM,Attached Melon Stem
 ATTACHED_PUMPKIN_STEM,Attached Pumpkin Stem
+AXOLOTL_BUCKET,Bucket of Axolotl
+AXOLOTL_SPAWN_EGG,Axolotl Spawn Egg
+AZALEA,Azalea
+AZALEA_LEAVES,Azalea Leaves
 AZURE_BLUET,Azure Bluet
 BAKED_POTATO,Baked Potato
 BAMBOO,Bamboo
@@ -47,6 +54,8 @@ BEETROOT_SOUP,Beetroot Soup
 BEE_NEST,Bee Nest
 BEE_SPAWN_EGG,Bee Spawn Egg
 BELL,Bell
+BIG_DRIPLEAF,Big Dripleaf
+BIG_DRIPLEAF_STEM,Big Dripleaf Stem
 BIRCH_BOAT,Birch Boat
 BIRCH_BUTTON,Birch Button
 BIRCH_DOOR,Birch Door
@@ -69,6 +78,8 @@ BLACKSTONE_STAIRS,Blackstone Stairs
 BLACKSTONE_WALL,Blackstone Wall
 BLACK_BANNER,Black Banner
 BLACK_BED,Black Bed
+BLACK_CANDLE,Black Candle
+BLACK_CANDLE_CAKE,Cake with Black Candle
 BLACK_CARPET,Black Carpet
 BLACK_CONCRETE,Black Concrete
 BLACK_CONCRETE_POWDER,Black Concrete Powder
@@ -86,6 +97,8 @@ BLAZE_ROD,Blaze Rod
 BLAZE_SPAWN_EGG,Blaze Spawn Egg
 BLUE_BANNER,Blue Banner
 BLUE_BED,Blue Bed
+BLUE_CANDLE,Blue Candle
+BLUE_CANDLE_CAKE,Cake with Blue Candle
 BLUE_CARPET,Blue Carpet
 BLUE_CONCRETE,Blue Concrete
 BLUE_CONCRETE_POWDER,Blue Concrete Powder
@@ -119,6 +132,8 @@ BRICK_STAIRS,Brick Stairs
 BRICK_WALL,Brick Wall
 BROWN_BANNER,Brown Banner
 BROWN_BED,Brown Bed
+BROWN_CANDLE,Brown Candle
+BROWN_CANDLE_CAKE,Cake with Brown Candle
 BROWN_CARPET,Brown Carpet
 BROWN_CONCRETE,Brown Concrete
 BROWN_CONCRETE_POWDER,Brown Concrete Powder
@@ -138,9 +153,14 @@ BUBBLE_CORAL_BLOCK,Bubble Coral Block
 BUBBLE_CORAL_FAN,Bubble Coral Fan
 BUBBLE_CORAL_WALL_FAN,Bubble Coral Wall Fan
 BUCKET,Bucket
+BUDDING_AMETHYST,Budding Amethyst
+BUNDLE,Bundle
 CACTUS,Cactus
 CAKE,Cake
+CALCITE,Calcite
 CAMPFIRE,Campfire
+CANDLE,Candle
+CANDLE_CAKE,Cake with Candle
 CARROT,Carrot
 CARROTS,Carrots
 CARROT_ON_A_STICK,Carrot on a Stick
@@ -150,6 +170,8 @@ CAT_SPAWN_EGG,Cat Spawn Egg
 CAULDRON,Cauldron
 CAVE_AIR,Cave Air
 CAVE_SPIDER_SPAWN_EGG,Cave Spider Spawn Egg
+CAVE_VINES,Cave Vines
+CAVE_VINES_PLANT,Cave Vines Plant
 CHAIN,Chain
 CHAINMAIL_BOOTS,Chainmail Boots
 CHAINMAIL_CHESTPLATE,Chainmail Chestplate
@@ -162,6 +184,7 @@ CHEST_MINECART,Minecart with Chest
 CHICKEN,Raw Chicken
 CHICKEN_SPAWN_EGG,Chicken Spawn Egg
 CHIPPED_ANVIL,Chipped Anvil
+CHISELED_DEEPSLATE,Chiseled Deepslate
 CHISELED_NETHER_BRICKS,Chiseled Nether Bricks
 CHISELED_POLISHED_BLACKSTONE,Chiseled Polished Blackstone
 CHISELED_QUARTZ_BLOCK,Chiseled Quartz Block
@@ -178,6 +201,10 @@ COAL,Coal
 COAL_BLOCK,Block of Coal
 COAL_ORE,Coal Ore
 COARSE_DIRT,Coarse Dirt
+COBBLED_DEEPSLATE,Cobbled Deepslate
+COBBLED_DEEPSLATE_SLAB,Cobbled Deepslate Slab
+COBBLED_DEEPSLATE_STAIRS,Cobbled Deepslate Stairs
+COBBLED_DEEPSLATE_WALL,Cobbled Deepslate Wall
 COBBLESTONE,Cobblestone
 COBBLESTONE_SLAB,Cobblestone Slab
 COBBLESTONE_STAIRS,Cobblestone Stairs
@@ -202,8 +229,13 @@ COOKED_PORKCHOP,Cooked Porkchop
 COOKED_RABBIT,Cooked Rabbit
 COOKED_SALMON,Cooked Salmon
 COOKIE,Cookie
+COPPER_BLOCK,Block of Copper
+COPPER_INGOT,Copper Ingot
+COPPER_ORE,Copper Ore
 CORNFLOWER,Cornflower
 COW_SPAWN_EGG,Cow Spawn Egg
+CRACKED_DEEPSLATE_BRICKS,Cracked Deepslate Bricks
+CRACKED_DEEPSLATE_TILES,Cracked Deepslate Tiles
 CRACKED_NETHER_BRICKS,Cracked Nether Bricks
 CRACKED_POLISHED_BLACKSTONE_BRICKS,Cracked Polished Blackstone Bricks
 CRACKED_STONE_BRICKS,Cracked Stone Bricks
@@ -230,12 +262,17 @@ CRIMSON_TRAPDOOR,Crimson Trapdoor
 CRIMSON_WALL_SIGN,Crimson Wall Sign
 CROSSBOW,Crossbow
 CRYING_OBSIDIAN,Crying Obsidian
+CUT_COPPER,Cut Copper
+CUT_COPPER_SLAB,Cut Copper Slab
+CUT_COPPER_STAIRS,Cut Copper Stairs
 CUT_RED_SANDSTONE,Cut Red Sandstone
 CUT_RED_SANDSTONE_SLAB,Cut Red Sandstone Slab
 CUT_SANDSTONE,Cut Sandstone
 CUT_SANDSTONE_SLAB,Cut Sandstone Slab
 CYAN_BANNER,Cyan Banner
 CYAN_BED,Cyan Bed
+CYAN_CANDLE,Cyan Candle
+CYAN_CANDLE_CAKE,Cake with Cyan Candle
 CYAN_CARPET,Cyan Carpet
 CYAN_CONCRETE,Cyan Concrete
 CYAN_CONCRETE_POWDER,Cyan Concrete Powder
@@ -291,6 +328,23 @@ DEAD_TUBE_CORAL_BLOCK,Dead Tube Coral Block
 DEAD_TUBE_CORAL_FAN,Dead Tube Coral Fan
 DEAD_TUBE_CORAL_WALL_FAN,Dead Tube Coral Wall Fan
 DEBUG_STICK,Debug Stick
+DEEPSLATE,Deepslate
+DEEPSLATE_BRICKS,Deepslate Bricks
+DEEPSLATE_BRICK_SLAB,Deepslate Brick Slab
+DEEPSLATE_BRICK_STAIRS,Deepslate Brick Stairs
+DEEPSLATE_BRICK_WALL,Deepslate Brick Wall
+DEEPSLATE_COAL_ORE,Deepslate Coal Ore
+DEEPSLATE_COPPER_ORE,Deepslate Copper Ore
+DEEPSLATE_DIAMOND_ORE,Deepslate Diamond Ore
+DEEPSLATE_EMERALD_ORE,Deepslate Emerald Ore
+DEEPSLATE_GOLD_ORE,Deepslate Gold Ore
+DEEPSLATE_IRON_ORE,Deepslate Iron Ore
+DEEPSLATE_LAPIS_ORE,Deepslate Lapis Lazuli Ore
+DEEPSLATE_REDSTONE_ORE,Deepslate Redstone Ore
+DEEPSLATE_TILES,Deepslate Tiles
+DEEPSLATE_TILE_SLAB,Deepslate Tile Slab
+DEEPSLATE_TILE_STAIRS,Deepslate Tile Stairs
+DEEPSLATE_TILE_WALL,Deepslate Tile Wall
 DETECTOR_RAIL,Detector Rail
 DIAMOND,Diamond
 DIAMOND_AXE,Diamond Axe
@@ -310,6 +364,7 @@ DIORITE_SLAB,Diorite Slab
 DIORITE_STAIRS,Diorite Stairs
 DIORITE_WALL,Diorite Wall
 DIRT,Dirt
+DIRT_PATH,Dirt Path
 DISPENSER,Dispenser
 DOLPHIN_SPAWN_EGG,Dolphin Spawn Egg
 DONKEY_SPAWN_EGG,Donkey Spawn Egg
@@ -319,6 +374,7 @@ DRAGON_HEAD,Dragon Head
 DRAGON_WALL_HEAD,Dragon Wall Head
 DRIED_KELP,Dried Kelp
 DRIED_KELP_BLOCK,Dried Kelp Block
+DRIPSTONE_BLOCK,Dripstone Block
 DROPPER,Dropper
 DROWNED_SPAWN_EGG,Drowned Spawn Egg
 EGG,Egg
@@ -347,6 +403,10 @@ END_STONE_BRICK_STAIRS,End Stone Brick Stairs
 END_STONE_BRICK_WALL,End Stone Brick Wall
 EVOKER_SPAWN_EGG,Evoker Spawn Egg
 EXPERIENCE_BOTTLE,Bottle o' Enchanting
+EXPOSED_COPPER,Exposed Copper
+EXPOSED_CUT_COPPER,Exposed Cut Copper
+EXPOSED_CUT_COPPER_SLAB,Exposed Cut Copper Slab
+EXPOSED_CUT_COPPER_STAIRS,Exposed Cut Copper Stairs
 FARMLAND,Farmland
 FEATHER,Feather
 FERMENTED_SPIDER_EYE,Fermented Spider Eye
@@ -364,6 +424,8 @@ FISHING_ROD,Fishing Rod
 FLETCHING_TABLE,Fletching Table
 FLINT,Flint
 FLINT_AND_STEEL,Flint and Steel
+FLOWERING_AZALEA,Flowering Azalea
+FLOWERING_AZALEA_LEAVES,Flowering Azalea Leaves
 FLOWER_BANNER_PATTERN,Flower Banner Pattern
 FLOWER_POT,Flower Pot
 FOX_SPAWN_EGG,Fox Spawn Egg
@@ -380,6 +442,12 @@ GLISTERING_MELON_SLICE,Glistering Melon Slice
 GLOBE_BANNER_PATTERN,Globe Banner Pattern
 GLOWSTONE,Glowstone
 GLOWSTONE_DUST,Glowstone Dust
+GLOW_BERRIES,Glow Berries
+GLOW_INK_SAC,Glow Ink Sac
+GLOW_ITEM_FRAME,Glow Item Frame
+GLOW_LICHEN,Glow Lichen
+GLOW_SQUID_SPAWN_EGG,Glow Squid Spawn Egg
+GOAT_SPAWN_EGG,Goat Spawn Egg
 GOLDEN_APPLE,Golden Apple
 GOLDEN_AXE,Golden Axe
 GOLDEN_BOOTS,Golden Boots
@@ -402,10 +470,11 @@ GRANITE_STAIRS,Granite Stairs
 GRANITE_WALL,Granite Wall
 GRASS,Grass
 GRASS_BLOCK,Grass Block
-GRASS_PATH,Grass Path
 GRAVEL,Gravel
 GRAY_BANNER,Gray Banner
 GRAY_BED,Gray Bed
+GRAY_CANDLE,Gray Candle
+GRAY_CANDLE_CAKE,Cake with Gray Candle
 GRAY_CARPET,Gray Carpet
 GRAY_CONCRETE,Gray Concrete
 GRAY_CONCRETE_POWDER,Gray Concrete Powder
@@ -419,6 +488,8 @@ GRAY_WALL_BANNER,Gray Wall Banner,AUTO-GENERATED
 GRAY_WOOL,Gray Wool
 GREEN_BANNER,Green Banner
 GREEN_BED,Green Bed
+GREEN_CANDLE,Green Candle
+GREEN_CANDLE_CAKE,Cake with Green Candle
 GREEN_CARPET,Green Carpet
 GREEN_CONCRETE,Green Concrete
 GREEN_CONCRETE_POWDER,Green Concrete Powder
@@ -433,6 +504,7 @@ GREEN_WOOL,Green Wool
 GRINDSTONE,Grindstone
 GUARDIAN_SPAWN_EGG,Guardian Spawn Egg
 GUNPOWDER,Gunpowder
+HANGING_ROOTS,Hanging Roots
 HAY_BLOCK,Hay Bale
 HEART_OF_THE_SEA,Heart of the Sea
 HEAVY_WEIGHTED_PRESSURE_PLATE,Heavy Weighted Pressure Plate
@@ -453,6 +525,7 @@ ICE,Ice
 INFESTED_CHISELED_STONE_BRICKS,Infested Chiseled Stone Bricks
 INFESTED_COBBLESTONE,Infested Cobblestone
 INFESTED_CRACKED_STONE_BRICKS,Infested Cracked Stone Bricks
+INFESTED_DEEPSLATE,Infested Deepslate
 INFESTED_MOSSY_STONE_BRICKS,Infested Mossy Stone Bricks
 INFESTED_STONE,Infested Stone
 INFESTED_STONE_BRICKS,Infested Stone Bricks
@@ -502,9 +575,11 @@ LANTERN,Lantern
 LAPIS_BLOCK,Lapis Lazuli Block
 LAPIS_LAZULI,Lapis Lazuli
 LAPIS_ORE,Lapis Lazuli Ore
+LARGE_AMETHYST_BUD,Large Amethyst Bud
 LARGE_FERN,Large Fern
 LAVA,Lava
 LAVA_BUCKET,Lava Bucket
+LAVA_CAULDRON,Lava Cauldron
 LEAD,Lead
 LEATHER,Leather
 LEATHER_BOOTS,Leather Boots
@@ -514,8 +589,12 @@ LEATHER_HORSE_ARMOR,Leather Horse Armor
 LEATHER_LEGGINGS,Leather Pants
 LECTERN,Lectern
 LEVER,Lever
+LIGHT,Light
+LIGHTNING_ROD,Lightning Rod
 LIGHT_BLUE_BANNER,Light Blue Banner
 LIGHT_BLUE_BED,Light Blue Bed
+LIGHT_BLUE_CANDLE,Light Blue Candle
+LIGHT_BLUE_CANDLE_CAKE,Cake with Light Blue Candle
 LIGHT_BLUE_CARPET,Light Blue Carpet
 LIGHT_BLUE_CONCRETE,Light Blue Concrete
 LIGHT_BLUE_CONCRETE_POWDER,Light Blue Concrete Powder
@@ -529,6 +608,8 @@ LIGHT_BLUE_WALL_BANNER,Light Blue Wall Banner,AUTO-GENERATED
 LIGHT_BLUE_WOOL,Light Blue Wool
 LIGHT_GRAY_BANNER,Light Gray Banner
 LIGHT_GRAY_BED,Light Gray Bed
+LIGHT_GRAY_CANDLE,Light Gray Candle
+LIGHT_GRAY_CANDLE_CAKE,Cake with Light Gray Candle
 LIGHT_GRAY_CARPET,Light Gray Carpet
 LIGHT_GRAY_CONCRETE,Light Gray Concrete
 LIGHT_GRAY_CONCRETE_POWDER,Light Gray Concrete Powder
@@ -546,6 +627,8 @@ LILY_OF_THE_VALLEY,Lily of the Valley
 LILY_PAD,Lily Pad
 LIME_BANNER,Lime Banner
 LIME_BED,Lime Bed
+LIME_CANDLE,Lime Candle
+LIME_CANDLE_CAKE,Cake with Lime Candle
 LIME_CARPET,Lime Carpet
 LIME_CONCRETE,Lime Concrete
 LIME_CONCRETE_POWDER,Lime Concrete Powder
@@ -563,6 +646,8 @@ LODESTONE,Lodestone
 LOOM,Loom
 MAGENTA_BANNER,Magenta Banner
 MAGENTA_BED,Magenta Bed
+MAGENTA_CANDLE,Magenta Candle
+MAGENTA_CANDLE_CAKE,Cake with Magenta Candle
 MAGENTA_CARPET,Magenta Carpet
 MAGENTA_CONCRETE,Magenta Concrete
 MAGENTA_CONCRETE_POWDER,Magenta Concrete Powder
@@ -578,6 +663,7 @@ MAGMA_BLOCK,Magma Block
 MAGMA_CREAM,Magma Cream
 MAGMA_CUBE_SPAWN_EGG,Magma Cube Spawn Egg
 MAP,Empty Map
+MEDIUM_AMETHYST_BUD,Medium Amethyst Bud
 MELON,Melon
 MELON_SEEDS,Melon Seeds
 MELON_SLICE,Melon Slice
@@ -594,6 +680,8 @@ MOSSY_STONE_BRICKS,Mossy Stone Bricks
 MOSSY_STONE_BRICK_SLAB,Mossy Stone Brick Slab
 MOSSY_STONE_BRICK_STAIRS,Mossy Stone Brick Stairs
 MOSSY_STONE_BRICK_WALL,Mossy Stone Brick Wall
+MOSS_BLOCK,Moss Block
+MOSS_CARPET,Moss Carpet
 MOVING_PISTON,Moving Piston
 MULE_SPAWN_EGG,Mule Spawn Egg
 MUSHROOM_STEM,Mushroom Stem
@@ -663,6 +751,8 @@ OBSIDIAN,Obsidian
 OCELOT_SPAWN_EGG,Ocelot Spawn Egg
 ORANGE_BANNER,Orange Banner
 ORANGE_BED,Orange Bed
+ORANGE_CANDLE,Orange Candle
+ORANGE_CANDLE_CAKE,Cake with Orange Candle
 ORANGE_CARPET,Orange Carpet
 ORANGE_CONCRETE,Orange Concrete
 ORANGE_CONCRETE_POWDER,Orange Concrete Powder
@@ -676,6 +766,10 @@ ORANGE_TULIP,Orange Tulip
 ORANGE_WALL_BANNER,Orange Wall Banner,AUTO-GENERATED
 ORANGE_WOOL,Orange Wool
 OXEYE_DAISY,Oxeye Daisy
+OXIDIZED_COPPER,Oxidized Copper
+OXIDIZED_CUT_COPPER,Oxidized Cut Copper
+OXIDIZED_CUT_COPPER_SLAB,Oxidized Cut Copper Slab
+OXIDIZED_CUT_COPPER_STAIRS,Oxidized Cut Copper Stairs
 PACKED_ICE,Packed Ice
 PAINTING,Painting
 PANDA_SPAWN_EGG,Panda Spawn Egg
@@ -692,6 +786,8 @@ PIG_SPAWN_EGG,Pig Spawn Egg
 PILLAGER_SPAWN_EGG,Pillager Spawn Egg
 PINK_BANNER,Pink Banner
 PINK_BED,Pink Bed
+PINK_CANDLE,Pink Candle
+PINK_CANDLE_CAKE,Cake with Pink Candle
 PINK_CARPET,Pink Carpet
 PINK_CONCRETE,Pink Concrete
 PINK_CONCRETE_POWDER,Pink Concrete Powder
@@ -709,6 +805,7 @@ PISTON_HEAD,Piston Head
 PLAYER_HEAD,Player Head
 PLAYER_WALL_HEAD,Player Wall Head
 PODZOL,Podzol
+POINTED_DRIPSTONE,Pointed Dripstone
 POISONOUS_POTATO,Poisonous Potato
 POLAR_BEAR_SPAWN_EGG,Polar Bear Spawn Egg
 POLISHED_ANDESITE,Polished Andesite
@@ -725,6 +822,10 @@ POLISHED_BLACKSTONE_PRESSURE_PLATE,Polished Blackstone Pressure Plate
 POLISHED_BLACKSTONE_SLAB,Polished Blackstone Slab
 POLISHED_BLACKSTONE_STAIRS,Polished Blackstone Stairs
 POLISHED_BLACKSTONE_WALL,Polished Blackstone Wall
+POLISHED_DEEPSLATE,Polished Deepslate
+POLISHED_DEEPSLATE_SLAB,Polished Deepslate Slab
+POLISHED_DEEPSLATE_STAIRS,Polished Deepslate Stairs
+POLISHED_DEEPSLATE_WALL,Polished Deepslate Wall
 POLISHED_DIORITE,Polished Diorite
 POLISHED_DIORITE_SLAB,Polished Diorite Slab
 POLISHED_DIORITE_STAIRS,Polished Diorite Stairs
@@ -739,6 +840,7 @@ POTATOES,Potatoes
 POTION,Potion
 POTTED_ACACIA_SAPLING,Potted Acacia Sapling
 POTTED_ALLIUM,Potted Allium
+POTTED_AZALEA_BUSH,Potted Azalea
 POTTED_AZURE_BLUET,Potted Azure Bluet
 POTTED_BAMBOO,Potted Bamboo
 POTTED_BIRCH_SAPLING,Potted Birch Sapling
@@ -752,6 +854,7 @@ POTTED_DANDELION,Potted Dandelion
 POTTED_DARK_OAK_SAPLING,Potted Dark Oak Sapling
 POTTED_DEAD_BUSH,Potted Dead Bush
 POTTED_FERN,Potted Fern
+POTTED_FLOWERING_AZALEA_BUSH,Potted Flowering Azalea
 POTTED_JUNGLE_SAPLING,Potted Jungle Sapling
 POTTED_LILY_OF_THE_VALLEY,Potted Lily of the Valley
 POTTED_OAK_SAPLING,Potted Oak Sapling
@@ -766,6 +869,9 @@ POTTED_WARPED_FUNGUS,Potted Warped Fungus
 POTTED_WARPED_ROOTS,Potted Warped Roots
 POTTED_WHITE_TULIP,Potted White Tulip
 POTTED_WITHER_ROSE,Potted Wither Rose
+POWDER_SNOW,Powder Snow
+POWDER_SNOW_BUCKET,Powder Snow Bucket
+POWDER_SNOW_CAULDRON,Powder Snow Cauldron
 POWERED_RAIL,Powered Rail
 PRISMARINE,Prismarine
 PRISMARINE_BRICKS,Prismarine Bricks
@@ -785,6 +891,8 @@ PUMPKIN_SEEDS,Pumpkin Seeds
 PUMPKIN_STEM,Pumpkin Stem
 PURPLE_BANNER,Purple Banner
 PURPLE_BED,Purple Bed
+PURPLE_CANDLE,Purple Candle
+PURPLE_CANDLE_CAKE,Cake with Purple Candle
 PURPLE_CARPET,Purple Carpet
 PURPLE_CONCRETE,Purple Concrete
 PURPLE_CONCRETE_POWDER,Purple Concrete Powder
@@ -813,6 +921,12 @@ RABBIT_SPAWN_EGG,Rabbit Spawn Egg
 RABBIT_STEW,Rabbit Stew
 RAIL,Rail
 RAVAGER_SPAWN_EGG,Ravager Spawn Egg
+RAW_COPPER,Raw Copper
+RAW_COPPER_BLOCK,Block of Raw Copper
+RAW_GOLD,Raw Gold
+RAW_GOLD_BLOCK,Block of Raw Gold
+RAW_IRON,Raw Iron
+RAW_IRON_BLOCK,Block of Raw Iron
 REDSTONE,Redstone Dust
 REDSTONE_BLOCK,Block of Redstone
 REDSTONE_LAMP,Redstone Lamp
@@ -822,6 +936,8 @@ REDSTONE_WALL_TORCH,Redstone Wall Torch
 REDSTONE_WIRE,Redstone Wire
 RED_BANNER,Red Banner
 RED_BED,Red Bed
+RED_CANDLE,Red Candle
+RED_CANDLE_CAKE,Cake with Red Candle
 RED_CARPET,Red Carpet
 RED_CONCRETE,Red Concrete
 RED_CONCRETE_POWDER,Red Concrete Powder
@@ -848,6 +964,7 @@ RED_WOOL,Red Wool
 REPEATER,Redstone Repeater
 REPEATING_COMMAND_BLOCK,Repeating Command Block
 RESPAWN_ANCHOR,Respawn Anchor
+ROOTED_DIRT,Rooted Dirt
 ROSE_BUSH,Rose Bush
 ROTTEN_FLESH,Rotten Flesh
 SADDLE,Saddle
@@ -860,6 +977,7 @@ SANDSTONE_SLAB,Sandstone Slab
 SANDSTONE_STAIRS,Sandstone Stairs
 SANDSTONE_WALL,Sandstone Wall
 SCAFFOLDING,Scaffolding
+SCULK_SENSOR,Sculk Sensor
 SCUTE,Scute
 SEAGRASS,Seagrass
 SEA_LANTERN,Sea Lantern
@@ -880,8 +998,11 @@ SKULL_BANNER_PATTERN,Skull Banner Pattern
 SLIME_BALL,Slimeball
 SLIME_BLOCK,Slime Block
 SLIME_SPAWN_EGG,Slime Spawn Egg
+SMALL_AMETHYST_BUD,Small Amethyst Bud
+SMALL_DRIPLEAF,Small Dripleaf
 SMITHING_TABLE,Smithing Table
 SMOKER,Smoker
+SMOOTH_BASALT,Smooth Basalt
 SMOOTH_QUARTZ,Smooth Quartz Block
 SMOOTH_QUARTZ_SLAB,Smooth Quartz Slab
 SMOOTH_QUARTZ_STAIRS,Smooth Quartz Stairs
@@ -909,6 +1030,7 @@ SPIDER_EYE,Spider Eye
 SPIDER_SPAWN_EGG,Spider Spawn Egg
 SPLASH_POTION,Splash Potion
 SPONGE,Sponge
+SPORE_BLOSSOM,Spore Blossom
 SPRUCE_BOAT,Spruce Boat
 SPRUCE_BUTTON,Spruce Button
 SPRUCE_DOOR,Spruce Door
@@ -925,6 +1047,7 @@ SPRUCE_STAIRS,Spruce Stairs
 SPRUCE_TRAPDOOR,Spruce Trapdoor
 SPRUCE_WALL_SIGN,Spruce Wall Sign
 SPRUCE_WOOD,Spruce Wood
+SPYGLASS,Spyglass
 SQUID_SPAWN_EGG,Squid Spawn Egg
 STICK,Stick
 STICKY_PISTON,Sticky Piston
@@ -974,6 +1097,7 @@ TALL_GRASS,Tall Grass
 TALL_SEAGRASS,Tall Seagrass
 TARGET,Target
 TERRACOTTA,Terracotta
+TINTED_GLASS,Tinted Glass
 TIPPED_ARROW,Tipped Arrow
 TNT,TNT
 TNT_MINECART,Minecart with TNT
@@ -991,6 +1115,7 @@ TUBE_CORAL,Tube Coral
 TUBE_CORAL_BLOCK,Tube Coral Block
 TUBE_CORAL_FAN,Tube Coral Fan
 TUBE_CORAL_WALL_FAN,Tube Coral Wall Fan
+TUFF,Tuff
 TURTLE_EGG,Turtle Egg
 TURTLE_HELMET,Turtle Shell
 TURTLE_SPAWN_EGG,Turtle Spawn Egg
@@ -1023,6 +1148,27 @@ WARPED_WALL_SIGN,Warped Wall Sign
 WARPED_WART_BLOCK,Warped Wart Block
 WATER,Water
 WATER_BUCKET,Water Bucket
+WATER_CAULDRON,Water Cauldron
+WAXED_COPPER_BLOCK,Waxed Block of Copper
+WAXED_CUT_COPPER,Waxed Cut Copper
+WAXED_CUT_COPPER_SLAB,Waxed Cut Copper Slab
+WAXED_CUT_COPPER_STAIRS,Waxed Cut Copper Stairs
+WAXED_EXPOSED_COPPER,Waxed Exposed Copper
+WAXED_EXPOSED_CUT_COPPER,Waxed Exposed Cut Copper
+WAXED_EXPOSED_CUT_COPPER_SLAB,Waxed Exposed Cut Copper Slab
+WAXED_EXPOSED_CUT_COPPER_STAIRS,Waxed Exposed Cut Copper Stairs
+WAXED_OXIDIZED_COPPER,Waxed Oxidized Copper
+WAXED_OXIDIZED_CUT_COPPER,Waxed Oxidized Cut Copper
+WAXED_OXIDIZED_CUT_COPPER_SLAB,Waxed Oxidized Cut Copper Slab
+WAXED_OXIDIZED_CUT_COPPER_STAIRS,Waxed Oxidized Cut Copper Stairs
+WAXED_WEATHERED_COPPER,Waxed Weathered Copper
+WAXED_WEATHERED_CUT_COPPER,Waxed Weathered Cut Copper
+WAXED_WEATHERED_CUT_COPPER_SLAB,Waxed Weathered Cut Copper Slab
+WAXED_WEATHERED_CUT_COPPER_STAIRS,Waxed Weathered Cut Copper Stairs
+WEATHERED_COPPER,Weathered Copper
+WEATHERED_CUT_COPPER,Weathered Cut Copper
+WEATHERED_CUT_COPPER_SLAB,Weathered Cut Copper Slab
+WEATHERED_CUT_COPPER_STAIRS,Weathered Cut Copper Stairs
 WEEPING_VINES,Weeping Vines
 WEEPING_VINES_PLANT,Weeping Vines Plant
 WET_SPONGE,Wet Sponge
@@ -1030,6 +1176,8 @@ WHEAT,Wheat
 WHEAT_SEEDS,Wheat Seeds
 WHITE_BANNER,White Banner
 WHITE_BED,White Bed
+WHITE_CANDLE,White Candle
+WHITE_CANDLE_CAKE,Cake with White Candle
 WHITE_CARPET,White Carpet
 WHITE_CONCRETE,White Concrete
 WHITE_CONCRETE_POWDER,White Concrete Powder
@@ -1057,6 +1205,8 @@ WRITABLE_BOOK,Book and Quill
 WRITTEN_BOOK,Written Book
 YELLOW_BANNER,Yellow Banner
 YELLOW_BED,Yellow Bed
+YELLOW_CANDLE,Yellow Candle
+YELLOW_CANDLE_CAKE,Cake with Yellow Candle
 YELLOW_CARPET,Yellow Carpet
 YELLOW_CONCRETE,Yellow Concrete
 YELLOW_CONCRETE_POWDER,Yellow Concrete Powder

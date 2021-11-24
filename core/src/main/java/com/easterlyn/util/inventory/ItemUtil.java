@@ -26,13 +26,13 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.ItemTag;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Item;
-import net.minecraft.server.v1_16_R3.IRegistry;
-import net.minecraft.server.v1_16_R3.NBTCompressedStreamTools;
-import net.minecraft.server.v1_16_R3.NBTTagCompound;
+import net.minecraft.core.Registry;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtIo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_16_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CookingRecipe;
@@ -561,30 +561,30 @@ public class ItemUtil {
   }
 
   public @NotNull static String getAsText(@NotNull ItemStack itemStack) {
-    return CraftItemStack.asNMSCopy(itemStack).save(new NBTTagCompound()).toString();
+    return CraftItemStack.asNMSCopy(itemStack).save(new CompoundTag()).toString();
   }
 
   public static ItemStack getAsItem(InputStream stream) throws IOException {
-    NBTTagCompound nbtTagCompound = NBTCompressedStreamTools.a(stream);
-    return CraftItemStack.asBukkitCopy(net.minecraft.server.v1_16_R3.ItemStack.a(nbtTagCompound));
+    CompoundTag nbtTagCompound = NbtIo.readCompressed(stream);
+    return CraftItemStack.asBukkitCopy(net.minecraft.world.item.ItemStack.of(nbtTagCompound));
   }
 
   public static void writeItemToFile(ItemStack itemStack, File file) throws IOException {
     try (FileOutputStream fileOut = new FileOutputStream(file);
         BufferedOutputStream outputStream = new BufferedOutputStream(fileOut)) {
-      NBTCompressedStreamTools.a(
-          CraftItemStack.asNMSCopy(itemStack).save(new NBTTagCompound()), outputStream);
+      NbtIo.writeCompressed(
+          CraftItemStack.asNMSCopy(itemStack).save(new CompoundTag()), outputStream);
     }
   }
 
   private @NotNull static HoverEvent getItemHover(@NotNull ItemStack itemStack) {
-    net.minecraft.server.v1_16_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+    net.minecraft.world.item.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
     ItemTag tag = null;
     if (nmsItem.hasTag()) {
       tag = ItemTag.ofNbt(nmsItem.getTag().toString());
     }
     return new HoverEvent(
         HoverEvent.Action.SHOW_ITEM,
-        new Item(IRegistry.ITEM.getKey(nmsItem.getItem()).toString(), nmsItem.getCount(), tag));
+        new Item(Registry.ITEM.getKey(nmsItem.getItem()).toString(), nmsItem.getCount(), tag));
   }
 }

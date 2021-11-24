@@ -6,7 +6,7 @@
   <dependencies>
     <dependency>
       <artifactId>paper-api</artifactId>
-      <groupId>com.destroystokyo.paper</groupId>
+      <groupId>io.papermc.paper</groupId>
     </dependency>
     <dependency>
       <artifactId>planarwrappers</artifactId>

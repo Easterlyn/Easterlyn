@@ -7,11 +7,16 @@
     <!-- API needs to override server when resolving dependencies -->
     <dependency>
       <artifactId>paper-api</artifactId>
-      <groupId>com.destroystokyo.paper</groupId>
+      <groupId>io.papermc.paper</groupId>
     </dependency>
     <dependency>
-      <artifactId>paper</artifactId>
-      <groupId>com.destroystokyo.paper</groupId>
+      <artifactId>spigot-api</artifactId>
+      <groupId>org.spigotmc</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>spigot</artifactId>
+      <classifier>remapped-mojang</classifier>
+      <groupId>org.spigotmc</groupId>
     </dependency>
     <dependency>
       <artifactId>acf-paper</artifactId>
@@ -58,7 +63,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <version>3.2.4</version>
         <configuration>
           <relocations>
             <relocation>
@@ -67,6 +71,39 @@
             </relocation>
           </relocations>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>specialsource-maven-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>remap</goal>
+            </goals>
+            <id>remap-obf</id>
+            <configuration>
+              <srgIn>org.spigotmc:minecraft-server:${spigot.version}${spigot.revision}:txt:maps-mojang</srgIn>
+              <reverse>true</reverse>
+              <remappedDependencies>org.spigotmc:spigot:${spigot.version}${spigot.revision}:jar:remapped-mojang</remappedDependencies>
+              <remappedArtifactAttached>true</remappedArtifactAttached>
+              <remappedClassifierName>remapped-obf</remappedClassifierName>
+            </configuration>
+          </execution>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>remap</goal>
+            </goals>
+            <id>remap-spigot</id>
+            <configuration>
+              <inputFile>${project.build.directory}/${project.artifactId}-${project.version}-remapped-obf.jar</inputFile>
+              <srgIn>org.spigotmc:minecraft-server:${spigot.version}${spigot.revision}:csrg:maps-spigot</srgIn>
+              <remappedDependencies>org.spigotmc:spigot:${spigot.version}${spigot.revision}:jar:remapped-obf</remappedDependencies>
+            </configuration>
+          </execution>
+        </executions>
+        <groupId>net.md-5</groupId>
       </plugin>
     </plugins>
   </build>
