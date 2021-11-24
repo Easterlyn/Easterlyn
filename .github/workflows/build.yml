@@ -27,14 +27,14 @@ jobs:
           path: ~/.m2/repository
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
 
-      - name: Install Paper dependency
+      - name: Install NMS dependency
         if: steps.cache.outputs.cache-hit != 'true'
         # TODO extract version so it can be changed in a single place
         run: |
-          mkdir ~/paperclip
-          cd ~/paperclip
-          wget -O paperclip.jar https://papermc.io/api/v1/paper/1.16.5/latest/download
-          java -jar -Dpaperclip.install=true paperclip.jar
+          mkdir ~/buildtools
+          cd ~/buildtools
+          wget -O buildtools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+          java -jar buildtools.jar --remapped --rev 1.18-pre5
 
       - name: Build with Maven
         run: |
