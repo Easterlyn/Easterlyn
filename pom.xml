@@ -224,7 +224,7 @@
         <artifactId>api</artifactId>
         <groupId>net.luckperms</groupId>
         <scope>provided</scope>
-        <version>5.3</version>
+        <version>5.4</version>
       </dependency>
       <dependency>
         <artifactId>CreeperHeal</artifactId>
