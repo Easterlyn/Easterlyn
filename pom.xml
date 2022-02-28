@@ -276,7 +276,7 @@
         <artifactId>GriefPrevention</artifactId>
         <groupId>com.github.TechFortress</groupId>
         <scope>provided</scope>
-        <version>16.17.1</version>
+        <version>16.18</version>
       </dependency>
       <!-- Tests -->
       <dependency>
