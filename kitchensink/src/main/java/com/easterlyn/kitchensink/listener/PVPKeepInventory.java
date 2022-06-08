@@ -4,7 +4,6 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.user.User;
 import com.easterlyn.util.ExperienceUtil;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -26,12 +25,8 @@ public class PVPKeepInventory implements Listener {
     boolean playerDamage = false;
     if (event.getDamager() instanceof Player) {
       playerDamage = true;
-    } else if (event.getDamager() instanceof Firework) {
-      Firework firework = (Firework) event.getDamager();
-      playerDamage =
-          firework.getSpawningEntity() != null || firework.getShooter() instanceof Player;
-    } else if (event.getDamager() instanceof Projectile) {
-      playerDamage = ((Projectile) event.getDamager()).getShooter() instanceof Player;
+    } else if (event.getDamager() instanceof Projectile projectile) {
+      playerDamage = projectile.getShooter() instanceof Player;
     }
 
     if (!playerDamage) {

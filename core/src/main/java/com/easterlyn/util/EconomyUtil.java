@@ -16,7 +16,7 @@ import org.bukkit.Keyed;
 import org.bukkit.Material;
 import org.bukkit.Tag;
 import org.bukkit.block.BlockState;
-import org.bukkit.craftbukkit.v1_18_R1.enchantments.CraftEnchantment;
+import org.bukkit.craftbukkit.v1_19_R1.enchantments.CraftEnchantment;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.inventory.CampfireRecipe;
 import org.bukkit.inventory.CookingRecipe;
@@ -36,11 +36,9 @@ import org.jetbrains.annotations.NotNull;
 public class EconomyUtil {
 
   public static final double OVERPRICED_RATE = 2.18265;
-
-  @SuppressWarnings("unused")
   public static final double NORMAL_RATE = 0.72755;
-
   public static final double UNDERPRICED_RATE = 0.24252;
+
   private static final Set<Function<ItemStack, Double>> modifiers = new HashSet<>();
   private static Map<Material, Double> mappings;
 
@@ -856,7 +854,7 @@ public class EconomyUtil {
       if (recipe.getResult().getType() != material) {
         ReportableEvent.call(
             "improper wrap of recipe: "
-                + ((Keyed) bukkitRecipe).getKey().toString()
+                + ((Keyed) bukkitRecipe).getKey()
                 + " type: "
                 + bukkitRecipe.getClass().getSimpleName());
         continue;

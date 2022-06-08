@@ -596,6 +596,36 @@ public class ConcurrentConfiguration implements Configuration {
     }
   }
 
+  @NotNull
+  @Override
+  public List<String> getComments(@NotNull String path) {
+    synchronized (lock) {
+      return internal.getComments(path);
+    }
+  }
+
+  @NotNull
+  @Override
+  public List<String> getInlineComments(@NotNull String path) {
+    synchronized (lock) {
+      return internal.getInlineComments(path);
+    }
+  }
+
+  @Override
+  public void setComments(@NotNull String path, @Nullable List<String> comments) {
+    synchronized (lock) {
+      internal.setComments(path, comments);
+    }
+  }
+
+  @Override
+  public void setInlineComments(@NotNull String path, @Nullable List<String> comments) {
+    synchronized (lock) {
+      internal.setInlineComments(path, comments);
+    }
+  }
+
   @Override
   public void addDefaults(@NotNull Map<String, Object> defaults) {
     synchronized (lock) {

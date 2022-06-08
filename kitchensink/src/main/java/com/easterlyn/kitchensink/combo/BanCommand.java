@@ -14,6 +14,9 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
+import org.bukkit.BanList.Type;
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -66,11 +69,12 @@ public class BanCommand extends BaseCommand implements Listener {
     if (player != null) {
       player.kickPlayer(listReason);
     }
-    target.banPlayer(
-        listReason,
-        date,
-        issuer.getIssuer().getName() + " on " + dateFormat.format(new Date()),
-        true);
+    Bukkit.getBanList(Type.NAME)
+        .addBan(
+            Objects.requireNonNull(target.getName()),
+            listReason,
+            date,
+            issuer.getIssuer().getName() + " on " + dateFormat.format(new Date()));
     core.getLocaleManager()
         .broadcast(
             "sink.module.ban.announcement",

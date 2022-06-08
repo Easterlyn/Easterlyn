@@ -6,10 +6,6 @@
   <dependencies>
     <!-- API needs to override server when resolving dependencies -->
     <dependency>
-      <artifactId>paper-api</artifactId>
-      <groupId>io.papermc.paper</groupId>
-    </dependency>
-    <dependency>
       <artifactId>spigot-api</artifactId>
       <groupId>org.spigotmc</groupId>
     </dependency>
@@ -33,6 +29,10 @@
       <groupId>org.reflections</groupId>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <artifactId>annotations</artifactId>
+      <groupId>org.jetbrains</groupId>
+    </dependency>
     <!-- Plugin dependencies -->
     <dependency>
       <artifactId>api</artifactId>
@@ -45,6 +45,10 @@
     <dependency>
       <artifactId>GriefPrevention</artifactId>
       <groupId>com.github.TechFortress</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
     </dependency>
   </dependencies>
 

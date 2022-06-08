@@ -16,8 +16,8 @@ import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_18_R1.CraftServer;
-import org.bukkit.craftbukkit.v1_18_R1.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_19_R1.CraftServer;
+import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -43,7 +43,7 @@ public class PlayerUtil {
                 Player player = (Player) notification.getValue();
                 // Save if over 45 days since last login, removes achievements that should not be
                 // present.
-                if (player.getLastLogin() < System.currentTimeMillis() - 3888000000L) {
+                if (player.getLastPlayed() < System.currentTimeMillis() - 3888000000L) {
                   player.saveData();
                 }
               })
@@ -148,7 +148,8 @@ public class PlayerUtil {
         new ServerPlayer(
             server,
             serverLevel,
-            new GameProfile(uuid, offlinePlayer.getName()));
+            profile,
+            null);
     // TODO: swap to OpenInv to prevent overwriting mounts?
 
     CraftPlayer player = nmsPlayer.getBukkitEntity();

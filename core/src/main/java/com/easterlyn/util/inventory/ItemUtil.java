@@ -32,7 +32,7 @@ import net.minecraft.nbt.NbtIo;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_18_R1.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_19_R1.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.CookingRecipe;
@@ -68,7 +68,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class ItemUtil {
 
   public static final ItemStack AIR = new ItemStack(Material.AIR);
@@ -458,7 +457,6 @@ public class ItemUtil {
     }
     ItemStack toAdd = is.clone();
     for (ItemStack invStack : inv.getStorageContents()) {
-      //noinspection ConstantConditions
       if (invStack == null) {
         return true;
       }

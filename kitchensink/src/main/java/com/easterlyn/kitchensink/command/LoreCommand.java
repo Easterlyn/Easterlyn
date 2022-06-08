@@ -17,7 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiFunction;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -79,7 +78,10 @@ public class LoreCommand extends BaseCommand {
         hand.getItemMeta(),
         skullMeta -> {
           // TODO custom heads - null UUID, name, data
-          skullMeta.setPlayerProfile(Bukkit.createProfile(owner));
+          skullMeta.setOwnerProfile(
+              owner == null
+                  ? null
+                  : core.getServer().createPlayerProfile(owner));
           hand.setItemMeta(skullMeta);
         });
     if (owner != null) {

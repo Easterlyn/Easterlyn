@@ -1,5 +1,6 @@
 ACACIA_BOAT,Acacia Boat
 ACACIA_BUTTON,Acacia Button
+ACACIA_CHEST_BOAT,Acacia Boat with Chest
 ACACIA_DOOR,Acacia Door
 ACACIA_FENCE,Acacia Fence
 ACACIA_FENCE_GATE,Acacia Fence Gate
@@ -16,6 +17,7 @@ ACACIA_WALL_SIGN,Acacia Wall Sign
 ACACIA_WOOD,Acacia Wood
 ACTIVATOR_RAIL,Activator Rail
 AIR,Air
+ALLAY_SPAWN_EGG,Allay Spawn Egg
 ALLIUM,Allium
 AMETHYST_BLOCK,Block of Amethyst
 AMETHYST_CLUSTER,Amethyst Cluster
@@ -58,6 +60,7 @@ BIG_DRIPLEAF,Big Dripleaf
 BIG_DRIPLEAF_STEM,Big Dripleaf Stem
 BIRCH_BOAT,Birch Boat
 BIRCH_BUTTON,Birch Button
+BIRCH_CHEST_BOAT,Birch Boat with Chest
 BIRCH_DOOR,Birch Door
 BIRCH_FENCE,Birch Fence
 BIRCH_FENCE_GATE,Birch Fence Gate
@@ -288,6 +291,7 @@ DAMAGED_ANVIL,Damaged Anvil
 DANDELION,Dandelion
 DARK_OAK_BOAT,Dark Oak Boat
 DARK_OAK_BUTTON,Dark Oak Button
+DARK_OAK_CHEST_BOAT,Dark Oak Boat with Chest
 DARK_OAK_DOOR,Dark Oak Door
 DARK_OAK_FENCE,Dark Oak Fence
 DARK_OAK_FENCE_GATE,Dark Oak Fence Gate
@@ -365,6 +369,7 @@ DIORITE_STAIRS,Diorite Stairs
 DIORITE_WALL,Diorite Wall
 DIRT,Dirt
 DIRT_PATH,Dirt Path
+DISC_FRAGMENT_5,Disc Fragment
 DISPENSER,Dispenser
 DOLPHIN_SPAWN_EGG,Dolphin Spawn Egg
 DONKEY_SPAWN_EGG,Donkey Spawn Egg
@@ -377,6 +382,7 @@ DRIED_KELP_BLOCK,Dried Kelp Block
 DRIPSTONE_BLOCK,Dripstone Block
 DROPPER,Dropper
 DROWNED_SPAWN_EGG,Drowned Spawn Egg
+ECHO_SHARD,Echo Shard
 EGG,Egg
 ELDER_GUARDIAN_SPAWN_EGG,Elder Guardian Spawn Egg
 ELYTRA,Elytra
@@ -429,6 +435,8 @@ FLOWERING_AZALEA_LEAVES,Flowering Azalea Leaves
 FLOWER_BANNER_PATTERN,Flower Banner Pattern
 FLOWER_POT,Flower Pot
 FOX_SPAWN_EGG,Fox Spawn Egg
+FROGSPAWN,Frogspawn
+FROG_SPAWN_EGG,Frog Spawn Egg
 FROSTED_ICE,Frosted Ice
 FURNACE,Furnace
 FURNACE_MINECART,Minecart with Furnace
@@ -447,6 +455,7 @@ GLOW_INK_SAC,Glow Ink Sac
 GLOW_ITEM_FRAME,Glow Item Frame
 GLOW_LICHEN,Glow Lichen
 GLOW_SQUID_SPAWN_EGG,Glow Squid Spawn Egg
+GOAT_HORN,Goat Horn
 GOAT_SPAWN_EGG,Goat Spawn Egg
 GOLDEN_APPLE,Golden Apple
 GOLDEN_AXE,Golden Axe
@@ -553,6 +562,7 @@ JIGSAW,Jigsaw Block
 JUKEBOX,Jukebox
 JUNGLE_BOAT,Jungle Boat
 JUNGLE_BUTTON,Jungle Button
+JUNGLE_CHEST_BOAT,Jungle Boat with Chest
 JUNGLE_DOOR,Jungle Door
 JUNGLE_FENCE,Jungle Fence
 JUNGLE_FENCE_GATE,Jungle Fence Gate
@@ -662,6 +672,24 @@ MAGENTA_WOOL,Magenta Wool
 MAGMA_BLOCK,Magma Block
 MAGMA_CREAM,Magma Cream
 MAGMA_CUBE_SPAWN_EGG,Magma Cube Spawn Egg
+MANGROVE_BOAT,Mangrove Boat
+MANGROVE_BUTTON,Mangrove Button
+MANGROVE_CHEST_BOAT,Mangrove Boat with Chest
+MANGROVE_DOOR,Mangrove Door
+MANGROVE_FENCE,Mangrove Fence
+MANGROVE_FENCE_GATE,Mangrove Fence Gate
+MANGROVE_LEAVES,Mangrove Leaves
+MANGROVE_LOG,Mangrove Log
+MANGROVE_PLANKS,Mangrove Planks
+MANGROVE_PRESSURE_PLATE,Mangrove Pressure Plate
+MANGROVE_PROPAGULE,Mangrove Propagule
+MANGROVE_ROOTS,Mangrove Roots
+MANGROVE_SIGN,Mangrove Sign
+MANGROVE_SLAB,Mangrove Slab
+MANGROVE_STAIRS,Mangrove Stairs
+MANGROVE_TRAPDOOR,Mangrove Trapdoor
+MANGROVE_WALL_SIGN,Mangrove Wall Sign
+MANGROVE_WOOD,Mangrove Wood
 MAP,Empty Map
 MEDIUM_AMETHYST_BUD,Medium Amethyst Bud
 MELON,Melon
@@ -683,17 +711,25 @@ MOSSY_STONE_BRICK_WALL,Mossy Stone Brick Wall
 MOSS_BLOCK,Moss Block
 MOSS_CARPET,Moss Carpet
 MOVING_PISTON,Moving Piston
+MUD,Mud
+MUDDY_MANGROVE_ROOTS,Muddy Mangrove Roots
+MUD_BRICKS,Mud Bricks
+MUD_BRICK_SLAB,Mud Brick Slab
+MUD_BRICK_STAIRS,Mud Brick Stairs
+MUD_BRICK_WALL,Mud Brick Wall
 MULE_SPAWN_EGG,Mule Spawn Egg
 MUSHROOM_STEM,Mushroom Stem
 MUSHROOM_STEW,Mushroom Stew
 MUSIC_DISC_11,Music Disc (11)
 MUSIC_DISC_13,Music Disc (13)
+MUSIC_DISC_5,Music Disc
 MUSIC_DISC_BLOCKS,Music Disc (Blocks)
 MUSIC_DISC_CAT,Music Disc (Cat)
 MUSIC_DISC_CHIRP,Music Disc (Chirp)
 MUSIC_DISC_FAR,Music Disc (Far)
 MUSIC_DISC_MALL,Music Disc (Mall)
 MUSIC_DISC_MELLOHI,Music Disc (Mellohi)
+MUSIC_DISC_OTHERSIDE,Music Disc (Otherside)
 MUSIC_DISC_PIGSTEP,Music Disc (Pigstep)
 MUSIC_DISC_STAL,Music Disc (Stal)
 MUSIC_DISC_STRAD,Music Disc (Strad)
@@ -732,6 +768,7 @@ NETHER_WART_BLOCK,Nether Wart Block
 NOTE_BLOCK,Note Block
 OAK_BOAT,Oak Boat
 OAK_BUTTON,Oak Button
+OAK_CHEST_BOAT,Oak Boat with Chest
 OAK_DOOR,Oak Door
 OAK_FENCE,Oak Fence
 OAK_FENCE_GATE,Oak Fence Gate
@@ -749,6 +786,7 @@ OAK_WOOD,Oak Wood
 OBSERVER,Observer
 OBSIDIAN,Obsidian
 OCELOT_SPAWN_EGG,Ocelot Spawn Egg
+OCHRE_FROGLIGHT,Ochre Froglight
 ORANGE_BANNER,Orange Banner
 ORANGE_BED,Orange Bed
 ORANGE_CANDLE,Orange Candle
@@ -771,10 +809,12 @@ OXIDIZED_CUT_COPPER,Oxidized Cut Copper
 OXIDIZED_CUT_COPPER_SLAB,Oxidized Cut Copper Slab
 OXIDIZED_CUT_COPPER_STAIRS,Oxidized Cut Copper Stairs
 PACKED_ICE,Packed Ice
+PACKED_MUD,Packed Mud
 PAINTING,Painting
 PANDA_SPAWN_EGG,Panda Spawn Egg
 PAPER,Paper
 PARROT_SPAWN_EGG,Parrot Spawn Egg
+PEARLESCENT_FROGLIGHT,Pearlescent Froglight
 PEONY,Peony
 PETRIFIED_OAK_SLAB,Petrified Oak Slab
 PHANTOM_MEMBRANE,Phantom Membrane
@@ -857,6 +897,7 @@ POTTED_FERN,Potted Fern
 POTTED_FLOWERING_AZALEA_BUSH,Potted Flowering Azalea
 POTTED_JUNGLE_SAPLING,Potted Jungle Sapling
 POTTED_LILY_OF_THE_VALLEY,Potted Lily of the Valley
+POTTED_MANGROVE_PROPAGULE,Potted Mangrove Propagule
 POTTED_OAK_SAPLING,Potted Oak Sapling
 POTTED_ORANGE_TULIP,Potted Orange Tulip
 POTTED_OXEYE_DAISY,Potted Oxeye Daisy
@@ -927,6 +968,7 @@ RAW_GOLD,Raw Gold
 RAW_GOLD_BLOCK,Block of Raw Gold
 RAW_IRON,Raw Iron
 RAW_IRON_BLOCK,Block of Raw Iron
+RECOVERY_COMPASS,Recovery Compass
 REDSTONE,Redstone Dust
 REDSTONE_BLOCK,Block of Redstone
 REDSTONE_LAMP,Redstone Lamp
@@ -961,6 +1003,7 @@ RED_TERRACOTTA,Red Terracotta
 RED_TULIP,Red Tulip
 RED_WALL_BANNER,Red Wall Banner,AUTO-GENERATED
 RED_WOOL,Red Wool
+REINFORCED_DEEPSLATE,Reinforced Deepslate
 REPEATER,Redstone Repeater
 REPEATING_COMMAND_BLOCK,Repeating Command Block
 RESPAWN_ANCHOR,Respawn Anchor
@@ -977,7 +1020,11 @@ SANDSTONE_SLAB,Sandstone Slab
 SANDSTONE_STAIRS,Sandstone Stairs
 SANDSTONE_WALL,Sandstone Wall
 SCAFFOLDING,Scaffolding
+SCULK,Sculk
+SCULK_CATALYST,Sculk Catalyst
 SCULK_SENSOR,Sculk Sensor
+SCULK_SHRIEKER,Sculk Shrieker
+SCULK_VEIN,Sculk Vein
 SCUTE,Scute
 SEAGRASS,Seagrass
 SEA_LANTERN,Sea Lantern
@@ -1033,6 +1080,7 @@ SPONGE,Sponge
 SPORE_BLOSSOM,Spore Blossom
 SPRUCE_BOAT,Spruce Boat
 SPRUCE_BUTTON,Spruce Button
+SPRUCE_CHEST_BOAT,Spruce Boat with Chest
 SPRUCE_DOOR,Spruce Door
 SPRUCE_FENCE,Spruce Fence
 SPRUCE_FENCE_GATE,Spruce Fence Gate
@@ -1079,6 +1127,8 @@ STRIPPED_DARK_OAK_LOG,Stripped Dark Oak Log
 STRIPPED_DARK_OAK_WOOD,Stripped Dark Oak Wood
 STRIPPED_JUNGLE_LOG,Stripped Jungle Log
 STRIPPED_JUNGLE_WOOD,Stripped Jungle Wood
+STRIPPED_MANGROVE_LOG,Stripped Mangrove Log
+STRIPPED_MANGROVE_WOOD,Stripped Mangrove Wood
 STRIPPED_OAK_LOG,Stripped Oak Log
 STRIPPED_OAK_WOOD,Stripped Oak Wood
 STRIPPED_SPRUCE_LOG,Stripped Spruce Log
@@ -1093,6 +1143,8 @@ SUNFLOWER,Sunflower
 SUSPICIOUS_STEW,Suspicious Stew
 SWEET_BERRIES,Sweet Berries
 SWEET_BERRY_BUSH,Sweet Berry Bush
+TADPOLE_BUCKET,Bucket of Tadpole
+TADPOLE_SPAWN_EGG,Tadpole Spawn Egg
 TALL_GRASS,Tall Grass
 TALL_SEAGRASS,Tall Seagrass
 TARGET,Target
@@ -1121,6 +1173,7 @@ TURTLE_HELMET,Turtle Shell
 TURTLE_SPAWN_EGG,Turtle Spawn Egg
 TWISTING_VINES,Twisting Vines
 TWISTING_VINES_PLANT,Twisting Vines Plant
+VERDANT_FROGLIGHT,Verdant Froglight
 VEX_SPAWN_EGG,Vex Spawn Egg
 VILLAGER_SPAWN_EGG,Villager Spawn Egg
 VINDICATOR_SPAWN_EGG,Vindicator Spawn Egg
@@ -1128,6 +1181,7 @@ VINE,Vines
 VOID_AIR,Void Air
 WALL_TORCH,Wall Torch
 WANDERING_TRADER_SPAWN_EGG,Wandering Trader Spawn Egg
+WARDEN_SPAWN_EGG,Warden Spawn Egg
 WARPED_BUTTON,Warped Button
 WARPED_DOOR,Warped Door
 WARPED_FENCE,Warped Fence

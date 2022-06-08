@@ -5,8 +5,12 @@
   <artifactId>machines</artifactId>
   <dependencies>
     <dependency>
-      <artifactId>paper-api</artifactId>
-      <groupId>io.papermc.paper</groupId>
+      <artifactId>spigot-api</artifactId>
+      <groupId>org.spigotmc</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>annotations</artifactId>
+      <groupId>org.jetbrains</groupId>
     </dependency>
     <dependency>
       <artifactId>planarwrappers</artifactId>
@@ -28,6 +32,10 @@
     <dependency>
       <artifactId>CreeperHeal</artifactId>
       <groupId>com.github.nitnelave</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
     </dependency>
   </dependencies>
 

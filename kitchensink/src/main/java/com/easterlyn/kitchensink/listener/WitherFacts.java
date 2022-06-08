@@ -42,7 +42,7 @@ public class WitherFacts implements Listener {
             || (lastDamage instanceof EntityDamageByEntityEvent
                 && ((EntityDamageByEntityEvent) lastDamage).getDamager().getType()
                     == EntityType.WITHER))) {
-      event.getItemsToKeep().add(facts);
+      event.getDrops().add(facts);
     }
   }
 }

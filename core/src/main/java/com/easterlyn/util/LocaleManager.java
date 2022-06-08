@@ -1,6 +1,5 @@
 package com.easterlyn.util;
 
-import com.easterlyn.util.text.QuoteConsumer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -26,6 +25,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import com.easterlyn.util.text.QuoteConsumer;
 
 public class LocaleManager {
 
@@ -200,10 +200,13 @@ public class LocaleManager {
     }
 
     Collection<TextComponent> textComponents = StringUtil.toJSON(message, additionalHandlers);
-    if (sender instanceof Player) {
+    if (sender instanceof Player player) {
       if (type == ChatMessageType.ACTION_BAR) {
-        ((Player) sender)
-            .sendActionBar(new TextComponent(textComponents.toArray(new BaseComponent[0])));
+        player
+            .spigot()
+            .sendMessage(
+                ChatMessageType.ACTION_BAR,
+                new TextComponent(textComponents.toArray(new BaseComponent[0])));
       } else {
         sender
             .spigot()
@@ -309,4 +312,5 @@ public class LocaleManager {
   public String getDefaultLocale() {
     return defaultLocale;
   }
+
 }

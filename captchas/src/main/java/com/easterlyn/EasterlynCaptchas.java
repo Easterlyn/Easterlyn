@@ -10,6 +10,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.cache.RemovalListener;
+import java.awt.Color;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -26,8 +27,7 @@ import java.util.ListIterator;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Player;
@@ -64,20 +64,23 @@ public class EasterlynCaptchas extends EasterlynPlugin {
           StringConverters.toNamespacedKey("captcha:hash"));
   private static final int MAX_CAPTCHA_DEPTH = 2;
   // TODO colors -> global definitions
-  public static final @NonNull TextColor DARKER_PURPLE = TextColor.color(85, 0, 85);
-  public static final @NonNull TextColor DARK_AQUA = TextColor.color(0, 170, 170);
-  public static final @NonNull TextColor YELLOW = TextColor.color(255, 255, 85);
+  public static final @NonNull ChatColor DARKER_PURPLE = ChatColor.of(new Color(85, 0, 85));
+  public static final @NonNull ChatColor DARK_AQUA = ChatColor.of(new Color(0, 170, 170));
+  public static final @NonNull ChatColor YELLOW = ChatColor.of(new Color(255, 255, 85));
 
   private final LoadingCache<String, ItemStack> cache =
       CacheBuilder.newBuilder()
           .expireAfterAccess(30, TimeUnit.MINUTES)
           .removalListener(
-              (RemovalListener<String, ItemStack>)
-                  notification -> save(notification.getKey(), notification.getValue()))
+              (RemovalListener<String, ItemStack>) notification -> {
+                if (notification.getKey() != null && notification.getValue() != null) {
+                  save(notification.getKey(), notification.getValue());
+                }
+              })
           .build(
               new CacheLoader<>() {
                 @Override
-                public ItemStack load(@NotNull String hash) throws Exception {
+                public @NotNull ItemStack load(@NotNull String hash) throws Exception {
                   File captchaFolder = new File(getDataFolder(), "captcha");
                   if (!captchaFolder.exists() && !captchaFolder.mkdirs()) {
                     throw new FileNotFoundException();
@@ -140,7 +143,7 @@ public class EasterlynCaptchas extends EasterlynPlugin {
     return meta != null
         && meta.hasLore()
         && meta.hasDisplayName()
-        && Component.text("Captchacard").equals(meta.displayName());
+        && "Captchacard".equals(meta.getDisplayName());
   }
 
   /**
@@ -150,11 +153,13 @@ public class EasterlynCaptchas extends EasterlynPlugin {
    */
   public static @NotNull ItemStack getBlankCaptchacard() {
     ItemStack itemStack = new ItemStack(Material.BOOK);
-    itemStack.editMeta(meta -> {
-      meta.displayName(Component.text("Captchacard"));
-      meta.lore(Collections.singletonList(Component.text("Blank")));
-      meta.getPersistentDataContainer().set(KEY_BLANK, PersistentDataType.BYTE, (byte) 0);
-    });
+    ItemMeta itemMeta = itemStack.getItemMeta();
+    if (itemMeta != null) {
+      itemMeta.setDisplayName("Captchacard");
+      itemMeta.setLore(List.of("Blank"));
+      itemMeta.getPersistentDataContainer().set(KEY_BLANK, PersistentDataType.BYTE, (byte) 0);
+    }
+    itemStack.setItemMeta(itemMeta);
     return itemStack;
   }
 
@@ -301,48 +306,40 @@ public class EasterlynCaptchas extends EasterlynPlugin {
     dataContainer.set(KEY_HASH, PersistentDataType.STRING, hash);
 
     // Add display elements for users.
-    ArrayList<Component> cardLore = new ArrayList<>();
+    ArrayList<String> cardLore = new ArrayList<>();
 
     // Expose hash for fun.
-    cardLore.add(Component.text(hash).color(DARKER_PURPLE));
+    cardLore.add(DARKER_PURPLE + hash);
 
     // Build an amount and name element.
-    Component component =
-        Component.text(item.getAmount() + " ").color(DARK_AQUA);
-    List<Component> existingLore = meta.lore();
+    String text = DARK_AQUA.toString() + item.getAmount() + " ";
+
+    List<String> existingLore = meta.getLore();
     if (isCaptcha(item) && existingLore != null && existingLore.size() >= 2) {
       // Use existing description to form X Captcha of Y.
-      component = component.append(Component.text("Captcha of ")).append(existingLore.get(1));
-      cardLore.add(component);
+      text += "Captcha of " + existingLore.get(1);
+      cardLore.add(text);
 
       // Append existing description.
       if (existingLore.size() >= 3) {
         cardLore.addAll(existingLore.subList(2, cardLore.size()));
       }
     } else {
-      cardLore.add(component.append(Component.text(ItemUtil.getItemName(item))));
+      cardLore.add(text + ItemUtil.getItemName(item));
 
-      Component displayName;
-      if (meta.hasDisplayName() && (displayName = meta.displayName()) != null) {
-        cardLore.add(displayName);
+      if (meta.hasDisplayName()) {
+        cardLore.add(meta.getDisplayName());
       }
 
       if (item.getType().getMaxDurability() > 0 && meta instanceof Damageable) {
-        cardLore.add(Component.text("Durability: ")
-            .color(YELLOW)
-            .append(
-                Component.text(item.getType().getMaxDurability() - ((Damageable) meta).getDamage()))
-            .color(DARK_AQUA)
-            .append(Component.text("/"))
-            .color(YELLOW)
-            .append(Component.text(item.getType().getMaxDurability()))
-            .color(DARK_AQUA));
+        cardLore.add(YELLOW + "Durability: "
+            + DARK_AQUA + (item.getType().getMaxDurability() - ((Damageable) meta).getDamage())
+            + YELLOW + "/" + DARK_AQUA + item.getType().getMaxDurability());
       }
     }
 
-    // TODO name components -> constants?
-    cardMeta.displayName(Component.text("Captchacard"));
-    cardMeta.lore(cardLore);
+    cardMeta.setDisplayName("Captchacard");
+    cardMeta.setLore(cardLore);
     card.setItemMeta(cardMeta);
     return card;
   }

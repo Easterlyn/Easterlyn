@@ -21,6 +21,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 
 public class CaptchaCommand extends BaseCommand {
@@ -42,11 +43,14 @@ public class CaptchaCommand extends BaseCommand {
       getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.unique.no_captcha"));
       return;
     }
-    item.editMeta(itemMeta ->
-        itemMeta.getPersistentDataContainer().set(
-            EasterlynCaptchas.KEY_SKIP_CONVERT,
-            PersistentDataType.BYTE,
-            (byte) 0));
+    ItemMeta itemMeta = item.getItemMeta();
+    if (itemMeta != null) {
+      itemMeta.getPersistentDataContainer().set(
+          EasterlynCaptchas.KEY_SKIP_CONVERT,
+          PersistentDataType.BYTE,
+          (byte) 0);
+    }
+    item.setItemMeta(itemMeta);
     player.getInventory().setItemInMainHand(item);
     getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.unique.success"));
   }

@@ -5,8 +5,12 @@
   <artifactId>kitchensink</artifactId>
   <dependencies>
     <dependency>
-      <artifactId>paper-api</artifactId>
-      <groupId>io.papermc.paper</groupId>
+      <artifactId>spigot-api</artifactId>
+      <groupId>org.spigotmc</groupId>
+    </dependency>
+    <dependency>
+      <artifactId>annotations</artifactId>
+      <groupId>org.jetbrains</groupId>
     </dependency>
     <dependency>
       <artifactId>planarwrappers</artifactId>
@@ -25,12 +29,12 @@
       <groupId>com.sk89q.worldedit</groupId>
     </dependency>
     <dependency>
-      <artifactId>brigadier</artifactId>
-      <groupId>com.mojang</groupId>
-    </dependency>
-    <dependency>
       <groupId>org.reflections</groupId>
       <artifactId>reflections</artifactId>
+    </dependency>
+    <dependency>
+      <artifactId>junit</artifactId>
+      <groupId>junit</groupId>
     </dependency>
   </dependencies>
 
