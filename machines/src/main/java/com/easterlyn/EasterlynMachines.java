@@ -628,7 +628,7 @@ public class EasterlynMachines extends JavaPlugin {
         EntityExplodeEvent.class,
         event -> {
           if (Bukkit.getPluginManager().isPluginEnabled("CreeperHeal")
-              && CreeperConfig.getWorld(event.getLocation().getWorld().getName())
+              && CreeperConfig.getWorld(event.getEntity().getWorld().getName())
                   .shouldReplace(event.getEntity())
               && event.getEntityType() != EntityType.ENDER_DRAGON) {
             event

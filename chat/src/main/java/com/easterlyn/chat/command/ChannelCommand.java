@@ -27,6 +27,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.Nullable;
 
 @CommandAlias("channel")
 @Description("{@@chat.commands.channel.description}")
@@ -46,7 +47,7 @@ public class ChannelCommand extends BaseCommand {
   public void join(
       @Flags(CoreContexts.SELF) User user,
       @Flags(ChannelFlag.VISIBLE) Channel channel,
-      @Optional String password) {
+      @Optional @Nullable String password) {
     channel.updateLastAccess();
     List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 

@@ -9,8 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 /**
- * Hook for the protection plugin <a
- * href=http://dev.bukkit.org/bukkit-plugins/worldguard/>WorldGuard</a>.
+ * Hook for the protection plugin
+ * <a href="http://dev.bukkit.org/bukkit-plugins/worldguard/">WorldGuard</a>.
  *
  * @author Jikoo
  */

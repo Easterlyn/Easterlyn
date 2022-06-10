@@ -19,7 +19,6 @@ import com.easterlyn.util.Colors;
 import java.util.HashMap;
 import java.util.Map;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class AetherCommand extends BaseCommand {
@@ -61,9 +60,6 @@ public class AetherCommand extends BaseCommand {
     public TextComponent getMention() {
       TextComponent component = new TextComponent("@" + getDisplayName());
       component.setColor(getColor());
-      component.setClickEvent(
-          new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
-
       TextComponent line = new TextComponent("#main");
       line.setColor(Colors.CHANNEL);
       TextComponent extra = new TextComponent("on Discord");

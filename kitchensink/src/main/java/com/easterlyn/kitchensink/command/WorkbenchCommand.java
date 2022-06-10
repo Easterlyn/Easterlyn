@@ -9,6 +9,7 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.command.CoreContexts;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class WorkbenchCommand extends BaseCommand {
 
@@ -17,7 +18,7 @@ public class WorkbenchCommand extends BaseCommand {
   @Syntax("/workbench")
   @CommandCompletion("@none")
   @CommandPermission("easterlyn.command.workbench")
-  public void workbench(@Flags(CoreContexts.SELF) Player player) {
+  public void workbench(@Flags(CoreContexts.SELF) @NotNull Player player) {
     player.openWorkbench(player.getLocation(), true);
   }
 }

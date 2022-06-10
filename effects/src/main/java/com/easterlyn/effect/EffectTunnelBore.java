@@ -5,7 +5,7 @@ import com.easterlyn.EasterlynEffects;
 import com.easterlyn.effect.event.IndirectBreakEvent;
 import com.easterlyn.util.BlockUpdateManager;
 import com.easterlyn.util.BlockUtil;
-import com.easterlyn.util.ExperienceUtil;
+import com.github.jikoo.planarwrappers.util.Experience;
 import java.util.Collection;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.Bukkit;
@@ -134,7 +134,7 @@ public class EffectTunnelBore extends Effect {
       player.getWorld().dropItem(player.getLocation(), is).setPickupDelay(0);
     }
     if (exp > 0) {
-      ExperienceUtil.changeExp(player, exp);
+      Experience.changeExp(player, exp);
     }
     budManager.queueBlock(block);
     ItemMeta handMeta = hand.getItemMeta();

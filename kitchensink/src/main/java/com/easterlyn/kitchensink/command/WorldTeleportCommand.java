@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 
 public class WorldTeleportCommand extends BaseCommand {
 
+  // TODO remove and replace with /execute as @p in <world>
   @CommandAlias("wtp")
   @Description("{@@sink.module.wtp.description}")
   @CommandPermission("easterlyn.command.wtp")

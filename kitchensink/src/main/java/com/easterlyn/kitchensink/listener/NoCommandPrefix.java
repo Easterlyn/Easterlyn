@@ -6,11 +6,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.server.TabCompleteEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class NoCommandPrefix implements Listener {
 
   @EventHandler(ignoreCancelled = true)
-  public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
+  public void onPlayerCommand(@NotNull PlayerCommandPreprocessEvent event) {
     int colon = event.getMessage().indexOf(':');
     int space = event.getMessage().indexOf(' ');
     if (!event.getPlayer().hasPermission("easterlyn.commands.unfiltered")
@@ -21,7 +22,7 @@ public class NoCommandPrefix implements Listener {
   }
 
   @EventHandler
-  public void onCommandSend(PlayerCommandSendEvent event) {
+  public void onCommandSend(@NotNull PlayerCommandSendEvent event) {
     if (event.getPlayer().hasPermission("easterlyn.commands.unfiltered")) {
       return;
     }
@@ -30,7 +31,7 @@ public class NoCommandPrefix implements Listener {
   }
 
   @EventHandler
-  public void onTabComplete(TabCompleteEvent event) {
+  public void onTabComplete(@NotNull TabCompleteEvent event) {
     if (!(event.getSender() instanceof Player)
         || event.getSender().hasPermission("easterlyn.commands.unfiltered")) {
       return;

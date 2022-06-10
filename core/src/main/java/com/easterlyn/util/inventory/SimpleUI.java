@@ -21,7 +21,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
-@SuppressWarnings("unused")
 public class SimpleUI implements InventoryHolder {
 
   private final Plugin plugin;
@@ -40,7 +39,7 @@ public class SimpleUI implements InventoryHolder {
     Event.register(
         InventoryClickEvent.class,
         event -> {
-          if (!(event.getView().getTopInventory().getHolder() instanceof SimpleUI)) {
+          if (!(event.getView().getTopInventory().getHolder() instanceof SimpleUI holder)) {
             return;
           }
           int slot = event.getRawSlot();
@@ -50,7 +49,6 @@ public class SimpleUI implements InventoryHolder {
             return;
           }
 
-          SimpleUI holder = (SimpleUI) event.getView().getTopInventory().getHolder();
           if (!holder.plugin.equals(plugin)) {
             return;
           }
@@ -61,7 +59,7 @@ public class SimpleUI implements InventoryHolder {
             button = holder.buttons.get(slot + holder.startIndex);
           }
           if (button != null) {
-            button.getConsumer().accept(event);
+            button.consumer().accept(event);
           }
         },
         plugin,
@@ -111,7 +109,7 @@ public class SimpleUI implements InventoryHolder {
     int endIndex = startIndex + (contents.length == 54 ? contents.length - 9 : contents.length);
     SortedMap<Integer, Button> sortedMap = buttons.subMap(startIndex, endIndex);
 
-    sortedMap.forEach((index, button) -> contents[index - startIndex] = button.getItem());
+    sortedMap.forEach((index, button) -> contents[index - startIndex] = button.item());
 
     if (contents.length == 54) {
       // First page button
@@ -126,7 +124,7 @@ public class SimpleUI implements InventoryHolder {
       // Last page button
       navigation.put(53, getLastPage());
 
-      navigation.forEach((slot, button) -> contents[slot] = button.getItem());
+      navigation.forEach((slot, button) -> contents[slot] = button.item());
     }
 
     inventory.setContents(contents);

@@ -89,7 +89,7 @@ public class CaptchaListener implements Listener {
       event.setCurrentItem(null);
     } else {
       event.setCurrentItem(ItemUtil.decrement(blankCaptcha, 1));
-      //noinspection deprecation // No alternative. Functions fine due to inventory update.
+      // No alternative. Functions fine due to inventory update.
       event.setCursor(null);
     }
 
@@ -106,7 +106,6 @@ public class CaptchaListener implements Listener {
         event.getWhoClicked().getWorld().dropItem(event.getWhoClicked().getLocation(), captchaItem);
       } else {
         // Set cursor to captcha
-        //noinspection deprecation
         event.setCursor(captchaItem);
       }
     }
@@ -155,7 +154,6 @@ public class CaptchaListener implements Listener {
     if (event.getRecipe() instanceof Keyed
         && ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.RECIPE_KEY)) {
       for (ItemStack itemStack : event.getInventory().getMatrix()) {
-        //noinspection ConstantConditions
         if (itemStack == null || itemStack.getType() == Material.AIR) {
           continue;
         }
@@ -174,7 +172,6 @@ public class CaptchaListener implements Listener {
     if (event.getRecipe() instanceof Keyed
         && ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.RECIPE_KEY)) {
       for (ItemStack itemStack : event.getInventory().getMatrix()) {
-        //noinspection ConstantConditions
         if (itemStack == null || itemStack.getType() == Material.AIR) {
           continue;
         }

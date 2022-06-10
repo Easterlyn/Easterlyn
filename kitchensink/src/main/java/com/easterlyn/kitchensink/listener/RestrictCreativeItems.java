@@ -8,6 +8,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryCreativeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class RestrictCreativeItems implements Listener {
 
@@ -17,7 +18,7 @@ public class RestrictCreativeItems implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onInventoryCreative(InventoryCreativeEvent event) {
+  public void onInventoryCreative(@NotNull InventoryCreativeEvent event) {
     if (event.getWhoClicked().hasPermission("easterlyn.events.creative.unfiltered")) {
       return;
     }

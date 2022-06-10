@@ -4,11 +4,12 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.SignChangeEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class ColorSignText implements Listener {
 
   @EventHandler(ignoreCancelled = true)
-  public void onSignChange(SignChangeEvent event) {
+  public void onSignChange(@NotNull SignChangeEvent event) {
     String[] lines = event.getLines();
     for (int i = 0; i < lines.length; i++) {
       String line = lines[i];

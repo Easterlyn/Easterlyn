@@ -4,11 +4,11 @@ import com.easterlyn.EasterlynCaptchas;
 import com.easterlyn.EasterlynMachines;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.EconomyUtil;
-import com.easterlyn.util.ExperienceUtil;
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.inventory.InventoryUtil;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.github.jikoo.planarwrappers.tuple.Pair;
+import com.github.jikoo.planarwrappers.util.Experience;
 import com.github.jikoo.planarwrappers.util.Generics;
 import com.github.jikoo.planarwrappers.world.Direction;
 import com.github.jikoo.planarwrappers.world.DirectionalTransformer;
@@ -221,7 +221,7 @@ public class Dublexor extends Machine {
 
     Player player = (Player) event.getWhoClicked();
     if (player.getGameMode() != GameMode.CREATIVE) {
-      ExperienceUtil.changeExp(player, -expCost);
+      Experience.changeExp(player, -expCost);
     }
 
     if (event.getClick().name().contains("SHIFT")) {
@@ -231,7 +231,7 @@ public class Dublexor extends Machine {
       } else {
         event.setCancelled(true);
         if (player.getGameMode() != GameMode.CREATIVE) {
-          ExperienceUtil.changeExp(player, expCost);
+          Experience.changeExp(player, expCost);
         }
         return;
       }
@@ -250,7 +250,7 @@ public class Dublexor extends Machine {
     } else {
       // Cursor cannot contain items
       if (player.getGameMode() != GameMode.CREATIVE) {
-        ExperienceUtil.changeExp(player, expCost);
+        Experience.changeExp(player, expCost);
       }
       event.setCancelled(true);
       return;
@@ -342,7 +342,7 @@ public class Dublexor extends Machine {
                 resultCost = Double.POSITIVE_INFINITY;
               }
               int exp = (int) Math.ceil(resultCost);
-              int playerExp = ExperienceUtil.getExp(player);
+              int playerExp = Experience.getExp(player);
               int remainder =
                   resultCost == Double.POSITIVE_INFINITY ? Integer.MIN_VALUE : playerExp - exp;
 

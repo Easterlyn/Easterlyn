@@ -7,11 +7,12 @@ import org.bukkit.entity.Rabbit;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class KillerRabbit implements Listener {
 
   @EventHandler(ignoreCancelled = true)
-  public void onEntitySpawn(CreatureSpawnEvent event) {
+  public void onEntitySpawn(@NotNull CreatureSpawnEvent event) {
     if (event.getEntityType() != EntityType.RABBIT
         || event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.NATURAL
         || ThreadLocalRandom.current().nextInt(1000) > 1) {

@@ -92,7 +92,6 @@ public class EconomyUtil {
       BlockState state = ((BlockStateMeta) itemMeta).getBlockState();
       if (state instanceof InventoryHolder) {
         for (ItemStack item : ((InventoryHolder) state).getInventory().getContents()) {
-          //noinspection ConstantConditions - Array is not null, but individual elements may be.
           if (item != null && item.getType() != Material.AIR) {
             throw new ArithmeticException("item has additional items stored inside");
           }
@@ -100,29 +99,24 @@ public class EconomyUtil {
       }
     }
 
-    if (itemMeta instanceof MapMeta) {
-      MapMeta mapMeta = (MapMeta) itemMeta;
+    if (itemMeta instanceof MapMeta mapMeta) {
       if (mapMeta.hasLocalizedName()) {
         // Map is an exploration map.
-        switch (mapMeta.getLocalizedName()) {
-          case "filled_map.monument":
+        cost = switch (mapMeta.getLocalizedName()) {
+          case "filled_map.monument" ->
             // Monument map.
-            cost = NumberUtil.addSafe(cost, 1200);
-            break;
-          case "filled_map.mansion":
+              NumberUtil.addSafe(cost, 1200);
+          case "filled_map.mansion" ->
             // Mansions are rarer than monuments, roughly 4/3 worth in vanilla.
-            cost = NumberUtil.addSafe(cost, 1600);
-            break;
-          default:
+              NumberUtil.addSafe(cost, 1600);
+          default ->
             // Just in case.
-            cost = NumberUtil.addSafe(cost, 2000);
-            break;
-        }
+              NumberUtil.addSafe(cost, 2000);
+        };
       }
     }
 
-    if (itemMeta instanceof FireworkMeta) {
-      FireworkMeta fireworkMeta = (FireworkMeta) itemMeta;
+    if (itemMeta instanceof FireworkMeta fireworkMeta) {
       double gunpowder = getMappings().get(Material.GUNPOWDER);
       cost = NumberUtil.addSafe(cost, Math.abs(fireworkMeta.getPower()) * gunpowder);
       for (FireworkEffect effect : fireworkMeta.getEffects()) {
@@ -163,8 +157,7 @@ public class EconomyUtil {
       }
     }
 
-    if (itemMeta instanceof PotionMeta) {
-      PotionMeta potionMeta = (PotionMeta) itemMeta;
+    if (itemMeta instanceof PotionMeta potionMeta) {
 
       if (potionMeta.hasCustomEffects()) {
         // Custom potions are unsupported.

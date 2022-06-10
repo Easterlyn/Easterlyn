@@ -13,6 +13,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class FortuneShears implements Listener {
@@ -20,7 +21,7 @@ public class FortuneShears implements Listener {
   // TODO allow anvil enchanting via book
 
   @EventHandler(ignoreCancelled = true)
-  public void onPlayerShearEntity(PlayerShearEntityEvent event) {
+  public void onPlayerShearEntity(@NotNull PlayerShearEntityEvent event) {
     ItemStack hand = event.getPlayer().getInventory().getItemInMainHand();
     if (hand.getType() == Material.SHEARS) {
       hand = event.getPlayer().getInventory().getItemInMainHand();

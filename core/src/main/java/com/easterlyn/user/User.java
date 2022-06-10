@@ -67,7 +67,7 @@ public class User implements Group {
     File file =
         new File(
             plugin.getDataFolder().getPath() + File.separatorChar + "users",
-            uuid.toString() + ".yml");
+            uuid + ".yml");
     ConcurrentConfiguration storage = ConcurrentConfiguration.load(plugin, file);
     if (file.exists()) {
       User user = new User(plugin, uuid, storage);

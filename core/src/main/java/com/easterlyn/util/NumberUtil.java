@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
  *
  * @author Jikoo
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class NumberUtil {
 
   private static final String CHARS =
@@ -24,18 +23,30 @@ public class NumberUtil {
   private static final Map<String, Integer> ROMAN_NUMERALS = new LinkedHashMap<>();
   private static final Pattern TIME_PATTERN =
       Pattern.compile(
-          "$(([0-9]+)y[ears]*)?(([0-9]+)mo[nths]*)?(([0-9]+)w[eks]*)?(([0-9]+)d[ays]*)?"
-              + "(([0-9]+)h[ours]*)(([0-9]+)m[inutes]*)?(([0-9]+)s[econds]*)?^",
+          "^((\\d+)y[ears]*)?((\\d+)mo[nths]*)?((\\d+)w[eks]*)?((\\d+)d[ays]*)?"
+              + "((\\d+)h[ours]*)((\\d+)m[inutes]*)?((\\d+)s[econds]*)?$",
           Pattern.CASE_INSENSITIVE);
 
   static {
     ROMAN_NUMERALS.put("M", 1000);
+    ROMAN_NUMERALS.put("IM", 999);
+    ROMAN_NUMERALS.put("VM", 995);
+    ROMAN_NUMERALS.put("XM", 990);
+    ROMAN_NUMERALS.put("LM", 950);
     ROMAN_NUMERALS.put("CM", 900);
     ROMAN_NUMERALS.put("D", 500);
+    ROMAN_NUMERALS.put("ID", 499);
+    ROMAN_NUMERALS.put("VD", 495);
+    ROMAN_NUMERALS.put("XD", 490);
+    ROMAN_NUMERALS.put("LD", 450);
     ROMAN_NUMERALS.put("CD", 400);
     ROMAN_NUMERALS.put("C", 100);
+    ROMAN_NUMERALS.put("IC", 99);
+    ROMAN_NUMERALS.put("VC", 95);
     ROMAN_NUMERALS.put("XC", 90);
     ROMAN_NUMERALS.put("L", 50);
+    ROMAN_NUMERALS.put("IL", 49);
+    ROMAN_NUMERALS.put("VL", 45);
     ROMAN_NUMERALS.put("XL", 40);
     ROMAN_NUMERALS.put("X", 10);
     ROMAN_NUMERALS.put("IX", 9);

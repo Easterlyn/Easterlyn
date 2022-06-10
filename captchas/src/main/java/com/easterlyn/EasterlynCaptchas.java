@@ -526,7 +526,7 @@ public class EasterlynCaptchas extends EasterlynPlugin {
   }
 
   @Override
-  protected void register(EasterlynCore plugin) {
+  protected void register(@NotNull EasterlynCore plugin) {
     plugin
         .getCommandManager()
         .getCommandCompletions()

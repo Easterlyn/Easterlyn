@@ -112,7 +112,7 @@ public class Colors {
 
   public @NotNull static String addColor(@NotNull String string) {
     Matcher matcher = COLOR_PATTERN.matcher(string);
-    StringBuffer builder = new StringBuffer();
+    StringBuilder builder = new StringBuilder();
 
     while (matcher.find()) {
       matcher.appendReplacement(

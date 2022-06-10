@@ -10,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.NotNull;
 
 public class DeathDropProtection implements Listener {
 
@@ -20,14 +21,14 @@ public class DeathDropProtection implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void onPlayerDropItem(PlayerDropItemEvent event) {
+  public void onPlayerDropItem(@NotNull PlayerDropItemEvent event) {
     if (event.getPlayer().isDead() || event.getPlayer().getHealth() <= 0) {
       event.getItemDrop().getPersistentDataContainer().set(key, PersistentDataType.BYTE, (byte) 1);
     }
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onEntityDamage(EntityDamageEvent event) {
+  public void onEntityDamage(@NotNull EntityDamageEvent event) {
     if (!(event.getEntity() instanceof Item)
         || event.getCause() == EntityDamageEvent.DamageCause.VOID
         || event instanceof EntityDamageByEntityEvent) {

@@ -36,7 +36,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-@SuppressWarnings({"unused", "WeakerAccess"})
 public class StringUtil {
 
   // TODO move item-related methods to ItemUtil
@@ -51,6 +50,7 @@ public class StringUtil {
   private static final Pattern COMMAND_PATTERN = Pattern.compile("/.{1,}");
   private static final Map<Character, BlockQuoteMatcher> BLOCK_QUOTES = new HashMap<>();
   private static final Set<QuoteConsumer> QUOTE_CONSUMERS = new HashSet<>();
+  public static final String LEGACY_CHAT_COLOR = "[" + ChatColor.COLOR_CHAR + "&][\\da-fk-orxA-FK-ORX]";
 
   static {
     BLOCK_QUOTES.put('`', new BacktickMatcher());
@@ -141,7 +141,6 @@ public class StringUtil {
         Stream.concat(QUOTE_CONSUMERS.stream(), additionalHandlers.stream())
             .collect(Collectors.toSet());
 
-    int maxIndex = message.length() - 1;
     nextChar:
     for (int i = 0; i < message.length(); ++i) {
 
@@ -178,8 +177,6 @@ public class StringUtil {
         if (quote.getQuoteMarks() != null) {
           builder.append(quote.getQuoteMarks());
         }
-
-        String quoteText = quote.getQuoteText();
 
         consumeQuote(parsedText, consumers, builder, quote.getQuoteText());
 
@@ -293,31 +290,17 @@ public class StringUtil {
    * @return the trimmed String
    */
   public @NotNull static String trimExtraWhitespace(@NotNull String s) {
-    // Strips useless codes and any spaces between them.
-    // Reset negates all prior colors and formatting.
-    s =
-        s.replaceAll(
-            "(((["
-                + ChatColor.COLOR_CHAR
-                + "&][0-9a-fk-orA-FK-OR])+)\\s+?)+(["
-                + ChatColor.COLOR_CHAR
-                + "&][rR])",
-            "$4");
     // Strips useless codes and any spaces between them. Colors reset prior colors and formatting.
     s =
         s.replaceAll(
-            "(((["
-                + ChatColor.COLOR_CHAR
-                + "&][0-9a-fk-orA-FK-OR])+)\\s+?)(["
-                + ChatColor.COLOR_CHAR
-                + "&][0-9a-fA-F])",
+            "(((" + LEGACY_CHAT_COLOR + ")+)\\s+?)+([" + ChatColor.COLOR_CHAR + "&][\\da-frA-FR])",
             "$4");
     // Strip all spaces between chat colors - actually strips about 1/2 per iteration
-    s = s.replaceAll("\\s+(([" + ChatColor.COLOR_CHAR + "&][0-9a-fk-orA-FK-OR])+)\\s+", " $1");
+    s = s.replaceAll("\\s+((" + LEGACY_CHAT_COLOR + ")+)\\s+", " $1");
     // Strip all spaces that appear to be at start
     s =
         s.replaceAll(
-            "(\\A|\\s+)((([" + ChatColor.COLOR_CHAR + "&][0-9a-fk-orA-FK-OR])+)?\\s+?)", " $3");
+            "(\\A|\\s+)(((" + LEGACY_CHAT_COLOR + ")+)?\\s+?)", " $3");
     return s.trim();
   }
 
@@ -328,7 +311,7 @@ public class StringUtil {
    * @return true if the String will appear empty to the client
    */
   public static boolean appearsEmpty(@NotNull String s) {
-    return s.replaceAll("(\\s|[" + ChatColor.COLOR_CHAR + "&][0-9a-fk-rA-FK-R])", "").isEmpty();
+    return s.replaceAll("(\\s|" + LEGACY_CHAT_COLOR + ")", "").isEmpty();
   }
 
   /**
@@ -463,29 +446,11 @@ public class StringUtil {
    */
   public @Nullable static Boolean asBoolean(String string) {
     string = string.toLowerCase();
-    switch (string) {
-      case "y":
-      case "yes":
-      case "on":
-      case "ok":
-      case "t":
-      case "true":
-      case "add":
-      case "1":
-        return true;
-      case "n":
-      case "no":
-      case "off":
-      case "f":
-      case "false":
-      case "remove":
-      case "del":
-      case "delete":
-      case "0":
-        return false;
-      default:
-        return null;
-    }
+    return switch (string) {
+      case "y", "yes", "on", "ok", "t", "true", "add", "1" -> true;
+      case "n", "no", "off", "f", "false", "remove", "del", "delete", "0" -> false;
+      default -> null;
+    };
   }
 
   /**

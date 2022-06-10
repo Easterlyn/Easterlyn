@@ -38,13 +38,16 @@ public class UserManager {
             .removalListener(
                 notification -> {
                   User user = (User) notification.getValue();
+                  if (user == null) {
+                    return;
+                  }
                   plugin.getServer().getPluginManager().callEvent(new UserUnloadEvent(user));
                   PermissionUtil.releasePermissionData(user.getUniqueId());
                 })
             .build(
                 new CacheLoader<>() {
                   @Override
-                  public User load(@NotNull final UUID uuid) {
+                  public @NotNull User load(@NotNull final UUID uuid) {
                     User user = User.load(plugin, uuid);
                     plugin.getServer().getPluginManager().callEvent(new UserLoadEvent(user));
                     return user;

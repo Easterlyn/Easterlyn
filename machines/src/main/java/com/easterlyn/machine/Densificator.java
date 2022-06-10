@@ -389,7 +389,7 @@ public class Densificator extends Machine {
               Button display = ui.getButton(4);
               if (display != null) {
                 // Item is not cloned, this is fine.
-                display.getItem().setAmount(amount);
+                display.item().setAmount(amount);
               }
               ui.draw(event.getView().getTopInventory());
             }));
@@ -421,7 +421,7 @@ public class Densificator extends Machine {
               int amount = adjustDensificationMode(storage, 1);
               Button display = ui.getButton(4);
               if (display != null) {
-                display.getItem().setAmount(amount);
+                display.item().setAmount(amount);
               }
               ui.draw(event.getView().getTopInventory());
             }));

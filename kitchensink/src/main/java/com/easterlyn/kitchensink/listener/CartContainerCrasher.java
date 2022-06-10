@@ -9,11 +9,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.vehicle.VehicleBlockCollisionEvent;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class CartContainerCrasher implements Listener {
 
   @EventHandler(priority = EventPriority.LOW)
-  public void onVehicleBlockCollision(VehicleBlockCollisionEvent event) {
+  public void onVehicleBlockCollision(@NotNull VehicleBlockCollisionEvent event) {
     if (event.getVehicle().getType() != EntityType.MINECART || !event.getVehicle().isValid()) {
       return;
     }
@@ -21,10 +22,9 @@ public class CartContainerCrasher implements Listener {
     if (event.getBlock().getType() == Material.DISPENSER
         || event.getBlock().getType() == Material.DROPPER) {
       BlockState blockState = event.getBlock().getState();
-      if (!(blockState instanceof Container)) {
+      if (!(blockState instanceof Container container)) {
         return;
       }
-      Container container = (Container) blockState;
       if (container.getInventory().firstEmpty() == -1) {
         return;
       }

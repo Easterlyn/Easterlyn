@@ -126,7 +126,7 @@ public class Channel implements Group {
   }
 
   /**
-   * Gets whether or not a user is a channel's owner.
+   * Gets whether a user is a channel's owner.
    *
    * @param user a user
    * @return if this user is an owner
@@ -137,7 +137,7 @@ public class Channel implements Group {
   }
 
   /**
-   * Gets whether or not a user is a channel moderator.
+   * Gets whether a user is a channel moderator.
    *
    * @param user a user
    * @return whether this user has permission to moderate the channel
@@ -147,10 +147,10 @@ public class Channel implements Group {
   }
 
   /**
-   * Sets whether or not a user is a moderator.
+   * Sets whether a user is a moderator.
    *
    * @param user the user
-   * @param moderator whether or not the user is a moderator
+   * @param moderator whether the user is a moderator
    */
   public void setModerator(@NotNull User user, boolean moderator) {}
 
@@ -158,17 +158,17 @@ public class Channel implements Group {
    * Check if the user allowed to enter the channel.
    *
    * @param user a user
-   * @return whether or not the user is allowed to join
+   * @return whether the user is allowed to join
    */
   public boolean isWhitelisted(@NotNull User user) {
     return !isBanned(user) && (!isPrivate() || isModerator(user));
   }
 
   /**
-   * Sets whether or not a user is allowed to enter the channel.
+   * Sets whether a user is allowed to enter the channel.
    *
    * @param user the user
-   * @param whitelisted whether or not the user is allowed to join the channel
+   * @param whitelisted whether the user is allowed to join the channel
    */
   public void setWhitelisted(@NotNull User user, boolean whitelisted) {}
 
@@ -183,10 +183,10 @@ public class Channel implements Group {
   }
 
   /**
-   * Sets whether or not a user is banned.
+   * Sets whether a user is banned.
    *
    * @param user the user
-   * @param banned whether or not the user is a moderator
+   * @param banned whether the user is a moderator
    */
   public void setBanned(@NotNull User user, boolean banned) {}
 

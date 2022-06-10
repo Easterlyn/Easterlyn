@@ -41,7 +41,7 @@ public class EasterlynLocales extends BukkitLocales {
     } else {
       CommandIssuer issuer = CommandManager.getCurrentCommandIssuer();
       matcher.reset();
-      StringBuffer sb = new StringBuffer(message.length());
+      StringBuilder builder = new StringBuilder(message.length());
 
       while (matcher.find()) {
         MessageKey key = MessageKey.of(matcher.group("key"));
@@ -49,11 +49,11 @@ public class EasterlynLocales extends BukkitLocales {
         if (value == null) {
           value = "";
         }
-        matcher.appendReplacement(sb, Matcher.quoteReplacement(value));
+        matcher.appendReplacement(builder, Matcher.quoteReplacement(value));
       }
 
-      matcher.appendTail(sb);
-      return sb.toString();
+      matcher.appendTail(builder);
+      return builder.toString();
     }
   }
 

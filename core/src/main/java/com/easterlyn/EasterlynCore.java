@@ -67,7 +67,7 @@ public class EasterlynCore extends JavaPlugin {
     registerCommands(this, getClassLoader(), "com.easterlyn.command");
 
     // Listener for preventing ruining unique items
-    getServer().getPluginManager().registerEvents(new UniqueListener(), this);
+    getServer().getPluginManager().registerEvents(new UniqueListener(localeManager), this);
 
     Event.register(
         PluginDisableEvent.class,

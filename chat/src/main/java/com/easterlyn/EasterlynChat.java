@@ -204,7 +204,7 @@ public class EasterlynChat extends EasterlynPlugin {
   }
 
   @Override
-  protected void register(EasterlynCore plugin) {
+  protected void register(@NotNull EasterlynCore plugin) {
     StringUtil.addQuoteConsumer(
         new StaticQuoteConsumer(CHANNEL_PATTERN) {
           @Override

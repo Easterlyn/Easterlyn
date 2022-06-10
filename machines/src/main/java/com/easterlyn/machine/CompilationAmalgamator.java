@@ -90,10 +90,9 @@ public class CompilationAmalgamator extends Machine {
     new BukkitRunnable() {
       @Override
       public void run() {
-        if (!(event.getPlayer() instanceof Player)) {
+        if (!(event.getPlayer() instanceof Player player)) {
           return;
         }
-        Player player = (Player) event.getPlayer();
         if (!player.isOnline()) {
           return;
         }

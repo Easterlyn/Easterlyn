@@ -3,8 +3,8 @@ package com.easterlyn.kitchensink.listener;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.user.User;
 import com.easterlyn.util.BlockUtil;
-import com.easterlyn.util.ExperienceUtil;
 import com.easterlyn.util.inventory.ItemUtil;
+import com.github.jikoo.planarwrappers.util.Experience;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -20,6 +20,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.jetbrains.annotations.NotNull;
 
 public class BottleExperience implements Listener {
 
@@ -27,7 +28,7 @@ public class BottleExperience implements Listener {
   private final String keyBottleThrow = "kitchensink:expBottleThrow";
 
   @EventHandler
-  public void onPlayerInteract(PlayerInteractEvent event) {
+  public void onPlayerInteract(@NotNull PlayerInteractEvent event) {
     if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
       if (BlockUtil.hasRightClickFunction(event)) {
         return;
@@ -60,9 +61,9 @@ public class BottleExperience implements Listener {
       return;
     }
 
-    int exp = ExperienceUtil.getExp(player);
+    int exp = Experience.getExp(player);
     if (exp >= 11) {
-      ExperienceUtil.changeExp(player, -11);
+      Experience.changeExp(player, -11);
       ItemUtil.setHeldItem(
           player.getInventory(),
           event.getHand() == EquipmentSlot.HAND,

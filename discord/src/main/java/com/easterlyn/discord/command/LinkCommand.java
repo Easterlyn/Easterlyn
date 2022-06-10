@@ -96,7 +96,7 @@ public class LinkCommand extends BaseCommand {
   @CommandCompletion("")
   public void link(
       @Flags(CoreContexts.SELF) Player issuer,
-      @SuppressWarnings("unused") String assistMeICannotBeReliedUponToRead) {
+      String assistMeICannotBeReliedUponToRead) {
     core.getLocaleManager().sendMessage(issuer, "discord.commands.link.reading_comprehension");
     link(issuer);
   }

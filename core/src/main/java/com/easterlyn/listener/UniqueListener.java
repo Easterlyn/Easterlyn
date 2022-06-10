@@ -1,5 +1,6 @@
 package com.easterlyn.listener;
 
+import com.easterlyn.util.LocaleManager;
 import com.easterlyn.util.inventory.ItemUtil;
 import org.bukkit.GameMode;
 import org.bukkit.Keyed;
@@ -14,6 +15,12 @@ import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.inventory.ItemStack;
 
 public class UniqueListener implements Listener {
+
+  private final LocaleManager locale;
+
+  public UniqueListener(LocaleManager locale) {
+    this.locale = locale;
+  }
 
   @EventHandler(ignoreCancelled = true)
   public void onPrepareItemCraft(PrepareItemCraftEvent event) {
@@ -46,9 +53,9 @@ public class UniqueListener implements Listener {
 
     for (ItemStack itemStack : event.getInventory().getMatrix()) {
       if (ItemUtil.isUniqueItem(itemStack)) {
-        event
-            .getWhoClicked()
-            .sendMessage("events.craft.unique".replace("{ITEM}", ItemUtil.getItemName(itemStack)));
+        locale.sendMessage(event.getWhoClicked(),
+            "events.craft.unique",
+            "{ITEM}", ItemUtil.getItemName(itemStack));
         event.setCancelled(true);
         return;
       }

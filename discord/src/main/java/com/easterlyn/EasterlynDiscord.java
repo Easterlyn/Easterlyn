@@ -63,7 +63,7 @@ public class EasterlynDiscord extends EasterlynPlugin {
             .build(
                 new CacheLoader<>() {
                   @Override
-                  public Object load(@NotNull Object key) {
+                  public @NotNull Object load(@NotNull Object key) {
                     if (!(key instanceof UUID)) {
                       throw new IllegalArgumentException("Key must be a UUID");
                     }
@@ -120,7 +120,7 @@ public class EasterlynDiscord extends EasterlynPlugin {
   }
 
   @Override
-  protected void register(EasterlynCore plugin) {
+  protected void register(@NotNull EasterlynCore plugin) {
     plugin.registerCommands(this, getClassLoader(), "com.easterlyn.discord.command");
     plugin.getLocaleManager().addLocaleSupplier(this);
   }

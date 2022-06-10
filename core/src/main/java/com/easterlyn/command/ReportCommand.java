@@ -32,7 +32,7 @@ public class ReportCommand extends BaseCommand {
       message +=
           String.format(
               " - /wtp @p %s %.2f %.2f %.2f %.2f %.2f",
-              location.getWorld().getName(),
+              issuer.getPlayer().getWorld().getName(),
               location.getX(),
               location.getY(),
               location.getZ(),

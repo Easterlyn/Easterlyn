@@ -42,7 +42,6 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-@SuppressWarnings({"WeakerAccess", "unused"})
 public abstract class Machine {
 
   private final EasterlynMachines machines;
@@ -205,8 +204,7 @@ public abstract class Machine {
     final Location key = getKey(storage);
     final BlockMap<ItemStack[]> inventories = new BlockMap<>();
     for (Block block : getMachines().getMachineBlocks(key.getBlock())) {
-      if (block.getState() instanceof InventoryHolder) {
-        InventoryHolder inventoryHolder = (InventoryHolder) block.getState();
+      if (block.getState() instanceof InventoryHolder inventoryHolder) {
         inventories.put(block, inventoryHolder.getInventory().getContents());
         inventoryHolder.getInventory().clear();
       }

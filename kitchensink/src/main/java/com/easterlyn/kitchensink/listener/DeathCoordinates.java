@@ -6,11 +6,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class DeathCoordinates implements Listener {
 
   @EventHandler(ignoreCancelled = true)
-  public void onPlayerDeath(PlayerDeathEvent event) {
+  public void onPlayerDeath(@NotNull PlayerDeathEvent event) {
     // TODO fun messages, clickable location component
     // TODO permanent record - maybe merge into /death
     Player player = event.getEntity();

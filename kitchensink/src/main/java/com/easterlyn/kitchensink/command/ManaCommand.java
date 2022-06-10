@@ -15,9 +15,9 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.EconomyUtil;
-import com.easterlyn.util.ExperienceUtil;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.inventory.ItemUtil;
+import com.github.jikoo.planarwrappers.util.Experience;
 import java.text.DecimalFormat;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -43,7 +43,7 @@ public class ManaCommand extends BaseCommand {
             player,
             "sink.module.mana.current.message",
             "{exp}",
-            String.valueOf(ExperienceUtil.getExp(player)));
+            String.valueOf(Experience.getExp(player)));
   }
 
   @CommandAlias("mana")
@@ -58,7 +58,7 @@ public class ManaCommand extends BaseCommand {
             "{exp}",
             String.valueOf(experience),
             "{level}",
-            getFormat().format(ExperienceUtil.getLevelFromExp(experience)));
+            getFormat().format(Experience.getLevelFromExp(experience)));
   }
 
   @CommandAlias("mana")
@@ -77,7 +77,7 @@ public class ManaCommand extends BaseCommand {
             getCurrentCommandIssuer().getIssuer(),
             "sink.module.mana.exp_to_level",
             "{exp}",
-            getFormat().format(ExperienceUtil.getExpFromLevel(level)),
+            getFormat().format(Experience.getExpFromLevel(level)),
             "{level}",
             String.valueOf(level));
   }
@@ -125,7 +125,7 @@ public class ManaCommand extends BaseCommand {
                   "{exp}",
                   getFormat().format(worth),
                   "{level}",
-                  String.valueOf(ExperienceUtil.getLevelFromExp((long) worth)));
+                  String.valueOf(Experience.getLevelFromExp((long) worth)));
       for (TextComponent text : StringUtil.toJSON(value)) {
         component.addExtra(text);
       }

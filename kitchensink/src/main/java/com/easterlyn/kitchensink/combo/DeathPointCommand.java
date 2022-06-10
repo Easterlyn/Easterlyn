@@ -20,15 +20,11 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
 
 public class DeathPointCommand extends BaseCommand implements Listener {
 
   public static final String DEATH_COOLDOWN = "kitchensink.deathTime";
-  private static final String DEATH_LOCATION = "kitchensink.deathLocation";
   @Dependency private EasterlynCore core;
   @Dependency private EasterlynKitchenSink sink;
 
@@ -50,7 +46,7 @@ public class DeathPointCommand extends BaseCommand implements Listener {
       return;
     }
 
-    Location death = user.getStorage().getSerializable(DEATH_LOCATION, Location.class);
+    Location death = user.getPlayer().getLastDeathLocation();
 
     if (death == null) {
       issuer.sendInfo(MessageKey.of("sink.module.death.error.missing"));
@@ -90,11 +86,5 @@ public class DeathPointCommand extends BaseCommand implements Listener {
             BossBarTimer.supplierPlayerImmobile(player),
             () -> core.getLocaleManager().sendMessage(player, "sink.common.teleport.movement"))
         .schedule(sink, DEATH_COOLDOWN, 4, TimeUnit.SECONDS);
-  }
-
-  @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void onPlayerTeleport(PlayerDeathEvent event) {
-    User user = core.getUserManager().getUser(event.getEntity().getUniqueId());
-    user.getStorage().set(DEATH_LOCATION, event.getEntity().getLocation());
   }
 }

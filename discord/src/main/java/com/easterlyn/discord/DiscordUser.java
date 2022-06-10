@@ -4,7 +4,6 @@ import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -19,8 +18,6 @@ public class DiscordUser extends User {
   public TextComponent getMention() {
     TextComponent component = new TextComponent("@" + getDisplayName());
     component.setColor(getColor());
-    component.setClickEvent(
-        new ClickEvent(ClickEvent.Action.OPEN_URL, "http://discord.easterlyn.com"));
 
     TextComponent line = new TextComponent("#main");
     line.setColor(Colors.CHANNEL);

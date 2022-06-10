@@ -13,6 +13,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
+import org.jetbrains.annotations.NotNull;
 
 public class WitherFacts implements Listener {
 
@@ -34,7 +35,7 @@ public class WitherFacts implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onPlayerDeath(PlayerDeathEvent event) {
+  public void onPlayerDeath(@NotNull PlayerDeathEvent event) {
     Player player = event.getEntity();
     EntityDamageEvent lastDamage = player.getLastDamageCause();
     if (lastDamage != null

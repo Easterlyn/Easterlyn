@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 
 public class HologramUtil {
 
-  @SuppressWarnings("deprecation") // It's this or static abuse.
+  // It's this or static abuse.
   private static final NamespacedKey KEY = new NamespacedKey("easterlyn", "hologram");
 
   private HologramUtil() {}

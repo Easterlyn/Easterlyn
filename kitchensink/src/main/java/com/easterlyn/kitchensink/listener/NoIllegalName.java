@@ -5,13 +5,14 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerLoginEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class NoIllegalName implements Listener {
 
   private final Pattern pattern = Pattern.compile("[^a-zA-Z_0-9]");
 
   @EventHandler(priority = EventPriority.HIGHEST)
-  public void onPlayerLogin(PlayerLoginEvent event) {
+  public void onPlayerLogin(@NotNull PlayerLoginEvent event) {
     if (this.pattern.matcher(event.getPlayer().getName()).find()) {
       /*
        * One day we had a guy log in who had a space after his name. Played hell with plugins
@@ -24,16 +25,12 @@ public class NoIllegalName implements Listener {
       event.setKickMessage("Your name appears to be invalid. Please restart Minecraft.");
       return;
     }
-    // Support old full bans TODO move or remove and fix old bans
     switch (event.getResult()) {
       case KICK_BANNED:
       case KICK_OTHER:
         String reason = event.getKickMessage();
         event.setKickMessage(reason.replaceAll("<(ip|uuid|name)=.*?>", ""));
         break;
-      case ALLOWED:
-      case KICK_FULL:
-      case KICK_WHITELIST:
       default:
         break;
     }
