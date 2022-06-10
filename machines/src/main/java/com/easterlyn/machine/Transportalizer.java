@@ -12,6 +12,7 @@ import com.github.jikoo.planarwrappers.world.DirectionalTransformer;
 import com.github.jikoo.planarwrappers.world.OrientableTransformer;
 import com.github.jikoo.planarwrappers.world.Shape;
 import com.github.jikoo.planarwrappers.world.TransformableBlockData;
+import java.util.Objects;
 import org.bukkit.Axis;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,9 +20,7 @@ import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.Sound;
-import org.bukkit.Tag;
 import org.bukkit.WorldBorder;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -46,8 +45,6 @@ import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.BoundingBox;
@@ -117,22 +114,6 @@ public class Transportalizer extends Machine {
           itemMeta.setDisplayName(ChatColor.WHITE + "Transportalizer");
           drop.setItemMeta(itemMeta);
         });
-
-    ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(machines, "transportalizer"), drop);
-    recipe.shape("BAB", "DCD", "FEF");
-    recipe.setIngredient('A', Material.END_CRYSTAL);
-    recipe.setIngredient('B', new RecipeChoice.MaterialChoice(Tag.BUTTONS));
-    recipe.setIngredient('C', Material.ENDER_CHEST);
-    recipe.setIngredient('D', Material.ENDER_EYE);
-    recipe.setIngredient('E', Material.HOPPER);
-    recipe.setIngredient(
-        'F',
-        new RecipeChoice.MaterialChoice(
-            Material.QUARTZ_BLOCK,
-            Material.QUARTZ_PILLAR,
-            Material.SMOOTH_QUARTZ,
-            Material.CHISELED_QUARTZ_BLOCK));
-    machines.getServer().addRecipe(recipe);
   }
 
   @Override
@@ -209,24 +190,16 @@ public class Transportalizer extends Machine {
    * @return the fuel value of the Material
    */
   private int getValue(Material m) {
-    switch (m) {
-      case GUNPOWDER:
-        return 1;
-      case REDSTONE:
-        return 2;
-      case BLAZE_POWDER:
-        return 3;
-      case GLOWSTONE_DUST:
-        return 4;
-      case BLAZE_ROD:
-        return 6;
-      case GLOWSTONE:
-        return 16;
-      case REDSTONE_BLOCK:
-        return 18;
-      default:
-        return 0;
-    }
+    return switch (m) {
+      case GUNPOWDER -> 1;
+      case REDSTONE -> 2;
+      case BLAZE_POWDER -> 3;
+      case GLOWSTONE_DUST -> 4;
+      case BLAZE_ROD -> 6;
+      case GLOWSTONE -> 16;
+      case REDSTONE_BLOCK -> 18;
+      default -> 0;
+    };
   }
 
   @Override
@@ -254,7 +227,7 @@ public class Transportalizer extends Machine {
 
     // Check for a sign in the proper location
     BlockState signState = keyBlock.getRelative(0, 2, 0).getState();
-    if (!(signState instanceof Sign)) {
+    if (!(signState instanceof Sign sign)) {
       event
           .getPlayer()
           .sendMessage(
@@ -265,10 +238,9 @@ public class Transportalizer extends Machine {
       return;
     }
 
-    Sign sign = (Sign) signState;
     // Check sign for proper format - sign lines are 0-3, third line is line 2
     String line3 = sign.getLine(2);
-    if (!line3.matches("-?[0-9]+(\\s|,\\s?)[0-9]+(\\s|,\\s?)-?[0-9]+")) {
+    if (!line3.matches("-?\\d+(\\s|,\\s?)\\d+(\\s|,\\s?)-?\\d+")) {
       event
           .getPlayer()
           .sendMessage(
@@ -495,8 +467,8 @@ public class Transportalizer extends Machine {
   }
 
   private void teleport(Entity entity, Location source, Location target) {
-    source.getWorld().playSound(source, Sound.BLOCK_NOTE_BLOCK_PLING, 1F, 2F);
-    target.getWorld().playSound(target, Sound.BLOCK_NOTE_BLOCK_PLING, 1F, 2F);
+    Objects.requireNonNull(source.getWorld()).playSound(source, Sound.BLOCK_NOTE_BLOCK_PLING, 1F, 2F);
+    Objects.requireNonNull(target.getWorld()).playSound(target, Sound.BLOCK_NOTE_BLOCK_PLING, 1F, 2F);
     Location current = entity.getLocation();
     target.setPitch(current.getPitch());
     target.setYaw(current.getYaw());

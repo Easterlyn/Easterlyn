@@ -23,9 +23,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -36,8 +36,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
-import org.bukkit.inventory.RecipeChoice;
-import org.bukkit.inventory.ShapedRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
@@ -100,22 +98,6 @@ public class Dublexor extends Machine {
           itemMeta.setDisplayName(ChatColor.RED + "No Result");
           barrier.setItemMeta(itemMeta);
         });
-
-    ShapedRecipe recipe = new ShapedRecipe(new NamespacedKey(machines, "dublexor"), drop);
-    recipe.shape("BAB", "DCD", "FEF");
-    recipe.setIngredient('A', Material.ENCHANTING_TABLE);
-    recipe.setIngredient('B', Material.EXPERIENCE_BOTTLE);
-    recipe.setIngredient('C', Material.BEACON);
-    recipe.setIngredient('D', Material.OBSIDIAN);
-    recipe.setIngredient('E', Material.SEA_LANTERN);
-    recipe.setIngredient(
-        'F',
-        new RecipeChoice.MaterialChoice(
-            Material.QUARTZ_BLOCK,
-            Material.QUARTZ_PILLAR,
-            Material.SMOOTH_QUARTZ,
-            Material.CHISELED_QUARTZ_BLOCK));
-    machines.getServer().addRecipe(recipe);
   }
 
   /** Singleton for getting the usage help recipe. */
@@ -180,10 +162,10 @@ public class Dublexor extends Machine {
   public void handleInteract(
       @NotNull PlayerInteractEvent event, @NotNull ConfigurationSection storage) {
     super.handleInteract(event, storage);
-    //noinspection deprecation
-    if (event.isCancelled() || event.getPlayer().isSneaking()) {
+    if (event.useInteractedBlock() == Result.DENY || event.getPlayer().isSneaking()) {
       return;
     }
+    event.setUseItemInHand(Result.DENY);
     Merchant merchant = getMachines().getMerchant(getName(), this, storage);
     merchant.setRecipes(Collections.singletonList(Dublexor.getExampleRecipe()));
     event.getPlayer().openMerchant(merchant, true);
@@ -263,7 +245,7 @@ public class Dublexor extends Machine {
       if (result.isSimilar(event.getCursor())) {
         result.setAmount(result.getAmount() + event.getCursor().getAmount());
       }
-      // noinspection deprecation // No alternative available, desync is handled.
+      // No alternative available, desync is handled by inventory updates.
       event.setCursor(result);
     } else {
       // Cursor cannot contain items
@@ -307,13 +289,12 @@ public class Dublexor extends Machine {
               // Must re-obtain player or update doesn't seem to happen
               Player player = Bukkit.getPlayer(id);
               if (player == null
-                  || !(player.getOpenInventory().getTopInventory() instanceof MerchantInventory)) {
+                  || !(player.getOpenInventory()
+                  .getTopInventory() instanceof MerchantInventory open)) {
                 // Player has logged out or closed inventory. Inventories are per-player, ignore.
                 return;
               }
 
-              MerchantInventory open =
-                  (MerchantInventory) player.getOpenInventory().getTopInventory();
               Pair<Machine, ConfigurationSection> machineData =
                   getMachines().getMerchantMachine(open.getMerchant());
               if (machineData == null || !Dublexor.this.equals(machineData.getLeft())) {
