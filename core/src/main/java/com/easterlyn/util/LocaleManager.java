@@ -1,5 +1,6 @@
 package com.easterlyn.util;
 
+import com.easterlyn.util.text.QuoteConsumer;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -25,7 +26,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import com.easterlyn.util.text.QuoteConsumer;
 
 public class LocaleManager {
 

@@ -98,30 +98,39 @@ public class EasterlynCore extends JavaPlugin {
         EventPriority.LOW);
   }
 
-  public void registerCommands(Plugin plugin, ClassLoader loader, String packageName) {
+  public void registerCommands(
+      @NotNull Plugin plugin,
+      @NotNull ClassLoader loader,
+      @NotNull String packageName) {
     if (!plugin.equals(this)) {
       commandManager.registerDependency(plugin.getClass(), plugin);
     }
-    new Reflections(new ConfigurationBuilder().forPackage(packageName, loader))
-        .getSubTypesOf(BaseCommand.class).stream()
-            .filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
-            .forEach(
-                clazz -> {
-                  Constructor<? extends BaseCommand> constructor;
-                  BaseCommand command;
-                  try {
-                    constructor = clazz.getConstructor();
-                    command = constructor.newInstance();
-                  } catch (ReflectiveOperationException e) {
-                    getLogger().severe("Unable to register command " + clazz.getName());
-                    e.printStackTrace();
-                    return;
-                  }
-                  commandManager.registerCommand(command, true);
-                  if (!this.equals(plugin)) {
-                    pluginCommands.put(plugin.getClass(), command);
-                  }
-                });
+    ConfigurationBuilder configuration = new ConfigurationBuilder()
+        .setClassLoaders(new ClassLoader[]{loader})
+        .forPackage(packageName, loader);
+    new Reflections(configuration)
+        .getSubTypesOf(BaseCommand.class)
+        .stream()
+        .filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
+        // reflections#378 - package parameter not respected
+        .filter(clazz -> clazz.getPackage().getName().startsWith(packageName))
+        .forEach(
+            clazz -> {
+              Constructor<? extends BaseCommand> constructor;
+              BaseCommand command;
+              try {
+                constructor = clazz.getConstructor();
+                command = constructor.newInstance();
+              } catch (ReflectiveOperationException e) {
+                getLogger().severe("Unable to register command " + clazz.getName());
+                e.printStackTrace();
+                return;
+              }
+              commandManager.registerCommand(command, true);
+              if (!this.equals(plugin)) {
+                pluginCommands.put(plugin.getClass(), command);
+              }
+            });
   }
 
   @Override

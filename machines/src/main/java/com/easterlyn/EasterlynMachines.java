@@ -88,7 +88,10 @@ public class EasterlynMachines extends JavaPlugin {
   public void onEnable() {
     saveDefaultConfig();
 
-    new Reflections(new ConfigurationBuilder().forPackage("com.easterlyn.machine", getClassLoader()))
+    ConfigurationBuilder configuration = new ConfigurationBuilder()
+        .setClassLoaders(new ClassLoader[]{getClassLoader()})
+        .forPackage("com.easterlyn.machine", getClassLoader());
+    new Reflections(configuration)
         .getSubTypesOf(Machine.class).stream()
             .filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
             .forEach(

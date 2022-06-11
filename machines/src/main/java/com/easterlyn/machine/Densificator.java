@@ -80,7 +80,7 @@ public class Densificator extends Machine {
             .build(
                 new CacheLoader<>() {
                   @Override
-                  public List<RecipeWrapper> load(@NotNull Material material) {
+                  public @NotNull List<RecipeWrapper> load(@NotNull Material material) {
                     ArrayList<RecipeWrapper> list = new ArrayList<>();
 
                     Bukkit.recipeIterator()
