@@ -3,7 +3,6 @@ package com.easterlyn.util;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.reflection.ReflectionUtil;
-import java.lang.reflect.Field;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,7 +17,6 @@ import net.minecraft.world.item.DiggerItem;
 import net.minecraft.world.item.HoeItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ShovelItem;
-import net.minecraft.world.item.TieredItem;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import org.bukkit.FluidCollisionMode;
@@ -54,22 +52,9 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-public class BlockUtil {
+public final class BlockUtil {
 
   private static final Set<BiFunction<Block, ItemStack, Boolean>> BLOCK_FUNCTIONS = new HashSet<>();
-  private static final Field ITEMTOOL_A;
-
-  static {
-    Field fieldItemToolA;
-    try {
-      fieldItemToolA = ReflectionUtil.getField(TieredItem.class, "a", Set.class);
-    } catch (NoSuchFieldException e) {
-      e.printStackTrace();
-      fieldItemToolA = null;
-    }
-
-    ITEMTOOL_A = fieldItemToolA;
-  }
 
   private BlockUtil() {}
 
@@ -159,24 +144,16 @@ public class BlockUtil {
   }
 
   public static boolean isCorrectTool(@Nullable ItemStack tool, @NotNull Material blockType) {
-    Item item;
     if (tool == null
         || tool.getType().isAir()
-        || !((item = CraftMagicNumbers.getItem(tool.getType())) instanceof DiggerItem)) {
+        || !(CraftMagicNumbers.getItem(tool.getType()) instanceof DiggerItem diggerItem)) {
       return !isToolRequired(blockType);
     }
 
-    if (ITEMTOOL_A == null) {
-      return isUsableTool(tool, blockType);
-    }
-
-    try {
-      Set<?> toolBlocks = (Set<?>) ITEMTOOL_A.get(item);
-      return toolBlocks.contains(CraftMagicNumbers.getBlock(blockType));
-    } catch (IllegalAccessException | ClassCastException e) {
-      ReportableEvent.call("Exception fetching list of blocks breakable by tool!", e, 10);
-      return isUsableTool(tool, blockType);
-    }
+    // NMSREF double check this on updates
+    return 1.0F != diggerItem.getDestroySpeed(
+        CraftItemStack.asNMSCopy(tool),
+        CraftMagicNumbers.getBlock(blockType).defaultBlockState());
   }
 
   private static boolean isUsableTool(@Nullable ItemStack tool, @NotNull Material blockType) {
