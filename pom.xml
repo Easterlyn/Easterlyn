@@ -91,6 +91,7 @@
                     <directory>${project.build.directory}</directory>
                     <excludes>
                       <exclude>original-*.jar</exclude>
+                      <exclude>*remapped*.jar</exclude>
                     </excludes>
                     <id>copy</id>
                     <includes>
@@ -130,6 +131,13 @@
         <filtering>true</filtering>
       </resource>
     </resources>
+
+    <plugins>
+      <plugin>
+        <artifactId>build-helper-maven-plugin</artifactId>
+        <groupId>org.codehaus.mojo</groupId>
+      </plugin>
+    </plugins>
   </build>
 
   <dependencyManagement>

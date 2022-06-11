@@ -65,6 +65,16 @@
   <build>
     <plugins>
       <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+      </plugin>
+
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
         <configuration>
@@ -108,6 +118,11 @@
           </execution>
         </executions>
         <groupId>net.md-5</groupId>
+      </plugin>
+
+      <plugin>
+        <artifactId>copy-maven-plugin</artifactId>
+        <groupId>ch.mfrey.maven.plugin</groupId>
       </plugin>
     </plugins>
   </build>

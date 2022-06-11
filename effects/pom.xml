@@ -3,6 +3,39 @@
   xmlns="http://maven.apache.org/POM/4.0.0"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <artifactId>effects</artifactId>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <groupId>org.apache.maven.plugins</groupId>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <configuration>
+          <relocations>
+            <relocation>
+              <pattern>com.github.jikoo.planarwrappers</pattern>
+              <shadedPattern>com.easterlyn.planarwrappers</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <artifactId>copy-maven-plugin</artifactId>
+        <groupId>ch.mfrey.maven.plugin</groupId>
+      </plugin>
+    </plugins>
+  </build>
+
   <dependencies>
     <dependency>
       <artifactId>spigot-api</artifactId>
