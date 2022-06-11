@@ -46,16 +46,15 @@ public class DeathPointCommand extends BaseCommand implements Listener {
       return;
     }
 
-    Location death = user.getPlayer().getLastDeathLocation();
-
-    if (death == null) {
-      issuer.sendInfo(MessageKey.of("sink.module.death.error.missing"));
-      return;
-    }
-
     Player player = user.getPlayer();
     if (player == null) {
       issuer.sendInfo(MessageKey.of("sink.common.teleport.player_unloaded"));
+      return;
+    }
+
+    Location death = player.getLastDeathLocation();
+    if (death == null) {
+      issuer.sendInfo(MessageKey.of("sink.module.death.error.missing"));
       return;
     }
 
