@@ -1,5 +1,8 @@
 package com.easterlyn.kitchensink.listener;
 
+import com.easterlyn.EasterlynKitchenSink;
+import org.bukkit.command.Command;
+import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -9,6 +12,12 @@ import org.bukkit.event.server.TabCompleteEvent;
 import org.jetbrains.annotations.NotNull;
 
 public class NoCommandPrefix implements Listener {
+
+  private final EasterlynKitchenSink plugin;
+
+  public NoCommandPrefix(EasterlynKitchenSink plugin) {
+    this.plugin = plugin;
+  }
 
   @EventHandler(ignoreCancelled = true)
   public void onPlayerCommand(@NotNull PlayerCommandPreprocessEvent event) {
@@ -27,7 +36,20 @@ public class NoCommandPrefix implements Listener {
       return;
     }
 
-    event.getCommands().removeIf(command -> command.indexOf(':') > -1);
+    SimpleCommandMap commandMap = plugin.getCore().getSimpleCommandMap();
+
+    event.getCommands().removeIf(command -> {
+      if (command.indexOf(':') > -1) {
+        return true;
+      }
+
+      if (commandMap == null) {
+        return false;
+      }
+
+      Command internalCommand = commandMap.getCommand(command);
+      return internalCommand == null || !internalCommand.testPermissionSilent(event.getPlayer());
+    });
   }
 
   @EventHandler

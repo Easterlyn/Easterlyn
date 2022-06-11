@@ -7,6 +7,7 @@ import com.easterlyn.kitchensink.combo.DeathPointCommand;
 import com.easterlyn.kitchensink.combo.FreeCarts;
 import com.easterlyn.kitchensink.combo.LoginCommands;
 import com.easterlyn.kitchensink.combo.Meteors;
+import com.easterlyn.kitchensink.listener.NoCommandPrefix;
 import com.easterlyn.kitchensink.listener.BottleExperience;
 import com.easterlyn.kitchensink.listener.CartContainerCrasher;
 import com.easterlyn.kitchensink.listener.ColorSignText;
@@ -14,29 +15,25 @@ import com.easterlyn.kitchensink.listener.DeathCoordinates;
 import com.easterlyn.kitchensink.listener.DeathDropProtection;
 import com.easterlyn.kitchensink.listener.FortuneShears;
 import com.easterlyn.kitchensink.listener.KillerRabbit;
-import com.easterlyn.kitchensink.listener.NoCommandPrefix;
 import com.easterlyn.kitchensink.listener.NoCreativeCrammingDrops;
 import com.easterlyn.kitchensink.listener.NoIllegalName;
 import com.easterlyn.kitchensink.listener.OnlyWitherKillsItems;
 import com.easterlyn.kitchensink.listener.PVPKeepInventory;
 import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
 import com.easterlyn.kitchensink.listener.WitherFacts;
-import com.github.jikoo.planarwrappers.event.Event;
+import com.easterlyn.plugin.EasterlynPlugin;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-public class EasterlynKitchenSink extends JavaPlugin {
+public class EasterlynKitchenSink extends EasterlynPlugin {
 
   private final List<BaseCommand> extraCommands = new ArrayList<>();
 
   @Override
-  public void onEnable() {
-
+  protected void enable() {
     saveDefaultConfig();
 
     /* TODO
@@ -100,8 +97,8 @@ public class EasterlynKitchenSink extends JavaPlugin {
     // Feature: Killer rabbit has a 1/1000 chance to spawn
     getServer().getPluginManager().registerEvents(new KillerRabbit(), this);
 
-    // Feature: Permission is required to use prefixes in commands.
-    getServer().getPluginManager().registerEvents(new NoCommandPrefix(), this);
+    // Feature: Permission is required to use prefixes in commands. Also, commands in general.
+    getServer().getPluginManager().registerEvents(new NoCommandPrefix(this), this);
 
     // Feature: Entities killed by creative players or cramming do not drop loot or exp.
     getServer().getPluginManager().registerEvents(new NoCreativeCrammingDrops(), this);
@@ -120,21 +117,6 @@ public class EasterlynKitchenSink extends JavaPlugin {
 
     // Fact: Withers are awesome.
     getServer().getPluginManager().registerEvents(new WitherFacts(), this);
-
-    RegisteredServiceProvider<EasterlynCore> registration =
-        getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (registration != null) {
-      register(registration.getProvider());
-    }
-
-    Event.register(
-        PluginEnableEvent.class,
-        pluginEnableEvent -> {
-          if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
-            register((EasterlynCore) pluginEnableEvent.getPlugin());
-          }
-        },
-        this);
   }
 
   @Override
@@ -150,12 +132,12 @@ public class EasterlynKitchenSink extends JavaPlugin {
     extraCommands.forEach(command -> plugin.getCommandManager().unregisterCommand(command));
   }
 
-  private void register(@NotNull EasterlynCore plugin) {
+  @Override
+  protected void register(@NotNull EasterlynCore core) {
+    core.registerCommands(this, getClassLoader(), "com.easterlyn.kitchensink.command");
 
-    plugin.registerCommands(this, getClassLoader(), "com.easterlyn.kitchensink.command");
+    extraCommands.forEach(command -> core.getCommandManager().registerCommand(command));
 
-    extraCommands.forEach(command -> plugin.getCommandManager().registerCommand(command));
-
-    plugin.getLocaleManager().addLocaleSupplier(this);
+    core.getLocaleManager().addLocaleSupplier(this);
   }
 }
