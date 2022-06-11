@@ -73,6 +73,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
 public class EasterlynMachines extends JavaPlugin {
 
@@ -87,7 +88,7 @@ public class EasterlynMachines extends JavaPlugin {
   public void onEnable() {
     saveDefaultConfig();
 
-    new Reflections("com.easterlyn.machine", getClassLoader())
+    new Reflections(new ConfigurationBuilder().forPackage("com.easterlyn.machine", getClassLoader()))
         .getSubTypesOf(Machine.class).stream()
             .filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
             .forEach(

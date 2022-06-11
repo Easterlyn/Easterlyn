@@ -29,6 +29,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
+import org.reflections.util.ConfigurationBuilder;
 
 /**
  * The core plugin for <a href=easterlyn.com>Easterlyn</a>'s Minecraft server.
@@ -101,7 +102,7 @@ public class EasterlynCore extends JavaPlugin {
     if (!plugin.equals(this)) {
       commandManager.registerDependency(plugin.getClass(), plugin);
     }
-    new Reflections(packageName, loader)
+    new Reflections(new ConfigurationBuilder().forPackage(packageName, loader))
         .getSubTypesOf(BaseCommand.class).stream()
             .filter(clazz -> !Modifier.isAbstract(clazz.getModifiers()))
             .forEach(
