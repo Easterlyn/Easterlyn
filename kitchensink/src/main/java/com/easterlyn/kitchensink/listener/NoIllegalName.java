@@ -9,7 +9,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class NoIllegalName implements Listener {
 
-  private final Pattern pattern = Pattern.compile("[^a-zA-Z_0-9]");
+  private final Pattern pattern = Pattern.compile("[^\\.a-zA-Z_0-9]");
 
   @EventHandler(priority = EventPriority.HIGHEST)
   public void onPlayerLogin(@NotNull PlayerLoginEvent event) {
