@@ -103,6 +103,10 @@ public class ConcurrentConfiguration implements Configuration {
 
   private void saveNow(File file) throws IOException {
     synchronized (lock) {
+      if (!this.dirty) {
+        return;
+      }
+
       if (internal.getRoot() instanceof FileConfiguration) {
         ((FileConfiguration) internal.getRoot()).save(file);
       } else {

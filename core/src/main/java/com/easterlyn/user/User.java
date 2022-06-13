@@ -89,7 +89,7 @@ public class User implements Group {
 
     Player player = Bukkit.getPlayer(uuid);
 
-    User user = new User(plugin, uuid, new ConcurrentConfiguration(plugin));
+    User user = new User(plugin, uuid, ConcurrentConfiguration.load(plugin, file));
     if (player != null) {
       user.getStorage().set("name", player.getName());
       if (player.getAddress() != null) {
