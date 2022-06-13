@@ -154,14 +154,14 @@
         <artifactId>spigot-api</artifactId>
         <groupId>org.spigotmc</groupId>
         <scope>provided</scope>
-        <version>${spigot.version}${spigot.revision}</version>
+        <version>${spigot.version}</version>
       </dependency>
       <dependency>
         <artifactId>spigot</artifactId>
         <classifier>remapped-mojang</classifier>
         <groupId>org.spigotmc</groupId>
         <scope>provided</scope>
-        <version>${spigot.version}${spigot.revision}</version>
+        <version>${spigot.version}</version>
       </dependency>
       <dependency>
         <artifactId>acf-paper</artifactId>
@@ -306,8 +306,7 @@
 
   <properties>
     <bukkit-api-version>1.19</bukkit-api-version>
-    <spigot.version>1.19</spigot.version>
-    <spigot.revision>-R0.1-SNAPSHOT</spigot.revision>
+    <spigot.version>1.19-R0.1-SNAPSHOT</spigot.version>
     <javassist.version>3.29.0-GA</javassist.version>
     <reflections.version>0.10.2</reflections.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

@@ -29,12 +29,11 @@ jobs:
 
       - name: Install NMS dependency
         if: steps.cache.outputs.cache-hit != 'true'
-        # TODO extract version so it can be changed in a single place
         run: |
-          mkdir ~/buildtools
-          cd ~/buildtools
-          wget -O buildtools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
-          java -jar buildtools.jar --remapped --rev 1.19
+          spigot_version=$(mvn help:evaluate -Dexpression=spigot.version -q -DforceStdout -P all -pl "$module")
+          mkdir buildtools
+          wget -O buildtools/buildtools.jar https://hub.spigotmc.org/jenkins/job/BuildTools/lastSuccessfulBuild/artifact/target/BuildTools.jar
+          java -jar buildtools/buildtools.jar --remapped --rev "${spigot_version%%-R*}"
 
       - name: Build with Maven
         run: |
