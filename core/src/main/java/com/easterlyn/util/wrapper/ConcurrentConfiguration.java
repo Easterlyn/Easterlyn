@@ -103,10 +103,6 @@ public class ConcurrentConfiguration implements Configuration {
 
   private void saveNow(File file) throws IOException {
     synchronized (lock) {
-      if (!this.dirty) {
-        return;
-      }
-
       if (internal.getRoot() instanceof FileConfiguration) {
         ((FileConfiguration) internal.getRoot()).save(file);
       } else {
@@ -216,7 +212,10 @@ public class ConcurrentConfiguration implements Configuration {
   @Override
   public @NotNull ConfigurationSection createSection(@NotNull String path) {
     synchronized (lock) {
-      return new ConcurrentConfiguration(plugin, file, lock, internal.createSection(path));
+      ConfigurationSection internalSection = internal.createSection(path);
+      dirty = true;
+      save();
+      return new ConcurrentConfiguration(plugin, file, lock, internalSection);
     }
   }
 
@@ -224,8 +223,10 @@ public class ConcurrentConfiguration implements Configuration {
   public @NotNull ConfigurationSection createSection(
       @NotNull String path, @NotNull Map<?, ?> mappings) {
     synchronized (lock) {
-      return new ConcurrentConfiguration(
-          plugin, file, lock, internal.createSection(path, mappings));
+      ConfigurationSection internalSection = internal.createSection(path, mappings);
+      dirty = true;
+      save();
+      return new ConcurrentConfiguration(plugin, file, lock, internalSection);
     }
   }
 
@@ -616,6 +617,8 @@ public class ConcurrentConfiguration implements Configuration {
   public void setComments(@NotNull String path, @Nullable List<String> comments) {
     synchronized (lock) {
       internal.setComments(path, comments);
+      dirty = true;
+      save();
     }
   }
 
@@ -623,6 +626,8 @@ public class ConcurrentConfiguration implements Configuration {
   public void setInlineComments(@NotNull String path, @Nullable List<String> comments) {
     synchronized (lock) {
       internal.setInlineComments(path, comments);
+      dirty = true;
+      save();
     }
   }
 
