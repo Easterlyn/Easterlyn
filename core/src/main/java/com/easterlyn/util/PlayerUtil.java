@@ -207,7 +207,7 @@ public class PlayerUtil {
     }
 
     // Ensure valid name.
-    if (Bukkit.getOnlineMode() && !id.matches("[a-zA-Z0-9_]{3,16}")) {
+    if (Bukkit.getOnlineMode() && !id.matches("[\\w.]{3,16}")) {
       return null;
     }
 
@@ -271,7 +271,7 @@ public class PlayerUtil {
     }
 
     // Ensure valid name.
-    if (Bukkit.getOnlineMode() && !id.matches("[a-zA-Z0-9_]{3,16}")) {
+    if (Bukkit.getOnlineMode() && !id.matches("[\\w.]{3,16}")) {
       return null;
     }
 
