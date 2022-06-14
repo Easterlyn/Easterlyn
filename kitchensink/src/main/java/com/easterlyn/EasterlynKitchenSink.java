@@ -7,6 +7,7 @@ import com.easterlyn.kitchensink.combo.DeathPointCommand;
 import com.easterlyn.kitchensink.combo.FreeCarts;
 import com.easterlyn.kitchensink.combo.LoginCommands;
 import com.easterlyn.kitchensink.combo.Meteors;
+import com.easterlyn.kitchensink.listener.HorseHusbandry;
 import com.easterlyn.kitchensink.listener.NoCommandPrefix;
 import com.easterlyn.kitchensink.listener.BottleExperience;
 import com.easterlyn.kitchensink.listener.CartContainerCrasher;
@@ -93,6 +94,9 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
 
     // Feature: Fortune works on shears
     getServer().getPluginManager().registerEvents(new FortuneShears(), this);
+
+    // Feature: Horses' stats are actually breedable - removes vanilla's RNG-heavy model.
+    getServer().getPluginManager().registerEvents(new HorseHusbandry(), this);
 
     // Feature: Killer rabbit has a 1/1000 chance to spawn
     getServer().getPluginManager().registerEvents(new KillerRabbit(), this);
