@@ -1,8 +1,6 @@
 package com.easterlyn.kitchensink.listener;
 
 import java.util.Random;
-import net.md_5.bungee.api.ChatMessageType;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.AbstractHorse;
@@ -50,14 +48,17 @@ public class HorseHusbandry implements Listener {
       return;
     }
 
-    player.spigot().sendMessage(ChatMessageType.ACTION_BAR,
-        new TextComponent(
-            String.format(
-                "Health: %.2f%%  -  Speed: %.2f%%  -  Jump: %.2f%%",
-                getSkillPercent(health, horse),
-                getSkillPercent(getSpeedRange(horse), horse),
-                getSkillPercent(getJumpRange(horse), horse)
-            )));
+    player.sendTitle(
+        "",
+        String.format(
+            "Health: %.2f%%  -  Speed: %.2f%%  -  Jump: %.2f%%",
+            getSkillPercent(health, horse),
+            getSkillPercent(getSpeedRange(horse), horse),
+            getSkillPercent(getJumpRange(horse), horse)
+        ),
+        20,
+        100,
+        20);
 
   }
 
