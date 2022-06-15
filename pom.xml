@@ -292,7 +292,6 @@
     <module>effects</module> <!-- depends: core -->
     <module>kitchensink</module> <!-- depends: core, captcha -->
     <module>machines</module> <!-- depends: core, captcha -->
-    <module>spectators</module> <!-- depends: core -->
   </modules>
 
   <packaging>pom</packaging>
