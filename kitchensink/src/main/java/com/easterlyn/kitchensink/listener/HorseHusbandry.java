@@ -56,14 +56,14 @@ public class HorseHusbandry implements Listener {
             getSkillPercent(getSpeedRange(horse), horse),
             getSkillPercent(getJumpRange(horse), horse)
         ),
-        20,
-        100,
-        20);
+        10,
+        60,
+        10);
 
   }
 
   private double getSkillPercent(@Nullable Range range, @NotNull AbstractHorse horse) {
-    if (range == null) {
+    if (range == null || range.max() == range.min()) {
       return 100.0;
     }
 
