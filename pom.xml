@@ -182,6 +182,12 @@
         <version>2.2.4</version>
       </dependency>
       <dependency>
+        <groupId>com.github.jikoo</groupId>
+        <artifactId>planarenchanting</artifactId>
+        <scope>provided</scope>
+        <version>1.0.1</version>
+      </dependency>
+      <dependency>
         <artifactId>discord4j-core</artifactId>
         <groupId>com.discord4j</groupId>
         <scope>provided</scope>

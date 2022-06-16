@@ -77,10 +77,10 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
     getServer().getPluginManager().registerEvents(meteors, this);
     extraCommands.add(meteors);
 
-    // Feature: Bottle experience by right clicking with an empty bottle.
+    // Feature: Bottle experience by right-clicking with an empty bottle.
     getServer().getPluginManager().registerEvents(new BottleExperience(), this);
 
-    // Feature: Allow color codes on signs via &
+    // Feature: Allow color codes on signs via '&'.
     getServer().getPluginManager().registerEvents(new ColorSignText(), this);
 
     // Feature: Insert carts into dispensers/droppers when crashed into.
@@ -92,13 +92,13 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
     // Feature: Items dropped on death cannot be damaged.
     getServer().getPluginManager().registerEvents(new DeathDropProtection(this), this);
 
-    // Feature: Fortune works on shears
-    getServer().getPluginManager().registerEvents(new FortuneShears(), this);
+    // Feature: Fortune works on shears.
+    getServer().getPluginManager().registerEvents(new FortuneShears(this), this);
 
     // Feature: Horses' stats are actually breedable - removes vanilla's RNG-heavy model.
     getServer().getPluginManager().registerEvents(new HorseHusbandry(), this);
 
-    // Feature: Killer rabbit has a 1/1000 chance to spawn
+    // Feature: Killer rabbit has a 1/1000 chance to spawn.
     getServer().getPluginManager().registerEvents(new KillerRabbit(), this);
 
     // Feature: Permission is required to use prefixes in commands. Also, commands in general.
@@ -107,7 +107,7 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
     // Feature: Entities killed by creative players or cramming do not drop loot or exp.
     getServer().getPluginManager().registerEvents(new NoCreativeCrammingDrops(), this);
 
-    // Feature: Prevent players joining with illegal names
+    // Feature: Prevent players joining with illegal names.
     getServer().getPluginManager().registerEvents(new NoIllegalName(), this);
 
     // Feature: Dropped items cannot be harmed by any entities other than the Wither.

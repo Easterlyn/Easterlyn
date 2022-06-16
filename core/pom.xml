@@ -25,6 +25,11 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.jikoo</groupId>
+      <artifactId>planarenchanting</artifactId>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
       <artifactId>reflections</artifactId>
       <groupId>org.reflections</groupId>
       <scope>provided</scope>
@@ -82,6 +87,10 @@
             <relocation>
               <pattern>com.github.jikoo.planarwrappers</pattern>
               <shadedPattern>com.easterlyn.planarwrappers</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>com.github.jikoo.enchanting</pattern>
+              <shadedPattern>com.easterlyn.planarenchanting</shadedPattern>
             </relocation>
           </relocations>
         </configuration>

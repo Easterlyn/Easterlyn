@@ -1,6 +1,9 @@
 package com.easterlyn.kitchensink.listener;
 
 import com.easterlyn.event.ReportableEvent;
+import com.github.jikoo.planarenchanting.anvil.AnvilOperation;
+import com.github.jikoo.planarenchanting.anvil.AnvilResult;
+import com.github.jikoo.planarenchanting.util.ItemUtil;
 import com.github.jikoo.planarwrappers.util.Generics;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.DyeColor;
@@ -11,14 +14,73 @@ import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class FortuneShears implements Listener {
 
-  // TODO allow anvil enchanting via book
+  private final Plugin plugin;
+
+  public FortuneShears(Plugin plugin) {
+    this.plugin = plugin;
+  }
+
+  @EventHandler
+  void onPrepareAnvil(@NotNull PrepareAnvilEvent event) {
+    var clicker = event.getView().getPlayer();
+    var inventory = event.getInventory();
+    var base = inventory.getItem(0);
+    var addition = inventory.getItem(1);
+
+    if (areItemsInvalid(base, addition)) {
+      return;
+    }
+
+    var operation = new AnvilOperation();
+    operation.setEnchantApplies(
+        (enchantment, itemStack) ->
+            enchantment.getItemTarget().includes(itemStack)
+                || enchantment.equals(Enchantment.LOOT_BONUS_BLOCKS));
+    final var result = operation.apply(inventory);
+
+    if (result == AnvilResult.EMPTY) {
+      return;
+    }
+
+    final var input = base.clone();
+    final var input2 = addition.clone();
+    final var resultItem = result.item();
+
+    event.setResult(resultItem);
+
+    plugin.getServer().getScheduler().runTask(plugin, () -> {
+      // Ensure inputs have not been modified since our calculations.
+      if (!input.equals(inventory.getItem(0)) || !input2.equals(inventory.getItem(1))) {
+        return;
+      }
+
+      // Set result again - overrides bad enchantment plugins that always write result.
+      inventory.setItem(2, resultItem);
+      // Set repair cost. As vanilla has no result for our combinations, this is always set to 0
+      // after the event has completed and needs to be set again.
+      inventory.setRepairCost(result.levelCost());
+      // Update level cost window property again just to be safe.
+      clicker.setWindowProperty(InventoryView.Property.REPAIR_COST, result.levelCost());
+    });
+  }
+
+  @Contract("null, _ -> true; _, null -> true")
+  private boolean areItemsInvalid(@Nullable ItemStack base, @Nullable ItemStack addition) {
+    return ItemUtil.isEmpty(base)
+        || ItemUtil.isEmpty(addition)
+        || base.getType() != Material.SHEARS;
+  }
 
   @EventHandler(ignoreCancelled = true)
   public void onPlayerShearEntity(@NotNull PlayerShearEntityEvent event) {
