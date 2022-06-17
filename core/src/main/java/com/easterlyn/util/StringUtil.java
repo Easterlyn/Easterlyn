@@ -41,7 +41,7 @@ public class StringUtil {
   // TODO move item-related methods to ItemUtil
   public static final Pattern IP_PATTERN = Pattern.compile("([0-9]{1,3}\\.){3}[0-9]{1,3}");
   public static final Pattern URL_PATTERN =
-      Pattern.compile("^(([^:/?#]+)://)?(([a-zA-Z0-9-_]+\\.)*[a-zA-Z0-9-]+\\.[a-zA-Z]+)(\\S*)?$");
+      Pattern.compile("^(([^:/?#]+)://)?(([a-zA-Z0-9-_]+\\.)*[a-zA-Z0-9-]+\\.[a-zA-Z]{2,}+)(\\S*)?$");
   public static final Simplifier TO_LOWER_CASE = s -> s.toLowerCase(Locale.ENGLISH);
   public static final Simplifier STRIP_URLS =
       s -> trimExtraWhitespace(URL_PATTERN.matcher(s).replaceAll(" "));
