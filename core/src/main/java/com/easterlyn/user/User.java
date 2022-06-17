@@ -12,7 +12,6 @@ import com.easterlyn.util.command.Group;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import com.github.jikoo.planarwrappers.util.Generics;
 import java.io.File;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,9 +28,12 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Statistic;
 import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissibleBase;
+import org.bukkit.permissions.Permission;
+import org.bukkit.permissions.ServerOperator;
 import org.bukkit.plugin.PluginManager;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-public class User implements Group {
+public class User extends PermissibleBase implements Group, ServerOperator {
 
   private final EasterlynCore plugin;
   private final UUID uuid;
@@ -48,14 +50,20 @@ public class User implements Group {
   private final Map<String, Object> tempStore;
 
   User(
-      @NotNull EasterlynCore plugin, @NotNull UUID uuid, @NotNull ConcurrentConfiguration storage) {
+      @NotNull EasterlynCore plugin,
+      @NotNull UUID uuid,
+      @NotNull ConcurrentConfiguration storage) {
+    super(null);
     this.plugin = plugin;
     this.uuid = uuid;
     this.storage = storage;
-    tempStore = new ConcurrentHashMap<>();
+    this.tempStore = new ConcurrentHashMap<>();
+    this.plugin.getServer().getPluginManager().subscribeToDefaultPerms(false, this);
   }
 
-  protected User(User user) {
+  @Contract(pure = true)
+  protected User(@NotNull User user) {
+    super(null);
     plugin = user.plugin;
     uuid = user.uuid;
     storage = user.storage;
@@ -151,16 +159,6 @@ public class User implements Group {
     return plugin.getServer().getPlayer(getUniqueId()) != null;
   }
 
-  public boolean hasPermission(String permission) {
-    if (isOnline()) {
-      Player player = getPlayer();
-      if (player != null) {
-        return player.hasPermission(permission);
-      }
-    }
-    return PermissionUtil.hasPermission(getUniqueId(), permission);
-  }
-
   public @NotNull UserRank getRank() {
     UserRank[] userRanks = UserRank.values();
     for (int i = userRanks.length - 1; i > 0; --i) {
@@ -173,13 +171,15 @@ public class User implements Group {
 
   protected @NotNull Pattern getMentionPattern() {
     Object storedPattern = getTemporaryStorage().get("mentionPattern");
+
     if (storedPattern instanceof Pattern) {
       return (Pattern) storedPattern;
     }
+
     StringBuilder builder = new StringBuilder("^@?(");
     OfflinePlayer player = Bukkit.getOfflinePlayer(getUniqueId());
     if (player.getName() != null) {
-      builder.append(player.getName()).append('|');
+      builder.append("\\Q").append(player.getName()).append("\\E").append('|');
       Player online = player.isOnline() ? player.getPlayer() : null;
       if (online != null
           && !online.getDisplayName().isEmpty()
@@ -188,13 +188,21 @@ public class User implements Group {
       }
     }
     builder.append(getUniqueId()).append(")([\\\\W&&[^" + ChatColor.COLOR_CHAR + "}]])?$");
+
     Pattern pattern = Pattern.compile(builder.toString(), Pattern.CASE_INSENSITIVE);
     getTemporaryStorage().put("mentionPattern", pattern);
+
     return pattern;
   }
 
   @Override
   public TextComponent getMention() {
+    Object storedMention = getTemporaryStorage().get("mention");
+
+    if (storedMention instanceof TextComponent) {
+      return (TextComponent) storedMention;
+    }
+
     TextComponent component = new TextComponent("@" + getDisplayName());
     component.setColor(getColor());
     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(getUniqueId());
@@ -225,12 +233,19 @@ public class User implements Group {
     line.setColor(rank.getColor());
     hovers.add(line);
     // TODO class and affinity
-    // TODO could cache in temp store, but needs to be deleted on perm change (login/command)
 
     component.setHoverEvent(
         new HoverEvent(
             HoverEvent.Action.SHOW_TEXT, new Text(hovers.toArray(new TextComponent[0]))));
+
+    getTemporaryStorage().put("mention", component);
+
     return component;
+  }
+
+  public void reloadMention() {
+    this.tempStore.put("mentionPattern", null);
+    this.tempStore.put("mention", null);
   }
 
   public void sendMessage(@NotNull String message) {
@@ -267,10 +282,9 @@ public class User implements Group {
    */
   public @Nullable Request pollPendingRequest() {
     Object stored = tempStore.remove("core.request");
-    if (!(stored instanceof Request)) {
+    if (!(stored instanceof Request request)) {
       return null;
     }
-    Request request = (Request) stored;
     return request.getExpiry() > System.currentTimeMillis() ? request : null;
   }
 
@@ -289,26 +303,27 @@ public class User implements Group {
     return true;
   }
 
-  /**
-   * The String representation of the Player's total time in game.
-   *
-   * @return the Player's time in game
-   */
-  private @NotNull String getTimePlayed() {
-    Player player = getPlayer();
-    if (player == null) {
-      return "0 days, 00:00";
-    }
-    int time = player.getStatistic(Statistic.PLAY_ONE_MINUTE) / 20 / 60;
-    int days = time / (24 * 60);
-    time -= days * 24 * 60;
-    int hours = time / (60);
-    time -= hours * 60;
-    DecimalFormat decimalFormat = new DecimalFormat("00");
-    return days + " days, " + decimalFormat.format(hours) + ':' + decimalFormat.format(time);
-  }
-
   public EasterlynCore getPlugin() {
     return plugin;
   }
+
+  @Override
+  public boolean hasPermission(@NotNull String permission) {
+    if (isOnline()) {
+      return super.hasPermission(permission);
+    }
+    return PermissionUtil.hasPermission(getUniqueId(), permission);
+  }
+
+  @Override
+  public boolean hasPermission(@NotNull Permission perm) {
+    return hasPermission(perm.getName());
+  }
+
+  @Override
+  public void recalculatePermissions() {
+    super.recalculatePermissions();
+    reloadMention();
+  }
+
 }

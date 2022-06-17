@@ -39,6 +39,7 @@ public class NicknameCommand extends BaseCommand {
     }
 
     user.getStorage().set("displayName", nickname);
+    user.reloadMention();
 
     Player player = user.getPlayer();
     if (player != null) {
