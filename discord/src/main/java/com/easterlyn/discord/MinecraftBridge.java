@@ -3,6 +3,7 @@ package com.easterlyn.discord;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
+import com.easterlyn.chat.channel.AliasedChannel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.github.jikoo.planarwrappers.event.Event;
 import com.google.common.cache.Cache;
@@ -30,6 +31,7 @@ import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 
@@ -135,6 +137,8 @@ public class MinecraftBridge {
                     .thenReturn(event))
         .subscribe();
 
+    EasterlynChat chat = JavaPlugin.getPlugin(EasterlynChat.class);
+    chat.getChannels().put("discord", new AliasedChannel(EasterlynChat.DEFAULT, "discord"));
     Event.register(
         UserChatEvent.class,
         event -> {
@@ -299,8 +303,9 @@ public class MinecraftBridge {
     }
     builder.append('`').append(event.getUser().getDisplayName()).append("`");
     if (!event.isThirdPerson()) {
-      builder.append(": ");
+      builder.append(':');
     }
+    builder.append(' ');
     builder.append(
         ChatColor.stripColor(event.getMessage())
             .replace("@everyone", "@Everyone")
