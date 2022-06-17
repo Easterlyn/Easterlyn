@@ -148,8 +148,8 @@ sink:
       success: '{color:normal.a}Item in hand set to {color:normal.b}{value}'
     near:
       description: '{color:normal.a}List nearby players.'
-      message: '{color:normal.a}Nearby players: {value}'
-      none: '{color:normal.a}Nearby players: none'
+      message: '{color:normal.a}Nearby players: '
+      none: 'none'
     tphere:
       description: '{color:normal.a}Teleport a player to you.'
       target: '{color:normal.a}Teleported you to @{value}'

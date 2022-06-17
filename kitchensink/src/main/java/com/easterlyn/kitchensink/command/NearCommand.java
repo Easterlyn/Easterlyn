@@ -48,38 +48,38 @@ public class NearCommand extends BaseCommand {
     boolean showInvisible = issuer.hasPermission("easterlyn.command.near.invisible");
     double squared = Math.pow(range, 2);
     AtomicInteger matches = new AtomicInteger();
+    String locale = core.getLocaleManager().getLocale(issuer);
     BaseComponent message =
         new TextComponent(
-            core.getLocaleManager()
-                .getValue("sink.module.near.message", core.getLocaleManager().getLocale(issuer)));
+            core.getLocaleManager().getValue("sink.module.near.message", locale));
     TextComponent separator = new TextComponent(", ");
 
-    players.forEach(
-        player -> {
-          if (issuer.getUniqueId().equals(player.getUniqueId())
-              || !issuer.canSee(player)
-              || !showSpectate && player.getGameMode() == GameMode.SPECTATOR
-              || !showInvisible && player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-            return;
-          }
-          double distanceSquared = location.distanceSquared(player.getLocation());
-          if (distanceSquared > squared) {
-            return;
-          }
-          matches.incrementAndGet();
-          int distance = (int) Math.sqrt(distanceSquared);
-          message.addExtra(core.getUserManager().getUser(player.getUniqueId()).getMention());
-          message.addExtra("(" + distance + ')');
-          message.addExtra(separator);
-        });
-
-    if (message.getExtra() == null || message.getExtra().size() == 0) {
-      core.getLocaleManager().sendMessage(issuer, "sink.module.near.none");
-      return;
+    for (Player player : players) {
+      if (issuer.getUniqueId().equals(player.getUniqueId())
+          || !issuer.canSee(player)
+          || !showSpectate && player.getGameMode() == GameMode.SPECTATOR
+          || !showInvisible && player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+        return;
+      }
+      double distanceSquared = location.distanceSquared(player.getLocation());
+      if (distanceSquared > squared) {
+        return;
+      }
+      matches.incrementAndGet();
+      int distance = (int) Math.sqrt(distanceSquared);
+      message.addExtra(core.getUserManager().getUser(player.getUniqueId()).getMention());
+      message.addExtra(" (" + distance + ')');
+      message.addExtra(separator);
     }
 
-    // Remove trailing comma component
-    message.getExtra().remove(message.getExtra().size() - 1);
+    if (message.getExtra() == null || message.getExtra().size() == 0) {
+      message.addExtra(
+          new TextComponent(
+              core.getLocaleManager().getValue("sink.module.near.none", locale)));
+    } else {
+      // Remove trailing comma component
+      message.getExtra().remove(message.getExtra().size() - 1);
+    }
 
     issuer.spigot().sendMessage(message);
   }
