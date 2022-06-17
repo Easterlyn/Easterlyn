@@ -14,12 +14,13 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * A class representing a standard chat channel.
+ * A class representing a user-created chat channel.
  *
  * @author Jikoo
  */
-public class NormalChannel extends Channel {
+public class UserChannel extends BaseChannel {
 
+  private final UUID owner;
   private final Set<UUID> moderators;
   private final Set<UUID> whitelist;
   private final Set<UUID> bans;
@@ -28,19 +29,25 @@ public class NormalChannel extends Channel {
   private @Nullable String password;
 
   /**
-   * Construct a new NormalChannel.
+   * Construct a new UserChannel.
    *
-   * @param name the name of the NormalChannel
-   * @param owner the owner of the NormalChannel
+   * @param name the name of the UserChannel
+   * @param owner the owner of the UserChannel
    */
-  public NormalChannel(@NotNull String name, @NotNull UUID owner) {
-    super(name, owner);
+  public UserChannel(@NotNull String name, @NotNull UUID owner) {
+    super(name);
+    this.owner = owner;
     isPrivate = new AtomicBoolean(false);
     moderators = Collections.newSetFromMap(new ConcurrentHashMap<>());
     whitelist = Collections.newSetFromMap(new ConcurrentHashMap<>());
     bans = Collections.newSetFromMap(new ConcurrentHashMap<>());
     lastAccessed = new AtomicLong(System.currentTimeMillis());
     password = null;
+  }
+
+  @Override
+  public @NotNull final UUID getOwner() {
+    return this.owner;
   }
 
   @Override
@@ -70,7 +77,9 @@ public class NormalChannel extends Channel {
 
   @Override
   public boolean isModerator(@NotNull User user) {
-    return super.isModerator(user) || moderators.contains(user.getUniqueId());
+    return isOwner(user)
+        || user.hasPermission("easterlyn.chat.channel.moderator")
+        || moderators.contains(user.getUniqueId());
   }
 
   @Override
@@ -143,7 +152,6 @@ public class NormalChannel extends Channel {
 
   @Override
   public void load(@NotNull ConfigurationSection data) {
-    super.load(data);
     isPrivate.set(data.getBoolean("private"));
     password = data.getString("password");
     data.getStringList("moderators")

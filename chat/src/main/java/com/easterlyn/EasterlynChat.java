@@ -6,9 +6,12 @@ import co.aikar.commands.CommandCompletions;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import co.aikar.locales.MessageKey;
+import com.easterlyn.chat.channel.AliasedChannel;
+import com.easterlyn.chat.channel.BaseChannel;
 import com.easterlyn.chat.channel.Channel;
-import com.easterlyn.chat.channel.NormalChannel;
-import com.easterlyn.chat.channel.SecretChannel;
+import com.easterlyn.chat.channel.InternalChannel;
+import com.easterlyn.chat.channel.UserChannel;
+import com.easterlyn.chat.channel.ServerChannel;
 import com.easterlyn.chat.command.ChannelFlag;
 import com.easterlyn.chat.listener.ChannelManagementListener;
 import com.easterlyn.chat.listener.MuteListener;
@@ -24,7 +27,6 @@ import com.easterlyn.util.text.ParsedText;
 import com.easterlyn.util.text.StaticQuoteConsumer;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -44,7 +46,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.permissions.PermissionDefault;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -55,8 +56,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EasterlynChat extends EasterlynPlugin {
 
-  public static final Channel DEFAULT =
-      new Channel("main", UUID.fromString("902b498d-9909-4e78-b401-b7c4f2b1ab4c"));
+  public static final ServerChannel DEFAULT = new ServerChannel("main");
   public static final String USER_CHANNELS = "chat.channels";
   public static final String USER_CURRENT = "chat.current";
   public static final String USER_HIGHLIGHTS = "chat.highlights";
@@ -111,11 +111,10 @@ public class EasterlynChat extends EasterlynPlugin {
 
     channels.put("", DEFAULT);
     channels.put("main", DEFAULT);
-    channels.put("aether", DEFAULT);
-    channels.put("discord", DEFAULT);
-    channels.put("pm", new SecretChannel("pm", DEFAULT.getOwner()));
-    channels.put("sign", new SecretChannel("sign", DEFAULT.getOwner()));
-    channels.put("#", new SecretChannel("#", DEFAULT.getOwner()));
+    channels.put("aether", new AliasedChannel(DEFAULT, "aether"));
+    channels.put("pm", new InternalChannel("pm"));
+    channels.put("sign", new InternalChannel("sign"));
+    channels.put("#", new InternalChannel("#"));
 
     getServer().getPluginManager().registerEvents(new ChannelManagementListener(this), this);
     getServer().getPluginManager().registerEvents(new MuteListener(), this);
@@ -164,7 +163,7 @@ public class EasterlynChat extends EasterlynPlugin {
     } catch (ClassNotFoundException e) {
       return false;
     }
-    if (!Channel.class.isAssignableFrom(channelClass)) {
+    if (!BaseChannel.class.isAssignableFrom(channelClass)) {
       return false;
     }
 
@@ -345,14 +344,14 @@ public class EasterlynChat extends EasterlynPlugin {
         .getCommandManager()
         .getCommandContexts()
         .registerIssuerAwareContext(
-            NormalChannel.class,
+            UserChannel.class,
             context -> {
               Channel channel = channelContext.getContext(context);
-              if (!(channel instanceof NormalChannel)) {
+              if (!(channel instanceof UserChannel)) {
                 throw new InvalidCommandArgument(
                     MessageKey.of("chat.common.channel_not_modifiable"));
               }
-              return (NormalChannel) channel;
+              return (UserChannel) channel;
             });
 
     // TODO ACF is removing leading # from channel display names in completions
@@ -372,7 +371,7 @@ public class EasterlynChat extends EasterlynPlugin {
     plugin
         .getCommandManager()
         .getCommandCompletions()
-        .setDefaultCompletion("channels", Channel.class, NormalChannel.class);
+        .setDefaultCompletion("channels", Channel.class, UserChannel.class);
 
     plugin
         .getCommandManager()
@@ -437,14 +436,7 @@ public class EasterlynChat extends EasterlynPlugin {
         return channels.keySet();
       }
 
-      RegisteredServiceProvider<EasterlynCore> registration =
-          getServer().getServicesManager().getRegistration(EasterlynCore.class);
-      if (registration == null) {
-        return Collections.emptyList();
-      }
-
-      User user =
-          registration.getProvider().getUserManager().getUser(context.getIssuer().getUniqueId());
+      User user = getCore().getUserManager().getUser(context.getIssuer().getUniqueId());
       return userHandler.apply(user);
     };
   }

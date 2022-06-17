@@ -1,7 +1,6 @@
 package com.easterlyn.chat.channel;
 
 import com.easterlyn.user.User;
-import java.util.UUID;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -9,14 +8,20 @@ import org.jetbrains.annotations.NotNull;
  *
  * @author Jikoo
  */
-public class SecretChannel extends Channel {
+public class InternalChannel extends ServerChannel {
 
-  public SecretChannel(@NotNull String name, @NotNull UUID owner) {
-    super(name, owner);
+  public InternalChannel(@NotNull String name) {
+    super(name);
   }
 
   @Override
   public boolean isWhitelisted(@NotNull User user) {
     return isModerator(user);
   }
+
+  @Override
+  public boolean isPrivate() {
+    return true;
+  }
+
 }

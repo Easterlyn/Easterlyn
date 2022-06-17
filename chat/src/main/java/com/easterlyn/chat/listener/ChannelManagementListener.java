@@ -41,22 +41,10 @@ public class ChannelManagementListener implements Listener {
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
   public void onPlayerChat(AsyncPlayerChatEvent event) {
-    RegisteredServiceProvider<EasterlynCore> easterlynRSP =
-        chat.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynRSP == null) {
-      event
-          .getPlayer()
-          .sendMessage(
-              "Easterlyn core plugin is not enabled! "
-                  + "Please report this to @Staff on Discord immediately!");
-      return;
-    }
-
-    event.setCancelled(true);
-
-    EasterlynCore core = easterlynRSP.getProvider();
+    EasterlynCore core = chat.getCore();
     User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
     event.getPlayer().setDisplayName(user.getDisplayName());
+    event.setCancelled(true);
 
     Channel channel = null;
 
