@@ -25,7 +25,7 @@ public class AutoUser extends User {
   private final Map<String, String> userData;
 
   public AutoUser(@NotNull EasterlynCore core, @NotNull Map<String, String> userData) {
-    super(core, new UUID(0, 0), new ConcurrentConfiguration(core));
+    super(core, new UUID(0, 0), ConcurrentConfiguration.load(core, null));
     this.userData = userData;
   }
 
@@ -46,7 +46,7 @@ public class AutoUser extends User {
     return false;
   }
 
-  public boolean hasPermission(String permission) {
+  public boolean hasPermission(@NotNull String permission) {
     Permission perm = getPlugin().getServer().getPluginManager().getPermission(permission);
     return perm == null
         || perm.getDefault() == PermissionDefault.TRUE

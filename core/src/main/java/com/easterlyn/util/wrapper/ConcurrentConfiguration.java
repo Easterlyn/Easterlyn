@@ -2,11 +2,19 @@ package com.easterlyn.util.wrapper;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicReference;
+import java.util.logging.Level;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -21,6 +29,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,11 +45,7 @@ public class ConcurrentConfiguration implements Configuration {
   private final Object lock;
   private final ConfigurationSection internal;
   private boolean dirty = false;
-  private BukkitTask saveTask;
-
-  public ConcurrentConfiguration(Plugin plugin) {
-    this(plugin, null, new Object(), new YamlConfiguration());
-  }
+  private final AtomicReference<BukkitTask> saveTask = new AtomicReference<>();
 
   private ConcurrentConfiguration(
       Plugin plugin, @Nullable File file, Object lock, ConfigurationSection section) {
@@ -50,7 +55,8 @@ public class ConcurrentConfiguration implements Configuration {
     this.internal = section;
   }
 
-  public static ConcurrentConfiguration load(Plugin plugin, File file) {
+  @Contract("_, _ -> new")
+  public static @NotNull ConcurrentConfiguration load(@NotNull Plugin plugin, @Nullable File file) {
     return new ConcurrentConfiguration(
         plugin,
         file,
@@ -66,11 +72,12 @@ public class ConcurrentConfiguration implements Configuration {
   }
 
   private void save() {
-    if (file == null || saveTask != null || !dirty) {
+    if (file == null || saveTask.get() != null || !dirty) {
       return;
     }
+
     try {
-      saveTask =
+      saveTask.set(
           new BukkitRunnable() {
             @Override
             public void run() {
@@ -87,33 +94,54 @@ public class ConcurrentConfiguration implements Configuration {
               try {
                 saveNow(file);
               } catch (IOException e) {
-                e.printStackTrace();
+                plugin.getLogger().log(Level.WARNING, "Error saving user data", e);
               }
             }
-          }.runTaskLater(plugin, 200L);
+          }.runTaskLaterAsynchronously(plugin, 200L));
     } catch (IllegalStateException e) {
       // Plugin is being disabled, cannot schedule tasks
+      saveTask.set(null);
       try {
         saveNow(file);
-      } catch (IOException ioException) {
-        ioException.printStackTrace();
+      } catch (IOException ioe) {
+        plugin.getLogger().log(Level.WARNING, "Error saving user data", ioe);
       }
     }
   }
 
-  private void saveNow(File file) throws IOException {
+  private void saveNow(@NotNull File file) throws IOException {
     synchronized (lock) {
       if (!this.dirty) {
         return;
       }
 
-      if (internal.getRoot() instanceof FileConfiguration) {
-        ((FileConfiguration) internal.getRoot()).save(file);
+      Configuration root = internal.getRoot();
+
+      if (root == null) {
+        // Section has been orphaned. Parent will handle the save.
+        return;
+      }
+
+      Path filePath = file.toPath();
+      Path parent = filePath.getParent();
+      Files.createDirectories(parent);
+
+      String data;
+      if (root instanceof FileConfiguration fileConfiguration) {
+        data = fileConfiguration.saveToString();
       } else {
-        throw new UnsupportedOperationException(
-            String.format(
-                "Cannot save internal ConfigurationSection implementation %s",
-                internal.getClass().getName()));
+        YamlConfiguration configuration = new YamlConfiguration();
+        configuration.setDefaults(root);
+        configuration.options().copyDefaults(true);
+        data = configuration.saveToString();
+      }
+
+      Path tempPath = filePath.resolveSibling(filePath.getFileName() + ".tmp");
+      try (Writer writer = new OutputStreamWriter(
+          Files.newOutputStream(tempPath),
+          StandardCharsets.UTF_8)) {
+        writer.write(data);
+        Files.move(tempPath, filePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
       }
       this.dirty = false;
     }
