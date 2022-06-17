@@ -12,6 +12,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
@@ -306,7 +307,7 @@ public class LocaleManager {
   }
 
   public String getLocale(@Nullable CommandSender sender) {
-    return sender instanceof Player ? ((Player) sender).getLocale() : defaultLocale;
+    return sender instanceof Player ? ((Player) sender).getLocale().toLowerCase(Locale.ENGLISH) : defaultLocale;
   }
 
   public String getDefaultLocale() {
