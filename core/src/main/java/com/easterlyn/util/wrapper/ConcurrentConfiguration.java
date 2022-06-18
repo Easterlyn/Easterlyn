@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.logging.Level;
 import org.bukkit.Color;
@@ -44,7 +45,7 @@ public class ConcurrentConfiguration implements Configuration {
   private final @Nullable File file;
   private final Object lock;
   private final ConfigurationSection internal;
-  private boolean dirty = false;
+  private final AtomicBoolean dirty = new AtomicBoolean(false);
   private final AtomicReference<BukkitTask> saveTask = new AtomicReference<>();
 
   private ConcurrentConfiguration(
@@ -72,7 +73,7 @@ public class ConcurrentConfiguration implements Configuration {
   }
 
   private void save() {
-    if (file == null || saveTask.get() != null || !dirty) {
+    if (file == null || saveTask.get() != null || !dirty.get()) {
       return;
     }
 
@@ -86,6 +87,7 @@ public class ConcurrentConfiguration implements Configuration {
               } catch (IOException e) {
                 e.printStackTrace();
               }
+              saveTask.set(null);
             }
 
             @Override
@@ -96,6 +98,7 @@ public class ConcurrentConfiguration implements Configuration {
               } catch (IOException e) {
                 plugin.getLogger().log(Level.WARNING, "Error saving user data", e);
               }
+              saveTask.set(null);
             }
           }.runTaskLaterAsynchronously(plugin, 200L));
     } catch (IllegalStateException e) {
@@ -111,10 +114,6 @@ public class ConcurrentConfiguration implements Configuration {
 
   private void saveNow(@NotNull File file) throws IOException {
     synchronized (lock) {
-      if (!this.dirty) {
-        return;
-      }
-
       Configuration root = internal.getRoot();
 
       if (root == null) {
@@ -143,7 +142,7 @@ public class ConcurrentConfiguration implements Configuration {
         writer.write(data);
         Files.move(tempPath, filePath, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.ATOMIC_MOVE);
       }
-      this.dirty = false;
+      this.dirty.set(false);
     }
   }
 
@@ -236,7 +235,7 @@ public class ConcurrentConfiguration implements Configuration {
   public void set(@NotNull String path, @Nullable Object value) {
     synchronized (lock) {
       internal.set(path, value);
-      dirty = true;
+      dirty.set(true);
       save();
     }
   }
@@ -245,7 +244,7 @@ public class ConcurrentConfiguration implements Configuration {
   public @NotNull ConfigurationSection createSection(@NotNull String path) {
     synchronized (lock) {
       ConfigurationSection internalSection = internal.createSection(path);
-      dirty = true;
+      dirty.set(true);
       save();
       return new ConcurrentConfiguration(plugin, file, lock, internalSection);
     }
@@ -256,7 +255,7 @@ public class ConcurrentConfiguration implements Configuration {
       @NotNull String path, @NotNull Map<?, ?> mappings) {
     synchronized (lock) {
       ConfigurationSection internalSection = internal.createSection(path, mappings);
-      dirty = true;
+      dirty.set(true);
       save();
       return new ConcurrentConfiguration(plugin, file, lock, internalSection);
     }
@@ -649,7 +648,7 @@ public class ConcurrentConfiguration implements Configuration {
   public void setComments(@NotNull String path, @Nullable List<String> comments) {
     synchronized (lock) {
       internal.setComments(path, comments);
-      dirty = true;
+      dirty.set(true);
       save();
     }
   }
@@ -658,7 +657,7 @@ public class ConcurrentConfiguration implements Configuration {
   public void setInlineComments(@NotNull String path, @Nullable List<String> comments) {
     synchronized (lock) {
       internal.setInlineComments(path, comments);
-      dirty = true;
+      dirty.set(true);
       save();
     }
   }
