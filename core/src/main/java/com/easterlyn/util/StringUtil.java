@@ -1,33 +1,16 @@
 package com.easterlyn.util;
 
-import com.easterlyn.util.text.BacktickMatcher;
-import com.easterlyn.util.text.BlockQuote;
-import com.easterlyn.util.text.BlockQuoteMatcher;
-import com.easterlyn.util.text.ParsedText;
-import com.easterlyn.util.text.QuoteConsumer;
-import com.easterlyn.util.text.QuoteMatcher;
-import com.easterlyn.util.text.StaticQuoteConsumer;
 import java.text.Normalizer;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,211 +30,15 @@ public class StringUtil {
       s -> trimExtraWhitespace(URL_PATTERN.matcher(s).replaceAll(" "));
   public static final Simplifier NORMALIZE = s -> Normalizer.normalize(s, Normalizer.Form.NFD);
   private static final Pattern ENUM_NAME_PATTERN = Pattern.compile("(?<=(?:\\A|_)([A-Z]))([A-Z]+)");
-  private static final Pattern COMMAND_PATTERN = Pattern.compile("/.{1,}");
-  private static final Map<Character, BlockQuoteMatcher> BLOCK_QUOTES = new HashMap<>();
-  private static final Set<QuoteConsumer> QUOTE_CONSUMERS = new HashSet<>();
   public static final String LEGACY_CHAT_COLOR = "[" + ChatColor.COLOR_CHAR + "&][\\da-fk-orxA-FK-ORX]";
 
-  static {
-    BLOCK_QUOTES.put('`', new BacktickMatcher());
-    BLOCK_QUOTES.put('"', new QuoteMatcher());
-
-    QUOTE_CONSUMERS.add(
-        new StaticQuoteConsumer(URL_PATTERN) {
-          @Override
-          public @Nullable Supplier<Matcher> handleQuote(String quote) {
-            if ("d.va".equalsIgnoreCase(quote)) {
-              // Overwatch was shut down for a reason.
-              return null;
-            }
-            Supplier<Matcher> matcherSupplier = super.handleQuote(quote);
-            if (matcherSupplier == null) {
-              return null;
-            }
-            Matcher matcher = matcherSupplier.get();
-            if (matcher.group(3) == null || matcher.group(3).isEmpty()) {
-              // Matches, but main group is somehow empty.
-              return null;
-            }
-            return matcherSupplier;
-          }
-
-          @Override
-          public void addComponents(
-              @NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
-            Matcher matcher = matcherSupplier.get();
-            String url = matcher.group();
-            // Correct missing protocol
-            if (matcher.group(1) == null || matcher.group(1).isEmpty()) {
-              url = "http://" + url;
-            }
-            TextComponent component = new TextComponent();
-            component.setText('[' + matcher.group(3).toLowerCase(Locale.ENGLISH) + ']');
-            component.setColor(Colors.WEB_LINK);
-            component.setUnderlined(true);
-            TextComponent[] hover = {new TextComponent(url)};
-            hover[0].setColor(Colors.WEB_LINK);
-            hover[0].setUnderlined(true);
-            component.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(hover)));
-            component.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, url));
-            components.addComponent(component);
-          }
-        });
-    QUOTE_CONSUMERS.add(
-        new StaticQuoteConsumer(COMMAND_PATTERN) {
-          @Override
-          public void addComponents(
-              @NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
-            String group = matcherSupplier.get().group();
-            TextComponent component = new TextComponent(group);
-            component.setColor(Colors.COMMAND);
-            TextComponent hover = new TextComponent("Click to run!");
-            hover.setColor(Colors.COMMAND);
-            component.setHoverEvent(
-                new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(new TextComponent[] {hover})));
-            component.setClickEvent(
-                new ClickEvent(ClickEvent.Action.RUN_COMMAND, ChatColor.stripColor(group.trim())));
-            components.addComponent(component);
-          }
-        });
-  }
-
-  public static void addBlockQuoteMatcher(char quoteStart, BlockQuoteMatcher matcher) {
-    BLOCK_QUOTES.put(quoteStart, matcher);
-  }
-
-  public static void addQuoteConsumer(QuoteConsumer consumer) {
-    QUOTE_CONSUMERS.add(consumer);
-  }
-
-  public static Collection<TextComponent> toJSON(@Nullable String message) {
-    return toJSON(message, Collections.emptyList());
-  }
-
-  // TODO appears to not be parsing colors correctly
-  public static Collection<TextComponent> toJSON(
-      @Nullable String message, Collection<QuoteConsumer> additionalHandlers) {
-    if (message == null) {
-      return Collections.emptyList();
-    }
-
-    ParsedText parsedText = new ParsedText();
-    StringBuilder builder = new StringBuilder();
-    Collection<QuoteConsumer> consumers =
-        Stream.concat(QUOTE_CONSUMERS.stream(), additionalHandlers.stream())
-            .collect(Collectors.toSet());
-
-    nextChar:
-    for (int i = 0; i < message.length(); ++i) {
-
-      char c = message.charAt(i);
-
-      BlockQuoteMatcher matcher = BLOCK_QUOTES.get(c);
-
-      // Cheeky while to prevent excessive nesting
-      //noinspection ConstantConditions
-      do {
-        if (matcher == null) {
-          break;
-        }
-
-        BlockQuote quote = matcher.findQuote(message, i);
-        if (quote == null) {
-          break;
-        }
-
-        i += quote.getQuoteLength() - 1;
-
-        if (!matcher.allowAdditionalParsing()) {
-          if (quote.getQuoteMarks() != null) {
-            builder
-                .append(quote.getQuoteMarks())
-                .append(quote.getQuoteText())
-                .append(quote.getQuoteMarks());
-          } else {
-            builder.append(quote.getQuoteText());
-          }
-          continue nextChar;
-        }
-
-        if (quote.getQuoteMarks() != null) {
-          builder.append(quote.getQuoteMarks());
-        }
-
-        consumeQuote(parsedText, consumers, builder, quote.getQuoteText());
-
-        if (quote.getQuoteMarks() != null) {
-          builder.append(quote.getQuoteMarks());
-        }
-
-        continue nextChar;
-      } while (false);
-
-      if (c == ' ') {
-        builder.append(c);
-        continue;
-      }
-
-      int nextSpace = message.indexOf(' ', i);
-      if (nextSpace == -1) {
-        nextSpace = message.length();
-      }
-
-      consumeQuote(parsedText, consumers, builder, message.substring(i, nextSpace));
-      i = nextSpace - 1;
-    }
-
-    // Parse remaining text in builder
-    consumeQuote(parsedText, consumers, builder, null);
-
-    // The client will crash if the array is empty
-    if (parsedText.getComponents().isEmpty()) {
-      parsedText.addComponent(new TextComponent(""));
-    }
-
-    return parsedText.getComponents();
-  }
-
-  private static void consumeQuote(
-      @NotNull ParsedText parsedText,
-      @NotNull Collection<QuoteConsumer> consumers,
-      @NotNull StringBuilder builder,
-      @Nullable String quote) {
-
-    if (quote == null) {
-      if (builder.length() == 0) {
-        return;
-      }
-      parsedText.addText(builder.toString());
-      if (builder.length() > 0) {
-        builder.delete(0, builder.length());
-      }
-      return;
-    }
-
-    for (QuoteConsumer consumer : consumers) {
-      Supplier<Matcher> matcher = consumer.handleQuote(quote);
-      if (matcher == null) {
-        continue;
-      }
-      if (builder.length() > 0) {
-        parsedText.addText(builder.toString());
-        builder.delete(0, builder.length());
-      }
-      consumer.addComponents(parsedText, matcher);
-      return;
-    }
-
-    builder.append(quote);
-  }
-
-  public static @NotNull String getConsoleText(TextComponent component) {
+  public static @NotNull String getConsoleText(@NotNull TextComponent component) {
     StringBuilder builder = new StringBuilder();
     getConsoleText(component, builder);
     return builder.toString();
   }
 
-  public static @NotNull String getConsoleText(Collection<TextComponent> components) {
+  public static @NotNull String getConsoleText(@NotNull Collection<TextComponent> components) {
     StringBuilder builder = new StringBuilder();
     for (TextComponent component : components) {
       getConsoleText(component, builder);
@@ -259,7 +46,9 @@ public class StringUtil {
     return builder.toString();
   }
 
-  private static void getConsoleText(TextComponent component, StringBuilder builder) {
+  private static void getConsoleText(
+      @NotNull TextComponent component,
+      @NotNull StringBuilder builder) {
 
     ClickEvent clickEvent = component.getClickEvent();
 

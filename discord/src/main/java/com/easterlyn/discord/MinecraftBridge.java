@@ -307,7 +307,7 @@ public class MinecraftBridge {
     }
     builder.append(' ');
     builder.append(
-        ChatColor.stripColor(event.getMessage())
+        ChatColor.stripColor(event.getText())
             .replace("@everyone", "@Everyone")
             .replace("@here", "@Here"));
 

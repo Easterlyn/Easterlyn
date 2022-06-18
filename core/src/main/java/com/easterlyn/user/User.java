@@ -7,8 +7,8 @@ import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.Request;
-import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.command.Group;
+import com.easterlyn.util.text.TextParsing;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import com.github.jikoo.planarwrappers.util.Generics;
 import java.io.File;
@@ -253,7 +253,7 @@ public class User extends PermissibleBase implements Group, ServerOperator {
   }
 
   public void sendMessage(@Nullable UUID sender, @NotNull String message) {
-    sendMessage(sender, StringUtil.toJSON(message).toArray(new TextComponent[0]));
+    sendMessage(sender, TextParsing.toJSON(message).toArray(new TextComponent[0]));
   }
 
   public void sendMessage(@NotNull BaseComponent... components) {

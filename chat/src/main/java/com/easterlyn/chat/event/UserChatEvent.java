@@ -6,16 +6,14 @@ import com.easterlyn.event.UserEvent;
 import com.easterlyn.user.AutoUser;
 import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
-import com.easterlyn.util.StringUtil;
-import com.easterlyn.util.inventory.ItemUtil;
-import com.easterlyn.util.text.ParsedText;
-import com.easterlyn.util.text.StaticQuoteConsumer;
+import com.easterlyn.util.text.TextParsing;
+import com.easterlyn.util.text.impl.PlayerItemQuoteConsumer;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
-import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Stream;
@@ -24,33 +22,30 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
-import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
 public class UserChatEvent extends UserEvent implements Cancellable {
 
   private static final HandlerList HANDLER_LIST = new HandlerList();
-  private static final Pattern PLAYER_ITEMS = Pattern.compile("$\\{ITEM:(\\d+)}^");
 
   private final Channel channel;
-  private final String message;
+  private final String text;
   private final boolean thirdPerson;
   private boolean cancelled = false;
 
-  public UserChatEvent(@NotNull User who, @NotNull Channel channel, @NotNull String message) {
-    this(who, channel, message, false);
+  public UserChatEvent(@NotNull User who, @NotNull Channel channel, @NotNull String text) {
+    this(who, channel, text, false);
   }
 
   public UserChatEvent(
-      @NotNull User who, @NotNull Channel channel, @NotNull String message, boolean thirdPerson) {
+      @NotNull User who, @NotNull Channel channel, @NotNull String text, boolean thirdPerson) {
     super(who);
     this.channel = channel;
-    this.message = message;
+    this.text = text;
     this.thirdPerson = thirdPerson;
   }
 
@@ -62,8 +57,8 @@ public class UserChatEvent extends UserEvent implements Cancellable {
     return channel;
   }
 
-  public @NotNull String getMessage() {
-    return message;
+  public @NotNull String getText() {
+    return text;
   }
 
   public boolean isThirdPerson() {
@@ -104,7 +99,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
     channelHover[0].setColor(Colors.COMMAND);
     channelHover[1].setColor(Colors.CHANNEL);
     channelElement.setHoverEvent(
-        new HoverEvent(HoverEvent.Action.SHOW_TEXT, new Text(channelHover)));
+        new HoverEvent(HoverEvent.Action.SHOW_TEXT, new net.md_5.bungee.api.chat.hover.content.Text(channelHover)));
     channelElement.setClickEvent(
         new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + channel.getDisplayName()));
 
@@ -126,37 +121,9 @@ public class UserChatEvent extends UserEvent implements Cancellable {
     Collection<TextComponent> messageComponents;
     Player player = getUser().getPlayer();
     if (player == null) {
-      messageComponents = StringUtil.toJSON(message);
+      messageComponents = TextParsing.toJSON(text);
     } else {
-      messageComponents =
-          StringUtil.toJSON(
-              message,
-              Collections.singleton(
-                  new StaticQuoteConsumer(PLAYER_ITEMS) {
-                    @Override
-                    public void addComponents(
-                        @NotNull ParsedText components,
-                        @NotNull Supplier<Matcher> matcherSupplier) {
-                      Matcher matcher = matcherSupplier.get();
-                      int slot;
-                      try {
-                        slot = Integer.parseInt(matcher.group(1));
-                      } catch (NumberFormatException e) {
-                        components.addText(matcher.group());
-                        return;
-                      }
-                      if (slot < 0 || slot >= player.getInventory().getSize()) {
-                        components.addText(matcher.group());
-                        return;
-                      }
-                      ItemStack item = player.getInventory().getItem(slot);
-                      if (item == null) {
-                        item = ItemUtil.AIR;
-                      }
-
-                      components.addComponent(ItemUtil.getItemComponent(item));
-                    }
-                  }));
+      messageComponents = TextParsing.toJSON(text, Set.of(new PlayerItemQuoteConsumer(player)));
     }
 
     Stream.concat(additionalRecipients.stream(), channel.getMembers().stream())
@@ -242,7 +209,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
                     "[%1$s]" + (thirdPerson ? "> %2$s " : " <%2$s> ") + "%3$s",
                     channel.getDisplayName(),
                     getUser().getDisplayName(),
-                    message)));
+                    text)));
   }
 
   private @NotNull Pattern getHighlightPattern(User user) {

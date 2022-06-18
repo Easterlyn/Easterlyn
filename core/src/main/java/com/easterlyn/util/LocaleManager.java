@@ -16,6 +16,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import com.easterlyn.util.text.TextParsing;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -200,7 +201,7 @@ public class LocaleManager {
       return;
     }
 
-    Collection<TextComponent> textComponents = StringUtil.toJSON(message, additionalHandlers);
+    Collection<TextComponent> textComponents = TextParsing.toJSON(message, additionalHandlers);
     if (sender instanceof Player player) {
       if (type == ChatMessageType.ACTION_BAR) {
         player

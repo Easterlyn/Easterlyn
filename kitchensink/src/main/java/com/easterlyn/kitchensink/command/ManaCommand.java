@@ -15,8 +15,8 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.EconomyUtil;
-import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.inventory.ItemUtil;
+import com.easterlyn.util.text.TextParsing;
 import com.github.jikoo.planarwrappers.util.Experience;
 import java.text.DecimalFormat;
 import net.md_5.bungee.api.ChatColor;
@@ -126,12 +126,12 @@ public class ManaCommand extends BaseCommand {
                   getFormat().format(worth),
                   "{level}",
                   String.valueOf(Experience.getLevelFromExp((long) worth)));
-      for (TextComponent text : StringUtil.toJSON(value)) {
+      for (TextComponent text : TextParsing.toJSON(value)) {
         component.addExtra(text);
       }
     } catch (ArithmeticException e) {
       for (TextComponent text :
-          StringUtil.toJSON(
+          TextParsing.toJSON(
               core.getLocaleManager()
                   .getValue("sink.module.mana.cost.oh_no", locale, "{value}", e.getMessage()))) {
         component.addExtra(text);

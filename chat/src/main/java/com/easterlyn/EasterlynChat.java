@@ -10,8 +10,8 @@ import com.easterlyn.chat.channel.AliasedChannel;
 import com.easterlyn.chat.channel.BaseChannel;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.InternalChannel;
-import com.easterlyn.chat.channel.UserChannel;
 import com.easterlyn.chat.channel.ServerChannel;
+import com.easterlyn.chat.channel.UserChannel;
 import com.easterlyn.chat.command.ChannelFlag;
 import com.easterlyn.chat.listener.ChannelManagementListener;
 import com.easterlyn.chat.listener.MuteListener;
@@ -22,9 +22,9 @@ import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.PermissionUtil;
-import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.text.ParsedText;
 import com.easterlyn.util.text.StaticQuoteConsumer;
+import com.easterlyn.util.text.TextParsing;
 import java.lang.reflect.Constructor;
 import java.util.Collection;
 import java.util.HashSet;
@@ -204,7 +204,7 @@ public class EasterlynChat extends EasterlynPlugin {
 
   @Override
   protected void register(@NotNull EasterlynCore plugin) {
-    StringUtil.addQuoteConsumer(
+    TextParsing.addQuoteConsumer(
         new StaticQuoteConsumer(CHANNEL_PATTERN) {
           @Override
           public void addComponents(

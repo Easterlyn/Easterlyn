@@ -23,6 +23,7 @@ import com.easterlyn.util.command.AddRemove;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import com.easterlyn.util.text.TextParsing;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -90,17 +91,17 @@ public class ChannelCommand extends BaseCommand {
               BaseComponent component = new TextComponent();
               component.addExtra(user.getMention());
               String locale = core.getLocaleManager().getLocale(player);
-              for (TextComponent textComponent :
-                  StringUtil.toJSON(core.getLocaleManager().getValue("chat.common.join", locale))) {
+              String localized = core.getLocaleManager().getValue("chat.common.join", locale);
+              for (TextComponent textComponent : TextParsing.toJSON(localized)) {
                 component.addExtra(textComponent);
               }
               component.addExtra(channel.getMention());
-              for (TextComponent textComponent :
-                  StringUtil.toJSON(
-                      ' '
-                          + core.getLocaleManager()
-                              .getValue("chat.common.at", locale, "{time}", time))) {
-                component.addExtra(textComponent);
+              localized =
+                  core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time);
+              if (localized != null) {
+                for (TextComponent textComponent : TextParsing.toJSON(' ' + localized)) {
+                  component.addExtra(textComponent);
+                }
               }
 
               player.spigot().sendMessage(component);
@@ -161,12 +162,12 @@ public class ChannelCommand extends BaseCommand {
               component.addExtra(user.getMention());
               String locale = core.getLocaleManager().getLocale(player);
               for (TextComponent textComponent :
-                  StringUtil.toJSON(core.getLocaleManager().getValue("chat.common.quit", locale))) {
+                  TextParsing.toJSON(core.getLocaleManager().getValue("chat.common.quit", locale))) {
                 component.addExtra(textComponent);
               }
               component.addExtra(channel.getMention());
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       ' '
                           + core.getLocaleManager()
                               .getValue("chat.common.at", locale, "{time}", time))) {
@@ -224,7 +225,7 @@ public class ChannelCommand extends BaseCommand {
               component.addExtra(target.getMention());
               String locale = core.getLocaleManager().getLocale(player);
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       core.getLocaleManager()
                           .getValue(
                               "chat.commands.channel.whitelist." + (add ? "add" : "remove"),
@@ -233,7 +234,7 @@ public class ChannelCommand extends BaseCommand {
               }
               component.addExtra(channel.getMention());
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       ' '
                           + core.getLocaleManager()
                               .getValue("chat.common.at", locale, "{time}", time))) {
@@ -281,7 +282,7 @@ public class ChannelCommand extends BaseCommand {
               component.addExtra(target.getMention());
               String locale = core.getLocaleManager().getLocale(player);
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       core.getLocaleManager()
                           .getValue(
                               "chat.commands.channel.moderator." + (add ? "add" : "remove"),
@@ -290,7 +291,7 @@ public class ChannelCommand extends BaseCommand {
               }
               component.addExtra(channel.getMention());
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       ' '
                           + core.getLocaleManager()
                               .getValue("chat.common.at", locale, "{time}", time))) {
@@ -340,7 +341,7 @@ public class ChannelCommand extends BaseCommand {
               component.addExtra(target.getMention());
               String locale = core.getLocaleManager().getLocale(player);
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       core.getLocaleManager()
                           .getValue(
                               "chat.commands.channel.ban." + (add ? "add" : "remove"), locale))) {
@@ -348,7 +349,7 @@ public class ChannelCommand extends BaseCommand {
               }
               component.addExtra(channel.getMention());
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       ' '
                           + core.getLocaleManager()
                               .getValue("chat.common.at", locale, "{time}", time))) {
@@ -412,7 +413,7 @@ public class ChannelCommand extends BaseCommand {
               component.addExtra(channel.getMention());
               String locale = core.getLocaleManager().getLocale(player);
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       core.getLocaleManager()
                           .getValue(
                               "chat.commands.channel.modify.private."
@@ -421,7 +422,7 @@ public class ChannelCommand extends BaseCommand {
                 component.addExtra(textComponent);
               }
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
                 component.addExtra(textComponent);
               }
@@ -473,7 +474,7 @@ public class ChannelCommand extends BaseCommand {
               component.addExtra(user.getMention());
               String locale = core.getLocaleManager().getLocale(player);
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       core.getLocaleManager()
                           .getValue(
                               "chat.commands.channel.modify.password."
@@ -483,7 +484,7 @@ public class ChannelCommand extends BaseCommand {
               }
               component.addExtra(channel.getMention());
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       ' '
                           + core.getLocaleManager()
                               .getValue("chat.common.at", locale, "{time}", time))) {
@@ -576,7 +577,7 @@ public class ChannelCommand extends BaseCommand {
               component.addExtra(channel.getMention());
               String locale = core.getLocaleManager().getLocale(player);
               for (TextComponent textComponent :
-                  StringUtil.toJSON(
+                  TextParsing.toJSON(
                       core.getLocaleManager()
                           .getValue("chat.commands.channel.delete.success", locale))) {
                 component.addExtra(textComponent);

@@ -2,6 +2,7 @@ package com.easterlyn.util.inventory;
 
 import com.easterlyn.util.NumberUtil;
 import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.text.TextParsing;
 import com.github.jikoo.planarwrappers.util.Generics;
 import com.google.common.collect.BiMap;
 import com.google.common.collect.HashBiMap;
@@ -70,7 +71,12 @@ import org.jetbrains.annotations.Nullable;
  */
 public class ItemUtil {
 
-  public static final ItemStack AIR = new ItemStack(Material.AIR);
+  public static final ItemStack AIR = new ItemStack(Material.AIR) {
+    @Override
+    public void setType(@NotNull Material type) {
+      // No.
+    }
+  };
   public static final String UNIQUE_KEYED_PREFIX = "easterlyn_unique_";
   private static final Set<Function<ItemStack, Boolean>> UNIQUE_CHECKS = new HashSet<>();
   private static BiMap<String, String> items;
@@ -541,8 +547,7 @@ public class ItemUtil {
     boolean named = itemStack.getItemMeta() != null && itemStack.getItemMeta().hasDisplayName();
     TextComponent component =
         new TextComponent(
-            StringUtil.toJSON(
-                    named ? itemStack.getItemMeta().getDisplayName() : getItemName(itemStack))
+            TextParsing.toJSON(named ? itemStack.getItemMeta().getDisplayName() : getItemName(itemStack))
                 .toArray(new TextComponent[0]));
     for (int i = 0; i < component.getExtra().size(); i++) {
       BaseComponent baseExtra = component.getExtra().get(i);

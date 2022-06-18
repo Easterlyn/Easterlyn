@@ -43,11 +43,6 @@ public class ShowItemCommand extends BaseCommand {
       return;
     }
 
-    new UserChatEvent(
-            sender,
-            channel,
-            "shows off {ITEM:" + player.getInventory().getHeldItemSlot() + "}",
-            true)
-        .send();
+    new UserChatEvent(sender, channel, "shows off {ITEM:HAND}", true).send();
   }
 }

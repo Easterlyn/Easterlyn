@@ -4,7 +4,7 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
-import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.text.TextParsing;
 import com.easterlyn.util.text.ParsedText;
 import com.easterlyn.util.text.QuoteConsumer;
 import com.github.jikoo.planarwrappers.event.Event;
@@ -34,7 +34,7 @@ public class UserManager {
   public UserManager(EasterlynCore plugin) {
     this.userCache =
         CacheBuilder.newBuilder()
-            .expireAfterAccess(30L, TimeUnit.MINUTES)
+            .expireAfterAccess(15L, TimeUnit.MINUTES)
             .removalListener(
                 notification -> {
                   User user = (User) notification.getValue();
@@ -80,7 +80,7 @@ public class UserManager {
                     }),
         plugin);
 
-    StringUtil.addQuoteConsumer(
+    TextParsing.addQuoteConsumer(
         new QuoteConsumer() {
           @Override
           public Iterable<Pattern> getPatterns() {
@@ -144,7 +144,7 @@ public class UserManager {
   // TODO getUser(CommandSender)
 
   private interface UserMatcher extends Supplier<Matcher> {
-
     User getUser();
   }
+
 }

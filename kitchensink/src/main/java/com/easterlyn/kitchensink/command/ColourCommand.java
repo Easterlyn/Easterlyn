@@ -16,7 +16,7 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.User;
-import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.text.TextParsing;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
@@ -66,7 +66,7 @@ public class ColourCommand extends BaseCommand {
     user.setColor(colour);
     TextComponent textComponent = new TextComponent();
     for (TextComponent element :
-        StringUtil.toJSON(
+        TextParsing.toJSON(
             core.getLocaleManager()
                 .getValue(
                     "sink.module.colour.set.self",
@@ -83,7 +83,7 @@ public class ColourCommand extends BaseCommand {
 
     textComponent = new TextComponent();
     for (TextComponent element :
-        StringUtil.toJSON(
+        TextParsing.toJSON(
             core.getLocaleManager()
                 .getValue(
                     "sink.module.colour.set.other",

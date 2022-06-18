@@ -2,7 +2,7 @@ package com.easterlyn.user;
 
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.util.Colors;
-import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.text.TextParsing;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import com.github.jikoo.planarwrappers.util.Generics;
 import java.util.Map;
@@ -73,7 +73,7 @@ public class AutoUser extends User {
       component.setHoverEvent(
           new HoverEvent(
               HoverEvent.Action.SHOW_TEXT,
-              new Text(StringUtil.toJSON(hover).toArray(new TextComponent[0]))));
+              new Text(TextParsing.toJSON(hover).toArray(new TextComponent[0]))));
     }
 
     return component;

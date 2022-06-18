@@ -1,4 +1,4 @@
-package com.easterlyn.util.text;
+package com.easterlyn.util.text.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -6,6 +6,8 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
+import com.easterlyn.util.text.BlockQuote;
+import com.easterlyn.util.text.BlockQuoteMatcher;
 import org.junit.Test;
 
 public class BlockQuoteTest {

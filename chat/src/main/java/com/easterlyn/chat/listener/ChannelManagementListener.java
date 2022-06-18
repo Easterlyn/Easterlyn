@@ -7,7 +7,7 @@ import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.user.AutoUser;
 import com.easterlyn.user.User;
-import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.text.TextParsing;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Collections;
@@ -196,8 +196,8 @@ public class ChannelManagementListener implements Listener {
               BaseComponent component = new TextComponent();
               component.addExtra(user.getMention());
               String locale = core.getLocaleManager().getLocale(player);
-              for (TextComponent textComponent :
-                  StringUtil.toJSON(core.getLocaleManager().getValue("chat.common.join", locale))) {
+              String localized = core.getLocaleManager().getValue("chat.common.join", locale);
+              for (TextComponent textComponent : TextParsing.toJSON(localized)) {
                 component.addExtra(textComponent);
               }
 
@@ -219,14 +219,13 @@ public class ChannelManagementListener implements Listener {
                         + core.getLocaleManager().getValue("chat.common.and", locale)
                         + merged.substring(lastComma + 1);
               }
-              for (TextComponent textComponent : StringUtil.toJSON(merged)) {
+              for (TextComponent textComponent : TextParsing.toJSON(merged)) {
                 if (!textComponent.getText().isEmpty()) {
                   component.addExtra(textComponent);
                 }
               }
-              for (TextComponent textComponent :
-                  StringUtil.toJSON(
-                      core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time))) {
+              localized = core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time);
+              for (TextComponent textComponent : TextParsing.toJSON(localized)) {
                 component.addExtra(textComponent);
               }
 

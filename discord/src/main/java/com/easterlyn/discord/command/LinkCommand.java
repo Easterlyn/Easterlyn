@@ -14,7 +14,7 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.util.StringUtil;
+import com.easterlyn.util.text.TextParsing;
 import java.util.UUID;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -44,7 +44,7 @@ public class LinkCommand extends BaseCommand {
                 "{value}",
                 pendingLink);
     TextComponent container = new TextComponent();
-    for (TextComponent component : StringUtil.toJSON(message)) {
+    for (TextComponent component : TextParsing.toJSON(message)) {
       container.addExtra(component);
     }
     container.setClickEvent(
@@ -57,7 +57,7 @@ public class LinkCommand extends BaseCommand {
     container.setHoverEvent(
         new HoverEvent(
             HoverEvent.Action.SHOW_TEXT,
-            new Text(StringUtil.toJSON(message).toArray(BaseComponent[]::new))));
+            new Text(TextParsing.toJSON(message).toArray(BaseComponent[]::new))));
     issuer.spigot().sendMessage(container);
   }
 

@@ -1,7 +1,10 @@
-package com.easterlyn.util.text;
+package com.easterlyn.util.text.impl;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import com.easterlyn.util.text.BlockQuote;
+import com.easterlyn.util.text.BlockQuoteMatcher;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
