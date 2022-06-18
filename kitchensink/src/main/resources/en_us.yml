@@ -67,6 +67,7 @@ sink:
       description: '{color:normal.a}Change game modes!'
       prevented: '{color:bad.a}Game mode change prevented!'
       success: '{color:normal.a}Game mode set to {color:normal.b}{value}'
+      other: '{color:normal.a}{target}''s game mode set to {color:normal.b}{value}'
     heal:
       description: '{color:normal.a}Heal a player to full health.'
       attribute_missing: '{color:bad.a}Cannot obtain max health from attribute!'

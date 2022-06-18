@@ -12,10 +12,9 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.util.StringUtil;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("gamemode|gm")
 @Description("{@@sink.module.gamemode.description}")
@@ -51,7 +50,7 @@ public class GamemodeCommand extends BaseCommand {
     setGameMode(issuer, GameMode.ADVENTURE, target);
   }
 
-  @CommandAlias("3|spectator")
+  @CommandAlias("3|spec|spectator")
   @Description("Set game mode to spectator!")
   @Syntax("[player]")
   @CommandCompletion("@player")
@@ -60,7 +59,10 @@ public class GamemodeCommand extends BaseCommand {
     setGameMode(issuer, GameMode.SPECTATOR, target);
   }
 
-  private void setGameMode(BukkitCommandIssuer issuer, GameMode gameMode, Player target) {
+  private void setGameMode(
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull GameMode gameMode,
+      @NotNull Player target) {
     if (target.getGameMode() != gameMode) {
       target.setGameMode(gameMode);
     }
@@ -71,19 +73,19 @@ public class GamemodeCommand extends BaseCommand {
     }
 
     String gameModeName = StringUtil.getFriendlyName(gameMode);
-    if (!target.hasPermission("easterlyn.command.gamemode")) {
-      core.getLocaleManager()
-          .sendMessage(target, "sink.module.gamemode.success", "{value}", gameModeName);
-    }
+    core.getLocaleManager()
+        .sendMessage(
+            target,
+            "sink.module.gamemode.success",
+            "{value}", gameModeName);
 
-    Bukkit.broadcast(
-        ChatColor.GRAY
-            + "["
-            + issuer.getIssuer().getName()
-            + "] Set "
-            + target.getName()
-            + "'s game mode to "
-            + gameModeName,
-        "easterlyn.command.gamemode");
+    if (!issuer.isPlayer() || !target.equals(issuer.getPlayer())) {
+      core.getLocaleManager()
+          .sendMessage(
+              target,
+              "sink.module.gamemode.other",
+              "{value}", gameModeName,
+              "{target}", target.getDisplayName());
+    }
   }
 }
