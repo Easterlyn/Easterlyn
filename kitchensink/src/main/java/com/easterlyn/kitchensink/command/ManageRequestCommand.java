@@ -17,7 +17,7 @@ public class ManageRequestCommand extends BaseCommand {
 
   @Dependency EasterlynCore core;
 
-  @CommandAlias("accept|yes|y|tpyes|tpaccept")
+  @CommandAlias("accept|yes|y")
   @Description("{@@sink.module.request.accept.description}")
   @CommandCompletion("")
   @Syntax("")
@@ -31,7 +31,7 @@ public class ManageRequestCommand extends BaseCommand {
     request.accept();
   }
 
-  @CommandAlias("decline|no|n|tpno|tpdeny")
+  @CommandAlias("decline|no|n")
   @Description("{@@sink.module.request.decline.description}")
   @CommandCompletion("")
   @Syntax("")
