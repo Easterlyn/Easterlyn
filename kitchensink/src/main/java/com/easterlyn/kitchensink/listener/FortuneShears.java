@@ -3,17 +3,21 @@ package com.easterlyn.kitchensink.listener;
 import com.easterlyn.event.ReportableEvent;
 import com.github.jikoo.planarenchanting.anvil.AnvilOperation;
 import com.github.jikoo.planarenchanting.anvil.AnvilResult;
+import com.github.jikoo.planarenchanting.table.Enchantability;
+import com.github.jikoo.planarenchanting.table.EnchantingTable;
+import com.github.jikoo.planarenchanting.table.TableEnchantListener;
 import com.github.jikoo.planarenchanting.util.ItemUtil;
 import com.github.jikoo.planarwrappers.util.Generics;
+import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.MushroomCow;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Sheep;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.PrepareAnvilEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.inventory.InventoryView;
@@ -23,12 +27,29 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class FortuneShears implements Listener {
+public class FortuneShears extends TableEnchantListener {
 
+  // Silk touch because heck you. Also lower enchantability for the same reason.
+  private final EnchantingTable table = new EnchantingTable(
+      Set.of(Enchantment.DURABILITY, Enchantment.LOOT_BONUS_BLOCKS, Enchantment.SILK_TOUCH),
+      Enchantability.STONE);
   private final Plugin plugin;
 
   public FortuneShears(Plugin plugin) {
+    super(plugin);
     this.plugin = plugin;
+  }
+
+  @Override
+  protected boolean isIneligible(@NotNull Player player, @NotNull ItemStack enchanted) {
+    return enchanted.getType() != Material.SHEARS;
+  }
+
+  @Override
+  protected @NotNull EnchantingTable getTable(
+      @NotNull Player player,
+      @NotNull ItemStack enchanted) {
+    return table;
   }
 
   @EventHandler

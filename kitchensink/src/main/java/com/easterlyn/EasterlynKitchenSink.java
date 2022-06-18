@@ -21,6 +21,7 @@ import com.easterlyn.kitchensink.listener.NoIllegalName;
 import com.easterlyn.kitchensink.listener.OnlyWitherKillsItems;
 import com.easterlyn.kitchensink.listener.PVPKeepInventory;
 import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
+import com.easterlyn.kitchensink.listener.UnbreakingGearEnchanter;
 import com.easterlyn.kitchensink.listener.WitherFacts;
 import com.easterlyn.plugin.EasterlynPlugin;
 import java.util.ArrayList;
@@ -118,6 +119,9 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
 
     // Feature: Restrict and clean NBT on items spawned and used in creative.
     getServer().getPluginManager().registerEvents(new RestrictCreativeItems(), this);
+
+    // Feature: Enchant elytra and shields with unbreaking in the enchanting table.
+    getServer().getPluginManager().registerEvents(new UnbreakingGearEnchanter(this), this);
 
     // Fact: Withers are awesome.
     getServer().getPluginManager().registerEvents(new WitherFacts(), this);
