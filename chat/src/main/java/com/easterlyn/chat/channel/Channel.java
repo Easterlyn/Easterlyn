@@ -23,6 +23,16 @@ public interface Channel extends Group {
   @NotNull String getName();
 
   /**
+   * Get whether the channel counts as matching a channel name. Note that this does not necessarily
+   * mean that the channel is the exact channel denoted by the channel name, only that it is a
+   * supported identifier.
+   *
+   * @param name the name to match
+   * @return whether the name matches
+   */
+  boolean isFocusedChannel(@Nullable String name);
+
+  /**
    * Get the display name of the channel.
    *
    * @return the channel's display name

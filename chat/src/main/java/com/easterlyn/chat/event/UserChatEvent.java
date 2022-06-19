@@ -168,12 +168,9 @@ public class UserChatEvent extends UserEvent implements Cancellable {
               }
 
               TextComponent finalMessage = new TextComponent();
-              // Set text a nice relaxing grey if not focused or explicitly set
+              // Set text a nice relaxing grey if not focused.
               finalMessage.setColor(
-                  channel.getName().equals("pm")
-                          || channel
-                              .getName()
-                              .equals(user.getStorage().getString(EasterlynChat.USER_CURRENT))
+                  channel.isFocusedChannel(user.getStorage().getString(EasterlynChat.USER_CURRENT))
                       ? ChatColor.WHITE
                       : ChatColor.GRAY);
 

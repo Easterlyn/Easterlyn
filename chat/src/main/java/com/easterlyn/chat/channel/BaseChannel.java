@@ -7,6 +7,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * A class representing a chat {@link Group}.
@@ -32,6 +33,11 @@ public abstract class BaseChannel implements Channel {
   @Override
   public @NotNull final String getName() {
     return name;
+  }
+
+  @Override
+  public boolean isFocusedChannel(@Nullable String channelName) {
+    return this.name.equals(channelName);
   }
 
   @Override
