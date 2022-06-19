@@ -33,7 +33,7 @@ public class ParsedText {
     this.components.add(component);
   }
 
-  public void addComponent(TextComponent... components) {
+  public void addComponents(TextComponent... components) {
     Collections.addAll(this.components, components);
   }
 

@@ -4,6 +4,7 @@ import com.easterlyn.util.inventory.ItemUtil;
 import com.easterlyn.util.text.ParsedText;
 import com.easterlyn.util.text.StaticQuoteConsumer;
 import com.github.jikoo.planarwrappers.util.StringConverters;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +19,7 @@ public class PlayerItemQuoteConsumer extends StaticQuoteConsumer {
   private final Player player;
 
   public PlayerItemQuoteConsumer(Player player) {
-    super(Pattern.compile("\\{ITEM:(\\w+)\\}"));
+    super(Pattern.compile("\\{ITEM:(\\w+)}"));
     this.player = player;
   }
   @Override
@@ -30,7 +31,10 @@ public class PlayerItemQuoteConsumer extends StaticQuoteConsumer {
       itemStack = ItemUtil.AIR;
     }
 
-    components.addComponent(ItemUtil.getItemComponent(itemStack));
+    components.addComponents(
+        new TextComponent("["),
+        ItemUtil.getItemComponent(itemStack),
+        new TextComponent("]"));
   }
 
   private @Nullable ItemStack getItem(String slotName) {
