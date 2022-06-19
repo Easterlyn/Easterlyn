@@ -41,7 +41,6 @@ public final class TextParsing {
     return toJSON(text, Set.of());
   }
 
-  // TODO parse colors
   public static @NotNull Collection<TextComponent> toJSON(
       @Nullable String text,
       @NotNull Collection<QuoteConsumer> additionalHandlers) {
@@ -49,121 +48,98 @@ public final class TextParsing {
       return Set.of();
     }
 
-    ParseState state = new ParseState(text, additionalHandlers);
+    return new TextParsing(additionalHandlers, text).toComponents();
+  }
 
-    for (state.index = 0; state.index < text.length(); ++state.index) {
-      state.currentChar = text.charAt(state.index);
-      if (!handleQuotedText(state)) {
-        handleUnquotedText(state);
+  private final @NotNull ParsedText parsedText = new ParsedText();
+  private final @NotNull StringBuilder builder = new StringBuilder();
+  private final @NotNull Collection<QuoteConsumer> consumers = new HashSet<>(QUOTE_CONSUMERS);
+  private final @NotNull String text;
+  private int index;
+  private char currentChar;
+
+  // TODO parse colors
+  private TextParsing(
+      @NotNull Collection<QuoteConsumer> additionalHandlers,
+      @NotNull String text) {
+    this.consumers.addAll(additionalHandlers);
+    this.text = text;
+  }
+
+  private @NotNull Collection<TextComponent> toComponents() {
+    for (index = 0; index < text.length(); ++index) {
+      currentChar = text.charAt(index);
+      if (!handleQuotedText()) {
+        handleUnquotedText();
       }
     }
 
-    return state.parsedText.getComponents();
+    flush();
+    return parsedText.getComponents();
   }
 
-  private static class ParseState {
-
-    private final ParsedText parsedText = new ParsedText();
-    private final StringBuilder builder = new StringBuilder();
-    private final Collection<QuoteConsumer> consumers = new HashSet<>(QUOTE_CONSUMERS);
-    private final String text;
-    private int index;
-    private char currentChar;
-
-    private ParseState(
-        @NotNull String text,
-        @NotNull Collection<QuoteConsumer> additionalHandlers) {
-      this.text = text;
-      this.consumers.addAll(additionalHandlers);
+  private void setIndex(int newIndex) {
+    if (newIndex < index) {
+      ReportableEvent.call("Index may not be reduced!", 5);
+      return;
     }
 
-    private void setIndex(int newIndex) {
-      if (newIndex < index) {
-        ReportableEvent.call("Index may not be reduced!", 5);
-        return;
-      }
-
-      index = newIndex;
-    }
-
+    index = newIndex;
   }
 
-  private static boolean handleQuotedText(@NotNull ParseState state) {
-    BlockQuoteMatcher matcher = BLOCK_QUOTES.get(state.currentChar);
+  private boolean handleQuotedText() {
+    BlockQuoteMatcher matcher = BLOCK_QUOTES.get(currentChar);
 
     if (matcher == null) {
       return false;
     }
 
-    BlockQuote quote = matcher.findQuote(state.text, state.index);
+    BlockQuote quote = matcher.findQuote(text, index);
     if (quote == null) {
       return false;
     }
 
     if (quote.getQuoteMarks() != null) {
-      state.builder.append(quote.getQuoteMarks());
+      builder.append(quote.getQuoteMarks());
     }
 
     if (matcher.allowAdditionalParsing()) {
-      consumeQuote(state.parsedText, state.consumers, state.builder, quote.getQuoteText());
+      consumeQuote(quote.getQuoteText());
     } else {
-      state.builder.append(quote.getQuoteText());
+      builder.append(quote.getQuoteText());
     }
 
     if (quote.getQuoteMarks() != null) {
-      state.builder.append(quote.getQuoteMarks());
+      builder.append(quote.getQuoteMarks());
     }
 
-    state.setIndex(state.index + quote.getQuoteLength() - 1);
+    setIndex(index + quote.getQuoteLength() - 1);
 
     return true;
   }
 
-  private static void handleUnquotedText(@NotNull ParseState state) {
-    if (state.currentChar == ' ') {
-      state.builder.append(state.currentChar);
+  private void handleUnquotedText() {
+    if (currentChar == ' ') {
+      builder.append(' ');
       return;
     }
 
-    int nextSpace = state.text.indexOf(' ', state.index);
+    int nextSpace = text.indexOf(' ', index);
     if (nextSpace == -1) {
-      nextSpace = state.text.length();
+      nextSpace = text.length();
     }
 
-    consumeQuote(
-        state.parsedText,
-        state.consumers,
-        state.builder,
-        state.text.substring(state.index, nextSpace));
-    state.setIndex(nextSpace - 1);
+    consumeQuote(text.substring(index, nextSpace));
+    setIndex(nextSpace - 1);
   }
 
-  private static void consumeQuote(
-      @NotNull ParsedText parsedText,
-      @NotNull Collection<QuoteConsumer> consumers,
-      @NotNull StringBuilder builder,
-      @Nullable String quote) {
-
-    if (quote == null) {
-      if (builder.length() == 0) {
-        return;
-      }
-      parsedText.addText(builder.toString());
-      if (builder.length() > 0) {
-        builder.delete(0, builder.length());
-      }
-      return;
-    }
-
+  private void consumeQuote(@NotNull String quote) {
     for (QuoteConsumer consumer : consumers) {
       Supplier<Matcher> matcher = consumer.handleQuote(quote);
       if (matcher == null) {
         continue;
       }
-      if (builder.length() > 0) {
-        parsedText.addText(builder.toString());
-        builder.delete(0, builder.length());
-      }
+      flush();
       consumer.addComponents(parsedText, matcher);
       return;
     }
@@ -171,8 +147,11 @@ public final class TextParsing {
     builder.append(quote);
   }
 
-  private TextParsing() {
-    throw new IllegalStateException("Cannot instantiate utility class!");
+  private void flush() {
+    if (builder.length() > 0) {
+      parsedText.addText(builder.toString());
+      builder.delete(0, builder.length());
+    }
   }
 
 }
