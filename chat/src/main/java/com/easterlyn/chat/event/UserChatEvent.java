@@ -147,7 +147,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
                     start.setText(text.substring(previousMatch, matcher.start()));
                     highlightedComponents.add(start);
                   }
-                  TextComponent mention = user.getMention();
+                  TextComponent mention = new TextComponent(user.getMention());
                   mention.setColor(Colors.HIGHLIGHT);
                   highlightedComponents.add(mention);
                   // Set previous match to end of group 1 so next will pick up group 2 if it exists.
