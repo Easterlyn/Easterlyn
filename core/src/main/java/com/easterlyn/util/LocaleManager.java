@@ -1,6 +1,7 @@
 package com.easterlyn.util;
 
 import com.easterlyn.util.text.QuoteConsumer;
+import com.easterlyn.util.text.TextParsing;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +17,6 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
-import com.easterlyn.util.text.TextParsing;
 import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;

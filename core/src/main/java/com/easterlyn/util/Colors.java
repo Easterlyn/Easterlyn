@@ -1,9 +1,9 @@
 package com.easterlyn.util;
 
 import com.easterlyn.EasterlynCore;
-import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import net.md_5.bungee.api.ChatColor;
@@ -14,9 +14,9 @@ import org.jetbrains.annotations.Nullable;
 
 public class Colors {
 
-  private static final Pattern COLOR_PATTERN = Pattern.compile("\\{color:([\\w\\.])+}");
+  public static final Pattern COLOR_PATTERN = Pattern.compile("\\{color:(([\\w\\.])+|#[a-f0-9]{6})}");
 
-  private static final Map<String, ChatColor> mappings = new HashMap<>();
+  private static final Map<String, ChatColor> MAPPINGS = new ConcurrentHashMap<>();
   public static ChatColor WEB_LINK = ChatColor.BLUE;
   public static ChatColor COMMAND = ChatColor.AQUA;
   public static ChatColor HIGHLIGHT = ChatColor.AQUA;
@@ -34,7 +34,7 @@ public class Colors {
 
   private Colors() {}
 
-  public static void load(EasterlynCore plugin) {
+  public static void load(@NotNull EasterlynCore plugin) {
     ConfigurationSection colorSection = plugin.getConfig().getConfigurationSection("colors");
     WEB_LINK = register(colorSection, "web_link", ChatColor.BLUE);
     COMMAND = register(colorSection, "command", ChatColor.AQUA);
@@ -67,7 +67,7 @@ public class Colors {
 
     // Custom defined colors
     for (String key : colorSection.getKeys(true)) {
-      if (mappings.containsKey(key) || !colorSection.isString(key)) {
+      if (MAPPINGS.containsKey(key) || !colorSection.isString(key)) {
         continue;
       }
       register(colorSection, key, ChatColor.WHITE);
@@ -84,7 +84,7 @@ public class Colors {
       color = getOrDefault(colorSection.getString(name), defaultColor);
     }
 
-    mappings.put(name.toLowerCase(Locale.ENGLISH), color);
+    MAPPINGS.put(name.toLowerCase(Locale.ENGLISH), color);
 
     return color;
   }
@@ -97,20 +97,22 @@ public class Colors {
     }
 
     colorName = colorName.toLowerCase(Locale.ENGLISH);
-    ChatColor color = mappings.get(colorName);
+    ChatColor color = MAPPINGS.get(colorName);
 
     if (color != null) {
       return color;
     }
 
     try {
-      return ChatColor.of(colorName);
+      ChatColor chatColor = ChatColor.of(colorName);
+      MAPPINGS.put(colorName, chatColor);
+      return chatColor;
     } catch (IllegalArgumentException e) {
       return defaultColor;
     }
   }
 
-  public @NotNull static String addColor(@NotNull String string) {
+  public static @NotNull String addColor(@NotNull String string) {
     Matcher matcher = COLOR_PATTERN.matcher(string);
     StringBuilder builder = new StringBuilder();
 

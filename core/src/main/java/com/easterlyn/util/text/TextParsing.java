@@ -58,7 +58,6 @@ public final class TextParsing {
   private int index;
   private char currentChar;
 
-  // TODO parse colors
   private TextParsing(
       @NotNull Collection<QuoteConsumer> additionalHandlers,
       @NotNull String text) {
