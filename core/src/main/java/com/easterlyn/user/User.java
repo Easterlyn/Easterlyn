@@ -313,7 +313,10 @@ public class User extends PermissibleBase implements Group, ServerOperator {
   @Override
   public boolean hasPermission(@NotNull String permission) {
     if (isOnline()) {
-      return super.hasPermission(permission);
+      Player player = getPlayer();
+      if (player != null) {
+        return player.hasPermission(permission);
+      }
     }
     return PermissionUtil.hasPermission(getUniqueId(), permission);
   }
