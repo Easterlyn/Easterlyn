@@ -244,8 +244,11 @@ public class User extends PermissibleBase implements Group, ServerOperator {
   }
 
   public void reloadMention() {
-    this.tempStore.put("mentionPattern", null);
-    this.tempStore.put("mention", null);
+    // Temp store is null on super initialization.
+    if (tempStore != null) {
+      this.tempStore.put("mentionPattern", null);
+      this.tempStore.put("mention", null);
+    }
   }
 
   public void sendMessage(@NotNull String message) {
