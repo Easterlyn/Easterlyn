@@ -8,7 +8,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class ParsedText {
@@ -25,7 +24,7 @@ public class ParsedText {
     this.components = new LinkedList<>();
   }
 
-  public Collection<TextComponent> getComponents() {
+  public List<TextComponent> getComponents() {
     return this.components;
   }
 
@@ -41,12 +40,16 @@ public class ParsedText {
     this.components.addAll(components);
   }
 
-  public void addText(@NotNull String text) {
+  public void addText(@Nullable String text) {
     addText(text, null, null);
   }
 
   public void addText(
-      @NotNull String text, @Nullable HoverEvent hover, @Nullable ClickEvent click) {
+      @Nullable String text, @Nullable HoverEvent hover, @Nullable ClickEvent click) {
+    if (text == null) {
+      return;
+    }
+
     StringBuilder builder = new StringBuilder();
 
     for (int i = 0; i < text.length(); ++i) {

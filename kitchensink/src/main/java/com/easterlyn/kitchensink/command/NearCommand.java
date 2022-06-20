@@ -11,8 +11,10 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
+import com.easterlyn.util.Colors;
+import com.easterlyn.util.text.ParsedText;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.GameMode;
@@ -37,9 +39,13 @@ public class NearCommand extends BaseCommand {
       range = Math.min(MAX_RADIUS, range);
     }
 
+    String locale = core.getLocaleManager().getLocale(issuer);
+    ParsedText message = new ParsedText();
+    message.addText(core.getLocaleManager().getValue("sink.module.near.message", locale));
+
     List<Player> players = issuer.getWorld().getPlayers();
     if (players.size() <= 1) {
-      core.getLocaleManager().sendMessage(issuer, "sink.module.near.none");
+      message.addText(core.getLocaleManager().getValue("sink.module.near.none", locale));
       return;
     }
 
@@ -47,40 +53,40 @@ public class NearCommand extends BaseCommand {
     boolean showSpectate = issuer.hasPermission("easterlyn.command.near.spectate");
     boolean showInvisible = issuer.hasPermission("easterlyn.command.near.invisible");
     double squared = Math.pow(range, 2);
-    AtomicInteger matches = new AtomicInteger();
-    String locale = core.getLocaleManager().getLocale(issuer);
-    BaseComponent message =
-        new TextComponent(
-            core.getLocaleManager().getValue("sink.module.near.message", locale));
+    int matches = 0;
     TextComponent separator = new TextComponent(", ");
+    ChatColor normalA = Colors.getOrDefault("normal.a", ChatColor.YELLOW);
+    separator.setColor(normalA);
+    ChatColor normalB = Colors.getOrDefault("normal.b", ChatColor.DARK_AQUA);
 
     for (Player player : players) {
       if (issuer.getUniqueId().equals(player.getUniqueId())
           || !issuer.canSee(player)
           || !showSpectate && player.getGameMode() == GameMode.SPECTATOR
           || !showInvisible && player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-        return;
+        continue;
       }
       double distanceSquared = location.distanceSquared(player.getLocation());
       if (distanceSquared > squared) {
-        return;
+        continue;
       }
-      matches.incrementAndGet();
+      ++matches;
       int distance = (int) Math.sqrt(distanceSquared);
-      message.addExtra(core.getUserManager().getUser(player.getUniqueId()).getMention());
-      message.addExtra(" (" + distance + ')');
-      message.addExtra(separator);
+      message.addComponent(core.getUserManager().getUser(player.getUniqueId()).getMention());
+      message.addText(normalA + " (" + normalB + distance + normalA + ')');
+      message.addComponent(separator);
     }
 
-    if (message.getExtra() == null || message.getExtra().size() == 0) {
-      message.addExtra(
-          new TextComponent(
-              core.getLocaleManager().getValue("sink.module.near.none", locale)));
-    } else {
+    if (matches == 0) {
+      message.addText(core.getLocaleManager().getValue("sink.module.near.none", locale));
+    }
+
+    List<TextComponent> components = message.getComponents();
+    if (matches > 0) {
       // Remove trailing comma component
-      message.getExtra().remove(message.getExtra().size() - 1);
+      components.remove(components.size() - 1);
     }
 
-    issuer.spigot().sendMessage(message);
+    issuer.spigot().sendMessage(new TextComponent(components.toArray(new BaseComponent[0])));
   }
 }
