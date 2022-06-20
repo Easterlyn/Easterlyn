@@ -32,7 +32,7 @@ public class MessageCommand extends BaseCommand {
 
   @Dependency EasterlynChat chat;
 
-  @CommandAlias("message|msg|m|whisper|w|pm|tell|t")
+  @CommandAlias("message|msg|m|whisper|w|pm|dm|tell|t")
   @Description("{@@chat.commands.message.description}")
   @CommandPermission("easterlyn.command.message")
   @Syntax("<recipient> <message>")

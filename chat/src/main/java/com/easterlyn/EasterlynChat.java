@@ -10,6 +10,8 @@ import com.easterlyn.chat.channel.AliasedChannel;
 import com.easterlyn.chat.channel.BaseChannel;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.InternalChannel;
+import com.easterlyn.chat.channel.MainChannel;
+import com.easterlyn.chat.channel.MessageChannel;
 import com.easterlyn.chat.channel.ServerChannel;
 import com.easterlyn.chat.channel.UserChannel;
 import com.easterlyn.chat.command.ChannelFlag;
@@ -56,12 +58,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EasterlynChat extends EasterlynPlugin {
 
-  public static final ServerChannel DEFAULT = new ServerChannel("main") {
-    @Override
-    public boolean isFocusedChannel(@Nullable String channelName) {
-      return channelName == null || super.isFocusedChannel(channelName);
-    }
-  };
+  public static final ServerChannel DEFAULT = new MainChannel();
   public static final String USER_CHANNELS = "chat.channels";
   public static final String USER_CURRENT = "chat.current";
   public static final String USER_HIGHLIGHTS = "chat.highlights";
@@ -117,12 +114,7 @@ public class EasterlynChat extends EasterlynPlugin {
     channels.put("", DEFAULT);
     channels.put("main", DEFAULT);
     channels.put("aether", new AliasedChannel(DEFAULT, "aether"));
-    channels.put("pm", new InternalChannel("pm") {
-      @Override
-      public boolean isFocusedChannel(@Nullable String channelName) {
-        return true;
-      }
-    });
+    channels.put("dm", new MessageChannel());
     channels.put("sign", new InternalChannel("sign"));
     channels.put("#", new InternalChannel("#"));
 

@@ -41,7 +41,7 @@ public abstract class BaseChannel implements Channel {
   }
 
   @Override
-  public @NotNull final TextComponent getMention() {
+  public @NotNull TextComponent getMention() {
     if (mention == null) {
       mention = Channel.super.getMention();
     }

@@ -56,9 +56,9 @@ public interface Channel extends Group {
             HoverEvent.Action.SHOW_TEXT,
             new Text(
                 TextComponent.fromLegacyText(
-                    Colors.COMMAND + "/join " + Colors.CHANNEL + getDisplayName()))));
+                    Colors.COMMAND + "/focus " + Colors.CHANNEL + getDisplayName()))));
     component.setClickEvent(
-        new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/join " + getDisplayName()));
+        new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/focus " + getDisplayName()));
     return component;
   }
 
