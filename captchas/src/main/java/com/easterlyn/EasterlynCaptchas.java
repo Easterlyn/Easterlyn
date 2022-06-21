@@ -199,6 +199,7 @@ public class EasterlynCaptchas extends EasterlynPlugin {
       ShapelessRecipe captchaRecipe =
           new ShapelessRecipe(new NamespacedKey(this, "captcha" + i), captchaItem);
       captchaRecipe.addIngredient(2 * i, Material.PAPER);
+      captchaRecipe.setGroup("captcha");
       getServer().addRecipe(captchaRecipe);
     }
 
