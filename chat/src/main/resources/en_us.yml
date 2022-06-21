@@ -69,7 +69,7 @@ chat:
           not_special: '{color:bad.a}Item to show off must be named or enchanted. Your main hand is neither.'
     message:
       description: '{color:normal.a}Send a message!'
-      error.pm_channel: '{color:bad.a}Could not retrieve PM channel!'
+      error.pm_channel: '{color:bad.a}Could not retrieve DM channel!'
     reply:
       description: '{color:normal.a}Send a reply!'
       error.no_target: '{color:bad.a}You do not have anyone to reply to!'

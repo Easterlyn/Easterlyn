@@ -51,10 +51,10 @@ public class MessageCommand extends BaseCommand {
     }
     replies.put(issuer.getUniqueId(), target);
 
-    Channel channel = chat.getChannels().get("pm");
+    Channel channel = chat.getChannels().get("dm");
 
     if (channel == null) {
-      ReportableEvent.call("Channel #pm not set up when executing /message!");
+      ReportableEvent.call("Channel #dm not set up when executing /message!");
       core.getLocaleManager()
           .sendMessage(sender.getIssuer(), "chat.commands.message.error.pm_channel");
       return;
