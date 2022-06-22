@@ -156,7 +156,7 @@ public class EasterlynCaptchas extends EasterlynPlugin {
     ItemMeta itemMeta = itemStack.getItemMeta();
     if (itemMeta != null) {
       itemMeta.setDisplayName("Captchacard");
-      itemMeta.setLore(List.of("Blank"));
+      itemMeta.setLore(List.of(DARKER_PURPLE + "Blank"));
       itemMeta.getPersistentDataContainer().set(KEY_BLANK, PersistentDataType.BYTE, (byte) 0);
     }
     itemStack.setItemMeta(itemMeta);
