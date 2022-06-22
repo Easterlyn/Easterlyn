@@ -17,6 +17,7 @@ import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRecipeDiscoverEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 
@@ -26,6 +27,13 @@ public class CaptchaListener implements Listener {
 
   public CaptchaListener(EasterlynCaptchas captcha) {
     this.captcha = captcha;
+  }
+
+  @EventHandler
+  private void handleDiscover(@NotNull PlayerRecipeDiscoverEvent event) {
+    if (event.getRecipe().getKey().equals(EasterlynCaptchas.UNCAPTCHA_KEY)) {
+      event.setCancelled(true);
+    }
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
@@ -153,7 +161,7 @@ public class CaptchaListener implements Listener {
   @EventHandler
   private void onPrepareItemCraft(@NotNull PrepareItemCraftEvent event) {
     if (event.getRecipe() instanceof Keyed
-        && ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.RECIPE_KEY)) {
+        && ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.UNCAPTCHA_KEY)) {
       for (ItemStack itemStack : event.getInventory().getMatrix()) {
         if (itemStack == null || itemStack.getType() == Material.AIR) {
           continue;
@@ -171,7 +179,7 @@ public class CaptchaListener implements Listener {
   @EventHandler
   private void onItemCraft(@NotNull CraftItemEvent event) {
     if (event.getRecipe() instanceof Keyed
-        && ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.RECIPE_KEY)) {
+        && ((Keyed) event.getRecipe()).getKey().getKey().equals(EasterlynCaptchas.UNCAPTCHA_KEY)) {
       for (ItemStack itemStack : event.getInventory().getMatrix()) {
         if (itemStack == null || itemStack.getType() == Material.AIR) {
           continue;

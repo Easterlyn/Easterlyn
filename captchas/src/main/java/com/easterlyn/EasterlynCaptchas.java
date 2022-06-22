@@ -52,7 +52,7 @@ import org.jetbrains.annotations.Nullable;
  */
 public class EasterlynCaptchas extends EasterlynPlugin {
 
-  public static final String RECIPE_KEY = ItemUtil.UNIQUE_KEYED_PREFIX + "captcha_uncraft";
+  public static final String UNCAPTCHA_KEY = ItemUtil.UNIQUE_KEYED_PREFIX + "captcha_uncraft";
   public static final NamespacedKey KEY_SKIP_CONVERT =
       Objects.requireNonNull(
           StringConverters.toNamespacedKey("captcha:skip_convert"));
@@ -204,7 +204,7 @@ public class EasterlynCaptchas extends EasterlynPlugin {
     }
 
     ShapelessRecipe uncaptchaRecipe =
-        new ShapelessRecipe(new NamespacedKey(this, RECIPE_KEY), new ItemStack(Material.DIRT));
+        new ShapelessRecipe(new NamespacedKey(this, UNCAPTCHA_KEY), new ItemStack(Material.DIRT));
     uncaptchaRecipe.addIngredient(Material.BOOK);
     getServer().addRecipe(uncaptchaRecipe);
 
