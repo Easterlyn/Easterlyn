@@ -36,13 +36,14 @@ public class LinkCommand extends BaseCommand {
   @Private
   public void link(@Flags(CoreContexts.SELF) Player issuer) {
     String pendingLink = discord.getPendingLink(issuer.getUniqueId());
+    String discordCommand = discord.getCommandPrefix() + "link " + pendingLink;
     String message =
         core.getLocaleManager()
             .getValue(
                 "discord.commands.link.code",
                 core.getLocaleManager().getLocale(issuer),
                 "{value}",
-                pendingLink);
+                discordCommand);
     TextComponent container = new TextComponent();
     for (TextComponent component : TextParsing.toJSON(message)) {
       container.addExtra(component);
@@ -50,7 +51,7 @@ public class LinkCommand extends BaseCommand {
     container.setClickEvent(
         new ClickEvent(
             ClickEvent.Action.COPY_TO_CLIPBOARD,
-            discord.getCommandPrefix() + "link " + pendingLink));
+            discordCommand));
     message =
         core.getLocaleManager()
             .getValue("discord.commands.link.copy_hint", core.getLocaleManager().getLocale(issuer));

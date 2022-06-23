@@ -5,9 +5,8 @@ discord:
         self: '{color:normal.a}Generate a code to link your Discord account with.'
         force: '{color:normal.a}Forcibly link a UUID and Discord snowflake.'
       code: |-
-        {color:normal.a}Message the Discord bot "{color:normal.b}!link {value}{color:normal.a}" to complete linking your Discord account!
+        {color:normal.a}Message the Discord bot "{color:normal.b}{value}{color:normal.a}" to complete linking your Discord account!
         {color:bad.a}This code will expire in 5 minutes.
-        {color:normal.a}Discord invite link: http://discord.easterlyn.com
       copy_hint: '{color:normal.a}Click to copy to clipboard!'
       reading_comprehension: '{color:bad.a}This is not Discord. Complete the link via command {color:bad.b}in Discord{color:bad.a}.'
       force:

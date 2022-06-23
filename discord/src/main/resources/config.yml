@@ -3,14 +3,10 @@ playing: 'n/a'
 guilds:
   '0123456789':
     channels:
-      welcome:
-        - '0123456789'
-      main:
-        - '0123456790'
-      log:
-        - '0123456791'
-      report:
-        - '0123456792'
+      welcome: '0123456789'
+      main: '0123456790'
+      log: '0123456791'
+      report: '0123456792'
     roles:
       member: '0123456793'
 command-whitelist:
