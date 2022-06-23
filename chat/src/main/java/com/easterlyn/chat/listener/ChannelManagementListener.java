@@ -2,6 +2,7 @@ package com.easterlyn.chat.listener;
 
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.chat.channel.AliasedChannel;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.event.UserCreationEvent;
@@ -61,6 +62,9 @@ public class ChannelManagementListener implements Listener {
         return;
       }
       channel = chat.getChannels().get(channelName);
+      if (channel instanceof AliasedChannel aliased) {
+        channel = aliased.getActual();
+      }
       if (channel == null) {
         core.getLocaleManager()
             .sendMessage(
