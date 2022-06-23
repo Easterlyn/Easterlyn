@@ -32,7 +32,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import reactor.core.publisher.Mono;
@@ -104,16 +103,17 @@ public class EasterlynDiscord extends EasterlynPlugin {
             () -> {
               DiscordClient client = DiscordClientBuilder.create(token).build();
               client
+                  .gateway()
+                  .setInitialPresence(
+                      ignored ->
+                          ClientPresence.online(
+                              ClientActivity.playing(
+                                  getConfig().getString("playing", "totally offline"))))
                   .login()
                   .doOnSuccess(
                       gatewayClient -> {
                         this.client = gatewayClient;
                         new MinecraftBridge(this, gatewayClient).setup();
-                        gatewayClient
-                            .updatePresence(ClientPresence.online(ClientActivity.playing(
-                                getConfig().getString("playing", "totally offline"))))
-
-                            .subscribe();
                       })
                   .subscribe();
             });
@@ -146,7 +146,7 @@ public class EasterlynDiscord extends EasterlynPlugin {
     return false;
   }
 
-  public Collection<GuildMessageChannel> getChannelIDs(ChannelType type) {
+  public Collection<GuildMessageChannel> getChannels(@NotNull ChannelType type) {
     if (Bukkit.isPrimaryThread()) {
       throw new IllegalStateException("Don't demand information from Discord on the main thread.");
     }
@@ -209,12 +209,7 @@ public class EasterlynDiscord extends EasterlynPlugin {
   }
 
   public @NotNull DiscordUser getUser(@NotNull UUID uuid) throws IllegalStateException {
-    RegisteredServiceProvider<EasterlynCore> registration =
-        getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (registration == null) {
-      throw new IllegalStateException("EasterlynCore not enabled!");
-    }
-    return new DiscordUser(registration.getProvider().getUserManager().getUser(uuid));
+    return new DiscordUser(getCore().getUserManager().getUser(uuid));
   }
 
   public @NotNull String getPendingLink(@NotNull UUID uuid) {
@@ -255,7 +250,7 @@ public class EasterlynDiscord extends EasterlynPlugin {
     datastore.set("link." + snowflake.asString(), uuid.toString());
   }
 
-  public void postMessage(ChannelType channelType, String message) {
+  public void postMessage(@NotNull ChannelType channelType, @NotNull String message) {
     if (client == null) {
       // TODO handle client not connected
       return;
@@ -292,7 +287,7 @@ public class EasterlynDiscord extends EasterlynPlugin {
 
       if (aggregateData.getRight() <= System.currentTimeMillis()) {
         // Typing status while aggregating
-        getChannelIDs(channelType)
+        getChannels(channelType)
             .forEach(
                 channel ->
                     channel
@@ -318,7 +313,7 @@ public class EasterlynDiscord extends EasterlynPlugin {
     directPostMessage(channelType, message);
   }
 
-  private void directPostMessage(ChannelType channelType, String message) {
+  private void directPostMessage(@NotNull ChannelType channelType, @NotNull String message) {
     if (client == null) {
       // TODO handle client not connected
       return;
@@ -342,6 +337,6 @@ public class EasterlynDiscord extends EasterlynPlugin {
       return;
     }
 
-    getChannelIDs(channelType).forEach(channel -> channel.createMessage(finalMessage).subscribe());
+    getChannels(channelType).forEach(channel -> channel.createMessage(finalMessage).subscribe());
   }
 }

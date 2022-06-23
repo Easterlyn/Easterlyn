@@ -38,6 +38,7 @@ import reactor.core.publisher.Mono;
 public class MinecraftBridge {
 
   private final EasterlynDiscord plugin;
+  private AliasedChannel mainChannel;
   private final GatewayDiscordClient client;
   private final Cache<Snowflake, Boolean> warnings;
   private final Pattern mention = Pattern.compile("<([@#]|:\\w+:)(\\d+)>");
@@ -71,6 +72,10 @@ public class MinecraftBridge {
                           User author = event.getMessage().getAuthor().get();
                           String msg = event.getMessage().getContent();
                           MessageChannel channel = event.getMessage().getChannel().block();
+
+                          if (channel == null) {
+                            return;
+                          }
 
                           String command = null;
                           String commandData = null;
@@ -138,7 +143,8 @@ public class MinecraftBridge {
         .subscribe();
 
     EasterlynChat chat = JavaPlugin.getPlugin(EasterlynChat.class);
-    chat.getChannels().put("discord", new AliasedChannel(EasterlynChat.DEFAULT, "discord"));
+    mainChannel = new AliasedChannel(EasterlynChat.DEFAULT, "discord");
+    chat.getChannels().put("discord", mainChannel);
     Event.register(
         UserChatEvent.class,
         event -> {
@@ -257,7 +263,7 @@ public class MinecraftBridge {
           .subscribe();
     }
 
-    new UserChatEvent(user, EasterlynChat.DEFAULT, sanitizeForMinecraft(content)).send();
+    new UserChatEvent(user, mainChannel, sanitizeForMinecraft(content)).send();
   }
 
   private String sanitizeForMinecraft(String message) {
@@ -292,7 +298,7 @@ public class MinecraftBridge {
     return sb.toString();
   }
 
-  private void handleMinecraftChat(UserChatEvent event) {
+  private void handleMinecraftChat(@NotNull UserChatEvent event) {
     if (event.getUser() instanceof DiscordUser) {
       return;
     }
