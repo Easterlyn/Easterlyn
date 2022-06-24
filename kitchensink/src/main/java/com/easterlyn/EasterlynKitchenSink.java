@@ -7,6 +7,7 @@ import com.easterlyn.kitchensink.combo.DeathPointCommand;
 import com.easterlyn.kitchensink.combo.FreeCarts;
 import com.easterlyn.kitchensink.combo.LoginCommands;
 import com.easterlyn.kitchensink.combo.Meteors;
+import com.easterlyn.kitchensink.listener.ExactSpawn;
 import com.easterlyn.kitchensink.listener.HorseHusbandry;
 import com.easterlyn.kitchensink.listener.NoCommandPrefix;
 import com.easterlyn.kitchensink.listener.BottleExperience;
@@ -92,6 +93,9 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
 
     // Feature: Items dropped on death cannot be damaged.
     getServer().getPluginManager().registerEvents(new DeathDropProtection(this), this);
+
+    // Feature: Use exact world spawn when respawning.
+    getServer().getPluginManager().registerEvents(new ExactSpawn(), this);
 
     // Feature: Fortune works on shears.
     getServer().getPluginManager().registerEvents(new FortuneShears(this), this);
