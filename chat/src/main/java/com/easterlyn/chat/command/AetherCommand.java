@@ -45,9 +45,11 @@ public class AetherCommand extends BaseCommand {
       ReportableEvent.call("Channel #aether not set up when executing /aether!");
       return;
     }
-    // TODO async
-    new UserChatEvent(new AetherUser(userData), channel, text)
-        .send(EasterlynChat.DEFAULT.getMembers());
+    core.getServer().getScheduler().runTaskAsynchronously(
+        core,
+        () ->
+            new UserChatEvent(new AetherUser(userData), channel, text)
+                .send(EasterlynChat.DEFAULT.getMembers()));
   }
 
   class AetherUser extends AutoUser {
