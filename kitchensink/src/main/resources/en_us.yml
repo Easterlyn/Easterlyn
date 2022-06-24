@@ -88,18 +88,21 @@ sink:
       clearmeta:
         description: '{color:normal.a}Clear ALL item meta.'
         success: '{color:normal.a}Reset meta!'
-      skull:
+      owner:
         description: '{color:normal.a}Set a player head''s owner.'
-        success: '{color:normal.a}Owner set to "{color:reset}{value}"'
+        success: '{color:normal.a}Owner set to "{color:reset}{value}{color:normal.a}"'
+      texture:
+        description: '{color:normal.a}Set a player head''s texture.'
+        success: '{color:normal.a}Texture set to set to "{color:reset}{value}{color:normal.a}"'
       author:
         description: '{color:normal.a}Set a book''s author.'
-        success: '{color:normal.a}Author set to "{color:reset}{value}"'
+        success: '{color:normal.a}Author set to "{color:reset}{value}{color:normal.a}"'
       title:
         description: '{color:normal.a}Set a book''s title.'
-        success: '{color:normal.a}Title set to "{color:reset}{value}"'
+        success: '{color:normal.a}Title set to "{color:reset}{value}{color:normal.a}"'
       name:
         description: '{color:normal.a}Set an item''s name.'
-        success: '{color:normal.a}Name set to "{color:reset}{value}"'
+        success: '{color:normal.a}Name set to "{color:reset}{value}{color:normal.a}"'
       delete:
         description: '{color:normal.a}Delete a line of lore.'
         success: '{color:normal.a}Deleted "{color:reset}{old_value}{color:normal.a}" at {color:normal.b}{line}{color:normal.a}!'

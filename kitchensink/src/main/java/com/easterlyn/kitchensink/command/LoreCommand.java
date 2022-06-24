@@ -16,7 +16,9 @@ import com.github.jikoo.planarwrappers.util.Generics;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiFunction;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -90,6 +92,36 @@ public class LoreCommand extends BaseCommand {
     } else {
       core.getLocaleManager().sendMessage(player, "sink.module.lore.delete.owner.success");
     }
+  }
+
+  @Subcommand("texture")
+  @Description("{@@sink.module.lore.texture.description}")
+  @Syntax("<hex string>")
+  @CommandCompletion("")
+  public void texture(@Flags(CoreContexts.SELF) Player player, @Single String hex) {
+    ItemStack hand = player.getInventory().getItemInMainHand();
+    if (handLacksMeta(player, hand)) {
+      return;
+    }
+    if (hand.getType() != Material.PLAYER_HEAD) {
+      core.getLocaleManager().sendMessage(player, "sink.module.lore.error.not_head");
+      return;
+    }
+
+    String format = "{SkullOwner:{Id:\"[I;%s,%s,%s,%s]\",Properties:{textures:[{Value:\"%s\"}]}}}";
+    UUID uuid = UUID.nameUUIDFromBytes(hex.getBytes());
+    long mostSigBits = uuid.getMostSignificantBits();
+    long leastSigBits = uuid.getLeastSignificantBits();
+
+    Bukkit.getUnsafe().modifyItemStack(
+        hand,
+        String.format(
+            format,
+            mostSigBits >> 32,
+            mostSigBits & Integer.MAX_VALUE,
+            leastSigBits >> 32,
+            leastSigBits & Integer.MAX_VALUE,
+            hex));
   }
 
   @Subcommand("author")

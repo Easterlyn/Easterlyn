@@ -40,8 +40,6 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
     saveDefaultConfig();
 
     /* TODO
-     *  - CommandRedirect? probably unnecessary, replacing essentials
-     *    - PlayerCommandPreprocessEvent
      *  - PlayerListHeaderFooterWelcome
      *  - IPCache
      *    - Used for seen
