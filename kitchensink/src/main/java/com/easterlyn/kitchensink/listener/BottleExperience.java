@@ -1,11 +1,10 @@
 package com.easterlyn.kitchensink.listener;
 
-import com.easterlyn.EasterlynCore;
+import com.easterlyn.plugin.EasterlynPlugin;
 import com.easterlyn.user.User;
 import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.github.jikoo.planarwrappers.util.Experience;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownExpBottle;
@@ -19,16 +18,20 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 
 public class BottleExperience implements Listener {
 
   private final String keyBottleCreate = "kitchensink:expBottleCreate";
   private final String keyBottleThrow = "kitchensink:expBottleThrow";
+  private final EasterlynPlugin plugin;
+
+  public BottleExperience(@NotNull EasterlynPlugin plugin) {
+    this.plugin = plugin;
+  }
 
   @EventHandler
-  public void onPlayerInteract(@NotNull PlayerInteractEvent event) {
+  private void onPlayerInteract(@NotNull PlayerInteractEvent event) {
     if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
       if (BlockUtil.hasRightClickFunction(event)) {
         return;
@@ -47,14 +50,8 @@ public class BottleExperience implements Listener {
       return;
     }
 
-    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
-        Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynProvider == null) {
-      return;
-    }
-
     Player player = event.getPlayer();
-    User user = easterlynProvider.getProvider().getUserManager().getUser(player.getUniqueId());
+    User user = plugin.getCore().getUserManager().getUser(player.getUniqueId());
 
     Object cooldown = user.getTemporaryStorage().get(keyBottleCreate);
     if (cooldown instanceof Long && (Long) cooldown >= System.currentTimeMillis()) {
@@ -78,41 +75,25 @@ public class BottleExperience implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onExpBottle(ExpBottleEvent event) {
+  private void onExpBottle(@NotNull ExpBottleEvent event) {
     event.setExperience(10);
     event.setShowEffect(false);
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onPlayerItemConsume(PlayerItemConsumeEvent event) {
-    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
-        Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynProvider == null) {
-      return;
-    }
-
-    User user =
-        easterlynProvider.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+  public void onPlayerItemConsume(@NotNull PlayerItemConsumeEvent event) {
+    User user = plugin.getCore().getUserManager().getUser(event.getPlayer().getUniqueId());
     user.getTemporaryStorage().put(keyBottleCreate, System.currentTimeMillis() + 2000);
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onProjectileLaunch(ProjectileLaunchEvent event) {
+  private void onProjectileLaunch(@NotNull ProjectileLaunchEvent event) {
     if (!(event.getEntity() instanceof ThrownExpBottle)
-        || !(event.getEntity().getShooter() instanceof Player)) {
-      return;
-    }
-    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
-        Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynProvider == null) {
+        || !(event.getEntity().getShooter() instanceof Player player)) {
       return;
     }
 
-    User user =
-        easterlynProvider
-            .getProvider()
-            .getUserManager()
-            .getUser(((Player) event.getEntity().getShooter()).getUniqueId());
+    User user = plugin.getCore().getUserManager().getUser(player.getUniqueId());
 
     Object cooldown = user.getTemporaryStorage().get(keyBottleThrow);
     if (cooldown instanceof Long && (Long) cooldown >= System.currentTimeMillis()) {

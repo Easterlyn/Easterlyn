@@ -119,7 +119,7 @@ public class EasterlynChat extends EasterlynPlugin {
     channels.put("#", new InternalChannel("#"));
 
     getServer().getPluginManager().registerEvents(new ChannelManagementListener(this), this);
-    getServer().getPluginManager().registerEvents(new MuteListener(), this);
+    getServer().getPluginManager().registerEvents(new MuteListener(this), this);
 
     // TODO
     //  - anti-spam listener

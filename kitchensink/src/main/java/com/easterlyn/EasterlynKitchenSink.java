@@ -7,28 +7,26 @@ import com.easterlyn.kitchensink.combo.DeathPointCommand;
 import com.easterlyn.kitchensink.combo.FreeCarts;
 import com.easterlyn.kitchensink.combo.LoginCommands;
 import com.easterlyn.kitchensink.combo.Meteors;
-import com.easterlyn.kitchensink.listener.ExactSpawn;
-import com.easterlyn.kitchensink.listener.HorseHusbandry;
-import com.easterlyn.kitchensink.listener.NoCommandPrefix;
 import com.easterlyn.kitchensink.listener.BottleExperience;
 import com.easterlyn.kitchensink.listener.CartContainerCrasher;
 import com.easterlyn.kitchensink.listener.ColorSignText;
 import com.easterlyn.kitchensink.listener.DeathCoordinates;
 import com.easterlyn.kitchensink.listener.DeathDropProtection;
+import com.easterlyn.kitchensink.listener.ExactSpawn;
 import com.easterlyn.kitchensink.listener.FortuneShears;
+import com.easterlyn.kitchensink.listener.HorseHusbandry;
 import com.easterlyn.kitchensink.listener.KillerRabbit;
+import com.easterlyn.kitchensink.listener.NoCommandPrefix;
 import com.easterlyn.kitchensink.listener.NoCreativeCrammingDrops;
 import com.easterlyn.kitchensink.listener.NoIllegalName;
 import com.easterlyn.kitchensink.listener.OnlyWitherKillsItems;
-import com.easterlyn.kitchensink.listener.PVPKeepInventory;
+import com.easterlyn.kitchensink.listener.PvpKeepInventory;
 import com.easterlyn.kitchensink.listener.RestrictCreativeItems;
 import com.easterlyn.kitchensink.listener.UnbreakingGearEnchanter;
 import com.easterlyn.kitchensink.listener.WitherFacts;
 import com.easterlyn.plugin.EasterlynPlugin;
 import java.util.ArrayList;
 import java.util.List;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 
 public class EasterlynKitchenSink extends EasterlynPlugin {
@@ -78,7 +76,7 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
     extraCommands.add(meteors);
 
     // Feature: Bottle experience by right-clicking with an empty bottle.
-    getServer().getPluginManager().registerEvents(new BottleExperience(), this);
+    getServer().getPluginManager().registerEvents(new BottleExperience(this), this);
 
     // Feature: Allow color codes on signs via '&'.
     getServer().getPluginManager().registerEvents(new ColorSignText(), this);
@@ -117,7 +115,7 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
     getServer().getPluginManager().registerEvents(new OnlyWitherKillsItems(), this);
 
     // Feature: Keep inventory when dying in PVP, drop a max of 30 exp.
-    getServer().getPluginManager().registerEvents(new PVPKeepInventory(), this);
+    getServer().getPluginManager().registerEvents(new PvpKeepInventory(this), this);
 
     // Feature: Restrict and clean NBT on items spawned and used in creative.
     getServer().getPluginManager().registerEvents(new RestrictCreativeItems(), this);
@@ -131,15 +129,7 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
 
   @Override
   public void onDisable() {
-    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
-        Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynProvider == null) {
-      return;
-    }
-
-    EasterlynCore plugin = easterlynProvider.getProvider();
-
-    extraCommands.forEach(command -> plugin.getCommandManager().unregisterCommand(command));
+    extraCommands.forEach(command -> getCore().getCommandManager().unregisterCommand(command));
   }
 
   @Override

@@ -28,7 +28,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -103,22 +102,18 @@ public class ChannelManagementListener implements Listener {
 
   @EventHandler
   public void onUserCreate(UserCreationEvent event) {
-    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
-        chat.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynProvider != null) {
-      ConfigurationSection userSection = chat.getConfig().getConfigurationSection("auto_user");
-      Map<String, String> userData = new HashMap<>();
-      if (userSection != null) {
-        userSection.getKeys(false).forEach(key -> userData.put(key, userSection.getString(key)));
-      }
-      Player player = event.getUser().getPlayer();
-      if (player != null && !player.hasPlayedBefore()) {
-        // TODO lang?
-        new UserChatEvent(
-            new AutoUser(easterlynProvider.getProvider(), userData),
-            EasterlynChat.DEFAULT,
-            event.getUser().getDisplayName() + " is new! Please welcome them.");
-      }
+    ConfigurationSection userSection = chat.getConfig().getConfigurationSection("auto_user");
+    Map<String, String> userData = new HashMap<>();
+    if (userSection != null) {
+      userSection.getKeys(false).forEach(key -> userData.put(key, userSection.getString(key)));
+    }
+    Player player = event.getUser().getPlayer();
+    if (player != null && !player.hasPlayedBefore()) {
+      // TODO lang?
+      new UserChatEvent(
+          new AutoUser(chat.getCore(), userData),
+          EasterlynChat.DEFAULT,
+          event.getUser().getDisplayName() + " is new! Please welcome them.");
     }
 
     addMainChannel(event.getUser(), null);
@@ -147,13 +142,7 @@ public class ChannelManagementListener implements Listener {
 
   @EventHandler(priority = EventPriority.HIGH)
   public void onPlayerJoin(PlayerJoinEvent event) {
-    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
-        chat.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynProvider == null) {
-      return;
-    }
-
-    EasterlynCore core = easterlynProvider.getProvider();
+    EasterlynCore core = chat.getCore();
     User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
     event.getPlayer().setDisplayName(user.getDisplayName());
 
@@ -241,14 +230,7 @@ public class ChannelManagementListener implements Listener {
 
   @EventHandler
   public void onPlayerQuit(PlayerQuitEvent event) {
-    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
-        chat.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynProvider == null) {
-      return;
-    }
-
-    User user =
-        easterlynProvider.getProvider().getUserManager().getUser(event.getPlayer().getUniqueId());
+    User user = chat.getCore().getUserManager().getUser(event.getPlayer().getUniqueId());
     List<String> savedChannels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 
     List<String> channels =

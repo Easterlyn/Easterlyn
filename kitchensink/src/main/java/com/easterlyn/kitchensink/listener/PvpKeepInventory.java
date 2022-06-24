@@ -1,6 +1,7 @@
 package com.easterlyn.kitchensink.listener;
 
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.plugin.EasterlynPlugin;
 import com.easterlyn.user.User;
 import com.github.jikoo.planarwrappers.util.Experience;
 import org.bukkit.Bukkit;
@@ -13,13 +14,18 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.jetbrains.annotations.NotNull;
 
-public class PVPKeepInventory implements Listener {
+public class PvpKeepInventory implements Listener {
 
-  private final String key = "lastPVPDamage";
+  private final String key = "kitchensink:lastPvpDamage";
+  private final EasterlynPlugin plugin;
+
+  public PvpKeepInventory(@NotNull EasterlynPlugin plugin) {
+    this.plugin = plugin;
+  }
 
   @EventHandler(ignoreCancelled = true)
   public void onEntityDamageByEntity(@NotNull EntityDamageByEntityEvent event) {
-    if (!(event.getEntity() instanceof Player)) {
+    if (!(event.getEntity() instanceof Player player)) {
       return;
     }
 
@@ -34,14 +40,7 @@ public class PVPKeepInventory implements Listener {
       return;
     }
 
-    RegisteredServiceProvider<EasterlynCore> easterlynProvider =
-        Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (easterlynProvider == null) {
-      return;
-    }
-
-    User user =
-        easterlynProvider.getProvider().getUserManager().getUser(event.getEntity().getUniqueId());
+    User user = plugin.getCore().getUserManager().getUser(player.getUniqueId());
     user.getTemporaryStorage().put(key, System.currentTimeMillis());
   }
 
@@ -53,8 +52,7 @@ public class PVPKeepInventory implements Listener {
       return;
     }
 
-    User user =
-        easterlynProvider.getProvider().getUserManager().getUser(event.getEntity().getUniqueId());
+    User user = plugin.getCore().getUserManager().getUser(event.getEntity().getUniqueId());
     Object object = user.getTemporaryStorage().get(key);
     if (!(object instanceof Long)) {
       return;
@@ -74,4 +72,5 @@ public class PVPKeepInventory implements Listener {
     event.setKeepInventory(true);
     event.getDrops().clear();
   }
+
 }

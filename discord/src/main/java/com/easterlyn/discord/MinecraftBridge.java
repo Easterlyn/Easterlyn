@@ -1,7 +1,6 @@
 package com.easterlyn.discord;
 
 import com.easterlyn.EasterlynChat;
-import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynDiscord;
 import com.easterlyn.chat.channel.AliasedChannel;
 import com.easterlyn.chat.event.UserChatEvent;
@@ -30,7 +29,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
@@ -148,7 +146,6 @@ public class MinecraftBridge {
     Event.register(
         UserChatEvent.class,
         event -> {
-          // TODO may want to try to softdepend on chat instead of hard
           if (event.isAsynchronous()) {
             handleMinecraftChat(event);
           } else {
@@ -167,11 +164,6 @@ public class MinecraftBridge {
           if (event.getPlayer().hasPermission("easterlyn.discord.exempt.commandlog")) {
             return;
           }
-          RegisteredServiceProvider<EasterlynCore> registration =
-              plugin.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-          if (registration == null) {
-            return;
-          }
 
           int space = event.getMessage().indexOf(' ');
           String commandName =
@@ -179,7 +171,7 @@ public class MinecraftBridge {
                   .getMessage()
                   .substring(1, space > 0 ? space : event.getMessage().length())
                   .toLowerCase();
-          SimpleCommandMap commandMap = registration.getProvider().getSimpleCommandMap();
+          SimpleCommandMap commandMap = plugin.getCore().getSimpleCommandMap();
           if (commandMap == null) {
             return;
           }
