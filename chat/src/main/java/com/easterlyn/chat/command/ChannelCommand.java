@@ -248,7 +248,7 @@ public class ChannelCommand extends BaseCommand {
   @Subcommand("moderator")
   @Description("{@@chat.commands.channel.moderator.description}")
   @Syntax("[#channel] <add|remove> <target>")
-  @CommandCompletion("@boolean @player")
+  @CommandCompletion("add|remove @player")
   public void setModerator(
       @Flags(CoreContexts.SELF) User user,
       @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
@@ -305,7 +305,7 @@ public class ChannelCommand extends BaseCommand {
   @Subcommand("ban")
   @Description("{@@chat.commands.ban.description}")
   @Syntax("[#channel] <add|remove> <target>")
-  @CommandCompletion("@boolean @player")
+  @CommandCompletion("add|remove @player")
   public void setBanned(
       @Flags(CoreContexts.SELF) User user,
       @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
@@ -433,7 +433,7 @@ public class ChannelCommand extends BaseCommand {
 
   @Subcommand("modify password")
   @Description("{@@chat.commands.channel.modify.password.description}")
-  @Syntax("[#channel] <private>")
+  @Syntax("[#channel] <password>")
   @CommandCompletion("@password")
   public void setPassword(
       @Flags(CoreContexts.SELF) User user,
@@ -460,7 +460,7 @@ public class ChannelCommand extends BaseCommand {
     }
 
     String time = timestamp.format(new Date());
-    boolean hasPassword = password == null;
+    boolean hasPassword = password != null;
     channel
         .getMembers()
         .forEach(

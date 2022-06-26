@@ -40,6 +40,7 @@ import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -356,8 +357,6 @@ public class EasterlynChat extends EasterlynPlugin {
               return (UserChannel) channel;
             });
 
-    // TODO ACF is removing leading # from channel display names in completions
-
     plugin
         .getCommandManager()
         .getCommandCompletions()
@@ -384,13 +383,12 @@ public class EasterlynChat extends EasterlynPlugin {
                 user -> {
                   List<String> channelsJoined =
                       user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
-                  return channels.values().stream()
-                      .distinct()
-                      .filter(
-                          channel ->
-                              !channelsJoined.contains(channel.getName())
-                                  && channel.isWhitelisted(user))
-                      .map(Channel::getDisplayName)
+                  return Stream.concat(
+                      channels.values().stream()
+                          .filter(channel -> channel.isWhitelisted(user))
+                          .map(Channel::getName),
+                      channelsJoined.stream())
+                      .map(name -> '#' + name)
                       .collect(Collectors.toSet());
                 }));
 
@@ -399,7 +397,12 @@ public class EasterlynChat extends EasterlynPlugin {
         .getCommandCompletions()
         .registerCompletion(
             "channelsListening",
-            getUserHandler(user -> user.getStorage().getStringList(EasterlynChat.USER_CHANNELS)));
+            getUserHandler(
+                user ->
+                    user.getStorage().getStringList(EasterlynChat.USER_CHANNELS)
+                        .stream()
+                        .map(name -> '#' + name)
+                        .collect(Collectors.toSet())));
 
     plugin
         .getCommandManager()
