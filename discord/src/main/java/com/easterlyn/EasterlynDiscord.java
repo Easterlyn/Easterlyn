@@ -82,7 +82,7 @@ public class EasterlynDiscord extends EasterlynPlugin {
         event -> {
           String message = event.getMessage();
           if (event.hasTrace()) {
-            message += '\n' + event.getTrace();
+            message += "\n```\n" + event.getTrace() + "\n```";
           }
           postMessage(ChannelType.REPORT, message);
         },
