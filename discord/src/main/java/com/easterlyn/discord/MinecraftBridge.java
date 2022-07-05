@@ -97,6 +97,7 @@ public class MinecraftBridge {
                                       + " copy the code!");
                             } else {
                               plugin.addLink(pendingLink, author.getId());
+                              channel.createMessage("Link established!");
                             }
                           }
 

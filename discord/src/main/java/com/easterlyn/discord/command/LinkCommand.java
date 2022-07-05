@@ -34,6 +34,7 @@ public class LinkCommand extends BaseCommand {
 
   @Default
   @Private
+  @CommandPermission("easterlyn.command.link.self")
   public void link(@Flags(CoreContexts.SELF) Player issuer) {
     String pendingLink = discord.getPendingLink(issuer.getUniqueId());
     String discordCommand = discord.getCommandPrefix() + "link " + pendingLink;
@@ -97,7 +98,7 @@ public class LinkCommand extends BaseCommand {
   @CommandCompletion("")
   public void link(
       @Flags(CoreContexts.SELF) Player issuer,
-      String assistMeICannotBeReliedUponToRead) {
+      @Single String assistMeICannotBeReliedUponToRead) {
     core.getLocaleManager().sendMessage(issuer, "discord.commands.link.reading_comprehension");
     link(issuer);
   }
