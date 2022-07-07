@@ -1,4 +1,4 @@
-package com.easterlyn.kitchensink.combo;
+package com.easterlyn.kitchensink.command;
 
 import co.aikar.commands.BaseCommand;
 import co.aikar.commands.BukkitCommandIssuer;
@@ -20,17 +20,16 @@ import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Listener;
 
-public class DeathPointCommand extends BaseCommand implements Listener {
+public class DeathPointCommand extends BaseCommand {
 
   public static final String DEATH_COOLDOWN = "kitchensink.deathTime";
   @Dependency private EasterlynCore core;
   @Dependency private EasterlynKitchenSink sink;
 
-  @CommandAlias("death")
-  @Description("{@@sink.module.death.description}")
-  @CommandPermission("easterlyn.command.death.self")
+  @CommandAlias("deathtp")
+  @Description("{@@sink.module.deathtp.description}")
+  @CommandPermission("easterlyn.command.deathtp.self")
   @Syntax("[target]")
   @CommandCompletion("@player")
   public void death(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
@@ -39,7 +38,7 @@ public class DeathPointCommand extends BaseCommand implements Listener {
     if (!other && user.getStorage().getLong(DEATH_COOLDOWN) >= System.currentTimeMillis()) {
       SimpleDateFormat dateFormat = new SimpleDateFormat("m:ss");
       issuer.sendInfo(
-          MessageKey.of("sink.module.death.error.cooldown"),
+          MessageKey.of("sink.module.deathtp.error.cooldown"),
           "{value}",
           dateFormat.format(
               new Date(user.getStorage().getLong(DEATH_COOLDOWN) - System.currentTimeMillis())));
@@ -69,13 +68,13 @@ public class DeathPointCommand extends BaseCommand implements Listener {
               if (player.teleport(death)) {
                 if (other) {
                   issuer.sendInfo(
-                      MessageKey.of("sink.module.death.success_other"),
+                      MessageKey.of("sink.module.deathtp.success_other"),
                       "{target}",
                       player.getName());
                 } else {
                   user.getStorage().set(DEATH_COOLDOWN, System.currentTimeMillis() + 30000L);
                 }
-                core.getLocaleManager().sendMessage(player, "sink.module.death.success");
+                core.getLocaleManager().sendMessage(player, "sink.module.deathtp.success");
               } else {
                 issuer.sendInfo(MessageKey.of("sink.common.teleport.blocked"));
               }
@@ -86,4 +85,5 @@ public class DeathPointCommand extends BaseCommand implements Listener {
             () -> core.getLocaleManager().sendMessage(player, "sink.common.teleport.movement"))
         .schedule(sink, DEATH_COOLDOWN, 4, TimeUnit.SECONDS);
   }
+
 }

@@ -3,14 +3,13 @@ package com.easterlyn;
 import co.aikar.commands.BaseCommand;
 import com.easterlyn.kitchensink.combo.BackCommand;
 import com.easterlyn.kitchensink.combo.BanCommand;
-import com.easterlyn.kitchensink.combo.DeathPointCommand;
+import com.easterlyn.kitchensink.combo.DeathCoordinates;
 import com.easterlyn.kitchensink.combo.FreeCarts;
 import com.easterlyn.kitchensink.combo.LoginCommands;
 import com.easterlyn.kitchensink.combo.Meteors;
 import com.easterlyn.kitchensink.listener.BottleExperience;
 import com.easterlyn.kitchensink.listener.CartContainerCrasher;
 import com.easterlyn.kitchensink.listener.ColorSignText;
-import com.easterlyn.kitchensink.listener.DeathCoordinates;
 import com.easterlyn.kitchensink.listener.DeathDropProtection;
 import com.easterlyn.kitchensink.listener.ExactSpawn;
 import com.easterlyn.kitchensink.listener.FortuneShears;
@@ -55,10 +54,10 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
     getServer().getPluginManager().registerEvents(banCommand, this);
     extraCommands.add(banCommand);
 
-    // Feature: Command for teleporting to last death location.
-    DeathPointCommand deathCommand = new DeathPointCommand();
-    getServer().getPluginManager().registerEvents(deathCommand, this);
-    extraCommands.add(deathCommand);
+    // Feature: Get death coordinates.
+    DeathCoordinates deathCoordinates = new DeathCoordinates();
+    getServer().getPluginManager().registerEvents(deathCoordinates, this);
+    extraCommands.add(deathCoordinates);
 
     // Feature: Temporary carts for official server rails. No clogging, no running low.
     FreeCarts freeCarts = new FreeCarts(this);

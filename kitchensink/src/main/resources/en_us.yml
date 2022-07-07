@@ -13,13 +13,17 @@ sink:
         missing: '{color:bad.a}No previous location stored!'
       success: '{color:normal.a}Teleported to your previous location!'
       success_other: '{color:normal.a}Teleported @{target} to their previous location.'
-    death:
+    deathtp:
       description: '{color:normal.a}Teleport to your last death!'
       error:
         cooldown: '{color:bad.a}You''re on cooldown for "/death" for another {color:bad.b}{value}{color:bad.a}.'
-        missing: '{color:bad.a}No death location stored!'
       success: '{color:normal.a}Teleported to your latest death!'
       success_other: '{color:normal.a}Teleported @{target} to their latest death.'
+    death:
+      success: '{color:normal.a}Last death: {world} {x}, {y}, {z}'
+      error:
+        world_unloaded: '{color:bad.a}World not loaded!'
+        missing: '{color:bad.a}No death location stored!'
     freecart:
       description: '{color:normal.a}Force a player into a free cart is removed when exited or crashed.'
     onlogin:
