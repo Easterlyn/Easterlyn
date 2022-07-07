@@ -210,7 +210,7 @@
         <artifactId>CreeperHeal</artifactId>
         <groupId>com.github.nitnelave</groupId>
         <scope>provided</scope>
-        <version>f0388aa524</version>
+        <version>8.0.0</version>
         <exclusions>
           <exclusion>
             <groupId>com.garbagemule.MobArena</groupId>
