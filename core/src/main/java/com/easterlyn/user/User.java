@@ -153,6 +153,7 @@ public class User extends PermissibleBase implements Group, ServerOperator {
       throw new IllegalArgumentException("Color must be a color, not a format code!");
     }
     getStorage().set("color", color.getName());
+    reloadMention();
   }
 
   public boolean isOnline() {
