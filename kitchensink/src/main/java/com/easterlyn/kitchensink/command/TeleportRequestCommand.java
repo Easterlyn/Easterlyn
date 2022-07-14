@@ -136,7 +136,7 @@ public class TeleportRequestCommand extends BaseCommand {
         issuer.sendMessage("The translation for your TP request is missing. Please notify your target manually.");
         return;
       }
-      requested.sendMessage(issuer.getUniqueId(), requestMessage);
+      requested.sendMessage(requestMessage);
     } else {
       core.getLocaleManager()
           .sendMessage(

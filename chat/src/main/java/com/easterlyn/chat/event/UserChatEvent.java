@@ -4,7 +4,6 @@ import com.easterlyn.EasterlynChat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.event.UserEvent;
 import com.easterlyn.user.PlayerUser;
-import com.easterlyn.user.ServerUser;
 import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.text.TextParsing;
@@ -205,8 +204,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
                 finalMessage.addExtra(component);
               }
 
-              user.sendMessage(
-                  getUser() instanceof ServerUser ? null : getUser().getUniqueId(), finalMessage);
+              user.sendMessage(finalMessage);
             });
 
     Bukkit.getConsoleSender()

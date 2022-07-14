@@ -17,7 +17,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class ServerUser extends User {
 
@@ -87,11 +86,6 @@ public class ServerUser extends User {
   @Override
   public void sendMessage(@NotNull BaseComponent... components) {
     Bukkit.getConsoleSender().spigot().sendMessage(components);
-  }
-
-  @Override
-  public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components) {
-    Bukkit.getConsoleSender().spigot().sendMessage(sender, components);
   }
 
 }

@@ -385,8 +385,7 @@ public class Transportalizer extends Machine {
                           }
                         })) {
                       target.sendMessage(
-                          issuer.getUniqueId(),
-                          issuer.getDisplayName()
+                              issuer.getDisplayName()
                               + " is requesting to transportalize you!\n"
                               + "Use /accept or /decline to manage the request.");
                     }

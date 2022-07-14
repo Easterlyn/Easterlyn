@@ -191,18 +191,10 @@ public abstract class User extends PermissibleBase implements Group, ServerOpera
   }
 
   public void sendMessage(@NotNull String message) {
-    sendMessage(null, message);
+    sendMessage(TextParsing.toJSON(message).toArray(new TextComponent[0]));
   }
 
-  public void sendMessage(@Nullable UUID sender, @NotNull String message) {
-    sendMessage(sender, TextParsing.toJSON(message).toArray(new TextComponent[0]));
-  }
-
-  public void sendMessage(@NotNull BaseComponent... components) {
-    sendMessage(null, components);
-  }
-
-  public abstract void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components);
+  public abstract void sendMessage(@NotNull BaseComponent... components);
 
   public @NotNull ConcurrentConfiguration getStorage() {
     return storage;

@@ -36,10 +36,10 @@ public class PlayerUser extends User {
   }
 
   @Override
-  public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components) {
+  public void sendMessage(@NotNull BaseComponent... components) {
     Player player = getPlayer();
     if (player != null) {
-      player.spigot().sendMessage(sender, components);
+      player.spigot().sendMessage(components);
     }
   }
 
