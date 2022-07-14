@@ -5,7 +5,7 @@ version: ${project.version}-${timestamp}
 author: Jikoo
 description: ${project.description}
 api-version: ${bukkit-api-version}
-depend: [ LuckPerms, EasterlynCaptchas ]
+depend: [ LuckPerms ]
 softdepend: [ GriefPrevention, WorldGuard ]
 # N.B. Reflections library requires Javassist library
 libraries:
