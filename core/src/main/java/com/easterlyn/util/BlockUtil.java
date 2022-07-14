@@ -242,7 +242,7 @@ public final class BlockUtil {
 
     if (hand.getType() == Material.GLASS_BOTTLE) {
       RayTraceResult rayTraceResult =
-          event.getPlayer().rayTraceBlocks(4, FluidCollisionMode.ALWAYS);
+          event.getPlayer().rayTraceBlocks(6, FluidCollisionMode.ALWAYS);
       if (rayTraceResult == null) {
         return false;
       }
