@@ -20,6 +20,7 @@ import com.easterlyn.chat.listener.MuteListener;
 import com.easterlyn.command.CoreLang;
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.plugin.EasterlynPlugin;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
@@ -35,6 +36,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.regex.Matcher;
@@ -49,6 +53,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.permissions.PermissionDefault;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -242,6 +247,7 @@ public class EasterlynChat extends EasterlynPlugin {
           }
         });
 
+    // TODO probably need ChannelFuture
     IssuerAwareContextResolver<Channel, BukkitCommandExecutionContext> channelContext =
         context -> {
           String firstArg = context.getFirstArg();
@@ -255,12 +261,16 @@ public class EasterlynChat extends EasterlynPlugin {
               // Console never has a current channel
               throw new InvalidCommandArgument(CoreLang.NO_CONSOLE);
             }
-            String channelName =
-                plugin
-                    .getUserManager()
-                    .getUser(context.getPlayer().getUniqueId())
-                    .getStorage()
-                    .getString(USER_CURRENT);
+            UUID uniqueId = context.getPlayer().getUniqueId();
+            // Load player for next time if they aren't loaded.
+            plugin.getUserManager().getPlayer(uniqueId);
+            PlayerUser playerUser = plugin
+                .getUserManager()
+                .getLoadedPlayer(uniqueId);
+            if (playerUser == null) {
+              throw new InvalidCommandArgument(MessageKey.of("chat.common.no_current_channel"));
+            }
+            String channelName = playerUser.getStorage().getString(USER_CURRENT);
             Channel channel = channels.get(channelName);
             if (channel == null) {
               throw new InvalidCommandArgument(MessageKey.of("chat.common.no_current_channel"));
@@ -289,7 +299,10 @@ public class EasterlynChat extends EasterlynPlugin {
 
           User user;
           if (context.getIssuer().isPlayer()) {
-            user = getCore().getUserManager().getUser(context.getIssuer().getUniqueId());
+            user = getCore().getUserManager().getLoadedPlayer(context.getIssuer().getUniqueId());
+            if (user == null) {
+              throw new InvalidCommandArgument(MessageKey.of("chat.common.no_current_channel"));
+            }
           } else {
             user = null;
           }
@@ -360,7 +373,7 @@ public class EasterlynChat extends EasterlynPlugin {
     plugin
         .getCommandManager()
         .getCommandCompletions()
-        .registerCompletion(
+        .registerAsyncCompletion(
             "channels",
             getUserHandler(
                 user ->
@@ -377,7 +390,7 @@ public class EasterlynChat extends EasterlynPlugin {
     plugin
         .getCommandManager()
         .getCommandCompletions()
-        .registerCompletion(
+        .registerAsyncCompletion(
             "channelsJoinable",
             getUserHandler(
                 user -> {
@@ -395,7 +408,7 @@ public class EasterlynChat extends EasterlynPlugin {
     plugin
         .getCommandManager()
         .getCommandCompletions()
-        .registerCompletion(
+        .registerAsyncCompletion(
             "channelsListening",
             getUserHandler(
                 user ->
@@ -407,7 +420,7 @@ public class EasterlynChat extends EasterlynPlugin {
     plugin
         .getCommandManager()
         .getCommandCompletions()
-        .registerCompletion(
+        .registerAsyncCompletion(
             "channelsModerated",
             getUserHandler(
                 user ->
@@ -420,7 +433,7 @@ public class EasterlynChat extends EasterlynPlugin {
     plugin
         .getCommandManager()
         .getCommandCompletions()
-        .registerCompletion(
+        .registerAsyncCompletion(
             "channelsOwned",
             getUserHandler(
                 user ->
@@ -433,16 +446,28 @@ public class EasterlynChat extends EasterlynPlugin {
     plugin.getLocaleManager().addLocaleSupplier(this);
     plugin.registerCommands(this, getClassLoader(), "com.easterlyn.chat.command");
   }
-
-  private CommandCompletions.CommandCompletionHandler<BukkitCommandCompletionContext>
+  @Contract(pure = true)
+  private CommandCompletions.@NotNull AsyncCommandCompletionHandler<BukkitCommandCompletionContext>
       getUserHandler(Function<User, Collection<String>> userHandler) {
     return context -> {
       if (!context.getIssuer().isPlayer()) {
         return channels.keySet();
       }
 
-      User user = getCore().getUserManager().getUser(context.getIssuer().getUniqueId());
+      User user = null;
+      try {
+        user = getCore().getUserManager().getPlayer(context.getPlayer().getUniqueId())
+            .get(1, TimeUnit.SECONDS).orElse(null);
+      } catch (TimeoutException | InterruptedException | ExecutionException e) {
+        ReportableEvent.call("Issue fetching user async", e, 5);
+      }
+
+      if (user == null) {
+        return List.of();
+      }
+
       return userHandler.apply(user);
     };
   }
+
 }

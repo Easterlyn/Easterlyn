@@ -25,6 +25,7 @@ import org.bukkit.command.PluginIdentifiableCommand;
 import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Root command for Easterlyn's core functions.
@@ -54,7 +55,8 @@ public class EasterlynCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.commandinfo")
   @CommandCompletion("@commands")
   public void commandInfo(
-      CommandIssuer issuer, @Default("commandinfo") @Single String commandName) {
+      @NotNull CommandIssuer issuer,
+      @NotNull @Default("commandinfo") @Single String commandName) {
 
     SimpleCommandMap simpleCommandMap = plugin.getSimpleCommandMap();
     if (simpleCommandMap == null) {
@@ -107,7 +109,8 @@ public class EasterlynCommand extends BaseCommand {
   @Syntax("[player]")
   @CommandCompletion("@player")
   public void ping(
-      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
     if (!(player instanceof CraftPlayer obcPlayer)) {
       issuer.sendInfo(MessageKey.of("core.commands.ping.error.implementation"));
       return;
@@ -120,4 +123,5 @@ public class EasterlynCommand extends BaseCommand {
         "{value}",
         String.valueOf(obcPlayer.getHandle().latency));
   }
+
 }

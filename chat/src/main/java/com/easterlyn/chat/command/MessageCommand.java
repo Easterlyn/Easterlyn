@@ -15,8 +15,9 @@ import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.event.ReportableEvent;
-import com.easterlyn.user.AutoUser;
+import com.easterlyn.user.ServerUser;
 import com.easterlyn.user.User;
+import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +26,6 @@ import java.util.UUID;
 
 public class MessageCommand extends BaseCommand {
 
-  // TODO timeout system
   private final HashMap<UUID, User> replies = new HashMap<>();
 
   @Dependency EasterlynCore core;
@@ -38,18 +38,9 @@ public class MessageCommand extends BaseCommand {
   @Syntax("<recipient> <message>")
   @CommandCompletion("@player")
   public void sendMessage(
-      BukkitCommandIssuer sender, @Flags(CoreContexts.ONLINE) User target, String message) {
-    User issuer;
-    if (sender.isPlayer()) {
-      issuer = core.getUserManager().getUser(sender.getUniqueId());
-    } else {
-      Map<String, String> userData = new HashMap<>();
-      userData.put("name", sender.getIssuer().getName());
-      issuer = new AutoUser(core, userData);
-      // For the purpose of allowing replies to console, set target's reply target.
-      replies.put(target.getUniqueId(), issuer);
-    }
-    replies.put(issuer.getUniqueId(), target);
+      @NotNull BukkitCommandIssuer sender,
+      @NotNull @Flags(CoreContexts.ONLINE) User target,
+      @NotNull String message) {
 
     Channel channel = chat.getChannels().get("dm");
 
@@ -60,11 +51,34 @@ public class MessageCommand extends BaseCommand {
       return;
     }
 
+
+    if (sender.isPlayer()) {
+      core.getUserManager().getPlayer(sender.getUniqueId())
+          .thenAccept(optional ->
+              optional.ifPresent(playerUser ->
+                  sendMessageLater(playerUser, target, channel, message)));
+    } else {
+      Map<String, String> userData = new HashMap<>();
+      userData.put("name", sender.getIssuer().getName());
+      User issuer = new ServerUser(core, userData);
+      sendMessageLater(issuer, target, channel, message);
+    }
+  }
+
+  private void sendMessageLater(
+      @NotNull User issuer,
+      @NotNull User target,
+      @NotNull Channel channel,
+      @NotNull String message) {
+
+    replies.put(target.getUniqueId(), issuer);
+    replies.put(issuer.getUniqueId(), target);
+
     List<UUID> recipients = new ArrayList<>();
-    if (!(issuer instanceof AutoUser)) {
+    if (!(issuer instanceof ServerUser)) {
       recipients.add(issuer.getUniqueId());
     }
-    if (!(target instanceof AutoUser)) {
+    if (!(target instanceof ServerUser)) {
       recipients.add(target.getUniqueId());
     }
 
@@ -76,7 +90,9 @@ public class MessageCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.message")
   @Syntax("<message>")
   @CommandCompletion("")
-  public void sendMessage(@Flags(CoreContexts.SELF) BukkitCommandIssuer sender, String message) {
+  public void sendMessage(
+      @NotNull @Flags(CoreContexts.SELF) BukkitCommandIssuer sender,
+      @NotNull String message) {
     User target = replies.get(sender.getUniqueId());
     if (target == null) {
       core.getLocaleManager()

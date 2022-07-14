@@ -18,7 +18,8 @@ public class WorkbenchCommand extends BaseCommand {
   @Syntax("/workbench")
   @CommandCompletion("@none")
   @CommandPermission("easterlyn.command.workbench")
-  public void workbench(@Flags(CoreContexts.SELF) @NotNull Player player) {
+  public void workbench(@NotNull @Flags(CoreContexts.SELF) Player player) {
     player.openWorkbench(player.getLocation(), true);
   }
+
 }

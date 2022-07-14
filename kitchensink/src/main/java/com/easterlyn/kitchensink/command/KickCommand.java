@@ -11,6 +11,7 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.command.CoreContexts;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class KickCommand extends BaseCommand {
 
@@ -20,8 +21,8 @@ public class KickCommand extends BaseCommand {
   @Syntax("<player> [reason]")
   @CommandCompletion("@player")
   public void kick(
-      @Flags(CoreContexts.ONLINE) Player target,
-      @Default("Big brother is watching.") String reason) {
+      @NotNull @Flags(CoreContexts.ONLINE) Player target,
+      @NotNull @Default("Big brother is watching.") String reason) {
     target.kickPlayer(reason);
     Bukkit.broadcastMessage("Kicked " + target.getName() + ": " + reason);
   }
@@ -32,7 +33,8 @@ public class KickCommand extends BaseCommand {
   @Syntax("<player> [reason]")
   @CommandCompletion("@player")
   public void silentKick(
-      @Flags(CoreContexts.ONLINE) Player target, @Default("Connection lost.") String reason) {
+      @NotNull @Flags(CoreContexts.ONLINE) Player target,
+      @NotNull @Default("Connection lost.") String reason) {
     target.kickPlayer(reason);
   }
 
@@ -41,7 +43,8 @@ public class KickCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.kickall")
   @Syntax("[reason]")
   @CommandCompletion("@player")
-  public void kickAll(@Default("Come back in a minute!") String reason) {
+  public void kickAll(@NotNull @Default("Come back in a minute!") String reason) {
     Bukkit.getOnlinePlayers().forEach(player -> player.kickPlayer(reason));
   }
+
 }

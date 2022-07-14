@@ -12,7 +12,7 @@ import co.aikar.commands.annotation.Syntax;
 import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -31,7 +31,9 @@ public class DeathCoordinates extends BaseCommand implements Listener {
   @CommandPermission("easterlyn.command.deathtp.self")
   @Syntax("[target]")
   @CommandCompletion("@player")
-  public void death(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+  public void death(
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) PlayerUser user) {
     Player player = user.getPlayer();
 
     if (player == null) {

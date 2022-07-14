@@ -11,6 +11,7 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class TeleportHereCommand extends BaseCommand {
 
@@ -22,11 +23,13 @@ public class TeleportHereCommand extends BaseCommand {
   @CommandCompletion("@player")
   @CommandPermission("easterlyn.command.tphere")
   public void teleportHere(
-      @Flags(CoreContexts.SELF) Player issuer, @Flags(CoreContexts.ONLINE) Player target) {
+      @NotNull @Flags(CoreContexts.SELF) Player issuer,
+      @NotNull @Flags(CoreContexts.ONLINE) Player target) {
     target.teleport(issuer);
     core.getLocaleManager()
         .sendMessage(target, "sink.module.tphere.target", "{value}", issuer.getName());
     core.getLocaleManager()
         .sendMessage(issuer, "sink.module.tphere.other", "{value}", target.getName());
   }
+
 }

@@ -7,6 +7,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Single;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
@@ -40,7 +41,7 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.clearmeta.description}")
   @Syntax("")
   @CommandCompletion("")
-  public void clearMeta(@Flags(CoreContexts.SELF) Player player) {
+  public void clearMeta(@NotNull @Flags(CoreContexts.SELF) Player player) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if (handLacksMeta(player, hand)) {
@@ -57,7 +58,9 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.owner.description}")
   @Syntax("<player>")
   @CommandCompletion("@player")
-  public void owner(@Flags(CoreContexts.SELF) Player player, @Single @Nullable String owner) {
+  public void owner(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      @Nullable @Single @Optional String owner) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if ("head".equals(getExecCommandLabel())) {
@@ -98,7 +101,9 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.texture.description}")
   @Syntax("<hex string>")
   @CommandCompletion("")
-  public void texture(@Flags(CoreContexts.SELF) Player player, @Single String hex) {
+  public void texture(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      @NotNull @Single String hex) {
     ItemStack hand = player.getInventory().getItemInMainHand();
     if (handLacksMeta(player, hand)) {
       return;
@@ -128,7 +133,9 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.author.description}")
   @Syntax("<author>")
   @CommandCompletion("@player")
-  public void author(@Flags(CoreContexts.SELF) Player player, @Nullable String args) {
+  public void author(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      @Nullable @Optional String args) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if (handLacksMeta(player, hand)) {
@@ -159,7 +166,9 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.title.description}")
   @Syntax("<title>")
   @CommandCompletion("Sample Text")
-  public void title(@Flags(CoreContexts.SELF) Player player, @Nullable String args) {
+  public void title(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      @Nullable @Optional String args) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if (handLacksMeta(player, hand)) {
@@ -190,7 +199,9 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.name.description}")
   @Syntax("<name>")
   @CommandCompletion("Sample Text")
-  public void name(@Flags(CoreContexts.SELF) Player player, @Nullable String args) {
+  public void name(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      @Nullable @Optional String args) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if (handLacksMeta(player, hand)) {
@@ -216,7 +227,7 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.delete.owner.description}")
   @Syntax("")
   @CommandCompletion("")
-  public void deleteOwner(@Flags(CoreContexts.SELF) Player player) {
+  public void deleteOwner(@NotNull @Flags(CoreContexts.SELF) Player player) {
     owner(player, null);
   }
 
@@ -224,7 +235,7 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.delete.author.description}")
   @Syntax("")
   @CommandCompletion("")
-  public void deleteAuthor(@Flags(CoreContexts.SELF) Player player) {
+  public void deleteAuthor(@NotNull @Flags(CoreContexts.SELF) Player player) {
     author(player, null);
   }
 
@@ -232,7 +243,7 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.delete.title.description}")
   @Syntax("")
   @CommandCompletion("")
-  public void deleteTitle(@Flags(CoreContexts.SELF) Player player) {
+  public void deleteTitle(@NotNull @Flags(CoreContexts.SELF) Player player) {
     title(player, null);
   }
 
@@ -240,7 +251,7 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.delete.name.description}")
   @Syntax("")
   @CommandCompletion("")
-  public void deleteName(@Flags(CoreContexts.SELF) Player player) {
+  public void deleteName(@NotNull @Flags(CoreContexts.SELF) Player player) {
     name(player, null);
   }
 
@@ -248,7 +259,7 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.delete.description}")
   @Syntax("<line>")
   @CommandCompletion("@integer") // TODO range for lore
-  public void delete(@Flags(CoreContexts.SELF) Player player, int line) {
+  public void delete(@NotNull @Flags(CoreContexts.SELF) Player player, int line) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if (handLacksMeta(player, hand)) {
@@ -275,7 +286,7 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.add.description}")
   @Syntax("<text>")
   @CommandCompletion("")
-  public void add(@Flags(CoreContexts.SELF) Player player, String text) {
+  public void add(@NotNull @Flags(CoreContexts.SELF) Player player, @NotNull String text) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if (handLacksMeta(player, hand)) {
@@ -303,7 +314,10 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.set.description}")
   @Syntax("<line> <text>")
   @CommandCompletion("@integer")
-  public void set(@Flags(CoreContexts.SELF) Player player, int line, String text) {
+  public void set(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      int line,
+      @NotNull String text) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if (handLacksMeta(player, hand)) {
@@ -330,7 +344,10 @@ public class LoreCommand extends BaseCommand {
   @Description("{@@sink.module.lore.insert.description}")
   @Syntax("<line> <text>")
   @CommandCompletion("@integer")
-  private void insert(@Flags(CoreContexts.SELF) Player player, int line, String text) {
+  private void insert(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      int line,
+      @NotNull String text) {
     ItemStack hand = player.getInventory().getItemInMainHand();
 
     if (handLacksMeta(player, hand)) {
@@ -353,7 +370,7 @@ public class LoreCommand extends BaseCommand {
                 }));
   }
 
-  private boolean handLacksMeta(Player player, ItemStack itemStack) {
+  private boolean handLacksMeta(@NotNull Player player, @NotNull ItemStack itemStack) {
     if (itemStack.getType() == Material.AIR) {
       core.getLocaleManager().sendMessage(player, "core.common.no_item");
       return true;
@@ -404,4 +421,5 @@ public class LoreCommand extends BaseCommand {
             "{old_value}",
             oldLine);
   }
+
 }

@@ -1,6 +1,6 @@
 package com.easterlyn.discord;
 
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.Colors;
 import net.md_5.bungee.api.ChatColor;
@@ -8,9 +8,10 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 
-public class DiscordUser extends User {
+public class DiscordUser extends PlayerUser {
 
-  public DiscordUser(User user) {
+  public DiscordUser(PlayerUser user) {
+    // TODO not require hard linking?
     super(user);
   }
 
@@ -44,4 +45,5 @@ public class DiscordUser extends User {
 
     return component;
   }
+
 }

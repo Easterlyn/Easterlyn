@@ -14,7 +14,8 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.event.ReportableEvent;
-import com.easterlyn.user.AutoUser;
+import com.easterlyn.user.ServerUser;
+import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
 import java.util.HashMap;
 import java.util.Map;
@@ -33,13 +34,6 @@ public class AetherCommand extends BaseCommand {
   @Syntax("<name> <message content>")
   @CommandCompletion("")
   public void aether(BukkitCommandIssuer issuer, @Single String name, String text) {
-    Map<String, String> userData = new HashMap<>();
-    userData.put("name", name);
-    userData.put(
-        "color",
-        issuer.isPlayer()
-            ? core.getUserManager().getUser(issuer.getUniqueId()).getColor().getName()
-            : Colors.RANK_HEAD_ADMIN.getName());
     Channel channel = chat.getChannels().get("aether");
     if (channel == null) {
       ReportableEvent.call("Channel #aether not set up when executing /aether!");
@@ -47,13 +41,27 @@ public class AetherCommand extends BaseCommand {
     }
     core.getServer().getScheduler().runTaskAsynchronously(
         core,
-        () ->
-            new UserChatEvent(new AetherUser(userData), channel, text)
-                .send(EasterlynChat.DEFAULT.getMembers()));
+        () -> {
+            Map<String, String> userData = new HashMap<>();
+            userData.put("name", name);
+            if (issuer.isPlayer()) {
+              core.getUserManager().getPlayer(issuer.getUniqueId())
+                  .thenAccept(opt -> opt.map(User::getColor).ifPresent(color -> {
+                    userData.put("color", color.getName());
+                    sendChat(userData, channel, text);
+                  }));
+            } else {
+              userData.put("color", Colors.RANK_HEAD_ADMIN.getName());
+              sendChat(userData, channel, text);
+            }
+        });
   }
 
-  class AetherUser extends AutoUser {
+  private void sendChat(Map<String, String> userData, Channel channel, String text) {
+    new UserChatEvent(new AetherUser(userData), channel, text).send(channel.getMembers());
+  }
 
+  class AetherUser extends ServerUser {
     AetherUser(Map<String, String> userData) {
       super(core, userData);
     }
@@ -64,7 +72,7 @@ public class AetherCommand extends BaseCommand {
       component.setColor(getColor());
       TextComponent line = new TextComponent("#main");
       line.setColor(Colors.CHANNEL);
-      TextComponent extra = new TextComponent("on Discord");
+      TextComponent extra = new TextComponent(" on Discord");
       extra.setColor(ChatColor.WHITE);
       line.addExtra(extra);
       line.addExtra(extra);
@@ -72,4 +80,5 @@ public class AetherCommand extends BaseCommand {
       return component;
     }
   }
+
 }

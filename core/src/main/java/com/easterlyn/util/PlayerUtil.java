@@ -1,17 +1,19 @@
 package com.easterlyn.util;
 
+import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.user.UserRank;
 import com.easterlyn.util.wrapper.PermissiblePlayer;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.mojang.authlib.GameProfile;
+import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.ExecutionException;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.players.GameProfileCache;
 import net.minecraft.world.level.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -21,6 +23,7 @@ import org.bukkit.craftbukkit.v1_19_R1.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,66 +68,87 @@ public class PlayerUtil {
   }
 
   /**
-   * Get a Player for the specified UUID if they have logged in in the past, even if offline.
+   * Start fetching a Player for the specified UUID if they have previously logged in,
+   * even if offline.
    *
-   * @param plugin the Plugin instance used to schedule a task. Can be null if called on the main
-   *     thread
+   * @param plugin the Plugin instance used to schedule tasks
    * @param uuid the UUID
-   * @return the Player, or null if they have not logged in
-   * @throws IllegalAccessException if passed a null Plugin and called off the main thread
+   * @return the Future
    */
-  public @Nullable static Player getPlayer(@Nullable Plugin plugin, @NotNull UUID uuid)
-      throws IllegalAccessException {
+  public static @NotNull CompletableFuture<Optional<Player>> getPlayer(
+      @NotNull Plugin plugin,
+      @NotNull UUID uuid) {
     return getPlayer(plugin, uuid, true);
   }
 
   /**
-   * Get a Player for the specified UUID if they have logged in in the past, even if offline.
+   * Start fetching a Player for the specified UUID if they have previously logged in,
+   * even if offline.
    *
-   * @param plugin the Plugin instance used to schedule a task. Can be null if called on the main
-   *     thread
+   * @param plugin the Plugin instance used to schedule tasks
    * @param uuid the UUID
    * @param useCached true if the Player cache is preferred over loading a new Player
-   * @return the Player, or null if they have not logged in
-   * @throws IllegalAccessException if passed a null Plugin and called off the main thread
+   * @return the Future
    */
-  public @Nullable static Player getPlayer(
-      @Nullable Plugin plugin, @NotNull UUID uuid, boolean useCached)
-      throws IllegalAccessException {
-    Player player = Bukkit.getPlayer(uuid);
-    if (player != null) {
+  public static @NotNull CompletableFuture<Optional<Player>> getPlayer(
+      @NotNull Plugin plugin,
+      @NotNull UUID uuid,
+      boolean useCached) {
+    Player loadedPlayer = getLoadedPlayer(uuid, useCached);
+    if (loadedPlayer != null) {
+      return CompletableFuture.completedFuture(Optional.of(loadedPlayer));
+    }
+
+    if (plugin.getServer().isPrimaryThread()) {
+      return CompletableFuture.completedFuture(Optional.ofNullable(loadOfflinePlayer(uuid)));
+    }
+
+    // Return to main thread. Note that Bukkit's method only returns a Future, which is Sad(TM).
+    CompletableFuture<Optional<Player>> future = new CompletableFuture<>();
+    try {
+      new BukkitRunnable() {
+        @Override
+        public void run() {
+            future.complete(Optional.ofNullable(loadOfflinePlayer(uuid)));
+        }
+
+        @Override
+        public synchronized void cancel() throws IllegalStateException {
+          super.cancel();
+          future.complete(Optional.empty());
+        }
+      }.runTask(plugin);
+    } catch (IllegalStateException ignored) {
+      // Server is shutting down or plugin is disabled.
+      future.complete(Optional.empty());
+    }
+
+    return future;
+  }
+
+  public static @Nullable Player getLoadedPlayer(@NotNull UUID uuid, boolean useCached) {
+    Player online = Bukkit.getPlayer(uuid);
+    if (online != null) {
       // Online, life is easy.
-      return player;
+      return online;
     }
 
     if (useCached) {
-      player = PLAYER_CACHE.getIfPresent(uuid);
-      if (player != null) {
-        return player;
-      }
+      return PLAYER_CACHE.getIfPresent(uuid);
     } else {
       // Invalidate cached player in case new player loaded is modified
       PLAYER_CACHE.invalidate(uuid);
     }
 
-    if (Bukkit.isPrimaryThread()) {
-      return getPlayerFor(uuid);
-    } else if (plugin == null) {
-      throw new IllegalAccessException(
-          "Asynchronous player load must use PlayerUtils#getPlayer(Plugin, UUID)");
-    }
-
-    try {
-      return Bukkit.getScheduler()
-          .callSyncMethod(plugin, () -> getPlayerFor(uuid))
-          .get(1, TimeUnit.SECONDS);
-    } catch (InterruptedException | ExecutionException | TimeoutException e) {
-      e.printStackTrace();
-      return null;
-    }
+    return null;
   }
 
-  private @Nullable static Player getPlayerFor(@NotNull UUID uuid) {
+  public static @Nullable Player loadOfflinePlayer(@NotNull UUID uuid) {
+    if (!Bukkit.isPrimaryThread()) {
+      ReportableEvent.call("Loaded player off main thread", 5);
+      throw new IllegalStateException("Cannot load players off main thread!");
+    }
+
     OfflinePlayer offlinePlayer = Bukkit.getOfflinePlayer(uuid);
     if (offlinePlayer.getName() == null) {
       // Player has not logged in.
@@ -165,7 +189,7 @@ public class PlayerUtil {
     return player;
   }
 
-  public static void modifyCachedPlayer(@NotNull Player player) {
+  public static void cachePlayer(@NotNull Player player) {
     PLAYER_CACHE.put(player.getUniqueId(), player);
   }
 
@@ -176,8 +200,9 @@ public class PlayerUtil {
    * @param id the identifier used to match a Player
    * @return the Player, or null if no matches were found
    */
-  public @Nullable static Player matchOnlinePlayer(
-      @Nullable CommandSender sender, @NotNull String id) {
+  public static @Nullable Player matchOnlinePlayer(
+      @Nullable CommandSender sender,
+      @NotNull String id) {
 
     Player senderPlayer = sender instanceof Player ? (Player) sender : null;
 
@@ -188,7 +213,7 @@ public class PlayerUtil {
         return player;
       }
       return null;
-    } catch (IllegalArgumentException e) {
+    } catch (IllegalArgumentException ignored) {
       // Not a UUID.
     }
 
@@ -203,11 +228,6 @@ public class PlayerUtil {
           return (Player) entity;
         }
       }
-      return null;
-    }
-
-    // Ensure valid name.
-    if (Bukkit.getOnlineMode() && !id.matches("[\\w.]{3,16}")) {
       return null;
     }
 
@@ -226,110 +246,169 @@ public class PlayerUtil {
   }
 
   /**
-   * Match a Player, online or off. If matching offline players, do not call on the main thread!
+   * Match a Player, online or off.
    *
    * @param id the UUID or name of the Player
    * @param offline true if offline Players should be matched
    * @param plugin the Plugin instance
    * @return the Player, or null if no matches were found
-   * @throws IllegalAccessException if attempting to match offline players on the main thread
    */
-  @SuppressWarnings("deprecation")
-  public @Nullable static Player matchPlayer(
-      @Nullable CommandSender sender, @NotNull String id, boolean offline, @Nullable Plugin plugin)
-      throws IllegalAccessException {
+  public static @NotNull CompletableFuture<Optional<Player>> matchPlayer(
+      @NotNull Plugin plugin,
+      @Nullable CommandSender sender,
+      @NotNull String id,
+      boolean offline) {
     // TODO: nick support
-    // Disallow on main thread.
-    // If we resort to searching offline players, this may take several seconds.
-    if (Bukkit.isPrimaryThread() && offline) {
-      throw new IllegalAccessException("Offline matching must be done asynchronously!");
-    }
 
+    // UUIDs have distinct handling.
     try {
       UUID uuid = UUID.fromString(id);
 
       if (!offline) {
-        return Bukkit.getPlayer(uuid);
+        return CompletableFuture.completedFuture(Optional.ofNullable(Bukkit.getPlayer(uuid)));
       }
 
-      return getPlayer(plugin, uuid);
+      return getPlayer(plugin, uuid, true);
     } catch (IllegalArgumentException e) {
       // Not a UUID.
     }
 
-    Player senderPlayer = sender instanceof Player ? (Player) sender : null;
+    // Target selectors have distinct handling.
     if (sender != null
         && sender.hasPermission("easterlyn.command.selector")
         && id.length() > 1
         && id.charAt(0) == '@') {
+        Player senderPlayer = sender instanceof Player ? (Player) sender : null;
       for (Entity entity : Bukkit.selectEntities(sender, id)) {
-        if (entity instanceof Player
-            && (senderPlayer == null || senderPlayer.canSee((Player) entity))) {
-          return (Player) entity;
+        if (entity instanceof Player player
+            && (senderPlayer == null || senderPlayer.canSee(player))) {
+          return CompletableFuture.completedFuture(Optional.of(player));
         }
       }
+      return CompletableFuture.completedFuture(Optional.empty());
     }
 
-    // Ensure valid name.
-    if (Bukkit.getOnlineMode() && !id.matches("[\\w.]{3,16}")) {
-      return null;
-    }
-
-    // Exact online match
-    OfflinePlayer player = Bukkit.getPlayerExact(id);
-
-    if (player != null) {
-      return player.getPlayer();
-    }
-
-    if (offline) {
-      // Exact offline match from usercache
-      player = Bukkit.getOfflinePlayer(id);
-      if (player.hasPlayedBefore()) {
-        return getPlayer(plugin, player.getUniqueId());
-      }
-    }
-    // TODO faster inexact offline from usercache
-
-    // Inexact online match
-    player = Bukkit.getPlayer(id);
-
-    if (player != null) {
-      return player.getPlayer();
+    // Exact online match.
+    Player playerExact = Bukkit.getPlayerExact(id);
+    if (playerExact != null) {
+      return CompletableFuture.completedFuture(Optional.of(playerExact));
     }
 
     if (!offline) {
-      return null;
+      // Inexact online match.
+      return CompletableFuture.completedFuture(Optional.ofNullable(matchOnlinePlayer(sender, id)));
     }
 
-    id = id.toLowerCase();
-
-    float bestMatch = 0F;
-    for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
-      String offlineName = offlinePlayer.getName();
-      if (offlineName == null) {
-        // Loaded by UUID only, name has never been looked up.
-        continue;
-      }
-
-      float currentMatch = StringUtil.compare(id, offlinePlayer.getName().toLowerCase());
-
-      if (currentMatch == 1F) {
-        player = offlinePlayer;
-        break;
-      }
-
-      if (currentMatch > bestMatch) {
-        bestMatch = currentMatch;
-        player = offlinePlayer;
-      }
-    }
-
-    // Only null if no players have played ever, otherwise even the worst match will do.
-    if (player == null) {
-      return null;
-    }
-
-    return getPlayer(plugin, player.getUniqueId());
+    return matchForwardingOfflineExact(plugin, id);
   }
+
+  private static @NotNull CompletableFuture<Optional<Player>> matchForwardingOfflineExact(
+      @NotNull Plugin plugin,
+      @NotNull String id) {
+    CompletableFuture<Optional<Player>> future = new CompletableFuture<>();
+    try {
+      new BukkitRunnable() {
+        @Override
+        public void run() {
+          GameProfileCache cache = ((CraftServer) plugin.getServer()).getServer().getProfileCache();
+          // Fetch from cache. Must be done async, will request if not present.
+          Optional<GameProfile> profileOptional = cache.get(id);
+
+          // Invalid profile name.
+          if (profileOptional.isEmpty()) {
+            // Pass forward to online inexact.
+            matchForwardingInexact(plugin, id).thenAccept(future::complete);
+            return;
+          }
+
+          UUID uuid = profileOptional.get().getId();
+          OfflinePlayer cachedOffline = Bukkit.getOfflinePlayer(uuid);
+
+          // Require user to have actually logged in.
+          if (!cachedOffline.hasPlayedBefore()) {
+            // Pass forward to online inexact.
+            matchForwardingInexact(plugin, id).thenAccept(future::complete);
+            return;
+          }
+
+          // Fetch player, returning to main thread if needed.
+          getPlayer(plugin, uuid).thenAccept(future::complete);
+        }
+
+        @Override
+        public synchronized void cancel() throws IllegalStateException {
+          super.cancel();
+          future.complete(Optional.empty());
+        }
+      }.runTaskAsynchronously(plugin);
+    } catch (IllegalStateException ignored) {
+      // Server is shutting down or plugin is disabled.
+      future.complete(Optional.empty());
+    }
+
+    return future;
+  }
+
+  private static CompletableFuture<Optional<Player>> matchForwardingInexact(
+      @NotNull Plugin plugin,
+      @NotNull String id) {
+    // This is a fallthrough that will also provide offline players, so player visibility
+    // should not factor in to player existence. Prefer online inexact for speed.
+    Player onlineInexact = matchOnlinePlayer(null, id);
+    if (onlineInexact != null) {
+      return CompletableFuture.completedFuture(Optional.of(onlineInexact));
+    }
+
+    CompletableFuture<Optional<Player>> future = new CompletableFuture<>();
+
+    try {
+      new BukkitRunnable() {
+        @Override
+        public void run() {
+          String lowerId = id.toLowerCase();
+          OfflinePlayer bestPlayer = null;
+          float bestMatch = 0F;
+          for (OfflinePlayer offlinePlayer : Bukkit.getOfflinePlayers()) {
+            String offlineName = offlinePlayer.getName();
+            if (offlineName == null) {
+              // Loaded by UUID only, name has never been looked up.
+              continue;
+            }
+
+            float currentMatch = StringUtil.compare(lowerId, offlinePlayer.getName().toLowerCase());
+
+            if (currentMatch == 1F) {
+              bestPlayer = offlinePlayer;
+              break;
+            }
+
+            if (currentMatch > bestMatch) {
+              bestMatch = currentMatch;
+              bestPlayer = offlinePlayer;
+            }
+          }
+
+          // Best match is null if no players have ever logged in.
+          if (bestPlayer == null) {
+            future.complete(Optional.empty());
+          } else {
+            // Fetch player, returning to main thread if needed.
+            getPlayer(plugin, bestPlayer.getUniqueId()).thenAccept(future::complete);
+          }
+        }
+
+        @Override
+        public synchronized void cancel() throws IllegalStateException {
+          super.cancel();
+          future.complete(Optional.empty());
+        }
+      }.runTaskAsynchronously(plugin);
+    } catch (IllegalStateException ignored) {
+      // Server is shutting down or plugin is disabled.
+      future.complete(Optional.empty());
+    }
+
+    return future;
+  }
+
 }

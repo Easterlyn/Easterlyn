@@ -17,17 +17,20 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.channel.UserChannel;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.command.CoreLang;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.util.StringUtil;
 import com.easterlyn.util.command.AddRemove;
+import com.easterlyn.util.text.TextParsing;
+import com.easterlyn.util.wrapper.PlayerUserFuture;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import com.easterlyn.util.text.TextParsing;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 @CommandAlias("channel")
@@ -46,9 +49,9 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("<#channel> [password]")
   @CommandCompletion("@channelsJoinable @password")
   public void join(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.VISIBLE) Channel channel,
-      @Optional @Nullable String password) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.VISIBLE) Channel channel,
+      @Nullable @Optional String password) {
     channel.updateLastAccess();
     List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 
@@ -115,9 +118,9 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("<#channel> [password]")
   @CommandCompletion("@channelsListening")
   public void focus(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.VISIBLE) Channel channel,
-      @Optional String password) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.VISIBLE) Channel channel,
+      @Nullable @Optional String password) {
     join(user, channel, password);
   }
 
@@ -127,8 +130,8 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("<#channel>")
   @CommandCompletion("@channelsListening")
   public void leave(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel) {
     channel.updateLastAccess();
     List<String> channels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
     String currentChannelName = user.getStorage().getString(EasterlynChat.USER_CURRENT);
@@ -185,15 +188,30 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("[#channel] <add|remove> <target>")
   @CommandCompletion("@boolean @player")
   public void setWhitelisted(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
-      AddRemove addRemove,
-      @Flags(CoreContexts.OFFLINE) User target) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
+      @NotNull AddRemove addRemove,
+      @NotNull PlayerUserFuture target) {
     channel.updateLastAccess();
     if (!channel.isModerator(user)) {
       core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_mod");
       return;
     }
+
+    target.future().thenAccept(targetUser -> {
+      if (targetUser.isPresent()) {
+        setWhitelistedLater(user, channel, addRemove, targetUser.get());
+      } else {
+        core.getLocaleManager().sendMessage(user.getPlayer(), CoreLang.INVALID_PLAYER.getMessageKey().getKey(), "{value}", target.id());
+      }
+    });
+  }
+
+  private void setWhitelistedLater(
+      @NotNull PlayerUser user,
+      @NotNull UserChannel channel,
+      @NotNull AddRemove addRemove,
+      @NotNull PlayerUser target) {
     boolean currentlyWhitelisted = channel.isWhitelisted(target);
     boolean add = addRemove == AddRemove.ADD;
     if (add == currentlyWhitelisted) {
@@ -237,7 +255,7 @@ public class ChannelCommand extends BaseCommand {
                   TextParsing.toJSON(
                       ' '
                           + core.getLocaleManager()
-                              .getValue("chat.common.at", locale, "{time}", time))) {
+                          .getValue("chat.common.at", locale, "{time}", time))) {
                 component.addExtra(textComponent);
               }
 
@@ -250,15 +268,30 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("[#channel] <add|remove> <target>")
   @CommandCompletion("add|remove @player")
   public void setModerator(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
-      AddRemove addRemove,
-      @Flags(CoreContexts.OFFLINE) User target) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
+      @NotNull AddRemove addRemove,
+      @NotNull PlayerUserFuture target) {
     channel.updateLastAccess();
     if (!channel.isOwner(user)) {
       core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
       return;
     }
+
+    target.future().thenAccept(targetUser -> {
+      if (targetUser.isPresent()) {
+        setModeratorLater(user, channel, addRemove, targetUser.get());
+      } else {
+        core.getLocaleManager().sendMessage(user.getPlayer(), CoreLang.INVALID_PLAYER.getMessageKey().getKey(), "{value}", target.id());
+      }
+    });
+  }
+
+  private void setModeratorLater(
+      @NotNull PlayerUser user,
+      @NotNull UserChannel channel,
+      @NotNull AddRemove addRemove,
+      @NotNull PlayerUser target) {
     boolean currentlyMod = channel.isModerator(target);
     boolean add = addRemove == AddRemove.ADD;
     if (add == currentlyMod) {
@@ -294,7 +327,7 @@ public class ChannelCommand extends BaseCommand {
                   TextParsing.toJSON(
                       ' '
                           + core.getLocaleManager()
-                              .getValue("chat.common.at", locale, "{time}", time))) {
+                          .getValue("chat.common.at", locale, "{time}", time))) {
                 component.addExtra(textComponent);
               }
 
@@ -307,15 +340,30 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("[#channel] <add|remove> <target>")
   @CommandCompletion("add|remove @player")
   public void setBanned(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
-      AddRemove addRemove,
-      @Flags(CoreContexts.OFFLINE) User target) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
+      @NotNull AddRemove addRemove,
+      @NotNull PlayerUserFuture target) {
     channel.updateLastAccess();
     if (!channel.isModerator(user)) {
       core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_mod");
       return;
     }
+
+    target.future().thenAccept(targetUser -> {
+      if (targetUser.isPresent()) {
+        setBannedLater(user, channel, addRemove, targetUser.get());
+      } else {
+        core.getLocaleManager().sendMessage(user.getPlayer(), CoreLang.INVALID_PLAYER.getMessageKey().getKey(), "{value}", target.id());
+      }
+    });
+  }
+
+  private void setBannedLater(
+      @NotNull PlayerUser user,
+      @NotNull UserChannel channel,
+      @NotNull AddRemove addRemove,
+      @NotNull PlayerUser target) {
     boolean currentlyBanned = channel.isBanned(target);
     boolean add = addRemove == AddRemove.ADD;
     if (add == currentlyBanned) {
@@ -352,7 +400,7 @@ public class ChannelCommand extends BaseCommand {
                   TextParsing.toJSON(
                       ' '
                           + core.getLocaleManager()
-                              .getValue("chat.common.at", locale, "{time}", time))) {
+                          .getValue("chat.common.at", locale, "{time}", time))) {
                 component.addExtra(textComponent);
               }
 
@@ -383,8 +431,8 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("[#channel] <private>")
   @CommandCompletion("@boolean")
   public void setAccessLevel(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
       boolean isPrivate) {
     channel.updateLastAccess();
     if (!channel.isOwner(user)) {
@@ -436,9 +484,9 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("[#channel] <password>")
   @CommandCompletion("@password")
   public void setPassword(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
-      @Optional String password) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
+      @Nullable @Optional String password) {
     channel.updateLastAccess();
     if (!channel.isOwner(user)) {
       core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
@@ -500,7 +548,9 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("<#channelname> <private>")
   @CommandCompletion("channelname")
   @CommandPermission("easterlyn.command.channel.create")
-  public void create(@Flags(CoreContexts.SELF) User user, @Single String name) {
+  public void create(
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Single String name) {
     if (!user.hasPermission("easterlyn.command.channel.createany")
         && (name.length() < 2
             || name.length() > 17
@@ -535,9 +585,9 @@ public class ChannelCommand extends BaseCommand {
   @Syntax("<#channel>")
   @CommandCompletion("@channelsOwned")
   public void delete(
-      @Flags(CoreContexts.SELF) User user,
-      @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
-      @Optional String name) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser user,
+      @NotNull @Flags(ChannelFlag.VISIBLE_OR_CURRENT) UserChannel channel,
+      @Nullable @Optional String name) {
     if (!channel.isOwner(user)) {
       core.getLocaleManager().sendMessage(user.getPlayer(), "chat.common.requires_owner");
       return;
@@ -552,9 +602,12 @@ public class ChannelCommand extends BaseCommand {
     chat.getChannels().remove(channel.getName());
 
     channel.getMembers().stream()
-        .map(uuid -> core.getUserManager().getUser(uuid))
+        .map(uuid -> core.getUserManager().getLoadedPlayer(uuid))
         .forEach(
             member -> {
+              if (member == null) {
+                return;
+              }
               List<String> channels =
                   member.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
               channels.remove(channel.getName());

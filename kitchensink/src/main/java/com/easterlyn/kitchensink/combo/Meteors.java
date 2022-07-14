@@ -38,7 +38,7 @@ public class Meteors extends BaseCommand implements Listener {
   private final NamespacedKey keyIgnite;
   private final NamespacedKey keyDamageTerrain;
 
-  public Meteors(Plugin plugin) {
+  public Meteors(@NotNull Plugin plugin) {
     this.plugin = plugin;
     keyStrength = new NamespacedKey(plugin, "meteorPower");
     keyIgnite = new NamespacedKey(plugin, "meteorIgnite");
@@ -50,7 +50,7 @@ public class Meteors extends BaseCommand implements Listener {
   @CommandPermission("easterlyn.command.meteor")
   @Syntax("")
   @CommandCompletion("")
-  private void meteorite(BukkitCommandIssuer issuer) {
+  private void meteorite(@NotNull BukkitCommandIssuer issuer) {
     if (!issuer.isPlayer()) {
       getCommandHelp().showHelp();
       return;
@@ -72,8 +72,8 @@ public class Meteors extends BaseCommand implements Listener {
   @Syntax("<player> [radius] [ignite] [terrainDamage] [material]")
   @CommandCompletion("@player @integer @boolean @boolean @material")
   private void meteorite(
-      BukkitCommandIssuer issuer,
-      @Flags(CoreContexts.ONLINE) Player target,
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE) Player target,
       @Default("3") int radius,
       @Default("false") boolean ignite,
       @Default("false") boolean damageTerrain,
@@ -87,8 +87,8 @@ public class Meteors extends BaseCommand implements Listener {
   @Syntax("<location> [radius] [ignite] [terrainDamage] [material]")
   @CommandCompletion("@worldLocation @integer @boolean @boolean @material")
   private void meteorite(
-      BukkitCommandIssuer issuer,
-      Location target,
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull Location target,
       @Default("3") int radius,
       @Default("false") boolean ignite,
       @Default("false") boolean damageTerrain,
@@ -205,7 +205,7 @@ public class Meteors extends BaseCommand implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true)
-  public void onEntityChangeBlock(EntityChangeBlockEvent event) {
+  public void onEntityChangeBlock(@NotNull EntityChangeBlockEvent event) {
     PersistentDataContainer dataContainer = event.getEntity().getPersistentDataContainer();
     if (dataContainer.has(keyStrength, PersistentDataType.FLOAT)) {
       event.setCancelled(true);
@@ -222,4 +222,5 @@ public class Meteors extends BaseCommand implements Listener {
               event.getEntity().getLocation(), strength, ignite, damageTerrain, event.getEntity());
     }
   }
+
 }

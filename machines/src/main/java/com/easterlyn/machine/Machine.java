@@ -1,6 +1,5 @@
 package com.easterlyn.machine;
 
-import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynMachines;
 import com.github.jikoo.planarwrappers.collections.BlockMap;
 import com.github.jikoo.planarwrappers.world.Direction;
@@ -32,7 +31,6 @@ import org.bukkit.event.inventory.TradeSelectEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -262,12 +260,8 @@ public abstract class Machine {
     disable(storage);
     Block key = getKey(storage).getBlock();
     for (Block block : this.getMachines().getMachineBlocks(key)) {
-      RegisteredServiceProvider<EasterlynCore> easterlynRSP =
-          Bukkit.getServer().getServicesManager().getRegistration(EasterlynCore.class);
-      block.setType(Material.AIR, easterlynRSP == null);
-      if (easterlynRSP != null) {
-        easterlynRSP.getProvider().getBlockUpdateManager().queueBlock(block);
-      }
+      block.setType(Material.AIR, false);
+      getMachines().getCore().getBlockUpdateManager().queueBlock(block);
     }
     key.setType(Material.AIR);
     getMachines().removeMachineFromMemory(key);

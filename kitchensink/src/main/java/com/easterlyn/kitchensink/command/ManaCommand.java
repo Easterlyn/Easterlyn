@@ -24,6 +24,8 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("mana")
 @Description("{@@sink.module.mana.description}")
@@ -37,7 +39,7 @@ public class ManaCommand extends BaseCommand {
   @Description("{@@sink.module.mana.current.description}")
   @Syntax("")
   @CommandCompletion("")
-  public void current(@Flags(CoreContexts.SELF) Player player) {
+  public void current(@NotNull @Flags(CoreContexts.SELF) Player player) {
     core.getLocaleManager()
         .sendMessage(
             player,
@@ -65,7 +67,7 @@ public class ManaCommand extends BaseCommand {
   @Description("{@@sink.module.mana.description}")
   @Syntax("<level>L")
   @CommandCompletion("@integer")
-  public void level(@Single String argument) {
+  public void level(@NotNull @Single String argument) {
     if (!argument.matches("\\d+[lL]")) {
       showSyntax(
           getCurrentCommandIssuer(), getLastCommandOperationContext().getRegisteredCommand());
@@ -86,7 +88,7 @@ public class ManaCommand extends BaseCommand {
   @Description("{@@sink.module.mana.cost.description}")
   @Syntax("")
   @CommandCompletion("")
-  public void cost(@Flags(CoreContexts.SELF) Player player) {
+  public void cost(@NotNull @Flags(CoreContexts.SELF) Player player) {
     ItemStack hand = player.getInventory().getItemInMainHand();
     while (EasterlynCaptchas.isUsedCaptcha(hand)) {
       ItemStack oldHand = hand;
@@ -141,7 +143,9 @@ public class ManaCommand extends BaseCommand {
     player.spigot().sendMessage(component);
   }
 
-  private DecimalFormat getFormat() {
-    return new DecimalFormat("#,###,###,###.###");
+  @Contract(" -> new")
+  private @NotNull DecimalFormat getFormat() {
+    return new DecimalFormat("#,###.###");
   }
+
 }

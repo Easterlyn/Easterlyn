@@ -23,6 +23,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class CaptchaCommand extends BaseCommand {
 
@@ -37,7 +39,7 @@ public class CaptchaCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.captcha.unique")
   @Syntax("")
   @CommandCompletion("")
-  public void add(@Flags(CoreContexts.SELF) Player player) {
+  public void add(@NotNull @Flags(CoreContexts.SELF) Player player) {
     ItemStack item = player.getInventory().getItemInMainHand();
     if (!EasterlynCaptchas.isUsedCaptcha(item)) {
       getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.unique.no_captcha"));
@@ -60,7 +62,7 @@ public class CaptchaCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.captcha.get")
   @Syntax("<hash>")
   @CommandCompletion("@captcha")
-  public void get(@Flags(CoreContexts.SELF) Player player, @Single String hash) {
+  public void get(@NotNull @Flags(CoreContexts.SELF) Player player, @NotNull @Single String hash) {
     ItemStack item = captcha.getCaptchaForHash(hash);
     if (item == null) {
       getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.get.invalid"));
@@ -76,8 +78,8 @@ public class CaptchaCommand extends BaseCommand {
   @Syntax("")
   @CommandCompletion("@permission:value=easterlyn.command.baptcha.free,complete=free")
   public void baptcha(
-      @Flags(CoreContexts.SELF) Player player,
-      @Optional @Single @CommandPermission("easterlyn.command.captcha.batch.free") String free) {
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      @Nullable @Optional @Single @CommandPermission("easterlyn.command.captcha.batch.free") String free) {
     ItemStack item = player.getInventory().getItemInMainHand();
     if (item.getType() == Material.AIR || captcha.canNotCaptcha(item)) {
       getCurrentCommandIssuer().sendInfo(MessageKey.of("captcha.commands.captcha.batch.invalid"));
@@ -157,11 +159,12 @@ public class CaptchaCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.captcha.convert")
   @Syntax("")
   @CommandCompletion("")
-  public void convert(@Flags(CoreContexts.SELF) Player player) {
+  public void convert(@NotNull @Flags(CoreContexts.SELF) Player player) {
     getCurrentCommandIssuer()
         .sendInfo(
             MessageKey.of("captcha.commands.captcha.batch.success"),
             "{value}",
             String.valueOf(captcha.convert(player)));
   }
+
 }

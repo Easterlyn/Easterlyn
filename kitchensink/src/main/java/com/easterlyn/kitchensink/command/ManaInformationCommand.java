@@ -14,6 +14,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import org.bukkit.Material;
 import org.bukkit.command.ConsoleCommandSender;
+import org.jetbrains.annotations.NotNull;
 
 public class ManaInformationCommand extends BaseCommand {
 
@@ -24,7 +25,7 @@ public class ManaInformationCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.manainformation")
   @Syntax("")
   @CommandCompletion("")
-  public void manaInformation(ConsoleCommandSender issuer) {
+  public void manaInformation(@NotNull ConsoleCommandSender issuer) {
     StringBuilder sb = new StringBuilder();
     for (Material material : Material.values()) {
       if (!material.isItem()) {
@@ -48,4 +49,5 @@ public class ManaInformationCommand extends BaseCommand {
 
     issuer.sendMessage("Report written to " + file.getPath());
   }
+
 }

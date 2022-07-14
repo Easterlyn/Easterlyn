@@ -50,6 +50,7 @@ sink:
     calculate:
       description: '{color:normal.a}Perform a calculation!'
       error: '{color:bad.a}Error parsing equation!'
+      worldedit: '{color.bad.b}WorldEdit{color.bad.a} must be installed to parse equations.'
     colour:
       description: '{color:normal.a}Taste the rainbow!'
       select.description: '{color:normal.a}Select your colour.'

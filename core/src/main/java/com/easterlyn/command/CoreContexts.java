@@ -6,16 +6,18 @@ import co.aikar.commands.CommandExecutionContext;
 import co.aikar.commands.InvalidCommandArgument;
 import co.aikar.commands.MessageKeys;
 import co.aikar.commands.contexts.ContextResolver;
-import co.aikar.commands.contexts.IssuerAwareContextResolver;
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.event.ReportableEvent;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.NumberUtil;
-import com.easterlyn.util.PlayerUtil;
+import com.easterlyn.util.wrapper.PlayerFuture;
+import com.easterlyn.util.wrapper.PlayerUserFuture;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -23,8 +25,6 @@ import net.md_5.bungee.api.ChatColor;
 import org.bukkit.World;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public class CoreContexts {
 
@@ -96,92 +96,7 @@ public class CoreContexts {
         .getCommandContexts()
         .registerIssuerAwareContext(
             Player.class,
-            new IssuerAwareContextResolver<>() {
-
-              @Override
-              public Player getContext(BukkitCommandExecutionContext context)
-                  throws InvalidCommandArgument {
-                // Type erasure is caused by command context providing raw RegisteredCommand
-                //noinspection unchecked
-                if (context.hasFlag(SELF)
-                    || context.hasFlag(ONLINE_WITH_PERM)
-                        && context.getIssuer().isPlayer()
-                        && context.getCmd().getRequiredPermissions().stream()
-                            .noneMatch(
-                                perm ->
-                                    context
-                                        .getIssuer()
-                                        .hasPermission(
-                                            perm.toString().replace(".self", ".other")))) {
-                  return getSelf(context.getIssuer());
-                }
-
-                if (context.hasFlag(ONLINE)) {
-                  return getOnline(context.getIssuer(), context.popFirstArg());
-                }
-
-                if (context.hasFlag(OFFLINE)) {
-                  return getOffline(context.getIssuer(), context.popFirstArg());
-                }
-
-                // Default/ONLINE_WITH_PERM behavior: Attempt to match online, fall through to self.
-                Player player = null;
-                String firstArg = context.getFirstArg();
-                if (firstArg != null && firstArg.length() > 3) {
-                  try {
-                    player = getOnline(context.getIssuer(), firstArg);
-                  } catch (InvalidCommandArgument ignored) {
-                    // If user is not specified, fall through to self.
-                  }
-                }
-                if (player != null) {
-                  context.popFirstArg();
-                  return player;
-                }
-                return getSelf(context.getIssuer());
-              }
-
-              private @NotNull Player getSelf(@NotNull BukkitCommandIssuer issuer)
-                  throws InvalidCommandArgument {
-                if (issuer.isPlayer()) {
-                  return issuer.getPlayer();
-                }
-                throw new InvalidCommandArgument(CoreLang.NO_CONSOLE);
-              }
-
-              private @NotNull Player getOnline(
-                  @NotNull BukkitCommandIssuer issuer, @Nullable String argument)
-                  throws InvalidCommandArgument {
-                if (argument == null) {
-                  throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", "null");
-                }
-                Player player = PlayerUtil.matchOnlinePlayer(issuer.getIssuer(), argument);
-                if (player == null) {
-                  throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", argument);
-                }
-                return player;
-              }
-
-              private @NotNull Player getOffline(
-                  @NotNull BukkitCommandIssuer issuer, @Nullable String argument)
-                  throws InvalidCommandArgument {
-                if (argument == null) {
-                  throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", "null");
-                }
-                Player player;
-                try {
-                  player = PlayerUtil.matchPlayer(issuer.getIssuer(), argument, true, plugin);
-                } catch (IllegalAccessException e) {
-                  ReportableEvent.call(
-                      "Called PlayerUtil#matchPlayer on the main thread while executing!", e, 5);
-                  player = PlayerUtil.matchOnlinePlayer(issuer.getIssuer(), argument);
-                }
-                if (player == null) {
-                  throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", argument);
-                }
-                return player;
-              }
-            });
+            new PlayerContextResolver());
 
     plugin
         .getCommandManager()
@@ -208,7 +123,60 @@ public class CoreContexts {
                           .getCommandContexts()
                           .getResolver(Player.class)
                           .getContext(context);
-              return plugin.getUserManager().getUser(player.getUniqueId());
+              User loaded = plugin.getUserManager().getLoadedPlayer(player.getUniqueId());
+              if (loaded == null) {
+                throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", player.getName());
+              }
+              return loaded;
+            });
+
+    plugin
+        .getCommandManager()
+        .getCommandContexts()
+        .registerIssuerAwareContext(
+            PlayerUser.class,
+            context -> {
+              User user =
+                  (User)
+                      plugin
+                          .getCommandManager()
+                          .getCommandContexts()
+                          .getResolver(User.class)
+                          .getContext(context);
+              if (user instanceof PlayerUser playerUser) {
+                return playerUser;
+              }
+              throw new InvalidCommandArgument(CoreLang.INVALID_PLAYER, "{value}", user.getDisplayName());
+            });
+
+    plugin
+        .getCommandManager()
+        .getCommandContexts()
+        .registerIssuerAwareContext(
+            PlayerFuture.class,
+            new PlayerFutureContextResolver(plugin));
+
+    plugin
+        .getCommandManager()
+        .getCommandContexts()
+        .registerIssuerAwareContext(
+            PlayerUserFuture.class,
+            context -> {
+              PlayerFuture playerFuture =
+                  (PlayerFuture)
+                      plugin
+                          .getCommandManager()
+                          .getCommandContexts()
+                          .getResolver(PlayerFuture.class)
+                          .getContext(context);
+              return new PlayerUserFuture(
+                  playerFuture.id(),
+                  playerFuture.future()
+                      .thenCompose(optionalPlayer ->
+                          optionalPlayer
+                              .map(player -> plugin.getUserManager().getPlayer(player.getUniqueId()))
+                              .orElseGet(() ->
+                                  CompletableFuture.completedFuture(Optional.empty()))));
             });
 
     plugin
@@ -292,4 +260,5 @@ public class CoreContexts {
               return world;
             });
   }
+
 }

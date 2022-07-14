@@ -15,6 +15,7 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.util.StringUtil;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class FlyCommand extends BaseCommand {
 
@@ -26,8 +27,8 @@ public class FlyCommand extends BaseCommand {
   @CommandCompletion("@player @boolean")
   @Syntax("[player] [true|false]")
   public void fly(
-      @Flags(CoreContexts.ONLINE_WITH_PERM) Player player,
-      @Default("toggle") @Single String flightString) {
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) Player player,
+      @NotNull @Default("toggle") @Single String flightString) {
 
     Boolean flight = StringUtil.asBoolean(flightString);
     if (flight == null) {
@@ -66,4 +67,5 @@ public class FlyCommand extends BaseCommand {
     core.getLocaleManager()
         .sendMessage(issuer.getIssuer(), "sink.module.fly.message", "{value}", flightString);
   }
+
 }

@@ -3,7 +3,8 @@ package com.easterlyn.chat.event;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.event.UserEvent;
-import com.easterlyn.user.AutoUser;
+import com.easterlyn.user.PlayerUser;
+import com.easterlyn.user.ServerUser;
 import com.easterlyn.user.User;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.text.TextParsing;
@@ -119,7 +120,12 @@ public class UserChatEvent extends UserEvent implements Cancellable {
     nameElement.addExtra(new TextComponent(thirdPerson ? " " : "> "));
 
     Collection<TextComponent> messageComponents;
-    Player player = getUser().getPlayer();
+    Player player;
+    if (getUser() instanceof PlayerUser playerUser) {
+      player = playerUser.getPlayer();
+    } else {
+      player = null;
+    }
     if (player == null) {
       messageComponents = TextParsing.toJSON(text);
     } else {
@@ -128,9 +134,13 @@ public class UserChatEvent extends UserEvent implements Cancellable {
 
     Stream.concat(additionalRecipients.stream(), channel.getMembers().stream())
         .distinct()
-        .map(uuid -> getUser().getPlugin().getUserManager().getUser(uuid))
+        .map(uuid -> getUser().getPlugin().getUserManager().getLoadedPlayer(uuid))
         .forEach(
             user -> {
+              if (user == null) {
+                return;
+              }
+
               boolean highlight = false;
 
               // Copy and convert TextComponents from parsed message
@@ -196,7 +206,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
               }
 
               user.sendMessage(
-                  getUser() instanceof AutoUser ? null : getUser().getUniqueId(), finalMessage);
+                  getUser() instanceof ServerUser ? null : getUser().getUniqueId(), finalMessage);
             });
 
     Bukkit.getConsoleSender()
@@ -231,7 +241,7 @@ public class UserChatEvent extends UserEvent implements Cancellable {
     highlights.add(user.getUniqueId().toString());
     highlights.add(user.getDisplayName());
 
-    Player player = user.isOnline() ? user.getPlayer() : null;
+    Player player = user.isOnline() && user instanceof PlayerUser playerUser ? playerUser.getPlayer() : null;
     if (player != null) {
       highlights.add(player.getName());
     }

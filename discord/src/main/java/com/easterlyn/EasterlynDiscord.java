@@ -209,7 +209,8 @@ public class EasterlynDiscord extends EasterlynPlugin {
   }
 
   public @NotNull DiscordUser getUser(@NotNull UUID uuid) throws IllegalStateException {
-    return new DiscordUser(getCore().getUserManager().getUser(uuid));
+    // Okay to get or load now, not on main thread.
+    return new DiscordUser(getCore().getUserManager().getOrLoadNow(uuid));
   }
 
   public @NotNull String getPendingLink(@NotNull UUID uuid) {

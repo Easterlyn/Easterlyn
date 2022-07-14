@@ -12,6 +12,7 @@ import com.easterlyn.EasterlynMachines;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.machine.Machine;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class MachineCommand extends BaseCommand {
 
@@ -22,7 +23,9 @@ public class MachineCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.machine")
   @Syntax("<machine>")
   @CommandCompletion("@machines")
-  public void getMachine(@Flags(CoreContexts.SELF) Player player, String machineName) {
+  public void getMachine(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      @NotNull String machineName) {
     Machine machine = plugin.getByName(machineName);
 
     if (machine == null) {
@@ -32,4 +35,5 @@ public class MachineCommand extends BaseCommand {
 
     player.getWorld().dropItem(player.getLocation(), machine.getUniqueDrop()).setPickupDelay(0);
   }
+
 }

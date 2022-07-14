@@ -182,4 +182,5 @@ public class EasterlynCore extends JavaPlugin {
     }
     return simpleCommandMap;
   }
+
 }

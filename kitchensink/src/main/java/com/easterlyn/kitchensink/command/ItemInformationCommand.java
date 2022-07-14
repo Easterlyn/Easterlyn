@@ -20,6 +20,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class ItemInformationCommand extends BaseCommand {
 
@@ -31,7 +32,7 @@ public class ItemInformationCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.iteminfo")
   @Syntax("")
   @CommandCompletion("")
-  public void itemInfo(@Flags(CoreContexts.SELF) Player player) {
+  public void itemInfo(@NotNull @Flags(CoreContexts.SELF) Player player) {
     ItemStack hand = player.getInventory().getItemInMainHand();
     if (hand.getType() == Material.AIR) {
       core.getLocaleManager().sendMessage(player, "core.common.no_item");
@@ -54,4 +55,5 @@ public class ItemInformationCommand extends BaseCommand {
       player.sendMessage("Mana: Too expensive!");
     }
   }
+
 }

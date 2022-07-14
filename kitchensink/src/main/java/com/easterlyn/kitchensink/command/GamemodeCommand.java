@@ -28,7 +28,8 @@ public class GamemodeCommand extends BaseCommand {
   @Syntax("[player]")
   @CommandCompletion("@player")
   public void survival(
-      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
     setGameMode(issuer, GameMode.SURVIVAL, target);
   }
 
@@ -37,7 +38,8 @@ public class GamemodeCommand extends BaseCommand {
   @Syntax("[player]")
   @CommandCompletion("@player")
   public void creative(
-      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
     setGameMode(issuer, GameMode.CREATIVE, target);
   }
 
@@ -46,7 +48,8 @@ public class GamemodeCommand extends BaseCommand {
   @Syntax("[player]")
   @CommandCompletion("@player")
   public void adventure(
-      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
     setGameMode(issuer, GameMode.ADVENTURE, target);
   }
 
@@ -55,7 +58,8 @@ public class GamemodeCommand extends BaseCommand {
   @Syntax("[player]")
   @CommandCompletion("@player")
   public void spectator(
-      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) Player target) {
     setGameMode(issuer, GameMode.SPECTATOR, target);
   }
 
@@ -88,4 +92,5 @@ public class GamemodeCommand extends BaseCommand {
               "{target}", target.getDisplayName());
     }
   }
+
 }

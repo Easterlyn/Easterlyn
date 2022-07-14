@@ -11,12 +11,14 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynKitchenSink;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.event.ReportableEvent;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.util.Request;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class TeleportRequestCommand extends BaseCommand {
 
@@ -32,7 +34,8 @@ public class TeleportRequestCommand extends BaseCommand {
   @Syntax("<player>")
   @CommandCompletion("@player")
   public void teleportRequest(
-      @Flags(CoreContexts.SELF) User issuer, @Flags(CoreContexts.ONLINE) User target) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser issuer,
+      @NotNull @Flags(CoreContexts.ONLINE) PlayerUser target) {
     tpRequest(issuer, target, true);
   }
 
@@ -42,11 +45,12 @@ public class TeleportRequestCommand extends BaseCommand {
   @Syntax("<player>")
   @CommandCompletion("@player")
   public void teleportHereRequest(
-      @Flags(CoreContexts.SELF) User issuer, @Flags(CoreContexts.ONLINE) User target) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser issuer,
+      @NotNull @Flags(CoreContexts.ONLINE) PlayerUser target) {
     tpRequest(issuer, target, false);
   }
 
-  private void tpRequest(User issuer, User requested, boolean to) {
+  private void tpRequest(@NotNull PlayerUser issuer, @NotNull PlayerUser requested, boolean to) {
     long nextTPA = issuer.getStorage().getLong(TPREQUEST_COOLDOWN);
     if (nextTPA > System.currentTimeMillis()) {
       SimpleDateFormat format = new SimpleDateFormat("m:ss");
@@ -127,6 +131,11 @@ public class TeleportRequestCommand extends BaseCommand {
                   core.getLocaleManager().getLocale(requestedPlayer),
                   "{value}",
                   issuingPlayer.getName());
+      if (requestMessage == null) {
+        ReportableEvent.call("Missing required translation " + (to ? "sink.module.tprequest.to.request" : "sink.module.tprequest.pull.request"));
+        issuer.sendMessage("The translation for your TP request is missing. Please notify your target manually.");
+        return;
+      }
       requested.sendMessage(issuer.getUniqueId(), requestMessage);
     } else {
       core.getLocaleManager()
@@ -137,4 +146,5 @@ public class TeleportRequestCommand extends BaseCommand {
               requestedPlayer.getName());
     }
   }
+
 }

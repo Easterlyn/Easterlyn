@@ -15,6 +15,7 @@ import com.easterlyn.command.CoreContexts;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("more")
 @Description("{@@sink.module.more.description}")
@@ -25,7 +26,7 @@ public class MoreCommand extends BaseCommand {
 
   @Default
   @Private
-  public void more(@Flags(CoreContexts.SELF) Player player) {
+  public void more(@NotNull @Flags(CoreContexts.SELF) Player player) {
     more(player, 0);
   }
 
@@ -33,7 +34,7 @@ public class MoreCommand extends BaseCommand {
   @Description("{@@sink.module.more.description}")
   @Syntax("[count]")
   @CommandCompletion("@integer")
-  public void more(@Flags(CoreContexts.SELF) Player player, int count) {
+  public void more(@NotNull @Flags(CoreContexts.SELF) Player player, int count) {
     ItemStack hand = player.getInventory().getItemInMainHand();
     if (hand.getType() == Material.AIR) {
       showSyntax(
@@ -49,4 +50,5 @@ public class MoreCommand extends BaseCommand {
         .sendMessage(
             player, "sink.module.more.success", "{value}", String.valueOf(hand.getAmount()));
   }
+
 }

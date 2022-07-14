@@ -10,7 +10,8 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Syntax;
 import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.user.AutoUser;
+import com.easterlyn.user.PlayerUser;
+import com.easterlyn.user.ServerUser;
 import com.easterlyn.user.User;
 import com.easterlyn.user.UserRank;
 import com.google.common.collect.HashMultimap;
@@ -26,6 +27,7 @@ import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class ListCommand extends BaseCommand {
 
@@ -36,14 +38,15 @@ public class ListCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.list")
   @Syntax("")
   @CommandCompletion("")
-  public void list(BukkitCommandIssuer issuer) {
+  public void list(@NotNull BukkitCommandIssuer issuer) {
     Player sender = issuer.getPlayer();
     UserRank[] ranks = UserRank.values();
     Multimap<String, User> groupedUsers = HashMultimap.create();
     int total = 0;
 
     for (Player player : Bukkit.getOnlinePlayers()) {
-      if (sender != null && !sender.canSee(player)) {
+      PlayerUser loadedPlayer = core.getUserManager().getLoadedPlayer(player.getUniqueId());
+      if (loadedPlayer == null || sender != null && !sender.canSee(player)) {
         continue;
       }
 
@@ -53,7 +56,7 @@ public class ListCommand extends BaseCommand {
         UserRank rank = ranks[i];
         if (i == 0 || player.hasPermission(rank.getPermission())) {
           groupedUsers.put(
-              rank.getFriendlyName(), core.getUserManager().getUser(player.getUniqueId()));
+              rank.getFriendlyName(), loadedPlayer);
           break;
         }
       }
@@ -63,7 +66,7 @@ public class ListCommand extends BaseCommand {
       Map<String, String> easterEgg = new HashMap<>();
       easterEgg.put("name", "Herobrine");
       easterEgg.put("color", ChatColor.BLACK.toString());
-      groupedUsers.put(UserRank.MEMBER.getFriendlyName(), new AutoUser(core, easterEgg));
+      groupedUsers.put(UserRank.MEMBER.getFriendlyName(), new ServerUser(core, easterEgg));
     }
 
     issuer.sendInfo(

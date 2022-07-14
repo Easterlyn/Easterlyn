@@ -6,7 +6,8 @@ import com.easterlyn.chat.channel.AliasedChannel;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.event.UserCreationEvent;
-import com.easterlyn.user.AutoUser;
+import com.easterlyn.user.PlayerUser;
+import com.easterlyn.user.ServerUser;
 import com.easterlyn.user.User;
 import com.easterlyn.util.text.TextParsing;
 import java.text.SimpleDateFormat;
@@ -40,12 +41,21 @@ public class ChannelManagementListener implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void onPlayerChat(AsyncPlayerChatEvent event) {
-    EasterlynCore core = chat.getCore();
-    User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
-    event.getPlayer().setDisplayName(user.getDisplayName());
+  public void onPlayerChat(@NotNull AsyncPlayerChatEvent event) {
     event.setCancelled(true);
+    chat
+        .getCore()
+        .getUserManager()
+        .getPlayer(event.getPlayer().getUniqueId())
+        .thenAccept(
+            optional ->
+                optional.ifPresent(
+                    playerUser -> handlePlayerChat(playerUser, event)));
+  }
 
+  private void handlePlayerChat(@NotNull User user, @NotNull AsyncPlayerChatEvent event) {
+    EasterlynCore core = chat.getCore();
+    event.getPlayer().setDisplayName(user.getDisplayName());
     Channel channel = null;
 
     // #channel message parsing
@@ -101,17 +111,21 @@ public class ChannelManagementListener implements Listener {
   }
 
   @EventHandler
-  public void onUserCreate(UserCreationEvent event) {
+  public void onUserCreate(@NotNull UserCreationEvent event) {
+    if (!(event.getUser() instanceof PlayerUser playerUser)) {
+      return;
+    }
+
     ConfigurationSection userSection = chat.getConfig().getConfigurationSection("auto_user");
     Map<String, String> userData = new HashMap<>();
     if (userSection != null) {
       userSection.getKeys(false).forEach(key -> userData.put(key, userSection.getString(key)));
     }
-    Player player = event.getUser().getPlayer();
+    Player player = playerUser.getPlayer();
     if (player != null && !player.hasPlayedBefore()) {
       // TODO lang?
       new UserChatEvent(
-          new AutoUser(chat.getCore(), userData),
+          new ServerUser(chat.getCore(), userData),
           EasterlynChat.DEFAULT,
           event.getUser().getDisplayName() + " is new! Please welcome them.");
     }
@@ -141,9 +155,13 @@ public class ChannelManagementListener implements Listener {
   }
 
   @EventHandler(priority = EventPriority.HIGH)
-  public void onPlayerJoin(PlayerJoinEvent event) {
+  public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
     EasterlynCore core = chat.getCore();
-    User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
+    User user = core.getUserManager().getLoadedPlayer(event.getPlayer().getUniqueId());
+    if (user == null) {
+      // User should be guaranteed loaded - we block the async pre-login until load completes.
+      return;
+    }
     event.getPlayer().setDisplayName(user.getDisplayName());
 
     List<String> savedChannels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
@@ -177,60 +195,84 @@ public class ChannelManagementListener implements Listener {
 
     chat.getServer()
         .getOnlinePlayers()
-        .forEach(
-            player -> {
-              User otherUser;
-              if (player.getUniqueId().equals(user.getUniqueId())) {
-                otherUser = user;
-              } else {
-                otherUser = core.getUserManager().getUser(player.getUniqueId());
-              }
+        .forEach(player -> announceCommonChannels(user, player, channels, time));
 
-              BaseComponent component = new TextComponent();
-              component.addExtra(user.getMention());
-              String locale = core.getLocaleManager().getLocale(player);
-              String localized = core.getLocaleManager().getValue("chat.common.join", locale);
-              for (TextComponent textComponent : TextParsing.toJSON(localized)) {
-                component.addExtra(textComponent);
-              }
+    event.setJoinMessage(null);
+  }
 
-              List<String> commonChannels =
-                  otherUser.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
-              commonChannels.retainAll(channels);
+  private void announceCommonChannels(
+      @NotNull User user,
+      @NotNull Player other,
+      @NotNull List<String> channels,
+      @NotNull String time) {
+    if (other.getUniqueId().equals(user.getUniqueId())) {
+      announceCommonChannels(user, other, user, channels, time);
+    } else {
+      chat.getCore().getUserManager().getPlayer(other.getUniqueId())
+          .thenAccept(
+              optional ->
+                  optional.ifPresent(
+                      playerUser ->
+                          announceCommonChannels(user, other, playerUser, channels, time)));
+    }
+  }
 
-              StringJoiner stringJoiner = new StringJoiner(", #", "#", " ").setEmptyValue("");
-              for (String channel : commonChannels) {
-                stringJoiner.add(channel);
-              }
-              String merged = stringJoiner.toString();
+  private void announceCommonChannels(
+      @NotNull User user,
+      @NotNull Player otherPlayer,
+      @NotNull User otherUser,
+      @NotNull List<String> channels,
+      @NotNull String time) {
+    BaseComponent component = new TextComponent();
+    component.addExtra(user.getMention());
+    EasterlynCore core = chat.getCore();
+    String locale = core.getLocaleManager().getLocale(otherPlayer);
+    String localized = core.getLocaleManager().getValue("chat.common.join", locale);
+    for (TextComponent textComponent : TextParsing.toJSON(localized)) {
+      component.addExtra(textComponent);
+    }
 
-              if (commonChannels.size() > 1) {
-                int lastComma = merged.lastIndexOf(',');
-                int firstSegmentIndex = commonChannels.size() > 2 ? lastComma + 1 : lastComma;
-                merged =
-                    merged.substring(0, firstSegmentIndex)
-                        + core.getLocaleManager().getValue("chat.common.and", locale)
-                        + merged.substring(lastComma + 1);
-              }
-              for (TextComponent textComponent : TextParsing.toJSON(merged)) {
-                if (!textComponent.getText().isEmpty()) {
-                  component.addExtra(textComponent);
-                }
-              }
-              localized = core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time);
-              for (TextComponent textComponent : TextParsing.toJSON(localized)) {
-                component.addExtra(textComponent);
-              }
+    List<String> commonChannels =
+        otherUser.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
+    commonChannels.retainAll(channels);
 
-              otherUser.sendMessage(component);
-            });
+    StringJoiner stringJoiner = new StringJoiner(", #", "#", " ").setEmptyValue("");
+    for (String channel : commonChannels) {
+      stringJoiner.add(channel);
+    }
+    String merged = stringJoiner.toString();
 
-    event.setJoinMessage("");
+    if (commonChannels.size() > 1) {
+      int lastComma = merged.lastIndexOf(',');
+      int firstSegmentIndex = commonChannels.size() > 2 ? lastComma + 1 : lastComma;
+      merged =
+          merged.substring(0, firstSegmentIndex)
+              + core.getLocaleManager().getValue("chat.common.and", locale)
+              + merged.substring(lastComma + 1);
+    }
+    for (TextComponent textComponent : TextParsing.toJSON(merged)) {
+      if (!textComponent.getText().isEmpty()) {
+        component.addExtra(textComponent);
+      }
+    }
+    localized = core.getLocaleManager().getValue("chat.common.at", locale, "{time}", time);
+    for (TextComponent textComponent : TextParsing.toJSON(localized)) {
+      component.addExtra(textComponent);
+    }
+
+    otherUser.sendMessage(component);
   }
 
   @EventHandler
-  public void onPlayerQuit(PlayerQuitEvent event) {
-    User user = chat.getCore().getUserManager().getUser(event.getPlayer().getUniqueId());
+  public void onPlayerQuit(@NotNull PlayerQuitEvent event) {
+    User user = chat.getCore().getUserManager().getLoadedPlayer(event.getPlayer().getUniqueId());
+    if (user == null) {
+      // Don't bother reloading user, just remove them from channels.
+      chat.getChannels().values()
+          .forEach(channel -> channel.getMembers().remove(event.getPlayer().getUniqueId()));
+      return;
+    }
+
     List<String> savedChannels = user.getStorage().getStringList(EasterlynChat.USER_CHANNELS);
 
     List<String> channels =

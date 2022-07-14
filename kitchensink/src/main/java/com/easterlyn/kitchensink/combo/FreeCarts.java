@@ -23,12 +23,13 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
+import org.jetbrains.annotations.NotNull;
 
 public class FreeCarts extends BaseCommand implements Listener {
 
   private final NamespacedKey key;
 
-  public FreeCarts(Plugin plugin) {
+  public FreeCarts(@NotNull Plugin plugin) {
     key = new NamespacedKey(plugin, "freecart");
   }
 
@@ -39,7 +40,7 @@ public class FreeCarts extends BaseCommand implements Listener {
   @CommandCompletion("@player")
   // TODO check if also requires @double @double @double @double @double @double
   public void spawnFreeCart(
-      @Flags(CoreContexts.ONLINE) Player target,
+      @NotNull @Flags(CoreContexts.ONLINE) Player target,
       double x,
       double y,
       double z,

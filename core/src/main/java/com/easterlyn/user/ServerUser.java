@@ -14,38 +14,37 @@ import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.PermissionDefault;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class AutoUser extends User {
+public class ServerUser extends User {
 
   private final Map<String, String> userData;
 
-  public AutoUser(@NotNull EasterlynCore core, @NotNull Map<String, String> userData) {
+  public ServerUser(@NotNull EasterlynCore core, @NotNull Map<String, String> userData) {
     super(core, new UUID(0, 0), ConcurrentConfiguration.load(core, null));
     this.userData = userData;
   }
 
-  public @Nullable Player getPlayer() {
-    return null;
-  }
-
+  @Override
   public @NotNull String getDisplayName() {
     return ChatColor.translateAlternateColorCodes(
         '&', Generics.orDefault(userData.get("name"), "Auto User"));
   }
 
+  @Override
   public @NotNull ChatColor getColor() {
     return Colors.getOrDefault(userData.get("color"), getRank().getColor());
   }
 
+  @Override
   public boolean isOnline() {
     return false;
   }
 
+  @Override
   public boolean hasPermission(@NotNull String permission) {
     Permission perm = getPlugin().getServer().getPluginManager().getPermission(permission);
     return perm == null
@@ -53,6 +52,7 @@ public class AutoUser extends User {
         || perm.getDefault() == PermissionDefault.OP;
   }
 
+  @Override
   public @NotNull UserRank getRank() {
     return UserRank.ADMIN;
   }
@@ -79,11 +79,19 @@ public class AutoUser extends User {
     return component;
   }
 
+  @Override
   public void sendMessage(@NotNull String message) {
     Bukkit.getConsoleSender().sendMessage(message);
   }
 
+  @Override
   public void sendMessage(@NotNull BaseComponent... components) {
     Bukkit.getConsoleSender().spigot().sendMessage(components);
   }
+
+  @Override
+  public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components) {
+    Bukkit.getConsoleSender().spigot().sendMessage(sender, components);
+  }
+
 }

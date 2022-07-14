@@ -9,6 +9,8 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Syntax;
 import co.aikar.locales.MessageKey;
 import com.sk89q.worldedit.internal.expression.Expression;
+import org.bukkit.Bukkit;
+import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -23,7 +25,12 @@ public class CalculateCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.calculate")
   @Syntax("[equation]")
   @CommandCompletion("")
-  public void calculate(BukkitCommandIssuer issuer, String input) {
+  public void calculate(@NotNull BukkitCommandIssuer issuer, @NotNull String input) {
+    if (Bukkit.getPluginManager().getPlugin("WorldEdit") == null) {
+      issuer.sendInfo(MessageKey.of("sink.module.calculate.worldedit"));
+      return;
+    }
+
     input = input.toLowerCase().replace('x', '*');
     if (this.lastValue.containsKey(issuer.getUniqueId())) {
       input = input.replace("ans", String.valueOf(this.lastValue.get(issuer.getUniqueId())));
@@ -42,4 +49,5 @@ public class CalculateCommand extends BaseCommand {
       issuer.sendInfo(MessageKey.of("sink.module.calculate.error"));
     }
   }
+
 }

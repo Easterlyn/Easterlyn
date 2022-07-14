@@ -1,17 +1,11 @@
 package com.easterlyn.user;
 
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.event.PlayerNameChangeEvent;
-import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.util.Colors;
-import com.easterlyn.util.PermissionUtil;
-import com.easterlyn.util.PlayerUtil;
 import com.easterlyn.util.Request;
 import com.easterlyn.util.command.Group;
 import com.easterlyn.util.text.TextParsing;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
-import com.github.jikoo.planarwrappers.util.Generics;
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -32,7 +26,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.permissions.PermissibleBase;
 import org.bukkit.permissions.Permission;
 import org.bukkit.permissions.ServerOperator;
-import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,9 +35,9 @@ import org.jetbrains.annotations.Nullable;
  *
  * @author Jikoo
  */
-public class User extends PermissibleBase implements Group, ServerOperator {
+public abstract class User extends PermissibleBase implements Group, ServerOperator {
 
-  private final EasterlynCore plugin;
+  protected final EasterlynCore plugin;
   private final UUID uuid;
   private final ConcurrentConfiguration storage;
   private final Map<String, Object> tempStore;
@@ -70,46 +63,6 @@ public class User extends PermissibleBase implements Group, ServerOperator {
     tempStore = user.tempStore;
   }
 
-  static @NotNull User load(@NotNull EasterlynCore plugin, @NotNull final UUID uuid) {
-    PluginManager pluginManager = plugin.getServer().getPluginManager();
-    File file =
-        new File(
-            plugin.getDataFolder().getPath() + File.separatorChar + "users",
-            uuid + ".yml");
-    ConcurrentConfiguration storage = ConcurrentConfiguration.load(plugin, file);
-    if (file.exists()) {
-      User user = new User(plugin, uuid, storage);
-      Player player = user.getPlayer();
-
-      if (player != null && player.getAddress() != null) {
-        storage.set("ip", player.getAddress().getHostString());
-        String previousName = storage.getString("name");
-        if (previousName != null && !previousName.equals(player.getName())) {
-          storage.set("previousName", previousName);
-          storage.set("name", player.getName());
-          pluginManager.callEvent(
-              new PlayerNameChangeEvent(player, previousName, player.getName()));
-        }
-      }
-
-      return user;
-    }
-
-    Player player = Bukkit.getPlayer(uuid);
-
-    User user = new User(plugin, uuid, ConcurrentConfiguration.load(plugin, file));
-    if (player != null) {
-      user.getStorage().set("name", player.getName());
-      if (player.getAddress() != null) {
-        user.getStorage().set("ip", player.getAddress().getHostString());
-      }
-
-      pluginManager.callEvent(new UserCreationEvent(user));
-    }
-
-    return user;
-  }
-
   public @NotNull UUID getUniqueId() {
     return uuid;
   }
@@ -119,22 +72,7 @@ public class User extends PermissibleBase implements Group, ServerOperator {
     return Collections.singleton(getUniqueId());
   }
 
-  public @Nullable Player getPlayer() {
-    try {
-      return PlayerUtil.getPlayer(plugin, getUniqueId());
-    } catch (IllegalAccessException e) {
-      e.printStackTrace();
-      return null;
-    }
-  }
-
-  public @NotNull String getDisplayName() {
-    return Generics.orDefault(
-        getStorage().getString("displayName"),
-        Generics.orDefault(
-            Generics.functionAs(Player.class, getPlayer(), Player::getDisplayName),
-            getUniqueId().toString()));
-  }
+  public abstract @NotNull String getDisplayName();
 
   public @NotNull ChatColor getColor() {
     return Colors.getOrDefault(getStorage().getString("color"), getRank().getColor());
@@ -264,12 +202,7 @@ public class User extends PermissibleBase implements Group, ServerOperator {
     sendMessage(null, components);
   }
 
-  public void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components) {
-    Player player = getPlayer();
-    if (player != null) {
-      player.spigot().sendMessage(sender, components);
-    }
-  }
+  public abstract void sendMessage(@Nullable UUID sender, @NotNull BaseComponent... components);
 
   public @NotNull ConcurrentConfiguration getStorage() {
     return storage;
@@ -312,15 +245,7 @@ public class User extends PermissibleBase implements Group, ServerOperator {
   }
 
   @Override
-  public boolean hasPermission(@NotNull String permission) {
-    if (isOnline()) {
-      Player player = getPlayer();
-      if (player != null) {
-        return player.hasPermission(permission);
-      }
-    }
-    return PermissionUtil.hasPermission(getUniqueId(), permission);
-  }
+  public abstract boolean hasPermission(@NotNull String permission);
 
   @Override
   public boolean hasPermission(@NotNull Permission perm) {

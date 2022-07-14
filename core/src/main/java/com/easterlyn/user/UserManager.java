@@ -1,24 +1,29 @@
 package com.easterlyn.user;
 
 import com.easterlyn.EasterlynCore;
+import com.easterlyn.event.PlayerNameChangeEvent;
+import com.easterlyn.event.UserCreationEvent;
 import com.easterlyn.event.UserLoadEvent;
 import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.text.TextParsing;
-import com.easterlyn.util.text.ParsedText;
-import com.easterlyn.util.text.QuoteConsumer;
+import com.easterlyn.util.wrapper.ConcurrentConfiguration;
 import com.github.jikoo.planarwrappers.event.Event;
+import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
-import com.google.common.cache.LoadingCache;
+import java.io.File;
+import java.nio.file.Path;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Supplier;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -29,9 +34,11 @@ import org.jetbrains.annotations.Nullable;
  */
 public class UserManager {
 
-  private final LoadingCache<UUID, User> userCache;
+  private final EasterlynCore plugin;
+  private final Cache<UUID, PlayerUser> userCache;
 
-  public UserManager(EasterlynCore plugin) {
+  public UserManager(@NotNull EasterlynCore plugin) {
+    this.plugin = plugin;
     this.userCache =
         CacheBuilder.newBuilder()
             .expireAfterAccess(15L, TimeUnit.MINUTES)
@@ -44,24 +51,17 @@ public class UserManager {
                   plugin.getServer().getPluginManager().callEvent(new UserUnloadEvent(user));
                   PermissionUtil.releasePermissionData(user.getUniqueId());
                 })
-            .build(
-                new CacheLoader<>() {
-                  @Override
-                  public @NotNull User load(@NotNull final UUID uuid) {
-                    User user = User.load(plugin, uuid);
-                    plugin.getServer().getPluginManager().callEvent(new UserLoadEvent(user));
-                    return user;
-                  }
-                });
+            .build();
 
     Event.register(
         AsyncPlayerPreLoginEvent.class,
         event -> {
           if (event.getLoginResult() == AsyncPlayerPreLoginEvent.Result.ALLOWED) {
-            getUser(event.getUniqueId());
+            getOrLoadNow(event.getUniqueId());
           }
         },
-        plugin);
+        plugin,
+        EventPriority.MONITOR);
 
     Event.register(
         PlayerQuitEvent.class,
@@ -80,71 +80,93 @@ public class UserManager {
                     }),
         plugin);
 
-    TextParsing.addQuoteConsumer(
-        new QuoteConsumer() {
-          @Override
-          public Iterable<Pattern> getPatterns() {
-            return userCache.asMap().keySet().stream()
-                .map(UserManager.this::getUser)
-                .map(User::getMentionPattern)
-                .collect(Collectors.toSet());
-          }
-
-          @Override
-          public @Nullable Supplier<Matcher> handleQuote(String quote) {
-            for (User loaded : userCache.asMap().values()) {
-              Pattern mentionPattern = loaded.getMentionPattern();
-              Matcher matcher = mentionPattern.matcher(quote);
-              if (!matcher.find()) {
-                continue;
-              }
-              return new UserMatcher() {
-                @Override
-                public User getUser() {
-                  return loaded;
-                }
-
-                @Override
-                public Matcher get() {
-                  return matcher;
-                }
-              };
-            }
-            return null;
-          }
-
-          @Override
-          public void addComponents(
-              @NotNull ParsedText components, @NotNull Supplier<Matcher> matcherSupplier) {
-            if (!(matcherSupplier instanceof UserMatcher)) {
-              components.addText(matcherSupplier.get().group());
-              return;
-            }
-
-            Matcher matcher = matcherSupplier.get();
-            User user = ((UserMatcher) matcherSupplier).getUser();
-
-            components.addComponent(user.getMention());
-            if (matcher.group(2) != null && !matcher.group(2).isEmpty()) {
-              components.addText(matcher.group(2));
-            }
-          }
-        });
+    TextParsing.addQuoteConsumer(new PlayerUserQuoteConsumer(userCache.asMap()::values));
   }
 
-  public User getUser(UUID uuid) {
-    return userCache.getUnchecked(uuid);
+  // TODO getUser(CommandSender)?
+
+  public @Nullable PlayerUser getLoadedPlayer(@NotNull UUID uuid) {
+    return userCache.getIfPresent(uuid);
+  }
+
+  public @NotNull CompletableFuture<Optional<PlayerUser>> getPlayer(@NotNull UUID uuid) {
+    PlayerUser present = userCache.getIfPresent(uuid);
+    if (present != null) {
+      return CompletableFuture.completedFuture(Optional.of(present));
+    }
+    CompletableFuture<Optional<PlayerUser>> future = new CompletableFuture<>();
+    try {
+      new BukkitRunnable() {
+        @Override
+        public void run() {
+          future.complete(Optional.of(getOrLoadNow(uuid)));
+        }
+
+        @Override
+        public synchronized void cancel() throws IllegalStateException {
+          super.cancel();
+          future.complete(Optional.empty());
+        }
+      }.runTaskAsynchronously(plugin);
+    } catch (Exception ignored) {
+      // Plugin disabled or server shutting down.
+      future.complete(Optional.empty());
+    }
+    return future;
+  }
+
+  public @NotNull PlayerUser getOrLoadNow(@NotNull UUID uuid) {
+    PlayerUser present = userCache.getIfPresent(uuid);
+    if (present != null) {
+      return present;
+    }
+
+    PlayerUser user = loadPlayerUser(plugin, uuid);
+    userCache.put(uuid, user);
+    plugin.getServer().getPluginManager().callEvent(new UserLoadEvent(user));
+    return user;
+  }
+
+  private @NotNull PlayerUser loadPlayerUser(@NotNull EasterlynCore plugin, @NotNull final UUID uuid) {
+    PluginManager pluginManager = plugin.getServer().getPluginManager();
+    File file = Path.of(plugin.getDataFolder().getPath(), "users", uuid + ".yml").toFile();
+    ConcurrentConfiguration storage = ConcurrentConfiguration.load(plugin, file);
+    if (file.exists()) {
+      PlayerUser user = new PlayerUser(plugin, uuid, storage);
+      Player player = user.getPlayer();
+
+      if (player != null && player.getAddress() != null) {
+        storage.set("ip", player.getAddress().getHostString());
+        String previousName = storage.getString("name");
+        if (previousName != null && !previousName.equals(player.getName())) {
+          storage.set("previousName", previousName);
+          storage.set("name", player.getName());
+          pluginManager.callEvent(
+              new PlayerNameChangeEvent(player, previousName, player.getName()));
+        }
+      }
+
+      return user;
+    }
+
+    Player player = Bukkit.getPlayer(uuid);
+
+    PlayerUser user = new PlayerUser(plugin, uuid, ConcurrentConfiguration.load(plugin, file));
+    if (player != null) {
+      user.getStorage().set("name", player.getName());
+      if (player.getAddress() != null) {
+        user.getStorage().set("ip", player.getAddress().getHostString());
+      }
+
+      pluginManager.callEvent(new UserCreationEvent(user));
+    }
+
+    return user;
   }
 
   public void clearCache() {
     userCache.invalidateAll();
     userCache.cleanUp();
-  }
-
-  // TODO getUser(CommandSender)
-
-  private interface UserMatcher extends Supplier<Matcher> {
-    User getUser();
   }
 
 }

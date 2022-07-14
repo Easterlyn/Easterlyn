@@ -51,7 +51,8 @@ public class BottleExperience implements Listener {
     }
 
     Player player = event.getPlayer();
-    User user = plugin.getCore().getUserManager().getUser(player.getUniqueId());
+    // TODO bad, need separate in-memory store
+    User user = plugin.getCore().getUserManager().getOrLoadNow(player.getUniqueId());
 
     Object cooldown = user.getTemporaryStorage().get(keyBottleCreate);
     if (cooldown instanceof Long && (Long) cooldown >= System.currentTimeMillis()) {
@@ -82,8 +83,14 @@ public class BottleExperience implements Listener {
 
   @EventHandler(ignoreCancelled = true)
   public void onPlayerItemConsume(@NotNull PlayerItemConsumeEvent event) {
-    User user = plugin.getCore().getUserManager().getUser(event.getPlayer().getUniqueId());
-    user.getTemporaryStorage().put(keyBottleCreate, System.currentTimeMillis() + 2000);
+    plugin.getCore().getUserManager().getPlayer(event.getPlayer().getUniqueId())
+        .thenAccept(
+            optional ->
+                optional.ifPresent(
+                    user ->
+                        user
+                            .getTemporaryStorage()
+                            .put(keyBottleCreate, System.currentTimeMillis() + 2000)));
   }
 
   @EventHandler(ignoreCancelled = true)
@@ -93,7 +100,8 @@ public class BottleExperience implements Listener {
       return;
     }
 
-    User user = plugin.getCore().getUserManager().getUser(player.getUniqueId());
+    // TODO bad
+    User user = plugin.getCore().getUserManager().getOrLoadNow(player.getUniqueId());
 
     Object cooldown = user.getTemporaryStorage().get(keyBottleThrow);
     if (cooldown instanceof Long && (Long) cooldown >= System.currentTimeMillis()) {

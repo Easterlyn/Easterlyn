@@ -15,12 +15,13 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.event.ReportableEvent;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.util.text.TextParsing;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("colour|color")
 @Description("{@@sink.module.colour.description}")
@@ -31,7 +32,7 @@ public class ColourCommand extends BaseCommand {
 
   @Default
   @Private
-  public void colour(BukkitCommandIssuer issuer) {
+  public void colour(@NotNull BukkitCommandIssuer issuer) {
     StringBuilder builder = new StringBuilder();
     for (int i = 0; i <= 27; ++i) {
       char code = Character.forDigit(i, 36);
@@ -62,7 +63,8 @@ public class ColourCommand extends BaseCommand {
   @Syntax("<colour>")
   @CommandCompletion("@colour")
   public void select(
-      @Flags("colour") ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+      @NotNull @Flags("colour") ChatColor colour,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) PlayerUser user) {
     user.setColor(colour);
     TextComponent textComponent = new TextComponent();
     for (TextComponent element :
@@ -101,7 +103,9 @@ public class ColourCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.colour.select.other")
   @Syntax("<colour> [player]")
   @CommandCompletion("@colour @player")
-  public void set(ChatColor colour, @Flags(CoreContexts.ONLINE_WITH_PERM) User target) {
+  public void set(
+      @NotNull @Flags("colour") ChatColor colour,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) PlayerUser target) {
     select(colour, target);
   }
 
@@ -112,7 +116,7 @@ public class ColourCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.lel")
   @Syntax("[painful to view sentence]")
   @CommandCompletion("")
-  public void requestLordEnglishEyeFuck(String message) {
+  public void requestLordEnglishEyeFuck(@NotNull String message) {
     ChatColor[] rainbow = {
       ChatColor.DARK_RED,
       ChatColor.RED,
@@ -141,4 +145,5 @@ public class ColourCommand extends BaseCommand {
     }
     Bukkit.broadcastMessage(lelOut.substring(0, Math.max(lelOut.length() - 1, 0)));
   }
+
 }

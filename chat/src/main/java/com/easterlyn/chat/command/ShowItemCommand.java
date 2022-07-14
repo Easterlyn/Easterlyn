@@ -12,9 +12,10 @@ import com.easterlyn.EasterlynCore;
 import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.jetbrains.annotations.NotNull;
 
 public class ShowItemCommand extends BaseCommand {
 
@@ -26,8 +27,8 @@ public class ShowItemCommand extends BaseCommand {
   @Syntax("[#channel]")
   @CommandCompletion("@channelsListening")
   public void showItem(
-      @Flags(CoreContexts.SELF) User sender,
-      @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel) {
+      @NotNull @Flags(CoreContexts.SELF) PlayerUser sender,
+      @NotNull @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel) {
     Player player = sender.getPlayer();
     if (player == null) {
       core.getLocaleManager()
@@ -45,4 +46,5 @@ public class ShowItemCommand extends BaseCommand {
 
     new UserChatEvent(sender, channel, "shows off {ITEM:HAND}", true).send();
   }
+
 }

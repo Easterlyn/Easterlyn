@@ -124,4 +124,6 @@ public class Colors {
 
     return builder.toString();
   }
+
+  // TODO move context here, add completion
 }

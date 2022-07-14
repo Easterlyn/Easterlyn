@@ -8,4 +8,5 @@ public class ChannelFlag {
   public static final String NOT_LISTENING = "notListening";
   public static final String VISIBLE = "visible";
   public static final String VISIBLE_OR_CURRENT = "visibleOrCurrent";
+
 }

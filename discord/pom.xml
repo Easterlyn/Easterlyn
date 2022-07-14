@@ -17,26 +17,6 @@
 
       <plugin>
         <artifactId>maven-shade-plugin</artifactId>
-        <configuration>
-          <relocations>
-            <relocation>
-              <pattern>com.github.jikoo.planarwrappers</pattern>
-              <shadedPattern>com.easterlyn.planarwrappers</shadedPattern>
-            </relocation>
-            <relocation>
-              <pattern>io.netty</pattern>
-              <shadedPattern>com.easterlyn.shaded.netty</shadedPattern>
-            </relocation>
-          </relocations>
-        </configuration>
-        <executions>
-          <execution>
-            <goals>
-              <goal>shade</goal>
-            </goals>
-            <phase>package</phase>
-          </execution>
-        </executions>
         <groupId>org.apache.maven.plugins</groupId>
       </plugin>
 

@@ -10,8 +10,9 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.util.Request;
+import org.jetbrains.annotations.NotNull;
 
 public class ManageRequestCommand extends BaseCommand {
 
@@ -22,7 +23,7 @@ public class ManageRequestCommand extends BaseCommand {
   @CommandCompletion("")
   @Syntax("")
   @CommandPermission("easterlyn.command.request")
-  public void accept(@Flags(CoreContexts.SELF) User user) {
+  public void accept(@NotNull @Flags(CoreContexts.SELF) PlayerUser user) {
     Request request = user.pollPendingRequest();
     if (request == null) {
       core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.request.error.no_pending");
@@ -36,7 +37,7 @@ public class ManageRequestCommand extends BaseCommand {
   @CommandCompletion("")
   @Syntax("")
   @CommandPermission("easterlyn.command.request")
-  public void decline(@Flags(CoreContexts.SELF) User user) {
+  public void decline(@NotNull @Flags(CoreContexts.SELF) PlayerUser user) {
     Request request = user.pollPendingRequest();
     if (request == null) {
       core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.request.error.no_pending");
@@ -44,4 +45,5 @@ public class ManageRequestCommand extends BaseCommand {
     }
     request.decline();
   }
+
 }

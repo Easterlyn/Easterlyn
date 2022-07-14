@@ -14,6 +14,7 @@ import com.easterlyn.command.CoreContexts;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class HealCommand extends BaseCommand {
 
@@ -24,7 +25,7 @@ public class HealCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.heal.self")
   @CommandCompletion("@player")
   @Syntax("[player]")
-  public void heal(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
+  public void heal(@NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
     AttributeInstance attribute = player.getAttribute(Attribute.GENERIC_MAX_HEALTH);
     CommandIssuer issuer = getCurrentCommandIssuer();
     if (attribute == null) {
@@ -45,7 +46,7 @@ public class HealCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.feed.self")
   @CommandCompletion("@player")
   @Syntax("[player]")
-  public void feed(@Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
+  public void feed(@NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) Player player) {
     player.setFoodLevel(20);
     player.setSaturation(20);
     core.getLocaleManager().sendMessage(player, "sink.module.feed.success.target");
@@ -56,4 +57,5 @@ public class HealCommand extends BaseCommand {
               issuer.getIssuer(), "sink.module.feed.success.other", "{target}", player.getName());
     }
   }
+
 }

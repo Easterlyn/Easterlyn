@@ -8,6 +8,7 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Subcommand;
 import co.aikar.commands.annotation.Syntax;
 import co.aikar.locales.MessageKey;
@@ -21,6 +22,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 @CommandAlias("onlogin")
 @Description("{@@sink.module.onlogin.description}")
@@ -32,16 +35,19 @@ public class LoginCommands extends BaseCommand implements Listener {
   @Dependency EasterlynCore core;
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void onPlayerJoin(PlayerJoinEvent event) {
-    User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
-    user.getStorage().getStringList(ONLOGIN).forEach(string -> event.getPlayer().chat(string));
+  public void onPlayerJoin(@NotNull PlayerJoinEvent event) {
+    core.getUserManager().getPlayer(event.getPlayer().getUniqueId())
+            .thenAccept(opt -> opt.ifPresent(
+                user -> user.getStorage()
+                    .getStringList(ONLOGIN)
+                    .forEach(string -> event.getPlayer().chat(string))));
   }
 
   @Subcommand("list")
   @Description("{@@sink.module.onlogin.list.description}")
   @Syntax("[player]")
   @CommandCompletion("@player")
-  public void list(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+  public void list(@NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
     CommandIssuer issuer = getCurrentCommandIssuer();
     List<String> list = user.getStorage().getStringList(ONLOGIN);
     if (list.isEmpty()) {
@@ -57,7 +63,9 @@ public class LoginCommands extends BaseCommand implements Listener {
   @Description("{@@sink.module.onlogin.add.description}")
   @Syntax("</command parameters>")
   @CommandCompletion("@player")
-  public void add(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, String command) {
+  public void add(
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) User user,
+      @Nullable @Optional String command) {
     CommandIssuer issuer = getCurrentCommandIssuer();
     List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
     if (!issuer.hasPermission("easterlyn.command.onlogin.more") && list.size() >= 2
@@ -81,7 +89,7 @@ public class LoginCommands extends BaseCommand implements Listener {
   @Description("{@@sink.module.onlogin.remove.description}")
   @Syntax("<index>")
   @CommandCompletion("@player @integer")
-  public void remove(@Flags(CoreContexts.ONLINE_WITH_PERM) User user, int commandIndex) {
+  public void remove(@NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) User user, int commandIndex) {
     CommandIssuer issuer = getCurrentCommandIssuer();
     List<String> list = new ArrayList<>(user.getStorage().getStringList(ONLOGIN));
     if (list.size() == 0) {

@@ -19,14 +19,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-shade-plugin</artifactId>
-        <configuration>
-          <relocations>
-            <relocation>
-              <pattern>com.github.jikoo.planarwrappers</pattern>
-              <shadedPattern>com.easterlyn.planarwrappers</shadedPattern>
-            </relocation>
-          </relocations>
-        </configuration>
       </plugin>
 
       <plugin>

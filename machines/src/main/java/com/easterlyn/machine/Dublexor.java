@@ -38,6 +38,7 @@ import org.bukkit.inventory.MerchantInventory;
 import org.bukkit.inventory.MerchantRecipe;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.RegisteredServiceProvider;
+import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -379,7 +380,8 @@ public class Dublexor extends Machine {
             });
   }
 
-  private Pair<ItemStack, Integer> unCaptcha(ItemStack potentialCaptcha) {
+  @Contract("_ -> new")
+  private @NotNull Pair<ItemStack, Integer> unCaptcha(@NotNull ItemStack potentialCaptcha) {
     try {
       Class.forName("com.easterlyn.EasterlynCaptchas");
     } catch (ClassNotFoundException e) {

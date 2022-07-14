@@ -1,6 +1,7 @@
 package com.easterlyn.discord.command;
 
 import co.aikar.commands.BaseCommand;
+import co.aikar.commands.BukkitCommandIssuer;
 import co.aikar.commands.annotation.CommandAlias;
 import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
@@ -21,8 +22,8 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("link")
 @Description("{@@discord.commands.link.description.self}")
@@ -35,7 +36,7 @@ public class LinkCommand extends BaseCommand {
   @Default
   @Private
   @CommandPermission("easterlyn.command.link.self")
-  public void link(@Flags(CoreContexts.SELF) Player issuer) {
+  public void link(@NotNull @Flags(CoreContexts.SELF) Player issuer) {
     String pendingLink = discord.getPendingLink(issuer.getUniqueId());
     String discordCommand = discord.getCommandPrefix() + "link " + pendingLink;
     String message =
@@ -68,7 +69,10 @@ public class LinkCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.link.other")
   @Syntax("<uuid> <snowflake>")
   @CommandCompletion("")
-  public void link(CommandSender issuer, UUID uuid, @Single String identifier) {
+  public void link(
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull UUID uuid,
+      @NotNull @Single String identifier) {
     discord
         .getServer()
         .getScheduler()
@@ -82,10 +86,10 @@ public class LinkCommand extends BaseCommand {
                           if (snowflake != null) {
                             discord.addLink(uuid, snowflake);
                             core.getLocaleManager()
-                                .sendMessage(issuer, "discord.command.link.force.success");
+                                .sendMessage(issuer.getIssuer(), "discord.command.link.force.success");
                           } else {
                             core.getLocaleManager()
-                                .sendMessage(issuer, "discord.command.link.force.failure");
+                                .sendMessage(issuer.getIssuer(), "discord.command.link.force.failure");
                           }
                         }));
   }
@@ -97,9 +101,10 @@ public class LinkCommand extends BaseCommand {
   @Syntax("")
   @CommandCompletion("")
   public void link(
-      @Flags(CoreContexts.SELF) Player issuer,
-      @Single String assistMeICannotBeReliedUponToRead) {
+      @NotNull @Flags(CoreContexts.SELF) Player issuer,
+      @NotNull @Single String assistMeICannotBeReliedUponToRead) {
     core.getLocaleManager().sendMessage(issuer, "discord.commands.link.reading_comprehension");
     link(issuer);
   }
+
 }

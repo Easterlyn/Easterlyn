@@ -11,6 +11,7 @@ import co.aikar.commands.annotation.Syntax;
 import co.aikar.locales.MessageKey;
 import com.easterlyn.event.ReportableEvent;
 import org.bukkit.Location;
+import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("report|mail @staff")
 @Description("{@@core.commands.report.description}")
@@ -20,7 +21,7 @@ public class ReportCommand extends BaseCommand {
   @Default
   @Private
   @Syntax("<descriptive details>")
-  public void report(BukkitCommandIssuer issuer, String args) {
+  public void report(@NotNull BukkitCommandIssuer issuer, @NotNull String args) {
     if (args.indexOf(' ') == -1) {
       issuer.sendInfo(MessageKey.of("core.commands.report.error.length"));
       return;
@@ -31,13 +32,11 @@ public class ReportCommand extends BaseCommand {
       Location location = issuer.getPlayer().getLocation();
       message +=
           String.format(
-              " - /wtp @p %s %.2f %.2f %.2f %.2f %.2f",
+              " - /execute as @p in %s run minecraft:tp %s %s %s",
               issuer.getPlayer().getWorld().getName(),
-              location.getX(),
-              location.getY(),
-              location.getZ(),
-              location.getPitch(),
-              location.getYaw());
+              location.getBlockX(),
+              location.getBlockY(),
+              location.getBlockZ());
     }
     message += '\n' + args;
 
@@ -50,4 +49,5 @@ public class ReportCommand extends BaseCommand {
 
     ReportableEvent.call(message);
   }
+
 }

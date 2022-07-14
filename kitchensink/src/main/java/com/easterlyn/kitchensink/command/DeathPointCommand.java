@@ -13,13 +13,14 @@ import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynKitchenSink;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.util.BossBarTimer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class DeathPointCommand extends BaseCommand {
 
@@ -32,7 +33,9 @@ public class DeathPointCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.deathtp.self")
   @Syntax("[target]")
   @CommandCompletion("@player")
-  public void death(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+  public void death(
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) PlayerUser user) {
     boolean other = !issuer.getUniqueId().equals(user.getUniqueId());
 
     if (!other && user.getStorage().getLong(DEATH_COOLDOWN) >= System.currentTimeMillis()) {

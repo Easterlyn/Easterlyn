@@ -19,6 +19,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.jetbrains.annotations.NotNull;
 
 public class EffectCommand extends BaseCommand {
 
@@ -29,7 +30,10 @@ public class EffectCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.effects")
   @Syntax("<effect> <level>")
   @CommandCompletion("@effect @integer")
-  public void applyEffect(@Flags(CoreContexts.SELF) Player player, String effectName, int level) {
+  public void applyEffect(
+      @NotNull @Flags(CoreContexts.SELF) Player player,
+      @NotNull String effectName,
+      int level) {
     ItemStack hand = player.getInventory().getItemInMainHand();
     if (hand.getType() == Material.AIR) {
       getCurrentCommandIssuer().sendInfo(MessageKey.of("core.common.no_item"));
@@ -61,4 +65,5 @@ public class EffectCommand extends BaseCommand {
     getCurrentCommandIssuer()
         .sendInfo(MessageKey.of("effects.commands.effect.success"), "{value}", loreString);
   }
+
 }

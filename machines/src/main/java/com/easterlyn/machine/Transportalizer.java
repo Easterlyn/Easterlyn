@@ -1,8 +1,7 @@
 package com.easterlyn.machine;
 
-import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynMachines;
-import com.easterlyn.user.User;
+import com.easterlyn.user.UserManager;
 import com.easterlyn.util.HologramUtil;
 import com.easterlyn.util.ProtectionUtil;
 import com.easterlyn.util.Request;
@@ -46,7 +45,6 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
@@ -352,49 +350,49 @@ public class Transportalizer extends Machine {
     }
 
     if (!push && entity instanceof Player) {
-      RegisteredServiceProvider<EasterlynCore> registration =
-          getMachines().getServer().getServicesManager().getRegistration(EasterlynCore.class);
-      if (registration == null) {
-        return "Easterlyn core plugin not loaded! Cannot pull players.";
-      }
       if (player.getUniqueId().equals(entity.getUniqueId())) {
         return null;
       }
 
-      User target = registration.getProvider().getUserManager().getUser(entity.getUniqueId());
-      User issuer = registration.getProvider().getUserManager().getUser(player.getUniqueId());
-      if (target.setPendingRequest(
-          new Request() {
-            @Override
-            public void accept() {
-              if (getFuel(storage) < cost) {
-                target.sendMessage(
-                    "Transportalizer is too low on fuel! Ask "
-                        + issuer.getDisplayName()
-                        + " to add more!");
-              }
-              Player localTarget = target.getPlayer();
-              if (localTarget == null) {
-                return;
-              }
-              teleport(entity, from, to);
-              setFuel(storage, getFuel(storage) - cost);
-            }
+      UserManager userManager = getMachines().getCore().getUserManager();
+      userManager
+          .getPlayer(entity.getUniqueId())
+          .thenAcceptBoth(
+              userManager.getPlayer(player.getUniqueId()),
+              (targetOptional, issuerOptional) ->
+                  targetOptional.ifPresent(target -> issuerOptional.ifPresent(issuer -> {
+                    if (target.setPendingRequest(
+                        new Request() {
+                          @Override
+                          public void accept() {
+                            if (getFuel(storage) < cost) {
+                              target.sendMessage(
+                                  "Transportalizer is too low on fuel! Ask "
+                                      + issuer.getDisplayName()
+                                      + " to add more!");
+                            }
+                            Player localTarget = target.getPlayer();
+                            if (localTarget == null) {
+                              return;
+                            }
+                            teleport(entity, from, to);
+                            setFuel(storage, getFuel(storage) - cost);
+                          }
 
-            @Override
-            public void decline() {
-              target.sendMessage("Request declined!");
-            }
-          })) {
-        target.sendMessage(
-            issuer.getUniqueId(),
-            issuer.getDisplayName()
-                + " is requesting to transportalize you!\n"
-                + "Use /accept or /decline to manage the request.");
-        // Blank message won't actually send, but will preclude immediate transportalization.
-        return "";
-      }
-      return null;
+                          @Override
+                          public void decline() {
+                            target.sendMessage("Request declined!");
+                          }
+                        })) {
+                      target.sendMessage(
+                          issuer.getUniqueId(),
+                          issuer.getDisplayName()
+                              + " is requesting to transportalize you!\n"
+                              + "Use /accept or /decline to manage the request.");
+                    }
+                  })));
+      // Blank message won't actually send, but will preclude immediate transportalization.
+      return "";
     }
 
     // Ender dragon or ender dragon parts

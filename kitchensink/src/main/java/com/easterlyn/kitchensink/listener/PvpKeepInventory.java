@@ -40,7 +40,8 @@ public class PvpKeepInventory implements Listener {
       return;
     }
 
-    User user = plugin.getCore().getUserManager().getUser(player.getUniqueId());
+    // TODO bad
+    User user = plugin.getCore().getUserManager().getOrLoadNow(player.getUniqueId());
     user.getTemporaryStorage().put(key, System.currentTimeMillis());
   }
 
@@ -52,7 +53,8 @@ public class PvpKeepInventory implements Listener {
       return;
     }
 
-    User user = plugin.getCore().getUserManager().getUser(event.getEntity().getUniqueId());
+    // TODO bad
+    User user = plugin.getCore().getUserManager().getOrLoadNow(event.getEntity().getUniqueId());
     Object object = user.getTemporaryStorage().get(key);
     if (!(object instanceof Long)) {
       return;

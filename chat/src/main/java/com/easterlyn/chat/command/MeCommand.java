@@ -11,6 +11,7 @@ import com.easterlyn.chat.channel.Channel;
 import com.easterlyn.chat.event.UserChatEvent;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.user.User;
+import org.jetbrains.annotations.NotNull;
 
 public class MeCommand extends BaseCommand {
 
@@ -20,9 +21,10 @@ public class MeCommand extends BaseCommand {
   @Syntax("[#channel] <action>")
   @CommandCompletion("")
   public void me(
-      @Flags(CoreContexts.SELF) User sender,
-      @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel,
-      String args) {
+      @NotNull @Flags(CoreContexts.SELF) User sender,
+      @NotNull @Flags(ChannelFlag.LISTENING_OR_CURRENT) Channel channel,
+      @NotNull String args) {
     new UserChatEvent(sender, channel, args, true).send();
   }
+
 }

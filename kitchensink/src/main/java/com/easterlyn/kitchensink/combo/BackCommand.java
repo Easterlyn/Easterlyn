@@ -13,7 +13,7 @@ import co.aikar.locales.MessageKey;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.EasterlynKitchenSink;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import com.easterlyn.util.BossBarTimer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -24,6 +24,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.jetbrains.annotations.NotNull;
 
 public class BackCommand extends BaseCommand implements Listener {
 
@@ -38,7 +39,9 @@ public class BackCommand extends BaseCommand implements Listener {
   @CommandPermission("easterlyn.command.back.self")
   @Syntax("[target]")
   @CommandCompletion("@player")
-  public void back(BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+  public void back(
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) PlayerUser user) {
     boolean other = !issuer.getUniqueId().equals(user.getUniqueId());
 
     if (!other && user.getStorage().getLong(BACK_COOLDOWN) >= System.currentTimeMillis()) {
@@ -94,7 +97,7 @@ public class BackCommand extends BaseCommand implements Listener {
   }
 
   @EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-  public void onPlayerTeleport(PlayerTeleportEvent event) {
+  public void onPlayerTeleport(@NotNull PlayerTeleportEvent event) {
     switch (event.getCause()) {
       case COMMAND:
       case END_GATEWAY:
@@ -110,7 +113,9 @@ public class BackCommand extends BaseCommand implements Listener {
         return;
     }
 
-    User user = core.getUserManager().getUser(event.getPlayer().getUniqueId());
-    user.getStorage().set(BACK_LOCATION, event.getFrom());
+    core.getUserManager().getPlayer(event.getPlayer().getUniqueId())
+        .thenAccept(opt -> opt.ifPresent(
+            user -> user.getStorage().set(BACK_LOCATION, event.getFrom())));
   }
+
 }

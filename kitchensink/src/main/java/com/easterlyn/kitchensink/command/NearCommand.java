@@ -11,9 +11,14 @@ import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
+import com.easterlyn.user.ServerUser;
 import com.easterlyn.util.Colors;
 import com.easterlyn.util.text.ParsedText;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ThreadLocalRandom;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -21,6 +26,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import org.jetbrains.annotations.NotNull;
 
 public class NearCommand extends BaseCommand {
 
@@ -33,7 +39,7 @@ public class NearCommand extends BaseCommand {
   @Syntax("[range]")
   @CommandCompletion("@integer")
   @CommandPermission("easterlyn.command.near")
-  public void near(@Flags(CoreContexts.SELF) Player issuer, @Default("200") int range) {
+  public void near(@NotNull @Flags(CoreContexts.SELF) Player issuer, @Default("200") int range) {
     range = Math.max(1, range);
     if (!issuer.hasPermission("easterlyn.command.near.far")) {
       range = Math.min(MAX_RADIUS, range);
@@ -59,6 +65,7 @@ public class NearCommand extends BaseCommand {
     separator.setColor(normalA);
     ChatColor normalB = Colors.getOrDefault("normal.b", ChatColor.DARK_AQUA);
 
+    CompletableFuture<ParsedText> future = CompletableFuture.completedFuture(message);
     for (Player player : players) {
       if (issuer.getUniqueId().equals(player.getUniqueId())
           || !issuer.canSee(player)
@@ -72,21 +79,40 @@ public class NearCommand extends BaseCommand {
       }
       ++matches;
       int distance = (int) Math.sqrt(distanceSquared);
-      message.addComponent(core.getUserManager().getUser(player.getUniqueId()).getMention());
-      message.addText(normalA + " (" + normalB + distance + normalA + ')');
+      future = future.thenCombine(core.getUserManager().getPlayer(player.getUniqueId()), (text, optional) -> {
+        optional.ifPresent(user -> {
+          text.addComponent(user.getMention());
+          text.addText(normalA + " (" + normalB + distance + normalA + ')');
+          text.addComponent(separator);
+        });
+        return text;
+      });
+    }
+
+    if (ThreadLocalRandom.current().nextDouble() < .001) {
+      ++matches;
+      Map<String, String> easterEgg = new HashMap<>();
+      easterEgg.put("name", "Herobrine");
+      easterEgg.put("color", ChatColor.BLACK.toString());
+      message.addComponent(new ServerUser(core, easterEgg).getMention());
+      message.addText(normalA + " (" + normalB + ThreadLocalRandom.current().nextInt(0, 26) + normalA + ')');
       message.addComponent(separator);
     }
 
-    if (matches == 0) {
+    if (matches < 1) {
       message.addText(core.getLocaleManager().getValue("sink.module.near.none", locale));
+      List<TextComponent> components = message.getComponents();
+      issuer.spigot().sendMessage(new TextComponent(components.toArray(new BaseComponent[0])));
+      return;
     }
 
-    List<TextComponent> components = message.getComponents();
-    if (matches > 0) {
+    future.thenAccept(text -> {
+      List<TextComponent> components = text.getComponents();
       // Remove trailing comma component
       components.remove(components.size() - 1);
-    }
 
-    issuer.spigot().sendMessage(new TextComponent(components.toArray(new BaseComponent[0])));
+      issuer.spigot().sendMessage(new TextComponent(components.toArray(new BaseComponent[0])));
+    });
   }
+
 }

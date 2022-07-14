@@ -8,12 +8,15 @@ import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
+import co.aikar.commands.annotation.Optional;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class NicknameCommand extends BaseCommand {
 
@@ -25,9 +28,9 @@ public class NicknameCommand extends BaseCommand {
   @Syntax("[target] <nickname|off>")
   @CommandCompletion("@player")
   public void setNick(
-      BukkitCommandIssuer issuer,
-      @Flags(CoreContexts.ONLINE_WITH_PERM) User user,
-      String nickname) {
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) PlayerUser user,
+      @Nullable @Optional String nickname) {
     if (nickname == null
         || nickname.isEmpty()
         || nickname.equalsIgnoreCase("off")

@@ -9,7 +9,7 @@ import co.aikar.commands.annotation.Description;
 import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
 import java.util.Objects;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -18,6 +18,7 @@ import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class CoordinatesCommand extends BaseCommand {
 
@@ -28,7 +29,8 @@ public class CoordinatesCommand extends BaseCommand {
   @Syntax("[player]")
   @CommandCompletion("@player")
   public void getCoordinates(
-      BukkitCommandIssuer issuer, @Flags(CoreContexts.ONLINE_WITH_PERM) User target) {
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull @Flags(CoreContexts.ONLINE_WITH_PERM) PlayerUser target) {
     Player player = target.getPlayer();
 
     if (player == null) {
@@ -74,4 +76,5 @@ public class CoordinatesCommand extends BaseCommand {
                 TextComponent.fromLegacyText(ChatColor.YELLOW + "Click to insert into chat!"))));
     issuer.getIssuer().spigot().sendMessage(richText);
   }
+
 }

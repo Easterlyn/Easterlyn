@@ -46,7 +46,8 @@ public class MuteListener implements Listener {
   }
 
   private void cancelIfMute(@NotNull Player player, @NotNull Cancellable cancellable) {
-    User user = plugin.getCore().getUserManager().getUser(player.getUniqueId());
+    // Have to get or load immediately - there's little way to undo the events after the fact.
+    User user = plugin.getCore().getUserManager().getOrLoadNow(player.getUniqueId());
     if (user.getStorage().getLong(EasterlynChat.USER_MUTE, 0L) > System.currentTimeMillis()) {
       cancellable.setCancelled(true);
     }

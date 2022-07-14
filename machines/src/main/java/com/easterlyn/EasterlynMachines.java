@@ -2,6 +2,7 @@ package com.easterlyn;
 
 import com.easterlyn.event.ReportableEvent;
 import com.easterlyn.machine.Machine;
+import com.easterlyn.plugin.EasterlynPlugin;
 import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.github.jikoo.planarwrappers.collections.BlockMap;
@@ -60,7 +61,6 @@ import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.server.PluginEnableEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
@@ -68,14 +68,12 @@ import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.Merchant;
 import org.bukkit.inventory.MerchantInventory;
-import org.bukkit.plugin.RegisteredServiceProvider;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.reflections.Reflections;
 import org.reflections.util.ConfigurationBuilder;
 
-public class EasterlynMachines extends JavaPlugin {
+public class EasterlynMachines extends EasterlynPlugin {
 
   private final BlockMap<Block> blocksToKeys = new BlockMap<>();
   private final BlockMultimap<Block> keysToBlocks = new BlockMultimap<>();
@@ -85,7 +83,7 @@ public class EasterlynMachines extends JavaPlugin {
   private final Map<Merchant, Pair<Machine, ConfigurationSection>> merchants = new HashMap<>();
 
   @Override
-  public void onEnable() {
+  protected void enable() {
     saveDefaultConfig();
 
     ConfigurationBuilder configuration = new ConfigurationBuilder()
@@ -323,24 +321,10 @@ public class EasterlynMachines extends JavaPlugin {
         loadChunkMachines(chunk);
       }
     }
-
-    RegisteredServiceProvider<EasterlynCore> registration =
-        getServer().getServicesManager().getRegistration(EasterlynCore.class);
-    if (registration != null) {
-      register(registration.getProvider());
-    }
-
-    Event.register(
-        PluginEnableEvent.class,
-        pluginEnableEvent -> {
-          if (pluginEnableEvent.getPlugin() instanceof EasterlynCore) {
-            register((EasterlynCore) pluginEnableEvent.getPlugin());
-          }
-        },
-        this);
   }
 
-  private void register(@NotNull EasterlynCore plugin) {
+  @Override
+  protected void register(@NotNull EasterlynCore plugin) {
     ItemUtil.addUniqueCheck(
         itemStack -> iconRegistry.keySet().stream().anyMatch(itemStack::isSimilar));
     BlockUtil.addRightClickFunction(((block, itemStack) -> isMachine(block)));

@@ -14,8 +14,8 @@ import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynCore;
 import com.easterlyn.command.CoreContexts;
 import com.easterlyn.kitchensink.combo.BackCommand;
-import com.easterlyn.kitchensink.combo.DeathPointCommand;
-import com.easterlyn.user.User;
+import com.easterlyn.user.PlayerUser;
+import org.jetbrains.annotations.NotNull;
 
 @CommandAlias("resetcooldown|rcd")
 @Description("{@@sink.module.cooldown.reset.description}")
@@ -26,7 +26,7 @@ public class CooldownReset extends BaseCommand {
 
   @Default
   @Private
-  public void resetAll(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+  public void resetAll(@Flags(CoreContexts.ONLINE_WITH_PERM) @NotNull PlayerUser user) {
     core.getLocaleManager().sendMessage(user.getPlayer(), "sink.module.cooldown.reset.all");
     user.getStorage().set(BackCommand.BACK_COOLDOWN, null);
     user.getStorage().set(DeathPointCommand.DEATH_COOLDOWN, null);
@@ -37,7 +37,7 @@ public class CooldownReset extends BaseCommand {
   @Description("{@@sink.module.cooldown.reset.specific.description}")
   @Syntax("")
   @CommandCompletion("@player")
-  public void resetBack(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+  public void resetBack(@Flags(CoreContexts.ONLINE_WITH_PERM) @NotNull PlayerUser user) {
     core.getLocaleManager()
         .sendMessage(user.getPlayer(), "sink.module.cooldown.reset.single", "{target}", "/back");
     user.getStorage().set(BackCommand.BACK_COOLDOWN, null);
@@ -47,7 +47,7 @@ public class CooldownReset extends BaseCommand {
   @Description("{@@sink.module.cooldown.reset.specific.description}")
   @Syntax("")
   @CommandCompletion("@player")
-  public void resetDeath(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+  public void resetDeath(@Flags(CoreContexts.ONLINE_WITH_PERM) @NotNull PlayerUser user) {
     core.getLocaleManager()
         .sendMessage(user.getPlayer(), "sink.module.cooldown.reset.single", "{target}", "/death");
     user.getStorage().set(DeathPointCommand.DEATH_COOLDOWN, null);
@@ -57,9 +57,10 @@ public class CooldownReset extends BaseCommand {
   @Description("{@@sink.module.cooldown.reset.specific.description}")
   @Syntax("")
   @CommandCompletion("@player")
-  public void resetTpa(@Flags(CoreContexts.ONLINE_WITH_PERM) User user) {
+  public void resetTpa(@Flags(CoreContexts.ONLINE_WITH_PERM) @NotNull PlayerUser user) {
     core.getLocaleManager()
         .sendMessage(user.getPlayer(), "sink.module.cooldown.reset.single", "{target}", "/tpa");
     user.getStorage().set(TeleportRequestCommand.TPREQUEST_COOLDOWN, null);
   }
+
 }

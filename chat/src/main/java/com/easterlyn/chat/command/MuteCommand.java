@@ -7,15 +7,16 @@ import co.aikar.commands.annotation.CommandCompletion;
 import co.aikar.commands.annotation.CommandPermission;
 import co.aikar.commands.annotation.Dependency;
 import co.aikar.commands.annotation.Description;
-import co.aikar.commands.annotation.Flags;
 import co.aikar.commands.annotation.Syntax;
 import com.easterlyn.EasterlynChat;
 import com.easterlyn.EasterlynCore;
-import com.easterlyn.command.CoreContexts;
-import com.easterlyn.user.User;
+import com.easterlyn.command.CoreLang;
+import com.easterlyn.user.PlayerUser;
+import com.easterlyn.util.wrapper.PlayerUserFuture;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class MuteCommand extends BaseCommand {
 
@@ -26,7 +27,7 @@ public class MuteCommand extends BaseCommand {
   @CommandPermission("easterlyn.command.mute")
   @CommandCompletion("@player")
   @Syntax("<player>")
-  public void mute(BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) User target) {
+  public void mute(@NotNull BukkitCommandIssuer issuer, @NotNull PlayerUserFuture target) {
     mute(issuer, target, new Date(Long.MAX_VALUE));
   }
 
@@ -36,7 +37,31 @@ public class MuteCommand extends BaseCommand {
   @CommandCompletion("@player @date")
   @Syntax("<player> <duration>")
   public void mute(
-      BukkitCommandIssuer issuer, @Flags(CoreContexts.OFFLINE) User target, Date date) {
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull PlayerUserFuture target,
+      @NotNull Date date) {
+
+    target
+        .future()
+        .thenAccept(
+            targetUser -> {
+              if (targetUser.isPresent()) {
+                muteLater(issuer, targetUser.get(), date);
+              } else {
+                core.getLocaleManager()
+                    .sendMessage(
+                        issuer.getIssuer(),
+                        CoreLang.INVALID_PLAYER.getMessageKey().getKey(),
+                        "{value}",
+                        target.id());
+              }
+            });
+  }
+
+  private void muteLater(
+      @NotNull BukkitCommandIssuer issuer,
+      @NotNull PlayerUser target,
+      @NotNull Date date) {
     target.getStorage().set(EasterlynChat.USER_MUTE, date.getTime());
 
     boolean isInfinite = date.getTime() == Long.MAX_VALUE;
@@ -63,4 +88,5 @@ public class MuteCommand extends BaseCommand {
               dateString);
     }
   }
+
 }

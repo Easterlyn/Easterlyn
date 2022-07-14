@@ -88,10 +88,11 @@ public class CoreCompletions {
         });
     completions.setDefaultCompletion("player", Player.class);
     // TODO
-    //  commands, date
+    //  commands, date, boolean
     //  location, worldLocation, material, world, chatcolor, chatformat
 
     completions.registerStaticCompletion(
         "password", Arrays.asList("Hunter2", "animebuttsdrivemenuts1"));
   }
+
 }
