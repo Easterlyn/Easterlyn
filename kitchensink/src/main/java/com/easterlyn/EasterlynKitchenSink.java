@@ -75,7 +75,7 @@ public class EasterlynKitchenSink extends EasterlynPlugin {
     extraCommands.add(meteors);
 
     // Feature: Bottle experience by right-clicking with an empty bottle.
-    getServer().getPluginManager().registerEvents(new BottleExperience(this), this);
+    getServer().getPluginManager().registerEvents(new BottleExperience(), this);
 
     // Feature: Allow color codes on signs via '&'.
     getServer().getPluginManager().registerEvents(new ColorSignText(), this);

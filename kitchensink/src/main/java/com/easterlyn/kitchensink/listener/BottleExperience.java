@@ -1,10 +1,11 @@
 package com.easterlyn.kitchensink.listener;
 
-import com.easterlyn.plugin.EasterlynPlugin;
-import com.easterlyn.user.User;
 import com.easterlyn.util.BlockUtil;
 import com.easterlyn.util.inventory.ItemUtil;
 import com.github.jikoo.planarwrappers.util.Experience;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.ThrownExpBottle;
@@ -22,13 +23,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class BottleExperience implements Listener {
 
-  private final String keyBottleCreate = "kitchensink:expBottleCreate";
-  private final String keyBottleThrow = "kitchensink:expBottleThrow";
-  private final EasterlynPlugin plugin;
-
-  public BottleExperience(@NotNull EasterlynPlugin plugin) {
-    this.plugin = plugin;
-  }
+  private final Map<UUID, Long> bottleCreate = new HashMap<>();
+  private final Map<UUID, Long> bottleThrow = new HashMap<>();
 
   @EventHandler
   private void onPlayerInteract(@NotNull PlayerInteractEvent event) {
@@ -51,11 +47,9 @@ public class BottleExperience implements Listener {
     }
 
     Player player = event.getPlayer();
-    // TODO bad, need separate in-memory store
-    User user = plugin.getCore().getUserManager().getOrLoadNow(player.getUniqueId());
+    Long cooldown = bottleCreate.get(player.getUniqueId());
 
-    Object cooldown = user.getTemporaryStorage().get(keyBottleCreate);
-    if (cooldown instanceof Long && (Long) cooldown >= System.currentTimeMillis()) {
+    if (cooldown != null && cooldown >= System.currentTimeMillis()) {
       return;
     }
 
@@ -70,7 +64,7 @@ public class BottleExperience implements Listener {
           .getWorld()
           .dropItem(player.getLocation(), new ItemStack(Material.EXPERIENCE_BOTTLE, 1))
           .setPickupDelay(0);
-      user.getTemporaryStorage().put(keyBottleThrow, System.currentTimeMillis() + 2000);
+      bottleThrow.put(player.getUniqueId(), System.currentTimeMillis() + 2000);
       event.setUseItemInHand(Event.Result.DENY);
     }
   }
@@ -83,14 +77,7 @@ public class BottleExperience implements Listener {
 
   @EventHandler(ignoreCancelled = true)
   public void onPlayerItemConsume(@NotNull PlayerItemConsumeEvent event) {
-    plugin.getCore().getUserManager().getPlayer(event.getPlayer().getUniqueId())
-        .thenAccept(
-            optional ->
-                optional.ifPresent(
-                    user ->
-                        user
-                            .getTemporaryStorage()
-                            .put(keyBottleCreate, System.currentTimeMillis() + 2000)));
+    bottleCreate.put(event.getPlayer().getUniqueId(), System.currentTimeMillis() + 2000);
   }
 
   @EventHandler(ignoreCancelled = true)
@@ -100,12 +87,10 @@ public class BottleExperience implements Listener {
       return;
     }
 
-    // TODO bad
-    User user = plugin.getCore().getUserManager().getOrLoadNow(player.getUniqueId());
-
-    Object cooldown = user.getTemporaryStorage().get(keyBottleThrow);
-    if (cooldown instanceof Long && (Long) cooldown >= System.currentTimeMillis()) {
+    Long cooldown = bottleThrow.get(player.getUniqueId());
+    if (cooldown != null && cooldown >= System.currentTimeMillis()) {
       event.setCancelled(true);
     }
   }
+
 }
