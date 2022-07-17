@@ -11,3 +11,4 @@ softdepend: [ GriefPrevention, WorldGuard ]
 libraries:
   - org.javassist:javassist:${javassist.version}
   - org.reflections:reflections:${reflections.version}
+  - com.github.ben-manes.caffeine:caffeine:${caffeine.version}

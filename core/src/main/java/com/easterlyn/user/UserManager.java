@@ -8,9 +8,10 @@ import com.easterlyn.event.UserUnloadEvent;
 import com.easterlyn.util.PermissionUtil;
 import com.easterlyn.util.text.TextParsing;
 import com.easterlyn.util.wrapper.ConcurrentConfiguration;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.RemovalCause;
 import com.github.jikoo.planarwrappers.event.Event;
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import java.io.File;
 import java.nio.file.Path;
 import java.util.Optional;
@@ -40,16 +41,22 @@ public class UserManager {
   public UserManager(@NotNull EasterlynCore plugin) {
     this.plugin = plugin;
     this.userCache =
-        CacheBuilder.newBuilder()
-            .expireAfterAccess(15L, TimeUnit.MINUTES)
+        Caffeine.newBuilder()
+            .expireAfterAccess(30L, TimeUnit.MINUTES)
+            .maximumSize(plugin.getServer().getMaxPlayers() * 2L)
             .removalListener(
-                notification -> {
-                  User user = (User) notification.getValue();
-                  if (user == null) {
+                (UUID key, PlayerUser value, RemovalCause cause) -> {
+                  if (key == null || value == null) {
                     return;
                   }
-                  plugin.getServer().getPluginManager().callEvent(new UserUnloadEvent(user));
-                  PermissionUtil.releasePermissionData(user.getUniqueId());
+                  if (cause == RemovalCause.EXPIRED && plugin.getServer().getPlayer(key) != null) {
+                    // Player is online. Schedule immediate re-addition and don't release perm data.
+                    plugin.getServer().getScheduler()
+                        .runTaskAsynchronously(plugin, () -> setPlayerUser(key, value));
+                    return;
+                  }
+                  plugin.getServer().getPluginManager().callEvent(new UserUnloadEvent(value));
+                  PermissionUtil.releasePermissionData(key);
                 })
             .build();
 
@@ -81,6 +88,10 @@ public class UserManager {
         plugin);
 
     TextParsing.addQuoteConsumer(new PlayerUserQuoteConsumer(userCache.asMap()::values));
+  }
+
+  private void setPlayerUser(@NotNull UUID uuid, @NotNull PlayerUser user) {
+    this.userCache.put(uuid, user);
   }
 
   // TODO getUser(CommandSender)?

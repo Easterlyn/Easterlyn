@@ -30,6 +30,10 @@
       <scope>compile</scope>
     </dependency>
     <dependency>
+      <groupId>com.github.ben-manes.caffeine</groupId>
+      <artifactId>caffeine</artifactId>
+    </dependency>
+    <dependency>
       <artifactId>reflections</artifactId>
       <groupId>org.reflections</groupId>
       <scope>provided</scope>
